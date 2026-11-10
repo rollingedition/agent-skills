@@ -10,6 +10,8 @@ This repository is generated from the books, so changes made here are overwritte
 
 | Book | Skill | Edition | Examples |
 | --- | --- | --- | --- |
+| [Model Context Protocol in Practice](https://rollingedition.com/model-context-protocol-in-practice) | `model-context-protocol-in-practice` | 2026.11.10 | 70 of 70 examples pass |
+| [Open Table Formats](https://rollingedition.com/open-table-formats) | `open-table-formats` | 2026.11.5 | 39 of 39 examples pass |
 
 ## Install
 
@@ -17,7 +19,7 @@ This repository is generated from the books, so changes made here are overwritte
 
 ```sh
 /plugin marketplace add rollingedition/agent-skills
-/plugin install BOOK@rolling-edition
+/plugin install model-context-protocol-in-practice@rolling-edition
 ```
 
 A new edition updates the plugin's version. `/plugin install books@rolling-edition` adds the MCP server, to search, read and cite every book.
@@ -25,7 +27,7 @@ A new edition updates the plugin's version. `/plugin install books@rolling-editi
 **Other agents** (Codex, Cursor, GitHub Copilot and more), with the [skills](https://skills.sh) CLI:
 
 ```sh
-npx skills add rollingedition/agent-skills --skill BOOK
+npx skills add rollingedition/agent-skills --skill model-context-protocol-in-practice
 ```
 
 Or download one skill as a zip from its book's page on [rollingedition.ai](https://rollingedition.ai/).

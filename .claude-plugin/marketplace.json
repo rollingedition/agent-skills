@@ -7,6 +7,20 @@
   "description": "Agent skills from Rolling Edition's books, each built from the book's current edition and versioned by it.",
   "plugins": [
     {
+      "name": "model-context-protocol-in-practice",
+      "source": "./plugins/model-context-protocol-in-practice",
+      "description": "Tools and data for agents, for engineers who know APIs: what MCP adds to an HTTP API and when it's the wrong choice, and how to design, build, secure, test and run MCP servers and clients on specification revision 2026-07-28 with the Python SDK, mcp 2.x, with a migration path from the 2025 revisions.",
+      "category": "learning",
+      "homepage": "https://rollingedition.com/model-context-protocol-in-practice"
+    },
+    {
+      "name": "open-table-formats",
+      "source": "./plugins/open-table-formats",
+      "description": "How Iceberg, Delta Lake and DuckLake store a table, change it, clean it up, register it in a catalog and move it to another format, on one hourly pageviews table, with examples that run offline on a laptop.",
+      "category": "learning",
+      "homepage": "https://rollingedition.com/open-table-formats"
+    },
+    {
       "name": "books",
       "source": "./plugins/books",
       "category": "learning",
