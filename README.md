@@ -10,28 +10,38 @@ This repository is generated from the books, so changes made here are overwritte
 
 | Book | Skill | Edition | Examples |
 | --- | --- | --- | --- |
+| [Business Intelligence with Agents](https://rollingedition.com/business-intelligence-with-agents) | `business-intelligence-with-agents` | 2026.11.7 | 78 of 78 examples pass |
 | [Model Context Protocol in Practice](https://rollingedition.com/model-context-protocol-in-practice) | `model-context-protocol-in-practice` | 2026.11.10 | 70 of 70 examples pass |
 | [Open Table Formats](https://rollingedition.com/open-table-formats) | `open-table-formats` | 2026.11.5 | 39 of 39 examples pass |
 | [A Primer on Search Relevance](https://rollingedition.com/primer-on-search-relevance) | `primer-on-search-relevance` | 2026.11.5 | 132 of 132 examples pass |
 
 ## Install
 
-**Claude Code:**
+**Claude Code:** add the catalog once, then one book, or every book with the MCP server:
 
 ```sh
 /plugin marketplace add rollingedition/agent-skills
-/plugin install model-context-protocol-in-practice@rolling-edition
+/plugin install business-intelligence-with-agents@rolling-edition
+/plugin install rolling-edition@rolling-edition
 ```
 
-A new edition updates the plugin's version. `/plugin install books@rolling-edition` adds the MCP server, to search, read and cite every book.
+A new edition is a new version of its plugin. `claude plugin update business-intelligence-with-agents@rolling-edition` fetches it, or turn on auto-update for this catalog in `/plugin`.
+
+**Claude (chat and Cowork):** in Customize, Plugins, add this repository as a marketplace, and install `rolling-edition`.
 
 **Other agents** (Codex, Cursor, GitHub Copilot and more), with the [skills](https://skills.sh) CLI:
 
 ```sh
-npx skills add rollingedition/agent-skills --skill model-context-protocol-in-practice
+npx skills add rollingedition/agent-skills --skill business-intelligence-with-agents
 ```
 
-Or download one skill as a zip from its book's page on [rollingedition.ai](https://rollingedition.ai/).
+Or from rollingedition.ai, which lists every skill for the same command:
+
+```sh
+npx skills add https://rollingedition.ai
+```
+
+Each book's page on [rollingedition.ai](https://rollingedition.ai/) also has its skill as a zip.
 
 ## Licence
 

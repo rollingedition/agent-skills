@@ -1,0 +1,29 @@
+{
+  "name": "rolling-edition",
+  "displayName": "Rolling Edition",
+  "version": "2026.1110.2330",
+  "description": "Every Rolling Edition book as an agent skill, built from its current edition, and the read-only MCP server that searches, reads and cites every book.",
+  "author": {
+    "name": "Rolling Edition",
+    "url": "https://rollingedition.com/"
+  },
+  "homepage": "https://rollingedition.com/assistants#agent-skills",
+  "repository": "https://github.com/rollingedition/agent-skills",
+  "license": "CC-BY-4.0",
+  "keywords": [
+    "technical-books",
+    "learning",
+    "agent-skills"
+  ],
+  "skills": [
+    "./plugins/business-intelligence-with-agents/skills",
+    "./plugins/model-context-protocol-in-practice/skills",
+    "./plugins/open-table-formats/skills",
+    "./plugins/primer-on-search-relevance/skills"
+  ],
+  "icon": "./icon.png",
+  "documentationUrl": "https://rollingedition.com/assistants#agent-skills",
+  "supportUrl": "https://rollingedition.com/assistants#trouble",
+  "privacyPolicyUrl": "https://rollingedition.com/policies/privacy#mcp",
+  "termsOfServiceUrl": "https://rollingedition.com/policies/terms"
+}

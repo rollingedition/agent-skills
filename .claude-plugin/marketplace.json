@@ -7,6 +7,13 @@
   "description": "Agent skills from Rolling Edition's books, each built from the book's current edition and versioned by it.",
   "plugins": [
     {
+      "name": "business-intelligence-with-agents",
+      "source": "./plugins/business-intelligence-with-agents",
+      "description": "Agents that turn business questions into trusted insights, from your warehouse: layered context, governed metrics in a semantic layer, guarded SQL, answers that say when they can't be given, access rules the agent can't talk its way past, and evaluation on your own golden questions, served over MCP, all on DuckDB, sqlglot and MetricFlow.",
+      "category": "learning",
+      "homepage": "https://rollingedition.com/business-intelligence-with-agents"
+    },
+    {
       "name": "model-context-protocol-in-practice",
       "source": "./plugins/model-context-protocol-in-practice",
       "description": "Tools and data for agents, for engineers who know APIs: what MCP adds to an HTTP API and when it's the wrong choice, and how to design, build, secure, test and run MCP servers and clients on specification revision 2026-07-28 with the Python SDK, mcp 2.x, with a migration path from the 2025 revisions.",
@@ -28,11 +35,11 @@
       "homepage": "https://rollingedition.com/primer-on-search-relevance"
     },
     {
-      "name": "books",
-      "source": "./plugins/books",
+      "name": "rolling-edition",
+      "source": "./",
       "category": "learning",
-      "description": "Search, read and cite every Rolling Edition book through its MCP server",
-      "homepage": "https://rollingedition.com/assistants"
+      "description": "Every book's agent skill in one plugin, with the MCP server",
+      "homepage": "https://rollingedition.com/assistants#agent-skills"
     }
   ]
 }
