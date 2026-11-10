@@ -2,6 +2,7 @@
   "$schema": "https://skills.sh/schemas/skills.sh.schema.json",
   "paths": [
     "./plugins/business-intelligence-with-agents/skills",
+    "./plugins/data-governance-as-code/skills",
     "./plugins/model-context-protocol-in-practice/skills",
     "./plugins/open-table-formats/skills",
     "./plugins/primer-on-search-relevance/skills"

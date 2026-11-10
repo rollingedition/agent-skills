@@ -14,6 +14,13 @@
       "homepage": "https://rollingedition.com/business-intelligence-with-agents"
     },
     {
+      "name": "data-governance-as-code",
+      "source": "./plugins/data-governance-as-code",
+      "description": "Governing a data platform with code that runs in CI: a catalog where every table has an owner and every column a classification, personal data found automatically, lineage from pipelines, access policies as tested Rego enforced as row filters and column masks, retention, consent and erasure that remove data, an audit trail, and the same rules for data that trains or grounds AI.",
+      "category": "learning",
+      "homepage": "https://rollingedition.com/data-governance-as-code"
+    },
+    {
       "name": "model-context-protocol-in-practice",
       "source": "./plugins/model-context-protocol-in-practice",
       "description": "Tools and data for agents, for engineers who know APIs: what MCP adds to an HTTP API and when it's the wrong choice, and how to design, build, secure, test and run MCP servers and clients on specification revision 2026-07-28 with the Python SDK, mcp 2.x, with a migration path from the 2025 revisions.",

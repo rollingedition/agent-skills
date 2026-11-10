@@ -1,0 +1,24 @@
+{
+  "name": "data-governance-as-code",
+  "displayName": "Data Governance as Code",
+  "version": "2026.11.21",
+  "description": "Governing a data platform with code that runs in CI: a catalog where every table has an owner and every column a classification, personal data found automatically, lineage from pipelines, access policies as tested Rego enforced as row filters and column masks, retention, consent and erasure that remove data, an audit trail, and the same rules for data that trains or grounds AI.",
+  "author": {
+    "name": "Rolling Edition",
+    "url": "https://rollingedition.com/"
+  },
+  "homepage": "https://rollingedition.com/data-governance-as-code",
+  "repository": "https://github.com/rollingedition/agent-skills",
+  "license": "CC-BY-4.0",
+  "keywords": [
+    "data-governance",
+    "data-warehousing",
+    "data-quality",
+    "data-pipelines"
+  ],
+  "icon": "./icon.png",
+  "documentationUrl": "https://rollingedition.com/assistants#agent-skills",
+  "supportUrl": "https://rollingedition.com/assistants#trouble",
+  "privacyPolicyUrl": "https://rollingedition.com/policies/privacy#mcp",
+  "termsOfServiceUrl": "https://rollingedition.com/policies/terms"
+}
