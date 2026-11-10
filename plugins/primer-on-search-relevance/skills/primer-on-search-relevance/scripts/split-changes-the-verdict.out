@@ -1,0 +1,7 @@
+test queries: 30
+test reranked minus semantic: -0.032
+test higher-scoring run: semantic
+test permutation p: 0.048
+train queries: 50
+train reranked minus semantic: 0.014
+train higher-scoring run: reranked

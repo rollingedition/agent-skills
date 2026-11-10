@@ -1,0 +1,22 @@
+name weight 1, train ndcg@10: 0.725
+name weight 1, train judged@10: 0.950
+name weight 2, train ndcg@10: 0.734
+name weight 2, train judged@10: 0.968
+name weight 3, train ndcg@10: 0.729
+name weight 3, train judged@10: 0.970
+name weight 5, train ndcg@10: 0.722
+name weight 5, train judged@10: 0.972
+best name weight on train: 2
+
+one field, test ndcg@10: 0.774
+one field, test judged@10: 0.950
+best name weight, test ndcg@10: 0.786
+best name weight, test judged@10: 0.970
+mean difference: 0.012
+wins, losses, ties: 15, 9, 6
+permutation p: 0.149
+established at 0.01: no
+t-test p: 0.153
+t-test agrees: yes
+99% interval: -0.009 to 0.032
+interval agrees: yes

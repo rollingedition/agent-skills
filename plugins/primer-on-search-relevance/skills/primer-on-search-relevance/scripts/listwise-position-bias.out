@@ -1,0 +1,12 @@
+test queries: 30
+tau between the two answers, mean: 0.311
+tau between the two answers, lowest: -0.484
+tau between the two answers, highest: 0.811
+top-10 products in common, mean: 6.967
+top-10 products in common, fewest: 3
+queries with the same first product: 13
+share of queries with the same first product: 0.433
+tau between the order shown and the answer, semantic order: 0.414
+tau between the order shown and the answer, reversed order: 0.045
+the same, if the order shown made no difference: -0.414
+reversed answer, test ndcg@10, not a planned comparison: 0.826

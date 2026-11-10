@@ -1,0 +1,41 @@
+order under people: semantic > hybrid > reranked > bm25
+bm25 ndcg@10 under people: 0.725
+semantic ndcg@10 under people: 0.830
+hybrid ndcg@10 under people: 0.812
+reranked ndcg@10 under people: 0.798
+order under people on the LLM's pairs: semantic > hybrid > reranked > bm25
+bm25 ndcg@10 under people on the LLM's pairs: 0.795
+semantic ndcg@10 under people on the LLM's pairs: 0.904
+hybrid ndcg@10 under people on the LLM's pairs: 0.885
+reranked ndcg@10 under people on the LLM's pairs: 0.869
+order under the short prompt: reranked > semantic > hybrid > bm25
+bm25 ndcg@10 under the short prompt: 0.832
+semantic ndcg@10 under the short prompt: 0.903
+hybrid ndcg@10 under the short prompt: 0.900
+reranked ndcg@10 under the short prompt: 0.906
+order under the guidelines prompt: reranked > semantic > hybrid > bm25
+bm25 ndcg@10 under the guidelines prompt: 0.805
+semantic ndcg@10 under the guidelines prompt: 0.878
+hybrid ndcg@10 under the guidelines prompt: 0.876
+reranked ndcg@10 under the guidelines prompt: 0.886
+rankers in the same place under every set of grades: bm25
+bm25, the short prompt minus people on the LLM's pairs: +0.037
+semantic, the short prompt minus people on the LLM's pairs: -0.001
+hybrid, the short prompt minus people on the LLM's pairs: +0.016
+reranked, the short prompt minus people on the LLM's pairs: +0.037
+bm25, the guidelines prompt minus people on the LLM's pairs: +0.010
+semantic, the guidelines prompt minus people on the LLM's pairs: -0.026
+hybrid, the guidelines prompt minus people on the LLM's pairs: -0.008
+reranked, the guidelines prompt minus people on the LLM's pairs: +0.017
+
+pairs of rankers: 6
+change in tau from one swapped pair: 0.333
+swapped under people on the LLM's pairs: none
+tau by hand, people against people on the LLM's pairs: 1.000
+tau from scipy, people against people on the LLM's pairs: 1.000
+swapped under the short prompt: semantic and reranked; hybrid and reranked
+tau by hand, people against the short prompt: 0.333
+tau from scipy, people against the short prompt: 0.333
+swapped under the guidelines prompt: semantic and reranked; hybrid and reranked
+tau by hand, people against the guidelines prompt: 0.333
+tau from scipy, people against the guidelines prompt: 0.333

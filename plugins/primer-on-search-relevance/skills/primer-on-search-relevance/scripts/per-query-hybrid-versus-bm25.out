@@ -1,0 +1,23 @@
+mean difference: 0.087
+median difference: 0.057
+hybrid better: 17
+bm25 better: 7
+tied: 6
+
+hybrid's three largest losses:
+                             query  difference
+query_id
+293       wood floor protector mat      -0.072
+292        decorative white pillow      -0.069
+249        bistro table and chairs      -0.066
+
+largest gain: outdoor light fixtures
+its gain: 0.714
+its bm25 judged@10: 0.200
+share of the mean gain from this query: 0.274
+
+relative gain of the means: 0.120
+mean of per-query relative gains: 0.218
+its bm25 ndcg@10: 0.286
+its relative gain: 2.492
+mean of per-query relative gains without it: 0.140

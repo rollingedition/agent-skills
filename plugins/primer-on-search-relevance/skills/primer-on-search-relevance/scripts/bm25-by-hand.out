@@ -1,0 +1,15 @@
+products with your: 6,135
+robertson idf of your: -0.045
+lucene idf of your: 0.671
+term weight at tf 1: 0.400
+term weight at tf 2: 0.571
+term weight at tf 4: 0.727
+term weight at tf 9: 0.857
+
+largest score difference from bm25s: 1e-06
+bm25s score type: float32
+same top 100 for every query: yes
+train ndcg@10 by hand: 0.695
+train ndcg@10 with bm25s: 0.695
+test ndcg@10 by hand: 0.725
+test ndcg@10 with bm25s: 0.725

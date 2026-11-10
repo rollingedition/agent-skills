@@ -1,0 +1,21 @@
+model: gemma4:12b-it-q4_K_M
+embedding model: Snowflake/snowflake-arctic-embed-m-v1.5
+rewrite prompt, first line: Rewrite this search query from an online furniture and home-goods store so that a search engine finds what the shopper wants. Fix spelling, expand abbreviations and add common synonyms for the product type, but keep every requirement the shopper stated and add none of your own. Return a single line.
+rewrite of foutains with brick look: fountains with brick look, brick style water features, masonry fountains, faux brick fountains
+rewrite of ines shag rug w003096809: Ines shag rug w003096809 area rug carpet
+rewrite of malachi sled: Malachi sled sofa couch settee loveseat
+exact products for malachi sled: malachi sled end table; malachi 44 '' console table; malachi sled coffee table
+train ndcg@10 bm25, typed: 0.695
+train judged@10 bm25, typed: 0.930
+train ndcg@10 bm25, rewrite: 0.646
+train judged@10 bm25, rewrite: 0.868
+train ndcg@10 semantic, typed: 0.772
+train judged@10 semantic, typed: 0.964
+train ndcg@10 semantic, rewrite: 0.759
+train judged@10 semantic, rewrite: 0.924
+train queries better, worse, bm25: 23, 24
+largest train loss, bm25: malachi sled
+largest train loss, bm25, change: -0.644
+train queries better, worse, semantic: 18, 25
+largest train loss, semantic: wall design shelf
+largest train loss, semantic, change: -0.653

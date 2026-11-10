@@ -1,0 +1,81 @@
+planned comparisons: 3
+p-value threshold: 0.0167
+interval level: 0.9833
+
+semantic minus bm25, people: 0.105
+semantic minus bm25, people, permutation p: 0.001
+semantic minus bm25, people, t-test p: 0.003
+semantic minus bm25, people, interval: 0.047 to 0.205
+semantic minus bm25, people, established: yes
+semantic minus bm25, people, disagrees with the permutation test: neither
+
+hybrid minus semantic, people: -0.018
+hybrid minus semantic, people, permutation p: 0.125
+hybrid minus semantic, people, t-test p: 0.123
+hybrid minus semantic, people, interval: -0.048 to 0.006
+hybrid minus semantic, people, established: no
+hybrid minus semantic, people, disagrees with the permutation test: neither
+
+reranked minus hybrid, people: -0.014
+reranked minus hybrid, people, permutation p: 0.382
+reranked minus hybrid, people, t-test p: 0.375
+reranked minus hybrid, people, interval: -0.053 to 0.020
+reranked minus hybrid, people, established: no
+reranked minus hybrid, people, disagrees with the permutation test: neither
+
+reranked minus semantic, people: -0.032
+reranked minus semantic, people, permutation p: 0.048
+
+semantic minus bm25, short prompt: 0.070
+semantic minus bm25, short prompt, permutation p: 0.010
+semantic minus bm25, short prompt, t-test p: 0.014
+semantic minus bm25, short prompt, interval: 0.016 to 0.146
+semantic minus bm25, short prompt, established: yes
+semantic minus bm25, short prompt, disagrees with the permutation test: neither
+
+hybrid minus semantic, short prompt: -0.002
+hybrid minus semantic, short prompt, permutation p: 0.851
+hybrid minus semantic, short prompt, t-test p: 0.861
+hybrid minus semantic, short prompt, interval: -0.029 to 0.036
+hybrid minus semantic, short prompt, established: no
+hybrid minus semantic, short prompt, disagrees with the permutation test: neither
+
+reranked minus hybrid, short prompt: 0.006
+reranked minus hybrid, short prompt, permutation p: 0.727
+reranked minus hybrid, short prompt, t-test p: 0.714
+reranked minus hybrid, short prompt, interval: -0.029 to 0.042
+reranked minus hybrid, short prompt, established: no
+reranked minus hybrid, short prompt, disagrees with the permutation test: neither
+
+reranked minus semantic, short prompt: 0.003
+reranked minus semantic, short prompt, permutation p: 0.847
+
+semantic minus bm25, guidelines prompt: 0.073
+semantic minus bm25, guidelines prompt, permutation p: 0.045
+semantic minus bm25, guidelines prompt, t-test p: 0.057
+semantic minus bm25, guidelines prompt, interval: 0.006 to 0.183
+semantic minus bm25, guidelines prompt, established: no
+semantic minus bm25, guidelines prompt, disagrees with the permutation test: interval
+
+hybrid minus semantic, guidelines prompt: -0.001
+hybrid minus semantic, guidelines prompt, permutation p: 0.929
+hybrid minus semantic, guidelines prompt, t-test p: 0.945
+hybrid minus semantic, guidelines prompt, interval: -0.045 to 0.037
+hybrid minus semantic, guidelines prompt, established: no
+hybrid minus semantic, guidelines prompt, disagrees with the permutation test: neither
+
+reranked minus hybrid, guidelines prompt: 0.010
+reranked minus hybrid, guidelines prompt, permutation p: 0.657
+reranked minus hybrid, guidelines prompt, t-test p: 0.609
+reranked minus hybrid, guidelines prompt, interval: -0.024 to 0.076
+reranked minus hybrid, guidelines prompt, established: no
+reranked minus hybrid, guidelines prompt, disagrees with the permutation test: neither
+
+reranked minus semantic, guidelines prompt: 0.009
+reranked minus semantic, guidelines prompt, permutation p: 0.581
+
+planned comparisons where the t-test or interval disagrees, people: 0
+planned comparisons where the t-test or interval disagrees, short prompt: 0
+planned comparisons where the t-test or interval disagrees, guidelines prompt: 1
+verdicts that differ from people's, short prompt: none
+verdicts that differ from people's, guidelines prompt: semantic minus bm25

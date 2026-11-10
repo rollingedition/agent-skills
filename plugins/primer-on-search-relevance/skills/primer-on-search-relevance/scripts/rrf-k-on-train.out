@@ -1,0 +1,14 @@
+rank 1 over rank 10 at k=1: 5.500
+rank 1 over rank 10 at k=60: 1.148
+k=1 ndcg@10: 0.753
+k=10 ndcg@10: 0.770
+k=30 ndcg@10: 0.771
+k=60 ndcg@10: 0.774
+k=100 ndcg@10: 0.778
+k=300 ndcg@10: 0.777
+best k on train: 100
+best k minus k=60: 0.004
+best k minus k=60, permutation p: 0.093
+best k minus k=60, t-test p: 0.103
+best k minus k=60, 95% interval: 0.001 to 0.011
+best k minus k=60, wins, losses, ties: 6, 3, 41

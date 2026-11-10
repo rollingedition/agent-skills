@@ -1,0 +1,11 @@
+pairs: 550
+rows are the human grades 2, 1, 0 and columns the LLM's, short prompt
+[[102  85   9]
+ [ 22 132  46]
+ [  3  42 109]]
+observed agreement, short prompt: 0.624
+agreement expected by chance, short prompt: 0.337
+kappa by hand, short prompt: 0.432
+kappa from scikit-learn, short prompt: 0.432
+observed agreement, guidelines prompt: 0.633
+kappa from scikit-learn, guidelines prompt: 0.454

@@ -1,0 +1,60 @@
+bm25 ndcg@10: 0.725
+bm25 judged@10: 0.927
+semantic ndcg@10: 0.830
+semantic judged@10: 0.990
+hybrid ndcg@10: 0.812
+hybrid judged@10: 0.980
+reranked ndcg@10: 0.798
+reranked judged@10: 0.980
+
+planned comparisons: 3
+p-value threshold: 0.0167
+interval level: 0.9833
+chance of a false positive, all gaps noise, tests independent: 0.143
+
+semantic minus bm25: 0.105
+semantic minus bm25 kind: planned
+semantic minus bm25 interval: 0.047 to 0.205
+semantic minus bm25 permutation p: 0.001
+semantic minus bm25 t-test p: 0.003
+semantic minus bm25 effect size: 0.601
+semantic minus bm25 wins, losses, ties: 21 / 7 / 2
+semantic minus bm25 established: yes
+semantic minus bm25 t-test agrees: yes
+semantic minus bm25 interval agrees: yes
+
+hybrid minus semantic: -0.018
+hybrid minus semantic kind: planned
+hybrid minus semantic interval: -0.048 to 0.006
+hybrid minus semantic permutation p: 0.125
+hybrid minus semantic t-test p: 0.123
+hybrid minus semantic effect size: -0.290
+hybrid minus semantic wins, losses, ties: 9 / 14 / 7
+hybrid minus semantic established: no
+hybrid minus semantic t-test agrees: yes
+hybrid minus semantic interval agrees: yes
+
+reranked minus hybrid: -0.014
+reranked minus hybrid kind: planned
+reranked minus hybrid interval: -0.053 to 0.020
+reranked minus hybrid permutation p: 0.382
+reranked minus hybrid t-test p: 0.375
+reranked minus hybrid effect size: -0.165
+reranked minus hybrid wins, losses, ties: 11 / 12 / 7
+reranked minus hybrid established: no
+reranked minus hybrid t-test agrees: yes
+reranked minus hybrid interval agrees: yes
+
+reranked minus semantic: -0.032
+reranked minus semantic kind: exploratory
+reranked minus semantic interval: -0.078 to -0.003
+reranked minus semantic permutation p: 0.048
+reranked minus semantic t-test p: 0.048
+reranked minus semantic effect size: -0.377
+reranked minus semantic wins, losses, ties: 9 / 16 / 5
+reranked minus semantic established: no
+reranked minus semantic t-test agrees: yes
+reranked minus semantic interval agrees: no
+
+planned comparisons established: 1
+planned comparisons with a disagreement: 0

@@ -1,0 +1,28 @@
+llm: gemma4:12b-it-q4_K_M
+licence in the manifest: Apache-2.0
+calls per query: 20
+answers without a score: 0
+distinct scores per query, median: 4
+share of products scored 100: 0.390
+products the llm labels exact: 251
+products people judged exact: 310
+products the llm labels partial: 345
+products people judged partial: 265
+products the llm labels irrelevant: 4
+products people judged irrelevant: 7
+products nobody judged: 18
+queries where most of the reranked top 10 shares its score: 30
+semantic, test ndcg@10: 0.830
+semantic, test judged@10: 0.990
+semantic, unjudged places in the test top 10s: 3
+llm pointwise, test ndcg@10: 0.837
+llm pointwise, test judged@10: 0.983
+llm pointwise, unjudged places in the test top 10s: 5
+llm pointwise, mean difference: 0.008
+llm pointwise, wins, losses, ties: 11, 8, 11
+llm pointwise, permutation p: 0.241
+llm pointwise, established at 0.01: no
+llm pointwise, t-test p: 0.244
+llm pointwise, t-test agrees: yes
+llm pointwise, 99% interval: -0.007 to 0.026
+llm pointwise, interval agrees: yes

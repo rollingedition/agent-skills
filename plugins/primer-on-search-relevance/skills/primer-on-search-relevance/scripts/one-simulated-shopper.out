@@ -1,0 +1,6 @@
+ 1  bm25      partial     clicks
+ 2  semantic  exact       clicks  leaves
+clicks for semantic: 1
+clicks for bm25: 1
+this search goes to: neither, a tie
+same clicks from lib.experiments: yes

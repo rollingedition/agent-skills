@@ -1,0 +1,7 @@
+settings tried: 11
+semantic alone, test ndcg@10: 0.830
+semantic weight chosen on train: 0.6
+test ndcg@10, weight chosen on train: 0.825
+semantic weight chosen on test: 0.8
+test ndcg@10, weight chosen on test: 0.835
+average inflation, 20 reported queries: 0.007

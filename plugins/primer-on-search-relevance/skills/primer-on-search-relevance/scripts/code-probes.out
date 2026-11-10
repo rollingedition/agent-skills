@@ -1,0 +1,15 @@
+products whose text contains w003096809: 0
+code, similarity of the two queries: 0.967
+code, products in both top 10s: 10
+
+products whose text contains 1920x1080p: 1
+that product: 5000 portable transmissive projector
+products in the Projectors class: 4
+1920x1080p projector, its semantic rank: 1
+1920x1080p projector, its similarity: 0.562
+1920x1080p projector, similarity of the next product: 0.496
+1920x1080p projector, its bm25 rank: 1
+2560x1440p projector, its semantic rank: 1
+2560x1440p projector, its similarity: 0.509
+2560x1440p projector, similarity of the next product: 0.508
+2560x1440p projector, its bm25 rank: not in the top 100

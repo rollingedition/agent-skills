@@ -1,0 +1,4 @@
+products: 12,000
+float32 bytes per product: 3,072
+product vectors in memory, MB: 36.9
+the same for 1,000,000 products, GB: 3.1

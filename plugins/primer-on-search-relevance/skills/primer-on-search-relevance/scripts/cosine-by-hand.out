@@ -1,0 +1,7 @@
+product: woolley vinyl solid color single shower curtain
+dot product: 0.577
+cosine by hand: 0.577
+cosine from scikit-learn: 0.577
+shortened product lengths: 0.706 to 0.778
+queries: 80
+queries whose top 10 changes: 61

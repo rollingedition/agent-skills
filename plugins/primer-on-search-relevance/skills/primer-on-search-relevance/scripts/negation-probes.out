@@ -1,0 +1,24 @@
+store queries with no, not, without or non: 0
+bm25 terms of rug that is not round: rug round
+products named armless: 42
+coffee tables that never mention glass: 62
+area rugs not named round: 90
+negation probe pairs: 3
+
+sofa with arms, semantic top 10 with armless: 1
+sofa with arms, bm25 top 10 with armless: 0
+
+sofa without arms, semantic top 10 with armless: 8
+sofa without arms, bm25 top 10 with armless: 0
+
+coffee table with glass top, semantic top 10 with glass: 10
+coffee table with glass top, bm25 top 10 with glass: 9
+
+coffee table not glass, semantic top 10 with glass: 10
+coffee table not glass, bm25 top 10 with glass: 10
+
+round rug, semantic top 10 with round: 10
+round rug, bm25 top 10 with round: 10
+
+rug that is not round, semantic top 10 with round: 10
+rug that is not round, bm25 top 10 with round: 10

@@ -1,0 +1,22 @@
+bonus 0, train ndcg@10: 0.725
+bonus 0, train judged@10: 0.950
+bonus 0.5, train ndcg@10: 0.727
+bonus 0.5, train judged@10: 0.956
+bonus 1, train ndcg@10: 0.725
+bonus 1, train judged@10: 0.964
+bonus 2, train ndcg@10: 0.716
+bonus 2, train judged@10: 0.968
+best bonus on train: 0.5
+
+bonus 0, test ndcg@10: 0.774
+bonus 0, test judged@10: 0.950
+bonus 0.5, test ndcg@10: 0.776
+bonus 0.5, test judged@10: 0.950
+mean difference: 0.002
+wins, losses, ties: 6, 7, 17
+permutation p: 0.758
+established at 0.01: no
+t-test p: 0.769
+t-test agrees: yes
+99% interval: -0.012 to 0.015
+interval agrees: yes

@@ -1,0 +1,23 @@
+hood, similarity of the two queries: 0.795
+hood, products in both top 10s: 0
+36 inch kitchen hood, right size in the top 10: 8
+48 inch kitchen hood, right size in the top 10: 8
+
+cooker, similarity of the two queries: 0.841
+cooker, products in both top 10s: 1
+4 qt slow cooker, right size in the top 10: 6
+7 qt slow cooker, right size in the top 10: 7
+
+bed, similarity of the two queries: 0.697
+bed, products in both top 10s: 0
+twin bed, right size in the top 10: 10
+king bed, right size in the top 10: 10
+
+seats, similarity of the two queries: 0.759
+seats, products in both top 10s: 1
+2 seat sofa, right size in the top 10: 0
+2 seat sofa, same digit but a piece count or 2 in 1: 4
+4 seat sofa, same digit but a piece count or 2 in 1: 4
+
+catalog names that give a seat count: 0
+catalog products named loveseat: 14

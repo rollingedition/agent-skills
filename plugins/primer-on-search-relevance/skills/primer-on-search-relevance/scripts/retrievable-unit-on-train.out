@@ -1,0 +1,29 @@
+products with no description: 1,568
+descriptions the sample cut short: 5,933
+description words, median of the others: 68
+product text words per product, most: 140
+description sentences: 35,061
+last sentence of product 8171: the antler 's durability and beauty will last a lifetime .
+whole product, train precision@5: 0.464
+whole product, train recall@5: 0.124
+whole product, train judged@5: 0.940
+whole product, train queries whose top 5 changes with ties reversed: 4
+name only, train precision@5: 0.368
+name only, train recall@5: 0.091
+name only, train judged@5: 0.960
+name only, train queries whose top 5 changes with ties reversed: 28
+description only, train precision@5: 0.304
+description only, train recall@5: 0.049
+description only, train judged@5: 0.828
+description only, train queries whose top 5 changes with ties reversed: 4
+sentences, train precision@5: 0.272
+sentences, train recall@5: 0.034
+sentences, train judged@5: 0.732
+sentences, train queries whose top 5 changes with ties reversed: 18
+sentences with the other fields, train precision@5: 0.428
+sentences with the other fields, train recall@5: 0.106
+sentences with the other fields, train judged@5: 0.944
+sentences with the other fields, train queries whose top 5 changes with ties reversed: 8
+highest train precision@5: whole product
+whole product minus sentences with the other fields, train precision@5: 0.036
+whole product minus sentences with the other fields, train recall@5: 0.018

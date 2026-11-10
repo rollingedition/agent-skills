@@ -1,0 +1,26 @@
+train ndcg@10 without stemming: 0.695
+train judged@10 without stemming: 0.930
+train ndcg@10 with stemming: 0.725
+train judged@10 with stemming: 0.950
+test ndcg@10 without stemming: 0.725
+test judged@10 without stemming: 0.927
+test ndcg@10 with stemming: 0.774
+test judged@10 with stemming: 0.950
+train queries better, worse: 24, 14
+query 410 without stemming: 0.360
+query 410 with stemming: 0.921
+query 359 without stemming: 0.961
+query 359 with stemming: 0.809
+
+the planned test comparison, threshold 0.01:
+mean difference: 0.050
+wins, losses, ties: 16, 6, 8
+permutation p: 0.005
+established at 0.01: yes
+t-test p: 0.037
+t-test agrees: no
+99% interval: 0.016 to 0.162
+interval agrees: yes
+test query with the largest gain: 133
+its gain: 0.635
+mean test gain without it: 0.029

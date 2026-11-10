@@ -1,0 +1,21 @@
+test queries: 30
+semantic ndcg@10: 0.830
+unweighted rrf ndcg@10: 0.812
+p-value threshold for each comparison: 0.025
+confidence level of each interval: 0.975
+weighted sum alpha chosen on train: 0.7
+weighted sum ndcg@10: 0.816
+weighted sum minus semantic: -0.014
+weighted sum permutation p: 0.229
+weighted sum t-test p: 0.221
+weighted sum interval: -0.042 to 0.008
+weighted sum established: False
+weighted rrf alpha chosen on train: 0.6
+weighted rrf ndcg@10: 0.825
+weighted rrf minus semantic: -0.005
+weighted rrf permutation p: 0.650
+weighted rrf t-test p: 0.643
+weighted rrf interval: -0.029 to 0.016
+weighted rrf established: False
+lowest judged@10: 0.980
+highest judged@10: 0.990

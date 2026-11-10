@@ -1,0 +1,13 @@
+products tokenized differently: 0
+
+query 62: 7qt slow cooker -> ['7qt', 'slow', 'cooker']
+product 1: all-clad 7 qt . slow cooker -> ['all', 'clad', 'qt', 'slow', 'cooker']
+products with the term 7qt: 0
+products whose text says 7 qt: 8
+exact products judged for query 62: 9
+exact products in bm25's top 10: 1
+train queries whose terms change with digits apart: 4
+test queries whose terms change with digits apart: 0
+
+probe: rug not wool -> ['rug', 'wool']
+queries with not or no: 0

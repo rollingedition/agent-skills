@@ -1,0 +1,17 @@
+grades from the top: 1 2 2 0 1 2 0 2 0 0
+pairs with different grades: 32
+pairs where delta ndcg by formula matches swapping the pair: 32
+force at position 1: +0.013
+force at position 2: +0.159
+force at position 3: +0.104
+force at position 4: -0.083
+force at position 5: -0.010
+force at position 6: +0.063
+force at position 7: -0.092
+force at position 8: +0.063
+force at position 9: -0.105
+force at position 10: -0.111
+strongest push up, position: 2
+strongest push down, position: 10
+ranknet's pull, lowest: 0.472
+ranknet's pull, highest: 0.525

@@ -1,0 +1,6 @@
+semantic, train ndcg@10: 0.772
+teacher, train ndcg@10: 0.785
+student, teacher's labels, train ndcg@10: 0.791
+lambdarank, human grades, same features, train ndcg@10: 0.747
+student minus the human-graded ranker: 0.044
+student minus the human-graded ranker, permutation p: 0.002

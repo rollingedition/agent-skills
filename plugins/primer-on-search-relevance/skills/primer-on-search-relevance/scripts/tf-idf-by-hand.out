@@ -1,0 +1,15 @@
+idf of furniture: 0.919
+idf of laundry: 3.985
+idf of basket: 3.925
+idf of wheels: 4.839
+
+tf-idf top 3 for 'laundry basket with wheels':
+  1  51.3  partial  laundry 4, basket 9, wheels 0 dirty clothes basket ,
+  2  45.4  exact    laundry 6, basket 3, wheels 2 laundry sorter basket
+  3  39.7  partial  laundry 7, basket 3, wheels 0 weave laundry basket
+
+tf-idf train ndcg@10: 0.579
+tf-idf train judged@10: 0.836
+bm25 train ndcg@10: 0.695
+bm25 train judged@10: 0.930
+train queries where bm25 scores higher, lower: 36, 10

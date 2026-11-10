@@ -1,0 +1,22 @@
+exact share, as drawn: 0.356
+exact share, in the train judgments: 0.234
+exact share, judged test-pool pairs: 0.543
+partial share, as drawn: 0.364
+partial share, in the train judgments: 0.613
+partial share, judged test-pool pairs: 0.427
+irrelevant share, as drawn: 0.280
+irrelevant share, in the train judgments: 0.153
+irrelevant share, judged test-pool pairs: 0.030
+
+observed agreement, short prompt, as drawn: 0.624
+kappa, short prompt, as drawn: 0.432
+observed agreement, short prompt, train judgments' mix: 0.635
+kappa, short prompt, train judgments' mix: 0.370
+
+observed agreement, guidelines prompt, as drawn: 0.633
+kappa, guidelines prompt, as drawn: 0.454
+observed agreement, guidelines prompt, train judgments' mix: 0.573
+kappa, guidelines prompt, train judgments' mix: 0.345
+
+higher kappa, as drawn: guidelines
+higher kappa, train judgments' mix: short

@@ -1,0 +1,19 @@
+listwise calls, both orders: 60
+answers that needed repair: 0
+products per call: 20
+prompt asks for: Order all 20 products from the best match for the query to the worst. Return the product numbers, each exactly once, in JSON.
+semantic, test ndcg@10: 0.830
+semantic, test judged@10: 0.990
+semantic, unjudged places in the test top 10s: 3
+llm listwise, test ndcg@10: 0.819
+llm listwise, test judged@10: 0.983
+llm listwise, unjudged places in the test top 10s: 5
+queries whose first product changes: 19
+llm listwise, mean difference: -0.010
+llm listwise, wins, losses, ties: 12, 12, 6
+llm listwise, permutation p: 0.580
+llm listwise, established at 0.01: no
+llm listwise, t-test p: 0.498
+llm listwise, t-test agrees: yes
+llm listwise, 99% interval: -0.070 to 0.016
+llm listwise, interval agrees: yes

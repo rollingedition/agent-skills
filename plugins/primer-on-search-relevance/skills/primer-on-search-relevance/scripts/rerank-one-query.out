@@ -1,0 +1,20 @@
+query: refrigerator with ice an water in door
+
+hybrid ndcg@10: 0.660
+hybrid rank of the first exact product: 3
+  1.95  partial     apec water icemaker-kit-38-14-ro refrigerator/icemaker installation accessory
+  2.06  partial     36 '' french door 26.1 cu . ft. smart energy star refrigerator with interior ice maker
+  1.44  exact       36 '' french door refrigerator 27 cu . ft. energy star refrigerator
+  2.19  partial     36 '' energy star counter-depth french door 22.6 cu . ft. refrigerator with ice maker
+  2.19  partial     800 series 21 cu . ft. smart energy star counter depth french door refrigerator with internal water dispenser
+
+reranked ndcg@10: 0.533
+reranked rank of the first exact product: 9
+  2.20  partial     smeg classic 36 '' french door 22 cu . ft. refrigerator with ice maker
+  2.19  partial     36 '' energy star counter-depth french door 22.6 cu . ft. refrigerator with ice maker
+  2.19  partial     800 series 21 cu . ft. smart energy star counter depth french door refrigerator with internal water dispenser
+  2.10  partial     28 '' energy star counter depth top freezer 12.56 cu . ft. refrigerator with auto ice maker
+  2.06  partial     36 '' french door 26.1 cu . ft. smart energy star refrigerator with interior ice maker
+
+hybrid's first exact product: 36 '' french door refrigerator 27 cu . ft. energy star refrigerator
+its text says ice or water: no

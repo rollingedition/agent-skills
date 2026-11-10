@@ -1,0 +1,6 @@
+spread of per-query changes: 0.062
+coefficient for paired queries: 7.8
+smallest change 30 queries detect: 0.032
+queries needed for a change of 0.01: 300
+simulated power at that change: 0.779
+simulated power below the planned 0.8: yes

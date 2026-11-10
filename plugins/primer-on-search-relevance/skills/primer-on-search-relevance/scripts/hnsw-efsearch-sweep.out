@@ -1,0 +1,34 @@
+products in layer 1: 12,000
+products in layer 2: 369
+products in layer 3: 10
+
+efSearch  mean recall@10  worst  queries at 0  similarities per query
+      16           0.934    0.0             2                     282
+      32           0.936    0.0             2                     346
+      48           0.940    0.0             2                     404
+      64           0.940    0.0             2                     463
+      80           0.956    0.0             1                     530
+      96           0.978    0.3             0                     611
+     112           0.980    0.3             0                     682
+     128           0.994    0.8             0                     767
+     144           0.998    0.9             0                     835
+     160           0.998    0.9             0                     924
+     176           0.998    0.9             0                    1020
+     192           0.998    0.9             0                    1115
+     208           0.998    0.9             0                    1191
+     224           1.000    1.0             0                    1271
+     240           1.000    1.0             0                    1349
+     256           1.000    1.0             0                    1441
+
+efSearch 16, recall@10 against exact: 0.934
+efSearch 16, similarities computed per query: 282
+efSearch 16, train queries with recall@10 of 0: 2
+efSearch 16, those queries: foutains with brick look, sheffield home bath set
+smallest efSearch with no query at 0: 96
+smallest efSearch with every query at 0.9 or more: 144
+chosen efSearch, recall@10 against exact: 0.998
+chosen efSearch, similarities computed per query: 835
+
+1  hnsw: dayse outdoor square cushion with fi  exact: tribeca 2 '' x 10 '' porcelain brick
+2  hnsw: 3 piece wall decor set                exact: barbados 5 '' x 10 '' ceramic brick
+3  hnsw: rustic autumn ivy branch              exact: kimary 0.75 '' x 1.5 '' glass brick

@@ -1,0 +1,14 @@
+depth 0 (semantic alone), train ndcg@10: 0.772
+depth 5, train ndcg@10: 0.782
+depth 5, change from the depth before: +0.010
+depth 10, train ndcg@10: 0.784
+depth 10, change from the depth before: +0.002
+depth 20, train ndcg@10: 0.802
+depth 20, change from the depth before: +0.018
+depth 30, train ndcg@10: 0.804
+depth 30, change from the depth before: +0.002
+depth 50, train ndcg@10: 0.793
+depth 50, change from the depth before: -0.011
+depth 75, train ndcg@10: 0.788
+depth 75, change from the depth before: -0.005
+pairs per query to score every candidate, median: 131

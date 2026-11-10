@@ -1,0 +1,7 @@
+products in both top 10s, mean: 3.7
+bm25 top 100, share of exact products retrieved: 0.672
+semantic top 100, share of exact products retrieved: 0.759
+union top 100, share of exact products retrieved: 0.810
+bm25 top 20, share of exact products retrieved: 0.297
+semantic top 20, share of exact products retrieved: 0.353
+union top 20, share of exact products retrieved: 0.445

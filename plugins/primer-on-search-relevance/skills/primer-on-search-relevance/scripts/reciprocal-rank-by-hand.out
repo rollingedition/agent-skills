@@ -1,0 +1,8 @@
+rr, exact counts as relevant: 0.500
+rr, partial or better counts: 1.000
+bm25 mrr: 0.650
+bm25 mrr from lib.metrics: 0.650
+bm25 queries with rr of 1: 16
+semantic mrr: 0.787
+semantic mrr from lib.metrics: 0.787
+semantic queries with rr of 1: 22

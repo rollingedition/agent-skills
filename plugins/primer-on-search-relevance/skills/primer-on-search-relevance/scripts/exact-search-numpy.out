@@ -1,0 +1,5 @@
+similarities computed: 360,000
+similarities per query: 12,000
+same top 10 as lib.semantic: 30 of 30
+same top 10 as faiss IndexFlatIP: 30 of 30
+ndcg@10 of the exact run: 0.830

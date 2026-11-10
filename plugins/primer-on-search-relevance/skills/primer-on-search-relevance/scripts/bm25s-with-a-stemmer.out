@@ -1,0 +1,2 @@
+query terms for pool floats: ['pool', 'float']
+largest score difference from bm25s with a stemmer: 2e-06

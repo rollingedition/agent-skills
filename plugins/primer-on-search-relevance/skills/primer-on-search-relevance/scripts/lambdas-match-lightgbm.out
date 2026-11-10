@@ -1,0 +1,3 @@
+candidates: 180
+lightgbm, no normalization or truncation, largest difference from the lambdas by hand after 5 trees: 0.000006
+lightgbm at its defaults, largest difference from the lambdas by hand after 5 trees: 0.595667

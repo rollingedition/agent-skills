@@ -1,0 +1,31 @@
+planned test comparisons: 5
+p-value threshold: 0.01
+queries fitted: 40
+queries held out for stopping: 10
+trees tried: 243
+trees kept by early stopping: 213
+stopping queries' ndcg@10, first tree: 0.568
+stopping queries' ndcg@10, trees kept: 0.794
+features the trees use: 8 of 8
+share of gain, cross_encoder: 0.641
+share of gain, similarity: 0.172
+share of gain, name_match: 0.097
+share of gain, bm25: 0.043
+share of gain, review_count: 0.021
+share of gain, rating_count: 0.021
+share of gain, attribute_match: 0.002
+share of gain, average_rating: 0.001
+semantic, test ndcg@10: 0.830
+semantic, test judged@10: 0.990
+semantic, unjudged places in the test top 10s: 3
+lambdamart, test ndcg@10: 0.817
+lambdamart, test judged@10: 0.990
+lambdamart, unjudged places in the test top 10s: 3
+lambdamart, mean difference: -0.012
+lambdamart, wins, losses, ties: 14, 12, 4
+lambdamart, permutation p: 0.260
+lambdamart, established at 0.01: no
+lambdamart, t-test p: 0.278
+lambdamart, t-test agrees: yes
+lambdamart, 99% interval: -0.044 to 0.011
+lambdamart, interval agrees: yes

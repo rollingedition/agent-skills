@@ -1,0 +1,28 @@
+
+train pairs where the prompts disagree: 122 of 550
+kappa between the prompts, train pool: 0.668
+guidelines    exact  partial  irrelevant
+short, train
+exact           122        4           1
+partial          31      153          75
+irrelevant        0       11         153
+largest disagreement, train pool: partial under short, irrelevant under guidelines (75)
+
+test pairs where the prompts disagree: 93 of 590
+kappa between the prompts, test pool: 0.712
+guidelines   exact  partial  irrelevant
+short, test
+exact          303       11           1
+partial         42      174          37
+irrelevant       0        2          20
+largest disagreement, test pool: partial under short, exact under guidelines (42)
+moved train pairs judged exact by people: 18
+moved train pairs judged partial by people: 31
+moved train pairs judged irrelevant by people: 26
+  toddler couch fold out       eulah 79 '' cotton rolled arm sofa bed
+  70s inspired furniture       angels moroccan window curtains , oriental wavy cu
+  7qt slow cooker              berghoff international eclipse 7 qt non-stick cove
+  gnome fairy garden           fairy house tea pot fairy garden
+  wall sconce with usb port    2 piece wall sconce set
+kappa with people, guidelines minus short: 0.022
+95% interval over resampled train queries: -0.042 to 0.086

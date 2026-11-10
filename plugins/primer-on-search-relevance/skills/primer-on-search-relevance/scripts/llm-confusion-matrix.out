@@ -1,0 +1,50 @@
+
+judged pairs, train pool: 550
+mean human grade, train pool: 1.076
+llm, train pool, short prompt  exact  partial  irrelevant
+human
+exact                            102       85           9
+partial                           22      132          46
+irrelevant                         3       42         109
+kappa, train pool, short prompt: 0.432
+mean llm grade, train pool, short prompt: 0.933
+llm grade higher than human, train pool, short prompt: 67
+llm grade lower than human, train pool, short prompt: 140
+stricter than the store's judges, train pool, short prompt: yes
+largest error, train pool, short prompt: exact called partial (85)
+llm, train pool, guidelines prompt  exact  partial  irrelevant
+human
+exact                                 118       53          25
+partial                                30       98          72
+irrelevant                              5       17         132
+kappa, train pool, guidelines prompt: 0.454
+mean llm grade, train pool, guidelines prompt: 0.862
+llm grade higher than human, train pool, guidelines prompt: 52
+llm grade lower than human, train pool, guidelines prompt: 150
+stricter than the store's judges, train pool, guidelines prompt: yes
+largest error, train pool, guidelines prompt: partial called irrelevant (72)
+
+judged pairs, test pool: 564
+mean human grade, test pool: 1.512
+llm, test pool, short prompt  exact  partial  irrelevant
+human
+exact                           252       53           1
+partial                          57      177           7
+irrelevant                        2        6           9
+kappa, test pool, short prompt: 0.571
+mean llm grade, test pool, short prompt: 1.521
+llm grade higher than human, test pool, short prompt: 65
+llm grade lower than human, test pool, short prompt: 61
+stricter than the store's judges, test pool, short prompt: no
+largest error, test pool, short prompt: partial called exact (57)
+llm, test pool, guidelines prompt  exact  partial  irrelevant
+human
+exact                                261       41           4
+partial                               76      133          32
+irrelevant                             3        4          10
+kappa, test pool, guidelines prompt: 0.470
+mean llm grade, test pool, guidelines prompt: 1.521
+llm grade higher than human, test pool, guidelines prompt: 83
+llm grade lower than human, test pool, guidelines prompt: 77
+stricter than the store's judges, test pool, guidelines prompt: no
+largest error, test pool, guidelines prompt: partial called exact (76)

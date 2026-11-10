@@ -1,0 +1,15 @@
+256 vs 768, mean difference in ndcg@10: -0.010
+256 vs 768, queries worse: 24
+256 vs 768, permutation test p: 0.076
+256 vs 768, paired t-test p: 0.080
+256 vs 768, 95% bootstrap interval: -0.0211 to -0.0002
+256 vs 768, interval excludes 0: yes
+256 vs 768, effect size: -0.253
+
+128 vs 768, mean difference in ndcg@10: -0.092
+128 vs 768, queries worse: 33
+128 vs 768, permutation test p: below 0.001
+128 vs 768, paired t-test p: below 0.001
+128 vs 768, 95% bootstrap interval: -0.1569 to -0.0565
+128 vs 768, interval excludes 0: yes
+128 vs 768, effect size: -0.547

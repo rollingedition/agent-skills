@@ -1,0 +1,9 @@
+model: gemma4:12b-it-q4_K_M
+licence in the manifest: Apache-2.0
+instructions: You help shoppers at an online furniture and home-goods store. Using only the products listed below, answer the shopper. Recommend up to three products that fit, cite each one by its ID, and say plainly if none of them fit. Don't mention products that aren't listed.
+context window the recording set, in tokens: 8192
+words in the catalog as the LLM reads it: 1,091,544
+words in one prompt with five products, median: 536
+the catalog against one prompt: 2,035 times
+the catalog against the recording's window, at one token per word: 133 times
+the catalog against 200,000 tokens, at one token per word: 5.5 times

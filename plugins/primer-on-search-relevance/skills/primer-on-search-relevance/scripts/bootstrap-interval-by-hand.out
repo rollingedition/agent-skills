@@ -1,0 +1,14 @@
+semantic minus bm25: 0.105
+semantic minus bm25 interval by hand: 0.049 to 0.172
+semantic minus bm25 percentile interval from scipy: 0.049 to 0.172
+semantic minus bm25 bca low: 0.055
+semantic minus bm25 bca high: 0.185
+semantic minus bm25 bca interval and 0: excludes 0
+semantic minus bm25 effect size: 0.601
+hybrid minus semantic: -0.018
+hybrid minus semantic interval by hand: -0.041 to 0.003
+hybrid minus semantic percentile interval from scipy: -0.041 to 0.003
+hybrid minus semantic bca low: -0.042
+hybrid minus semantic bca high: 0.002
+hybrid minus semantic bca interval and 0: includes 0
+hybrid minus semantic effect size: -0.290

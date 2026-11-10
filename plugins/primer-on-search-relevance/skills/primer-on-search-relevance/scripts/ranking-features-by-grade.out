@@ -1,0 +1,34 @@
+features: 8
+train candidates: 6896
+train candidates per query, median: 131
+share of train candidates nobody judged: 0.286
+
+candidates for laundry basket with wheels: 125
+                                  name  bm25  similarity  cross_encoder  name_match  attribute_match  rating_count  grade
+       laundry sorter basket on wheels 8.229       0.597          3.433       1.000              0.0           NaN    2.0
+                vintage laundry basket 6.270       0.572          2.995       0.667              0.0         638.0    2.0
+         rolling wicker laundry basket 5.494       0.588          2.974       0.667              0.0         110.0    2.0
+aluminum frame laundry basket can be f 4.739       0.524          2.941       0.667              0.0          14.0    2.0
+    rebrilliant rolling laundry hamper 5.537       0.558          2.804       0.333              0.0          17.0    2.0
+4-bag laundry hamper sorter cart baske 6.012       0.543          2.739       0.667              0.0           NaN    2.0
+top 6 by cross-encoder, exact: 6
+
+mean of each feature by grade, train candidates:
+             bm25  similarity  cross_encoder  name_match  attribute_match  rating_count  average_rating  review_count
+grade
+exact       4.317       0.517          2.191       0.562            0.024       466.879           4.537       333.589
+partial     3.936       0.454          1.513       0.461            0.030       385.454           4.539       288.779
+irrelevant  2.760       0.360          1.159       0.404            0.006       246.781           4.552       159.052
+unjudged    2.323       0.369          1.050       0.140            0.018       339.904           4.520       237.027
+mean cross_encoder, exact: 2.191
+mean cross_encoder, partial: 1.513
+mean cross_encoder, irrelevant: 1.159
+mean cross_encoder, unjudged: 1.050
+relevance features where unjudged sits nearer irrelevant than partial: 4 of 4
+rating_count, exact, mean: 466.879
+rating_count, exact, median: 43.0
+rating_count, partial, mean: 385.454
+rating_count, partial, median: 31.0
+rating_count, irrelevant, mean: 246.781
+rating_count, irrelevant, median: 35.5
+products with no rating: 2632

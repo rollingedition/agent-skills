@@ -1,0 +1,5 @@
+'ge top loading washer 4.5' -> ['ge', 'top', 'loading', 'washer']
+'bistro table and chairs' -> ['bistro', 'table', 'chairs']
+
+products with the token chairs: 895
+products with chair but not chairs: 359

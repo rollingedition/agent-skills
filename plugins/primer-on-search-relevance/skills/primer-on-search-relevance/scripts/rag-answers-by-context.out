@@ -1,0 +1,49 @@
+bm25 contexts that differ from lib.lexical: 7
+bm25 contexts that differ from lib.lexical only in order: 6
+semantic, unjudged products in the contexts: 0
+semantic, contexts with an exact product: 25
+semantic, answers that cite an exact product: 22
+semantic, products cited: 80
+semantic, cited products that are exact: 60
+semantic, mean exact share: 0.658
+semantic, answers that recommend nothing: 2
+semantic, recommend nothing, with an exact product in the context: 1
+semantic, recommend something, with no exact product in the context: 4
+semantic, products cited with no exact product in the context: 11
+semantic, of those, partial: 11
+semantic, unjudged products cited: 0
+bm25, unjudged products in the contexts: 10
+bm25, contexts with an exact product: 24
+bm25, answers that cite an exact product: 23
+bm25, products cited: 73
+bm25, cited products that are exact: 52
+bm25, mean exact share: 0.639
+bm25, answers that recommend nothing: 3
+bm25, recommend nothing, with an exact product in the context: 0
+bm25, recommend something, with no exact product in the context: 3
+bm25, products cited with no exact product in the context: 7
+bm25, of those, partial: 7
+bm25, unjudged products cited: 1
+random, unjudged products in the contexts: 147
+random, contexts with an exact product: 1
+random, answers that cite an exact product: 1
+random, products cited: 1
+random, cited products that are exact: 1
+random, mean exact share: 0.033
+random, answers that recommend nothing: 29
+random, recommend nothing, with an exact product in the context: 0
+random, recommend something, with no exact product in the context: 0
+random, products cited with no exact product in the context: 0
+random, of those, partial: 0
+random, unjudged products cited: 0
+answers that cite more exact products than their context holds: 0
+planned test comparisons: 2
+p-value threshold: 0.025
+answers, semantic over bm25, mean difference: 0.019
+answers, semantic over bm25, wins, losses, ties: 4, 5, 21
+answers, semantic over bm25, permutation p: 0.765
+answers, semantic over bm25, established at 0.025: no
+answers, semantic over bm25, t-test p: 0.715
+answers, semantic over bm25, t-test agrees: yes
+answers, semantic over bm25, 97.5% interval: -0.078 to 0.161
+answers, semantic over bm25, interval agrees: yes

@@ -1,0 +1,34 @@
+ligth: ligth bulb | light bulb (train query)
+ligth, similarity of the two spellings: 0.710
+ligth, products in both semantic top 10s: 5
+ligth, semantic ndcg@10 as typed: 1.000
+ligth, semantic ndcg@10 corrected: 1.000
+ligth, bm25 ndcg@10 as typed: 0.945
+ligth, bm25 ndcg@10 corrected: 0.945
+
+foutains: foutains with brick look | fountains with brick look (train query)
+foutains, similarity of the two spellings: 0.668
+foutains, products in both semantic top 10s: 0
+foutains, semantic ndcg@10 as typed: 0.353
+foutains, semantic ndcg@10 corrected: 0.645
+foutains, bm25 ndcg@10 as typed: 0.356
+foutains, bm25 ndcg@10 corrected: 0.507
+
+desins: twin over full bunk beds cool desins | twin over full bunk beds cool designs (train query)
+desins, similarity of the two spellings: 0.829
+desins, products in both semantic top 10s: 6
+desins, semantic ndcg@10 as typed: 0.565
+desins, semantic ndcg@10 corrected: 0.616
+desins, bm25 ndcg@10 as typed: 0.488
+desins, bm25 ndcg@10 corrected: 0.488
+
+ice-an: refrigerator with ice an water in door | refrigerator with ice and water in door (test query)
+ice-an, similarity of the two spellings: 0.975
+ice-an, products in both semantic top 10s: 9
+ice-an, semantic ndcg@10 as typed: 0.807
+ice-an, semantic ndcg@10 corrected: 0.829
+ice-an, bm25 ndcg@10 as typed: 0.501
+ice-an, bm25 ndcg@10 corrected: 0.501
+
+spelling probes: 4
+smallest two-sided permutation p-value possible with 4 queries: 0.125

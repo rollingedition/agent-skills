@@ -1,0 +1,6 @@
+contexts: 60
+spearman with the exact share, recall@5: 0.540
+spearman with the exact share, precision@5: 0.797
+spearman with the exact share, context precision@5: 0.808
+matches scipy's spearmanr: yes
+weakest with the exact share: recall@5

@@ -1,0 +1,17 @@
+query: 48 inch kitchen hood
+     judgment   width  name
+ 1   exact         48  48 '' 1200 cfm ducted wall mount range hood in bru
+ 2   exact         48  48 '' 400 cfm ducted wall mount range hood in brus
+ 3   exact         48  48 '' 400 cfm convertible wall mount range hood
+ 4   partial    35.75  36 '' ws-48 series 500 cfm ducted under cabinet ra
+ 5   exact         48  48 '' hand crafted designer wood island hood serie
+ 6   exact         48  48 '' island range hood
+ 7   exact         48  48 inch wall mount chimney range hood with 600 cfm
+ 8   exact         48  48 '' ducted island range hood
+ 9   exact         48  48 '' professional 900cfm ducted island range hood
+10   partial     29.8  30 '' 480 cfm convertible under cabinet range hood
+
+semantic, width 48 in the top 10: 8
+semantic, exact in the top 10: 8
+bm25, width 48 in the top 10: 10
+bm25, exact in the top 10: 10

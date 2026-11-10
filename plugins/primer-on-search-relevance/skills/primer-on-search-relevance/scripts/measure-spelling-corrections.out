@@ -1,0 +1,25 @@
+typo queries: 4
+of them, test queries: 1
+305 (train): ligth bulb -> light bulb
+305 (train), bm25 ndcg@10 typed: 0.945
+305 (train), bm25 ndcg@10 corrected: 0.945
+305 (train), semantic ndcg@10 typed: 1.000
+305 (train), semantic ndcg@10 corrected: 1.000
+20 (train): foutains with brick look -> fountains with brick look
+20 (train), bm25 ndcg@10 typed: 0.356
+20 (train), bm25 ndcg@10 corrected: 0.507
+20 (train), semantic ndcg@10 typed: 0.353
+20 (train), semantic ndcg@10 corrected: 0.645
+224 (train): twin over full bunk beds cool desins -> twin over full bunk beds cool designs
+224 (train), bm25 ndcg@10 typed: 0.488
+224 (train), bm25 ndcg@10 corrected: 0.488
+224 (train), semantic ndcg@10 typed: 0.565
+224 (train), semantic ndcg@10 corrected: 0.616
+406 (test): refrigerator with ice an water in door -> refrigerator with ice an water in door
+406 (test), bm25 ndcg@10 typed: 0.501
+406 (test), bm25 ndcg@10 corrected: 0.501
+406 (test): the corrector changes nothing
+459 (test): tye dye duvet cover -> the dye duvet cover
+459 (test), bm25 ndcg@10 typed: 0.953
+459 (test), bm25 ndcg@10 corrected: 0.953
+459 (test): no recorded embedding of the corrected text

@@ -1,0 +1,12 @@
+unjudged pairs in the top 10, bm25: 22
+unjudged pairs in the top 10, semantic 128: 24
+as judged, bm25: 0.725
+as judged, semantic 128: 0.742
+bm25's unjudged exact, bm25: 0.788
+bm25's unjudged exact, semantic 128: 0.738
+bm25's unjudged exact, semantic: 0.829
+semantic 128's unjudged exact, bm25: 0.718
+semantic 128's unjudged exact, semantic 128: 0.807
+leader changes, semantic 128 against bm25: yes
+leader changes, semantic against bm25: no
+pairs to judge, semantic 128 against bm25: 46

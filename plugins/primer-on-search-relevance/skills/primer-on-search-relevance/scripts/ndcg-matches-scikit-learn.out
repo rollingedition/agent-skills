@@ -1,0 +1,7 @@
+ndcg@10, only the top 10 passed: 0.901
+ndcg@10 from lib.metrics: 0.615
+ndcg@10, every judged product passed: 0.615
+rankings compared: 90
+largest difference: 0.000
+5-product ranking, lib.metrics: 0.539
+5-product ranking, scikit-learn: 0.629

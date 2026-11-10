@@ -1,0 +1,16 @@
+tool description: Search the store's catalog. Returns the top 5 products: ID, name, class and attributes.
+searches allowed: 3
+traces: 60
+first searches the same under both tools: 30
+first searches that keep the query as typed: 26
+first search for 48" sliding single track , barn door for laundry: 48" sliding single track barn door laundry
+first search for counter top one cup hot water dispenser: counter top hot water dispenser one cup
+first search for refrigerator with ice an water in door: refrigerator with ice and water in door
+first search for tye dye duvet cover: tie dye duvet cover
+traces whose first search returns the answer recording's context: 55
+bm25, searches: 32
+bm25, traces with one search: 29
+semantic, searches: 35
+semantic, traces with one search: 27
+bm25 searches whose results differ from lib.lexical: 7
+bm25 searches whose results differ from lib.lexical only in order: 6

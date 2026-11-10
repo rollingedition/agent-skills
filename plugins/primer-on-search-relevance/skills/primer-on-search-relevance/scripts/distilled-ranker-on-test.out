@@ -1,0 +1,24 @@
+train candidates the teacher labels: 6896
+of them, judged by nobody: 1975
+student features: 7
+trees kept by early stopping: 202
+student's share of gain, similarity: 0.812
+student's share of gain, name_match: 0.126
+student's share of gain, bm25: 0.055
+tau between student and cross_encoder, mean over test queries: 0.466
+tau between student and similarity, mean over test queries: 0.753
+teacher's own order of the candidates, test ndcg@10, not a planned comparison: 0.782
+semantic, test ndcg@10: 0.830
+semantic, test judged@10: 0.990
+semantic, unjudged places in the test top 10s: 3
+distilled, test ndcg@10: 0.826
+distilled, test judged@10: 0.987
+distilled, unjudged places in the test top 10s: 4
+distilled, mean difference: -0.004
+distilled, wins, losses, ties: 10, 13, 7
+distilled, permutation p: 0.720
+distilled, established at 0.01: no
+distilled, t-test p: 0.694
+distilled, t-test agrees: yes
+distilled, 99% interval: -0.034 to 0.017
+distilled, interval agrees: yes

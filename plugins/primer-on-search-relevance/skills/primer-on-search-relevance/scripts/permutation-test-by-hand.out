@@ -1,0 +1,7 @@
+test queries: 30
+sign patterns for the test queries: 1,073,741,824
+observed mean difference: -0.018
+95% of flipped means are smaller than: 0.022
+p-value by hand: 0.117
+p-value from scipy: 0.125
+difference at the 0.05 level: within chance

@@ -1,0 +1,6 @@
+grades: [1, 2, 2, 2, 2, 1, 1, 0, 0, 0]
+best grades: [2, 2, 2, 2, 2, 2, 2, 2, 2, 2]
+dcg@10: 5.586
+ideal dcg@10: 9.087
+ndcg@10: 0.615
+ndcg@10 from lib.metrics: 0.615

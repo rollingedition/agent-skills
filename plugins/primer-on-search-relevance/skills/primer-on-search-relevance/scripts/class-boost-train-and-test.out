@@ -1,0 +1,24 @@
+exact train products outside the predicted class: 501 of 1937
+train ndcg@10 semantic: 0.772
+train judged@10 semantic: 0.964
+train ndcg@10 filter: 0.675
+train ndcg@10 boost 0.01: 0.773
+train ndcg@10 boost 0.02: 0.774
+train ndcg@10 boost 0.05: 0.768
+train ndcg@10 boost 0.1: 0.742
+train ndcg@10 boost 0.2: 0.692
+train judged@10 filter: 0.866
+train judged@10 best boost: 0.966
+best boost on train: 0.02
+
+the planned test comparison, threshold 0.01:
+test judged@10 semantic: 0.990
+test judged@10 boosted: 0.993
+class boost, semantic, mean difference: 0.005
+class boost, semantic, wins, losses, ties: 7, 4, 19
+class boost, semantic, permutation p: 0.174
+class boost, semantic, established at 0.01: no
+class boost, semantic, t-test p: 0.164
+class boost, semantic, t-test agrees: yes
+class boost, semantic, 99% interval: -0.002 to 0.017
+class boost, semantic, interval agrees: yes

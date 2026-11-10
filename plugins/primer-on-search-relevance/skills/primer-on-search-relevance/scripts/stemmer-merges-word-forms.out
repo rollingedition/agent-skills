@@ -1,0 +1,19 @@
+floats: snowball float, by hand float
+floating: snowball float, by hand float
+molding: snowball mold, by hand mold
+molded: snowball mold, by hand mold
+moldings: snowball mold, by hand molding
+shelves: snowball shelv, by hand shelv
+shelving: snowball shelv, by hand shelv
+shelf: snowball shelf, by hand shelf
+
+products with floats: 11
+products with the stem of floats: 288
+products with molding: 123
+products with the stem of molding: 262
+products with the stem of floats that say floating: 244
+products with the stem of floats in Wall Mounted Shelves: 57
+products with the stem of floats in Desks: 36
+vocabulary without stemming: 20,393 terms
+vocabulary with stemming: 15,258 terms
+vocabulary reduction: 25%

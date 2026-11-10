@@ -1,0 +1,23 @@
+test queries: 30
+mean ndcg@10: 0.725
+mean judged@10: 0.927
+lowest ndcg@10: 0.212
+median ndcg@10: 0.687
+highest ndcg@10: 1.000
+queries with ndcg@10 of 1: 4
+
+                            query  ndcg@10  judged@10
+query_id
+46           beach blue headboard    0.212        0.5
+133        outdoor light fixtures    0.286        0.2
+292       decorative white pillow    0.467        1.0
+lowest query: beach blue headboard
+judged@10 of the lowest query: 0.500
+
+judged@10 for outdoor light fixtures: 0.200
+bm25 top 5 for outdoor light fixtures
+  exact       malikah 1 -bulb outdoor bulkhead light
+  unjudged    60 watt equivalent e12 led candle light bulb
+  unjudged    5w ( 40 watt equivalent ) , b11 led , dimmable light bulb e1
+  unjudged    60 watt equivalent , a19 led , non-dimmable light bulb , war
+  unjudged    40 watt equivalent e12 dimmable led edison candle light bulb

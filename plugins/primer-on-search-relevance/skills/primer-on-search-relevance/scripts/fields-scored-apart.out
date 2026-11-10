@@ -1,0 +1,5 @@
+one field, train ndcg@10: 0.725
+one field, train judged@10: 0.950
+fields scored apart, train ndcg@10: 0.686
+fields scored apart, train judged@10: 0.970
+train queries better, worse with fields scored apart: 15, 24

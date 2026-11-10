@@ -1,0 +1,10 @@
+semantic, train ndcg@10: 0.772
+lambdarank, unjudged as 0, cross-validated ndcg@10: 0.798
+lambdarank, unjudged left out, cross-validated ndcg@10: 0.733
+lambdarank, unjudged left out, minus the first: -0.064
+lambdarank, unjudged left out, minus the first, permutation p: 0.005
+pointwise regression, unjudged as 0, cross-validated ndcg@10: 0.769
+pointwise regression, unjudged as 0, minus the first: -0.029
+pointwise regression, unjudged as 0, minus the first, permutation p: 0.007
+first setup minus semantic: 0.026
+first setup minus semantic, permutation p: 0.242

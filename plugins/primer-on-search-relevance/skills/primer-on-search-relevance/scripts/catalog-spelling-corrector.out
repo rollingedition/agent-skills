@@ -1,0 +1,15 @@
+catalog words: 19,680
+queries changed: 4
+of them, train queries: 3
+  foutains with brick look (train), corrected: fountains with brick look
+  twin over full bunk beds cool desins (train), corrected: twin over full bunk beds cool designs
+  ligth bulb (train), corrected: light bulb
+  tye dye duvet cover (test), corrected: the dye duvet cover
+same as lib.queries.correct_query: True
+catalog count of tye: 0
+catalog count of tie: 45
+catalog count of the: 20389
+catalog count of kohler: 71
+catalog count of whitehaven: 60
+catalog count of malachi: 5
+catalog count of luau: 4

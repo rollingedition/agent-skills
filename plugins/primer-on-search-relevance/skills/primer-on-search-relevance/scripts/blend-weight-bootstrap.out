@@ -1,0 +1,15 @@
+resamples: 1000
+weighted sum alpha tuned on all train queries: 0.7
+weighted sum resamples choosing alpha 0.5: 13
+weighted sum resamples choosing alpha 0.6: 171
+weighted sum resamples choosing alpha 0.7: 686
+weighted sum resamples choosing alpha 0.8: 11
+weighted sum resamples choosing alpha 0.9: 74
+weighted sum resamples choosing alpha 1.0: 45
+weighted rrf alpha tuned on all train queries: 0.6
+weighted rrf resamples choosing alpha 0.5: 2
+weighted rrf resamples choosing alpha 0.6: 513
+weighted rrf resamples choosing alpha 0.7: 76
+weighted rrf resamples choosing alpha 0.8: 365
+weighted rrf resamples choosing alpha 0.9: 26
+weighted rrf resamples choosing alpha 1.0: 18

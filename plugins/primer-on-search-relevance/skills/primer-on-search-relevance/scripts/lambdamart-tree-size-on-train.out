@@ -1,0 +1,21 @@
+train queries: 50
+semantic, train ndcg@10: 0.772
+3 leaves, learning rate 0.05, cross-validated ndcg@10: 0.780
+3 leaves, learning rate 0.05, trees kept per fold: 18, 27, 52, 20, 85
+3 leaves, learning rate 0.1, cross-validated ndcg@10: 0.798
+3 leaves, learning rate 0.1, trees kept per fold: 99, 20, 8, 43, 38
+7 leaves, learning rate 0.05, cross-validated ndcg@10: 0.744
+7 leaves, learning rate 0.05, trees kept per fold: 2, 28, 30, 39, 55
+7 leaves, learning rate 0.1, cross-validated ndcg@10: 0.772
+7 leaves, learning rate 0.1, trees kept per fold: 80, 12, 13, 7, 20
+15 leaves, learning rate 0.05, cross-validated ndcg@10: 0.720
+15 leaves, learning rate 0.05, trees kept per fold: 4, 37, 175, 44, 120
+15 leaves, learning rate 0.1, cross-validated ndcg@10: 0.728
+15 leaves, learning rate 0.1, trees kept per fold: 19, 68, 136, 48, 53
+31 leaves, learning rate 0.05, cross-validated ndcg@10: 0.679
+31 leaves, learning rate 0.05, trees kept per fold: 15, 8, 91, 8, 22
+31 leaves, learning rate 0.1, cross-validated ndcg@10: 0.737
+31 leaves, learning rate 0.1, trees kept per fold: 11, 75, 166, 96, 58
+settings tried: 8
+best setting: 3 leaves, learning rate 0.1
+lib.ranking.TREES holds it: yes

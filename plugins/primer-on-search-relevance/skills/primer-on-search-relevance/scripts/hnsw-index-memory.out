@@ -1,0 +1,5 @@
+links per product, upper layers: 32
+links per product, bottom layer: 64
+faiss's estimate, 4d + 8M bytes per product: 3,328
+bytes per product, exact index: 3,072
+bytes per product, hnsw index: 3,344

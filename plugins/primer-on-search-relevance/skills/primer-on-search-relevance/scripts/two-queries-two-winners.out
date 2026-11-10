@@ -1,0 +1,30 @@
+products containing 7qt: 0
+products containing 7 qt: 9
+
+exact in bm25 top 10 for butcher block island: 9
+  exact       carol kitchen island with butcher block top
+  exact       brunton kitchen island with butcher block top
+  partial     brunton kitchen cart butcher block top
+  exact       janigian kitchen island with butcher block
+  exact       avelar kitchen island with butcher block
+
+exact in semantic top 10 for butcher block island: 3
+  partial     boosblock® prep table with butcher block top
+  partial     boosblock® butcher block
+  partial     prep table
+  partial     pro chef kitchen cart with butcher block top
+  exact       brunton kitchen island with butcher block top
+
+exact in bm25 top 10 for 7qt slow cooker: 1
+  partial     cuisinart 6.5 quart programmable slow cooker
+  partial     midea 6.5 qt . slow cooker
+  partial     delonghi cks1660d livenza programmable 6 qt . slow cook
+  partial     nesco 1.5 qt . analog slow cooker
+  partial     360 cookware gourmet slow cooker
+
+exact in semantic top 10 for 7qt slow cooker: 7
+  exact       7-qt . stay or go slow cooker
+  exact       crock-pot 7 qt . slow cooker
+  exact       zing 7 qt . digital slow cooker
+  exact       black + decker 7 qt . digital slow cooker
+  exact       crock-pot 7 qt . slow cooker

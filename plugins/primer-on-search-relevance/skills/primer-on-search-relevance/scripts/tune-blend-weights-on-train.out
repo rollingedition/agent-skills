@@ -1,0 +1,21 @@
+alphas tried: 11
+min-max ndcg@10 for alpha 0 to 1: 0.695 0.709 0.736 0.746 0.758 0.771 0.781 0.784 0.777 0.778 0.772
+semantic alone ndcg@10: 0.772
+unweighted rrf (alpha 0.5) ndcg@10: 0.774
+min-max best alpha: 0.7
+min-max best ndcg@10: 0.784
+theoretical min-max best alpha: 0.9
+theoretical min-max best ndcg@10: 0.789
+z-score best alpha: 0.7
+z-score best ndcg@10: 0.787
+weighted rrf best alpha: 0.6
+weighted rrf best ndcg@10: 0.787
+theoretical min-max against min-max, permutation p: 0.164
+z-score against min-max, permutation p: 0.349
+weighted rrf against min-max, permutation p: 0.776
+min-max gain over semantic: 0.013
+min-max gain over semantic, permutation p: 0.177
+min-max gain over semantic, t-test p: 0.161
+weighted rrf gain over semantic: 0.015
+weighted rrf gain over semantic, permutation p: 0.215
+weighted rrf gain over semantic, t-test p: 0.205

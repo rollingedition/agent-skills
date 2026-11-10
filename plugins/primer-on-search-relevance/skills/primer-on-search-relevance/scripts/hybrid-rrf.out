@@ -1,0 +1,15 @@
+first product: woolley vinyl solid color single shower curtain
+first product's bm25 rank: 3
+first product's semantic rank: 1
+first product's score by hand: 0.03227
+first product's score from rrf_scores: 0.03227
+second product: woolley vinyl single shower curtain
+second product's bm25 rank: 2
+second product's semantic rank: 2
+second product's score by hand: 0.03226
+second product's score from rrf_scores: 0.03226
+hybrid ndcg@10: 0.812
+hybrid judged@10: 0.980
+better than semantic: 9
+worse than semantic: 14
+tied with semantic: 7

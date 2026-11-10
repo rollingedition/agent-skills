@@ -1,0 +1,11 @@
+candidates for laundry basket with wheels: 125
+bm25 range: 2.059 to 8.229
+similarity range: 0.336 to 0.597
+raw sum ndcg@10: 0.706
+raw sum, products shared with the bm25 top 10: 9.6
+raw sum, products shared with the semantic top 10: 3.9
+min-max sum ndcg@10: 0.771
+min-max sum, products shared with the bm25 top 10: 6.5
+min-max sum, products shared with the semantic top 10: 6.2
+train queries ranked as lib.blend.weighted_sum ranks them: 50 of 50
+min-max minus raw, permutation p: below 0.001

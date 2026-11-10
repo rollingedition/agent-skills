@@ -1,0 +1,30 @@
+planned test comparisons: 2
+p-value threshold: 0.025
+efSearch chosen on train queries: 144
+exact ndcg@10: 0.830
+
+default, recall@10 against exact: 0.930
+default, queries with recall@10 of 0: 2
+default, those queries: liberty hardware francisco, 48" sliding single track , barn door for laundry
+default, recall@100 against exact: 0.849
+default, hnsw ndcg@10: 0.791
+default, queries whose ndcg@10 changes: 3
+default, permutation p: 0.256
+default, t-test p: 0.154
+default, 97.5% interval: -0.1544 to -0.0006
+default, established: no
+default, t-test agrees: yes
+default, interval agrees: no
+
+chosen, recall@10 against exact: 1.000
+chosen, queries with recall@10 of 0: 0
+chosen, those queries: none
+chosen, recall@100 against exact: 0.994
+chosen, hnsw ndcg@10: 0.830
+chosen, queries whose ndcg@10 changes: 0
+chosen, permutation p: 1.000
+chosen, t-test p: 1.000
+chosen, 97.5% interval: 0.0000 to 0.0000
+chosen, established: no
+chosen, t-test agrees: yes
+chosen, interval agrees: yes

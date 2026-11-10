@@ -1,0 +1,19 @@
+bm25, largest loss: fold in half table
+bm25, largest loss, change: -0.471
+bm25, largest loss, rewrite: folding table, collapsible table, drop leaf table, gateleg table
+bm25, largest loss, unjudged products in the rewrite's top 10: 3
+bm25, largest gain: refrigerator with ice an water in door
+bm25, largest gain, change: +0.159
+bm25, largest gain, rewrite: refrigerator with ice and water in door, fridge with door dispenser, refrigerator with external water and ice dispenser
+bm25, largest gain, unjudged products in the rewrite's top 10: 1
+semantic, largest loss: pull out sleeper loveseat
+semantic, largest loss, change: -0.304
+semantic, largest loss, rewrite: pull out sleeper loveseat sofa couch convertible sofa sofa bed
+semantic, largest loss, unjudged products in the rewrite's top 10: 4
+semantic, largest gain: nautical platters
+semantic, largest gain, change: +0.055
+semantic, largest gain, rewrite: nautical platters serving trays seafood platters maritime serving boards
+semantic, largest gain, unjudged products in the rewrite's top 10: 0
+bm25, largest gain, ndcg@10 typed: 0.501
+bm25, largest gain, ndcg@10 spelling fixed only: 0.501
+bm25 stop words among an and and: an, and

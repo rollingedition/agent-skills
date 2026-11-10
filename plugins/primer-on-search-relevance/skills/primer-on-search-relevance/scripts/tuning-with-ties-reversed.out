@@ -1,0 +1,6 @@
+best rrf k, ties by product_id: 100
+weighted rrf alpha, ties by product_id: 0.6
+weighted sum alpha, ties by product_id: 0.7
+best rrf k, ties reversed: 300
+weighted rrf alpha, ties reversed: 0.8
+weighted sum alpha, ties reversed: 0.7

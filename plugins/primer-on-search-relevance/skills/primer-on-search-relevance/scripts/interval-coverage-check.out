@@ -1,0 +1,6 @@
+trials: 1000
+standard error of a coverage near 0.95: 0.007
+bca coverage at 0.95: 0.927
+t coverage at 0.95: 0.945
+bca coverage at 0.9833: 0.955
+t coverage at 0.9833: 0.975

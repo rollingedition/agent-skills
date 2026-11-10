@@ -1,0 +1,26 @@
+products that write a number then '': 3014
+products that write a number then ": 65
+products that write a number then inch: 215
+terms of 3.7-quart slow cooker, normalized: 3_7qt slow cooker
+terms of 3 in 1 sofa bed, normalized: sofa bed
+terms of 1 in twin, normalized: 1in twin
+terms of 48 '' range hood, first try: 48 range hood
+terms of 48 '' range hood, normalized: 48in range hood
+queries with a unit: 4
+of them, test queries: 2
+62 (train): 7qt slow cooker -> 7qt slow cooker
+62 (train), bm25 ndcg@10 as written: 0.554
+62 (train), bm25 ndcg@10 first try: 0.930
+62 (train), bm25 ndcg@10 normalized: 0.930
+101 (train): 48 in entry table with side by side drawer -> 48in entry table with side by side drawer
+101 (train), bm25 ndcg@10 as written: 0.569
+101 (train), bm25 ndcg@10 first try: 0.569
+101 (train), bm25 ndcg@10 normalized: 0.569
+285 (test): 48" sliding single track , barn door for laundry -> 48in sliding single track , barn door for laundry
+285 (test), bm25 ndcg@10 as written: 0.592
+285 (test), bm25 ndcg@10 first try: 0.592
+285 (test), bm25 ndcg@10 normalized: 0.592
+482 (test): 48 inch kitchen hood -> 48in kitchen hood
+482 (test), bm25 ndcg@10 as written: 1.000
+482 (test), bm25 ndcg@10 first try: 0.824
+482 (test), bm25 ndcg@10 normalized: 1.000

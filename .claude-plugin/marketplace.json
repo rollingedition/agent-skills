@@ -21,6 +21,13 @@
       "homepage": "https://rollingedition.com/open-table-formats"
     },
     {
+      "name": "primer-on-search-relevance",
+      "source": "./plugins/primer-on-search-relevance",
+      "description": "How search engines find and rank results, and how to measure whether a change helps: lexical, semantic and hybrid retrieval, reranking with learned models and LLMs, and judgments from people and LLMs, on a real product catalog.",
+      "category": "learning",
+      "homepage": "https://rollingedition.com/primer-on-search-relevance"
+    },
+    {
       "name": "books",
       "source": "./plugins/books",
       "category": "learning",

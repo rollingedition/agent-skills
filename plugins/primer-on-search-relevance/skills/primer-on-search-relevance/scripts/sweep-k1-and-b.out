@@ -1,0 +1,28 @@
+train ndcg@10, k1 down and b across:
+      0.00   0.25   0.50   0.75   1.00
+0.5  0.707  0.710  0.716  0.720  0.720
+0.9  0.711  0.711  0.716  0.722  0.720
+1.2  0.709  0.711  0.715  0.723  0.720
+1.5  0.709  0.714  0.719  0.725  0.715
+2.0  0.714  0.720  0.726  0.729  0.713
+settings in the grid: 25
+best k1 on train: 2.0
+best b on train: 0.75
+best setting on the grid's edge: yes
+train ndcg@10 at the train best: 0.729
+train ndcg@10 at k1 1.5, b 0.75: 0.725
+train gain of the best over the defaults: 0.004
+lowest train ndcg@10 in the grid: 0.707
+
+test ndcg@10 at k1 1.5, b 0.75: 0.774
+test judged@10 at k1 1.5, b 0.75: 0.950
+test ndcg@10 at the train best: 0.775
+test judged@10 at the train best: 0.953
+mean difference: 0.001
+wins, losses, ties: 7, 6, 17
+permutation p: 0.757
+established at 0.01: no
+t-test p: 0.754
+t-test agrees: yes
+99% interval: -0.008 to 0.008
+interval agrees: yes

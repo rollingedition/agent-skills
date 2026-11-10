@@ -1,0 +1,22 @@
+bm25 ndcg@10: 0.725
+semantic ndcg@10: 0.830
+mean change: 0.105
+threshold: 0.05
+permutation test p: 0.001
+paired t-test p: 0.003
+95% interval: 0.055 to 0.185
+established: yes
+wins: 21
+losses: 7
+ties: 2
+largest loss: -0.092
+
+                                                     query   bm25  semantic  change
+query_id
+292                                decorative white pillow  0.467     0.375  -0.092
+293                               wood floor protector mat  0.653     0.568  -0.084
+482                                   48 inch kitchen hood  1.000     0.921  -0.079
+63                                        monthly calendar  1.000     0.931  -0.069
+285       48" sliding single track , barn door for laundry  0.592     0.555  -0.037
+72                                      fold in half table  1.000     0.965  -0.035
+94                kohler whitehaven farmhouse kitchen sink  0.694     0.690  -0.004

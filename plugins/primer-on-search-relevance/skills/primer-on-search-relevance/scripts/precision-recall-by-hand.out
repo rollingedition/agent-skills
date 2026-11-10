@@ -1,0 +1,15 @@
+exact in the top 10: 4
+exact products judged: 12
+precision@10 by hand: 0.400
+recall@10 by hand: 0.333
+precision@10 from lib.metrics: 0.400
+recall@10 from lib.metrics: 0.333
+
+queries where precision@10 can't reach 1: 7
+fewest exact products for a query: 4
+queries with that few: 4
+best precision@10 for those queries: 0.400
+queries where recall@10 can't reach 1: 22
+query with the most exact products: outdoor light fixtures
+its exact products: 170
+its best recall@10: 0.059

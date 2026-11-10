@@ -1,0 +1,8 @@
+cross-encoder, model calls per query: 20
+cross-encoder, characters read per query, mean: 9,911
+llm pointwise, model calls per query: 20
+llm pointwise, characters read per query, mean: 17,864
+llm listwise, model calls per query: 1
+llm listwise, characters read per query, mean: 5,973
+llm pairwise, every pair in both orders, calls per query: 380
+llm listwise over the top 100, window 20, step 10, calls per query: 9

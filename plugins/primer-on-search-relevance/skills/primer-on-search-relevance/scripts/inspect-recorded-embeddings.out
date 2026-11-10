@@ -1,0 +1,19 @@
+embedding model: Snowflake/snowflake-arctic-embed-m-v1.5
+query prompt: Represent this sentence for searching relevant passages:
+products embedded: 12,000
+dimensions: 768
+stored as: float16
+longest product text, tokens: 201
+model's input limit, tokens: 512
+product 1, first four numbers: -0.033, 0.051, 0.111, -0.012
+stored vector lengths: 0.99994 to 1.00006
+lengths after lib.recorded rescales: 1.00000 to 1.00000
+median similarity of two queries: 0.291
+
+whimsical solar lights, nearest other query: outdoor light fixtures
+whimsical solar lights, similarity: 0.637
+whimsical solar lights, words in common: 0
+
+wall design shelf, nearest other query: kitchen storage shelves
+wall design shelf, similarity: 0.679
+wall design shelf, words in common: 0

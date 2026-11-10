@@ -1,0 +1,29 @@
+pairs in the test pool: 590
+of them, unjudged: 26
+unjudged products in the top 10s, bm25: 22
+unjudged products in the top 10s, semantic: 3
+unjudged products in the top 10s, hybrid: 6
+unjudged products in the top 10s, reranked: 6
+unjudged products for outdoor light fixtures: 8
+of them, with bulb in the name: 8
+order, people's grades only: semantic > hybrid > reranked > bm25
+
+unjudged pairs graded exact, partial, irrelevant, short prompt: 4, 17, 5
+unjudged bulbs graded irrelevant, short prompt: 0
+bm25 ndcg@10, filled by the short prompt: 0.754
+semantic ndcg@10, filled by the short prompt: 0.833
+hybrid ndcg@10, filled by the short prompt: 0.821
+reranked ndcg@10, filled by the short prompt: 0.813
+order, filled by the short prompt: semantic > hybrid > reranked > bm25
+rankers that change place when filled, short prompt: none
+verdicts that change when filled, short prompt: none
+
+unjudged pairs graded exact, partial, irrelevant, guidelines prompt: 5, 9, 12
+unjudged bulbs graded irrelevant, guidelines prompt: 7
+bm25 ndcg@10, filled by the guidelines prompt: 0.745
+semantic ndcg@10, filled by the guidelines prompt: 0.834
+hybrid ndcg@10, filled by the guidelines prompt: 0.821
+reranked ndcg@10, filled by the guidelines prompt: 0.813
+order, filled by the guidelines prompt: semantic > hybrid > reranked > bm25
+rankers that change place when filled, guidelines prompt: none
+verdicts that change when filled, guidelines prompt: none

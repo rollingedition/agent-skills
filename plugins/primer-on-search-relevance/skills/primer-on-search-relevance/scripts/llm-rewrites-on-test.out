@@ -1,0 +1,35 @@
+the planned test comparisons, threshold 0.01:
+llm rewrite, bm25, test ndcg@10 typed: 0.725
+llm rewrite, bm25, test judged@10 typed: 0.927
+llm rewrite, bm25, test ndcg@10 rewrite: 0.669
+llm rewrite, bm25, test judged@10 rewrite: 0.903
+llm rewrite, bm25, mean difference: -0.056
+llm rewrite, bm25, wins, losses, ties: 13, 15, 2
+llm rewrite, bm25, permutation p: 0.060
+llm rewrite, bm25, established at 0.01: no
+llm rewrite, bm25, t-test p: 0.060
+llm rewrite, bm25, t-test agrees: yes
+llm rewrite, bm25, 99% interval: -0.143 to 0.005
+llm rewrite, bm25, interval agrees: yes
+llm rewrite, bm25, condensed ndcg@10 typed: 0.778
+llm rewrite, bm25, condensed ndcg@10 rewrite: 0.725
+llm rewrite, bm25, condensed, exploratory mean difference: -0.053
+llm rewrite, bm25, condensed, exploratory permutation p: 0.044
+llm rewrite, bm25, condensed, exploratory 99% interval: -0.150 to -0.002
+llm rewrite, semantic, test ndcg@10 typed: 0.830
+llm rewrite, semantic, test judged@10 typed: 0.990
+llm rewrite, semantic, test ndcg@10 rewrite: 0.749
+llm rewrite, semantic, test judged@10 rewrite: 0.947
+llm rewrite, semantic, mean difference: -0.081
+llm rewrite, semantic, wins, losses, ties: 7, 19, 4
+llm rewrite, semantic, permutation p: 0.000
+llm rewrite, semantic, established at 0.01: yes
+llm rewrite, semantic, t-test p: 0.000
+llm rewrite, semantic, t-test agrees: yes
+llm rewrite, semantic, 99% interval: -0.132 to -0.035
+llm rewrite, semantic, interval agrees: yes
+llm rewrite, semantic, condensed ndcg@10 typed: 0.834
+llm rewrite, semantic, condensed ndcg@10 rewrite: 0.791
+llm rewrite, semantic, condensed, exploratory mean difference: -0.043
+llm rewrite, semantic, condensed, exploratory permutation p: 0.002
+llm rewrite, semantic, condensed, exploratory 99% interval: -0.079 to -0.014

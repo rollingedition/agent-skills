@@ -1,0 +1,19 @@
+cross-encoder model: Alibaba-NLP/gte-reranker-modernbert-base
+licence in the manifest: Apache-2.0
+rerank depth: 20
+queries whose top 20 holds the products the llm rerankers saw: 30 of 30
+semantic, test ndcg@10: 0.830
+semantic, test judged@10: 0.990
+semantic, unjudged places in the test top 10s: 3
+cross-encoder, test ndcg@10: 0.813
+cross-encoder, test judged@10: 0.983
+cross-encoder, unjudged places in the test top 10s: 5
+queries whose first product changes: 23
+cross-encoder, mean difference: -0.016
+cross-encoder, wins, losses, ties: 11, 12, 7
+cross-encoder, permutation p: 0.178
+cross-encoder, established at 0.01: no
+cross-encoder, t-test p: 0.171
+cross-encoder, t-test agrees: yes
+cross-encoder, 99% interval: -0.058 to 0.006
+cross-encoder, interval agrees: yes

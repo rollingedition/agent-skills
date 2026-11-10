@@ -1,0 +1,14 @@
+navigational shopper, bm25 clicks per search: 1.362
+navigational shopper, semantic clicks per search: 1.269
+navigational shopper, clicks per search p: below 0.001
+navigational shopper, bm25 share of searches with an exact click: 0.695
+navigational shopper, semantic share of searches with an exact click: 0.799
+navigational shopper, share of searches with an exact click p: below 0.001
+perfect shopper, bm25 clicks per search: 6.443
+perfect shopper, semantic clicks per search: 7.451
+perfect shopper, clicks per search p: below 0.001
+perfect shopper, bm25 share of searches with an exact click: 0.898
+perfect shopper, semantic share of searches with an exact click: 0.895
+perfect shopper, share of searches with an exact click p: 0.646
+clicks per search reverses between shoppers: yes
+share of searches with an exact click reverses between shoppers: no

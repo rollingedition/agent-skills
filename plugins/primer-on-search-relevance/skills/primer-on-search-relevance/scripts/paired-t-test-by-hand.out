@@ -1,0 +1,8 @@
+semantic minus bm25: 0.105
+semantic minus bm25 t by hand: 3.294
+semantic minus bm25 p by hand: 0.003
+semantic minus bm25 p from ttest_rel: 0.003
+hybrid minus semantic: -0.018
+hybrid minus semantic t by hand: -1.590
+hybrid minus semantic p by hand: 0.123
+hybrid minus semantic p from ttest_rel: 0.123

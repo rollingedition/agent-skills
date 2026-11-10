@@ -1,0 +1,9 @@
+first query, lowest best similarity: liberty hardware francisco
+its best similarity: 0.436
+exact products in its top 10: 5
+second query, highest 10th similarity: kohler whitehaven farmhouse kitchen sink
+its 10th similarity: 0.647
+
+products above 0.5 for the first query: 0
+products above 0.5 for the second query: 103
+test queries with no product above 0.5: 2

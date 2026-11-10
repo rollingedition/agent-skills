@@ -1,0 +1,29 @@
+exact products for query 246: 12
+exact, with clear in their text: 4
+exact, with clear in text or attributes: 8
+for example: wynsum vinyl single shower curtain -> color: clear; width: 72; height: 84
+queries that contain an attribute name: 1
+products whose attributes name size: 950
+
+train ndcg@10, one field: 0.725
+train judged@10, one field: 0.950
+train ndcg@10, with attributes: 0.717
+train judged@10, with attributes: 0.948
+
+test ndcg@10, one field: 0.774
+test judged@10, one field: 0.950
+test ndcg@10, with attributes: 0.787
+test judged@10, with attributes: 0.963
+
+query 246 ndcg@10, one field: 0.714
+query 246 ndcg@10, with attributes: 0.844
+query 58 ndcg@10, one field: 0.731
+query 58 ndcg@10, with attributes: 0.667
+mean difference: 0.013
+wins, losses, ties: 8, 10, 12
+permutation p: 0.303
+established at 0.01: no
+t-test p: 0.281
+t-test agrees: yes
+99% interval: -0.009 to 0.053
+interval agrees: yes

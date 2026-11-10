@@ -1,0 +1,13 @@
+product classes: 410
+products without a class: 800
+products with several classes: 620
+query classes that no product has: 1
+query classes that no product has, names: Crock Pots & Slow Cookers
+same predictions as MultinomialNB: 80 of 80
+predicted class equals query_class: 60
+queries where most exact products have the predicted class: 63
+queries where most exact products have the query_class: 63
+133 (test): outdoor light fixtures -> Light Bulbs (query_class: Outdoor Wall Lights)
+255 (test): desk and chair set -> Desks (query_class: Office Chairs)
+410 (train): pool floats -> Deck Boxes (query_class: Lawn Games)
+predicted class for 7qt slow cooker: Slow Cookers

@@ -1,0 +1,16 @@
+train queries: 50
+semantic precision@10: 0.502
+hybrid precision@10: 0.488
+higher precision@10: semantic
+semantic mrr: 0.673
+hybrid mrr: 0.710
+higher mrr: hybrid
+semantic ndcg@10: 0.772
+hybrid ndcg@10: 0.774
+higher ndcg@10: hybrid
+semantic ndcg@10 with exponential gains: 0.709
+hybrid ndcg@10 with exponential gains: 0.708
+higher ndcg@10 with exponential gains: semantic
+metrics won by semantic: 2
+metrics won by hybrid: 2
+largest gap: 0.037

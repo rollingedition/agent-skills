@@ -1,0 +1,25 @@
+{
+  "name": "primer-on-search-relevance",
+  "displayName": "A Primer on Search Relevance",
+  "version": "2026.11.5",
+  "description": "How search engines find and rank results, and how to measure whether a change helps: lexical, semantic and hybrid retrieval, reranking with learned models and LLMs, and judgments from people and LLMs, on a real product catalog.",
+  "author": {
+    "name": "Rolling Edition",
+    "url": "https://rollingedition.com/"
+  },
+  "homepage": "https://rollingedition.com/primer-on-search-relevance",
+  "repository": "https://github.com/rollingedition/agent-skills",
+  "license": "CC-BY-4.0",
+  "keywords": [
+    "search-relevance",
+    "search-evaluation",
+    "semantic-search",
+    "learning-to-rank",
+    "retrieval-augmented-generation"
+  ],
+  "icon": "./icon.png",
+  "documentationUrl": "https://rollingedition.com/assistants#agent-skills",
+  "supportUrl": "https://rollingedition.com/assistants#trouble",
+  "privacyPolicyUrl": "https://rollingedition.com/policies/privacy#mcp",
+  "termsOfServiceUrl": "https://rollingedition.com/policies/terms"
+}

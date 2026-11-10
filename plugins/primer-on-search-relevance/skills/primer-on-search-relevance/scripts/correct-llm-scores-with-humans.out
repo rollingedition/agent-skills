@@ -1,0 +1,28 @@
+queries judged by people in each draw: 10 of 30
+draws: 2,000
+
+semantic minus bm25, people, all queries: 0.105
+semantic minus bm25, human sample alone, spread: 0.045
+semantic minus bm25, short prompt, LLM only: 0.070
+semantic minus bm25, short prompt, corrected, mean over draws: 0.104
+semantic minus bm25, short prompt, corrected, spread: 0.036
+semantic minus bm25, short prompt, corrected spread smaller than the human sample's: yes
+semantic minus bm25, short prompt, correlation of per-query gaps with people's: 0.641
+semantic minus bm25, guidelines prompt, LLM only: 0.073
+semantic minus bm25, guidelines prompt, corrected, mean over draws: 0.104
+semantic minus bm25, guidelines prompt, corrected, spread: 0.039
+semantic minus bm25, guidelines prompt, corrected spread smaller than the human sample's: yes
+semantic minus bm25, guidelines prompt, correlation of per-query gaps with people's: 0.692
+
+hybrid minus semantic, people, all queries: -0.018
+hybrid minus semantic, human sample alone, spread: 0.016
+hybrid minus semantic, short prompt, LLM only: -0.002
+hybrid minus semantic, short prompt, corrected, mean over draws: -0.017
+hybrid minus semantic, short prompt, corrected, spread: 0.023
+hybrid minus semantic, short prompt, corrected spread smaller than the human sample's: no
+hybrid minus semantic, short prompt, correlation of per-query gaps with people's: 0.168
+hybrid minus semantic, guidelines prompt, LLM only: -0.001
+hybrid minus semantic, guidelines prompt, corrected, mean over draws: -0.017
+hybrid minus semantic, guidelines prompt, corrected, spread: 0.024
+hybrid minus semantic, guidelines prompt, corrected spread smaller than the human sample's: no
+hybrid minus semantic, guidelines prompt, correlation of per-query gaps with people's: 0.342

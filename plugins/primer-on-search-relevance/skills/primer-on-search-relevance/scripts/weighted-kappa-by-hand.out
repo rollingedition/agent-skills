@@ -1,0 +1,18 @@
+disagreement weights, rows and columns 2, 1, 0
+[[0.  0.5 1. ]
+ [0.5 0.  0.5]
+ [1.  0.5 0. ]]
+
+pairs two grades apart, short prompt: 12
+disagreements one grade apart, share, short prompt: 0.942
+one grade apart, share expected by chance, short prompt: 0.742
+kappa, short prompt: 0.432
+linear weighted kappa by hand, short prompt: 0.523
+linear weighted kappa from scikit-learn, short prompt: 0.523
+
+pairs two grades apart, guidelines prompt: 30
+disagreements one grade apart, share, guidelines prompt: 0.851
+one grade apart, share expected by chance, guidelines prompt: 0.664
+kappa, guidelines prompt: 0.454
+linear weighted kappa by hand, guidelines prompt: 0.531
+linear weighted kappa from scikit-learn, guidelines prompt: 0.531

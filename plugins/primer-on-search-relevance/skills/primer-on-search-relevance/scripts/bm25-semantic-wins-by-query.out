@@ -1,0 +1,18 @@
+train queries: 50
+bm25 ndcg@10: 0.695
+semantic ndcg@10: 0.772
+bm25 better: 15
+semantic better: 31
+tied: 4
+better of the two, chosen per query: 0.802
+queries with a digit: 5
+queries with a digit, bm25 better: 1
+
+queries where bm25 leads by 0.1 or more: 6
+query_id
+44     chrome shower head and valve
+146          laundry vanity cabinet
+277             barstool patio sets
+313                    malachi sled
+359                  french molding
+432            butcher block island

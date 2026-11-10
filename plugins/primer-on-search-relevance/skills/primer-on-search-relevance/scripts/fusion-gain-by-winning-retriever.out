@@ -1,0 +1,17 @@
+bm25 judged@10: 0.930
+semantic judged@10: 0.964
+semantic minus bm25, mean ndcg@10: 0.077
+semantic minus bm25, permutation p: 0.003
+semantic minus bm25, t-test p: 0.004
+hybrid minus semantic, mean ndcg@10: 0.002
+hybrid minus semantic, permutation p: 0.863
+hybrid minus semantic, t-test p: 0.872
+
+bm25 wins, queries: 15
+bm25 wins, fusion better than semantic: 12
+bm25 wins, fusion worse than semantic: 2
+bm25 wins, mean change in ndcg@10: 0.101
+semantic wins, queries: 31
+semantic wins, fusion better than semantic: 5
+semantic wins, fusion worse than semantic: 25
+semantic wins, mean change in ndcg@10: -0.045

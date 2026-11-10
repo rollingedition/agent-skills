@@ -1,0 +1,25 @@
+bm25, picks the tool never returned: 0
+bm25, picks nobody judged: 3
+bm25, traces with fewer than three picks: 2
+bm25, traces whose searches returned no exact product: 5
+bm25, traces that saw an exact product and picked none: 6
+bm25, precision@3 of the picks: 0.567
+bm25, precision@3 of the first search's top 3: 0.500
+bm25, picks against the top 3, exploratory permutation p: 0.152
+semantic, picks the tool never returned: 0
+semantic, picks nobody judged: 0
+semantic, traces with fewer than three picks: 0
+semantic, traces whose searches returned no exact product: 5
+semantic, traces that saw an exact product and picked none: 2
+semantic, precision@3 of the picks: 0.622
+semantic, precision@3 of the first search's top 3: 0.633
+semantic, picks against the top 3, exploratory permutation p: 1.000
+picks against the top 3, p-values below 0.05 uncorrected: 0 of 2
+agent picks, semantic over bm25, mean difference: 0.056
+agent picks, semantic over bm25, wins, losses, ties: 5, 4, 21
+agent picks, semantic over bm25, permutation p: 0.422
+agent picks, semantic over bm25, established at 0.025: no
+agent picks, semantic over bm25, t-test p: 0.305
+agent picks, semantic over bm25, t-test agrees: yes
+agent picks, semantic over bm25, 97.5% interval: -0.033 to 0.209
+agent picks, semantic over bm25, interval agrees: yes

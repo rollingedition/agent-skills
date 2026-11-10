@@ -1,0 +1,9 @@
+rankings checked: 90
+largest difference from lib.metrics: 0.000
+
+query: luau string lights
+grades in the top 10: [2, 2, 2, 2, 1, 1, 1, 1, 1, 1]
+best possible grades: [2, 2, 2, 2, 1, 1, 1, 1, 1, 1]
+exact products judged: 4
+exact in the top 10: 4
+ndcg@10: 1.000

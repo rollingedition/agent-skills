@@ -1,0 +1,10 @@
+vocabulary: 20,393 terms
+average product length: 50.3 terms
+postings for cooker, first 3: [(1, 3), (2, 2), (115, 1)]
+
+products with 7qt: 0
+products with slow: 157
+products with cooker: 141
+products with any query term: 158
+products with every query term: 0
+products with w003096809: 0

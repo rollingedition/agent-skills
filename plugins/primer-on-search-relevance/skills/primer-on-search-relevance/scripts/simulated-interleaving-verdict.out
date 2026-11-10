@@ -1,0 +1,16 @@
+exact click probability: 0.95
+exact stop probability: 0.9
+partial click probability: 0.5
+partial stop probability: 0.5
+irrelevant click probability: 0.05
+irrelevant stop probability: 0.2
+semantic against bm25, 100 searches: 51 wins, 36 losses, p 0.133
+semantic against bm25, 1,000 searches: 519 wins, 347 losses, p below 0.001
+semantic against bm25, 10,000 searches: 5222 wins, 3552 losses, p below 0.001
+hybrid against semantic, 100 searches: 32 wins, 51 losses, p 0.048
+hybrid against semantic, 1,000 searches: 413 wins, 447 losses, p 0.260
+hybrid against semantic, 10,000 searches: 4180 wins, 4593 losses, p below 0.001
+hybrid with bm25 ties reversed against semantic, 100 searches: 35 wins, 48 losses, p 0.187
+hybrid with bm25 ties reversed against semantic, 1,000 searches: 410 wins, 463 losses, p 0.078
+hybrid with bm25 ties reversed against semantic, 10,000 searches: 4174 wins, 4560 losses, p below 0.001
+hybrid against semantic, verdict at 100 searches changes with bm25 ties reversed: yes

@@ -1,0 +1,15 @@
+queries with a digit: 7
+          split   bm25  semantic                                             query
+query_id
+45        train  0.288     0.316                            70s inspired furniture
+62        train  0.554     0.930                                   7qt slow cooker
+101       train  0.569     0.770        48 in entry table with side by side drawer
+203       train  0.606     0.740                         ge top loading washer 4.5
+205       train  0.935     0.930                          ines shag rug w003096809
+285        test  0.592     0.555  48" sliding single track , barn door for laundry
+482        test  1.000     0.921                              48 inch kitchen hood
+semantic better: 4
+bm25 better: 3
+gaps under 0.03: 2
+products whose text has the word 7qt: 0
+products whose text has 7 qt: 8

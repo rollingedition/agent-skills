@@ -1,0 +1,16 @@
+bm25 judged@10: 0.927
+semantic judged@10: 0.990
+semantic mean change: 0.105
+semantic wins: 21
+semantic losses: 7
+semantic largest loss: -0.092
+semantic urisk with alpha 1: 0.092
+semantic 128 judged@10: 0.920
+semantic 128 mean change: 0.017
+semantic 128 wins: 15
+semantic 128 losses: 13
+semantic 128 largest loss: -0.253
+semantic 128 urisk with alpha 1: -0.033
+semantic 128 permutation test p: 0.592
+semantic 128 paired t-test p: 0.597
+semantic 128 interval: -0.036 to 0.088

@@ -1,0 +1,5 @@
+cross-encoder model: Alibaba-NLP/gte-reranker-modernbert-base
+reranked ndcg@10: 0.798
+reranked judged@10: 0.980
+better than hybrid: 11
+worse than hybrid: 12

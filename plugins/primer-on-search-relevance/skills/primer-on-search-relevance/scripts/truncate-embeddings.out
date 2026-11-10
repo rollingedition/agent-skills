@@ -1,0 +1,11 @@
+768 dimensions, float32 bytes per product: 3,072
+768 dimensions, ndcg@10: 0.772
+768 dimensions, judged@10: 0.964
+
+256 dimensions, float32 bytes per product: 1,024
+256 dimensions, ndcg@10: 0.762
+256 dimensions, judged@10: 0.952
+
+128 dimensions, float32 bytes per product: 512
+128 dimensions, ndcg@10: 0.680
+128 dimensions, judged@10: 0.874

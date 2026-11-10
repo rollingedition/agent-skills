@@ -1,0 +1,25 @@
+train ndcg@10 semantic: 0.772
+train judged@10 semantic: 0.964
+train ndcg@10 hypothetical alone: 0.704
+train judged@10 hypothetical alone: 0.890
+train ndcg@10 hyde: 0.769
+train judged@10 hyde: 0.946
+train ndcg@10 bm25: 0.695
+train judged@10 bm25: 0.930
+train ndcg@10 bm25, hypothetical alone: 0.644
+train judged@10 bm25, hypothetical alone: 0.854
+train ndcg@10 bm25, query five times plus hypothetical: 0.694
+train judged@10 bm25, query five times plus hypothetical: 0.912
+train queries better, worse, hypothetical alone: 13, 29
+
+the planned test comparison, threshold 0.01:
+test judged@10 semantic: 0.990
+test judged@10 hyde: 0.970
+hyde, semantic, mean difference: -0.031
+hyde, semantic, wins, losses, ties: 8, 14, 8
+hyde, semantic, permutation p: 0.108
+hyde, semantic, established at 0.01: no
+hyde, semantic, t-test p: 0.121
+hyde, semantic, t-test agrees: yes
+hyde, semantic, 99% interval: -0.115 to 0.001
+hyde, semantic, interval agrees: yes

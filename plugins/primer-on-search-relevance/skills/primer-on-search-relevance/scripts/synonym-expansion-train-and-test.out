@@ -1,0 +1,34 @@
+synonym groups: 14
+train queries the list changes: 14
+train ndcg@10 typed: 0.695
+train judged@10 typed: 0.930
+train ndcg@10 expanded: 0.722
+train judged@10 expanded: 0.944
+test queries the list changes: 1
+test ndcg@10 typed: 0.725
+test judged@10 typed: 0.927
+test ndcg@10 expanded: 0.725
+test judged@10 expanded: 0.927
+test query changed: indoor multi tiered plant stand
+words the list adds to it: unit
+train queries better, worse: 6, 5
+share of the net train gain from the largest gain: 0.473
+largest train gain: midcentury tv unit
+largest train gain, words added: stand mid century
+largest train gain, change: +0.632
+largest train loss: wire basket with dividers
+largest train loss, words added: hamper
+largest train loss, change: -0.176
+largest train loss, top 10 names with hamper: 4
+largest train loss, of those, unjudged: 4
+
+planned test comparisons: 5
+p-value threshold: 0.01
+synonyms, bm25, mean difference: 0.000
+synonyms, bm25, wins, losses, ties: 0, 0, 30
+synonyms, bm25, permutation p: 1.000
+synonyms, bm25, established at 0.01: no
+synonyms, bm25, t-test p: 1.000
+synonyms, bm25, t-test agrees: yes
+synonyms, bm25, 99% interval: 0.000 to 0.000
+synonyms, bm25, interval agrees: yes

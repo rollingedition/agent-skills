@@ -1,0 +1,21 @@
+embedding model: Snowflake/snowflake-arctic-embed-m-v1.5
+dimensions: 768
+query: clear shower curtain
+
+ 1  0.577  exact       woolley vinyl solid color single shower curtain
+ 2  0.572  exact       woolley vinyl single shower curtain
+ 3  0.569  partial     newburg check 3d vinyl single shower curtain + hoo
+ 4  0.556  partial     rodas vinyl shower curtain
+ 5  0.554  exact       siniard single shower curtain
+ 6  0.552  partial     71 '' x71 '' 4pcs shower curtain sets beach theme
+ 7  0.550  exact       almazan lightweight single shower curtain
+ 8  0.549  exact       simmon vinyl single shower curtain liner
+ 9  0.546  partial     vinyl striped shower curtain set
+10  0.542  partial     cindy window vinyl single shower curtain
+
+exact in the top 10: 5
+partial in the top 10: 5
+irrelevant in the top 10: 0
+unjudged in the top 10: 0
+similarity spread in the top 10: 0.035
+ndcg@10: 0.793

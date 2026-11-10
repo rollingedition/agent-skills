@@ -1,0 +1,26 @@
+conversations: 12
+first query: coat rack for bedroom
+follow-up: something in black
+standalone: black coat rack for bedroom
+first query, refinement in attributes: 0.125
+first query, refinement in text or attributes: 0.200
+first query, right kind: 0.958
+first query, right kind with the refinement: 0.175
+follow-up alone, refinement in attributes: 0.433
+follow-up alone, refinement in text or attributes: 0.950
+follow-up alone, right kind: 0.058
+follow-up alone, right kind with the refinement: 0.058
+turns joined, refinement in attributes: 0.208
+turns joined, refinement in text or attributes: 0.383
+turns joined, right kind: 0.933
+turns joined, right kind with the refinement: 0.325
+standalone, refinement in attributes: 0.200
+standalone, refinement in text or attributes: 0.392
+standalone, right kind: 0.958
+standalone, right kind with the refinement: 0.350
+standalone, filtered, refinement in attributes: 0.583
+standalone, filtered, refinement in text or attributes: 0.900
+standalone, filtered, right kind: 0.675
+standalone, filtered, right kind with the refinement: 0.675
+standalone against turns joined, more, fewer, same: 5, 4, 3
+conversations the filter leaves with fewer than 10 products: 3

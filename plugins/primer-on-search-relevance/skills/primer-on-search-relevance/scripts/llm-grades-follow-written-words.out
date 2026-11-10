@@ -1,0 +1,49 @@
+query: dual monitor stand
+Name: abramowski monitor stand
+Class: Desktop Organizers & Desk Pads
+Category:
+Description: the monitor stand riser can help !
+Attributes: color: white; material: wood; style: modern; width: 23.5; height: 4.64; depth: 9.2
+grades from people, short, guidelines: 2 1 1
+
+clear shower curtain products that say clear: 9
+products that say clear, graded exact by people: 5
+products that say clear, graded exact by the short prompt: 7
+products that say clear, graded exact by the guidelines prompt: 7
+
+clear shower curtain products that never say clear: 9
+products that never say clear, graded exact by people: 1
+products that never say clear, graded exact by the short prompt: 0
+products that never say clear, graded exact by the guidelines prompt: 0
+
+exact train pairs missing a query word: 149
+share graded lower, short prompt, exact train pairs missing a query word: 0.584
+share graded lower, guidelines prompt, exact train pairs missing a query word: 0.483
+
+exact train pairs with every query word: 47
+share graded lower, short prompt, exact train pairs with every query word: 0.149
+share graded lower, guidelines prompt, exact train pairs with every query word: 0.128
+
+partial train pairs with every query word: 8
+share graded higher, short prompt, partial train pairs with every query word: 0.875
+share graded higher, guidelines prompt, partial train pairs with every query word: 0.875
+
+partial train pairs missing a query word: 192
+share graded higher, short prompt, partial train pairs missing a query word: 0.078
+share graded higher, guidelines prompt, partial train pairs missing a query word: 0.120
+
+exact test pairs missing a query word: 128
+share graded lower, short prompt, exact test pairs missing a query word: 0.305
+share graded lower, guidelines prompt, exact test pairs missing a query word: 0.281
+
+exact test pairs with every query word: 178
+share graded lower, short prompt, exact test pairs with every query word: 0.084
+share graded lower, guidelines prompt, exact test pairs with every query word: 0.051
+
+partial test pairs with every query word: 42
+share graded higher, short prompt, partial test pairs with every query word: 0.548
+share graded higher, guidelines prompt, partial test pairs with every query word: 0.667
+
+partial test pairs missing a query word: 199
+share graded higher, short prompt, partial test pairs missing a query word: 0.171
+share graded higher, guidelines prompt, partial test pairs missing a query word: 0.241

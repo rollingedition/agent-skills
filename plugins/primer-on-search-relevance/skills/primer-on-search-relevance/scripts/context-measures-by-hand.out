@@ -1,0 +1,8 @@
+contexts: 60
+context recall equals recall_at_k every time: yes
+context precision equals lib.generation's every time: yes
+grades in order, door jewelry organizer, semantic: 1 1 2 2 2
+context precision@5: 0.478
+precision@5: 0.600
+exact products judged per test query: 4 to 170
+highest recall@5 possible for the query with the most: 0.029
