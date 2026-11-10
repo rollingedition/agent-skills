@@ -1,0 +1,17 @@
+{
+  "name": "rolling-edition",
+  "owner": {
+    "name": "Rolling Edition",
+    "url": "https://rollingedition.com/"
+  },
+  "description": "Agent skills from Rolling Edition's books, each built from the book's current edition and versioned by it.",
+  "plugins": [
+    {
+      "name": "books",
+      "source": "./plugins/books",
+      "category": "learning",
+      "description": "Search, read and cite every Rolling Edition book through its MCP server",
+      "homepage": "https://rollingedition.com/assistants"
+    }
+  ]
+}

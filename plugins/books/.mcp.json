@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "rolling-edition": {
+      "type": "http",
+      "url": "https://rollingedition.ai/mcp"
+    }
+  }
+}
