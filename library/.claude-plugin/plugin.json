@@ -15,13 +15,6 @@
     "learning",
     "agent-skills"
   ],
-  "skills": [
-    "./plugins/business-intelligence-with-agents/skills",
-    "./plugins/data-governance-as-code/skills",
-    "./plugins/model-context-protocol-in-practice/skills",
-    "./plugins/open-table-formats/skills",
-    "./plugins/primer-on-search-relevance/skills"
-  ],
   "icon": "./icon.png",
   "documentationUrl": "https://rollingedition.com/assistants#agent-skills",
   "supportUrl": "https://rollingedition.com/assistants#trouble",

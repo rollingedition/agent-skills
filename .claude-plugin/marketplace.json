@@ -43,9 +43,9 @@
     },
     {
       "name": "rolling-edition",
-      "source": "./",
+      "source": "./library",
       "category": "learning",
-      "description": "Every book's agent skill in one plugin, with the MCP server",
+      "description": "Every book's procedures and chapters in one plugin, with the MCP server",
       "homepage": "https://rollingedition.com/assistants#agent-skills"
     }
   ]
