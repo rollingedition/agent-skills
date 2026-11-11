@@ -3,12 +3,12 @@ title: "Time Series Forecasting"
 chapter: "Make the total add up"
 chapter_id: make-the-total-add-up
 book: time-series-forecasting
-edition: 2026.11.2
+edition: 2026.11.3
 verified: 2026-11-11
-edition_code: RHYP-H8RM
+edition_code: PAPV-2BKC
 canonical: https://rollingedition.com/time-series-forecasting/make-the-total-add-up
 license: CC BY 4.0
-attribution: "“Make the total add up,” chapter 7 of Time Series Forecasting, Edition 2026.11.2, examples passed Nov 11, 2026. By Rolling Edition, https://rollingedition.com/time-series-forecasting/make-the-total-add-up. Text CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Make the total add up,” chapter 7 of Time Series Forecasting, Edition 2026.11.3, examples passed Nov 11, 2026. By Rolling Edition, https://rollingedition.com/time-series-forecasting/make-the-total-add-up. Text CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Make the total add up
 
@@ -36,7 +36,7 @@ The bottom-up total is the sum, hour by hour, of the thirty client forecasts tha
 
 The sum adds up by construction, so the check that matters is on the data. The total series has to equal the sum of the thirty readings in every hour, or every score is measured against the wrong number. The exception is the clock-change hours. A clock-change flag sets a client's reading to missing, so the total is missing at 01:00 on Mar 31, 2013 and Mar 30, 2014, the gap hours, and at 01:00 on Oct 27, 2013 and Oct 26, 2014, the repeat hours.
 
-Example `total-bottom-up-and-direct` (Python 3.13.16 · holidays 0.108 · lightgbm 4.7.0 · mlforecast 1.1.0 · numpy 2.4.6 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.2:
+Example `total-bottom-up-and-direct` (Python 3.13.16 · holidays 0.108 · lightgbm 4.7.0 · mlforecast 1.1.0 · numpy 2.5.4 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.3:
 
 ```python
 """Forecast the total of the thirty clients two ways: bottom-up, the sum of the client forecasts, and direct, one model on
@@ -168,7 +168,7 @@ The weak point is the shape of the day. The split gives every client the total's
 
 The working paper that defines MinT reports, citing Hyndman et al. (2011), that a top-down split biases the reconciled forecasts at each level, even when the base forecasts are unbiased ([Wickramasuriya, Athanasopoulos and Hyndman, 2017](https://robjhyndman.com/papers/mint.pdf)). This chapter does not re-derive that result. It measures the split on these clients, and the oracle check gives a reference for the split's own error.
 
-Example `total-split-by-share` (Python 3.13.16 · holidays 0.108 · lightgbm 4.7.0 · mlforecast 1.1.0 · numpy 2.4.6 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.2:
+Example `total-split-by-share` (Python 3.13.16 · holidays 0.108 · lightgbm 4.7.0 · mlforecast 1.1.0 · numpy 2.5.4 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.3:
 
 ```python
 """Split the direct total forecast into client forecasts by each client's share of the history before its cutoff (top-down),
@@ -235,15 +235,15 @@ Most failures in this chapter are silent, so they are worth naming before they h
 
 The first is a quietly short total. If one client drops out of the sum, the total is smaller than the demand, and its scores still look reasonable. The bottom-up total in this book raises an error when an hour has fewer than thirty client forecasts. The start rule refuses a client with too little history instead of skipping it, as Chapter 6 explains. In production, a run that builds fewer forecasts than clients should stop and name the missing client.
 
-The second is the raw sum. The October repeat hour holds two real hours of energy under one label, so a total built from raw readings can count that hour at roughly twice its neighbours. The result is a demand spike that is not there. The book's total masks the hour instead, and the check in [the first example](https://github.com/rollingedition/book-time-series-forecasting/blob/953a258e81dbd2d9435cf15185da38a7d3a7a49c/examples/total-bottom-up-and-direct.py) excludes the clock-change hours for the same reason.
+The second is the raw sum. The October repeat hour holds two real hours of energy under one label, so a total built from raw readings can count that hour at roughly twice its neighbours. The result is a demand spike that is not there. The book's total masks the hour instead, and the check in [the first example](https://github.com/rollingedition/book-time-series-forecasting/blob/59bd5abfe1489fe93d5d2b7768ce9baf13e569b5/examples/total-bottom-up-and-direct.py) excludes the clock-change hours for the same reason.
 
-The third is a split that reads the future. A split whose shares use the window's own readings scores better in a backtest than it will in production. The poisoning check is the test. A share must not move when readings after its cutoff change. The share check in [the second example](https://github.com/rollingedition/book-time-series-forecasting/blob/953a258e81dbd2d9435cf15185da38a7d3a7a49c/examples/total-split-by-share.py) and the scale check in [the first](https://github.com/rollingedition/book-time-series-forecasting/blob/953a258e81dbd2d9435cf15185da38a7d3a7a49c/examples/total-bottom-up-and-direct.py) both return zero, and a production run should keep them as tests that fail loudly.
+The third is a split that reads the future. A split whose shares use the window's own readings scores better in a backtest than it will in production. The poisoning check is the test. A share must not move when readings after its cutoff change. The share check in [the second example](https://github.com/rollingedition/book-time-series-forecasting/blob/59bd5abfe1489fe93d5d2b7768ce9baf13e569b5/examples/total-split-by-share.py) and the scale check in [the first](https://github.com/rollingedition/book-time-series-forecasting/blob/59bd5abfe1489fe93d5d2b7768ce9baf13e569b5/examples/total-bottom-up-and-direct.py) both return zero, and a production run should keep them as tests that fail loudly.
 
 The fourth is a decision and a report that disagree. The identifier lowers the total's error on the decision windows and raises it on the standard cutoffs. A monitor that watches only one set of windows will miss the other's failure. On every refit, log the total's error with and without the identifier on the same windows, beside the per-client MASE that Chapter 6 uses to decide.
 
-The fifth is a share that goes stale. A share is a fact about the past 8 weeks, so when a client's habits change, its share lags the change for as long as the window is long. A top-down forecast of that client is then wrong in a steady direction, not at random, and the error does not show in the total at all, because the shares still add to one. A monitor should therefore watch each client's share over time, not only the total's error. The per-client MASE in [the second example](https://github.com/rollingedition/book-time-series-forecasting/blob/953a258e81dbd2d9435cf15185da38a7d3a7a49c/examples/total-split-by-share.py) is the measure that sees it.
+The fifth is a share that goes stale. A share is a fact about the past 8 weeks, so when a client's habits change, its share lags the change for as long as the window is long. A top-down forecast of that client is then wrong in a steady direction, not at random, and the error does not show in the total at all, because the shares still add to one. A monitor should therefore watch each client's share over time, not only the total's error. The per-client MASE in [the second example](https://github.com/rollingedition/book-time-series-forecasting/blob/59bd5abfe1489fe93d5d2b7768ce9baf13e569b5/examples/total-split-by-share.py) is the measure that sees it.
 
-The sixth is a scale that moves with the window. The total's MASE scale is read once, from the history before the first scored cutoff. A scale refreshed for each window reads that window's own readings, and every score on the total then changes for reasons that have nothing to do with the forecast. [The first example](https://github.com/rollingedition/book-time-series-forecasting/blob/953a258e81dbd2d9435cf15185da38a7d3a7a49c/examples/total-bottom-up-and-direct.py) checks, for each scored cutoff, that the scale for that window does not move when readings from the cutoff on are replaced. The count of comparisons in which it moves is 0 of six.
+The sixth is a scale that moves with the window. The total's MASE scale is read once, from the history before the first scored cutoff. A scale refreshed for each window reads that window's own readings, and every score on the total then changes for reasons that have nothing to do with the forecast. [The first example](https://github.com/rollingedition/book-time-series-forecasting/blob/59bd5abfe1489fe93d5d2b7768ce9baf13e569b5/examples/total-bottom-up-and-direct.py) checks, for each scored cutoff, that the scale for that window does not move when readings from the cutoff on are replaced. The count of comparisons in which it moves is 0 of six.
 
 **Working rule:** In production, check the total against the sum of its readings on every refit, stop when a client is missing from a total, and run the poisoning check on each share and on the scale for each window. Log the total's error with and without the identifier on the same windows. When the windows disagree, report both and do not choose the one that flatters the model.
 

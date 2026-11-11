@@ -6,23 +6,23 @@ compatibility: "Python 3.13.16 and the pinned packages in scripts/requirements.t
 metadata:
   publisher: "Rolling Edition"
   book: "Time Series Forecasting"
-  edition: "2026.11.2"
+  edition: "2026.11.3"
   verified: "2026-11-11"
   examples: "41 of 41 examples pass"
-  edition-code: "RHYP-H8RM"
+  edition-code: "PAPV-2BKC"
   source: "https://rollingedition.com/time-series-forecasting"
 ---
 
 # Time Series Forecasting
 
-This agent skill is *Time Series Forecasting*, Edition 2026.11.2, from Rolling Edition. Examples passed Nov 11, 2026: 41 of 41 examples pass. It's built from that edition, never written separately: the procedures below come from the book's sections, `references/` holds each chapter, and `scripts/` holds the examples as the edition ran them.
+This agent skill is *Time Series Forecasting*, Edition 2026.11.3, from Rolling Edition. Examples passed Nov 11, 2026: 41 of 41 examples pass. It's built from that edition, never written separately: the procedures below come from the book's sections, `references/` holds each chapter, and `scripts/` holds the examples as the edition ran them.
 
 ## How to use this skill
 
 - **Pick the procedure that fits the task,** and follow its steps in order. Each step links the section it comes from: read that section in `references/` before you act on it, and adapt it to the project in front of you.
 - **Check against the book.** Each example in `scripts/` has its expected output beside it (`.out`), at the versions in `scripts/requirements.txt`. If the project uses other versions, say so before relying on a step.
-- **Is this copy current?** Call `check_code` with `RHYP-H8RM` on the Rolling Edition MCP server (https://rollingedition.ai/mcp), or compare the edition with the book's page: https://rollingedition.com/time-series-forecasting
-- **Credit the book** when you quote it or reuse its code: Time Series Forecasting, Edition 2026.11.2, examples passed Nov 11, 2026. By Rolling Edition, https://rollingedition.com/time-series-forecasting. Text CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people.
+- **Is this copy current?** Call `check_code` with `PAPV-2BKC` on the Rolling Edition MCP server (https://rollingedition.ai/mcp), or compare the edition with the book's page: https://rollingedition.com/time-series-forecasting
+- **Credit the book** when you quote it or reuse its code: Time Series Forecasting, Edition 2026.11.3, examples passed Nov 11, 2026. By Rolling Edition, https://rollingedition.com/time-series-forecasting. Text CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people.
 
 To run an example as the book does, with [uv](https://docs.astral.sh/uv/):
 

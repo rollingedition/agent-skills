@@ -3,12 +3,12 @@ title: "Time Series Forecasting"
 chapter: "Add calendar and lag features"
 chapter_id: add-calendar-and-lag-features
 book: time-series-forecasting
-edition: 2026.11.2
+edition: 2026.11.3
 verified: 2026-11-11
-edition_code: RHYP-H8RM
+edition_code: PAPV-2BKC
 canonical: https://rollingedition.com/time-series-forecasting/add-calendar-and-lag-features
 license: CC BY 4.0
-attribution: "“Add calendar and lag features,” chapter 5 of Time Series Forecasting, Edition 2026.11.2, examples passed Nov 11, 2026. By Rolling Edition, https://rollingedition.com/time-series-forecasting/add-calendar-and-lag-features. Text CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Add calendar and lag features,” chapter 5 of Time Series Forecasting, Edition 2026.11.3, examples passed Nov 11, 2026. By Rolling Edition, https://rollingedition.com/time-series-forecasting/add-calendar-and-lag-features. Text CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Add calendar and lag features
 
@@ -44,7 +44,7 @@ The table below shows the three kinds of target hour in that day-ahead forecast,
 | 01:00 (hour 1) | 00:00 of the forecast day | no | 01:00 the day before | yes |
 | 23:00 (hour 23) | 22:00 of the forecast day | no | 23:00 the day before | yes |
 
-The supplier's model uses two lags, 24 and 168. Both are known for every hour of the day-ahead forecast, so the model never needs a reading that does not yet exist. The example that builds the feature sets, [lgbm-feature-sets](https://github.com/rollingedition/book-time-series-forecasting/blob/953a258e81dbd2d9435cf15185da38a7d3a7a49c/examples/lgbm-feature-sets.py), passes these two lags to `MLForecast`, and the rest is the library's job.
+The supplier's model uses two lags, 24 and 168. Both are known for every hour of the day-ahead forecast, so the model never needs a reading that does not yet exist. The example that builds the feature sets, [lgbm-feature-sets](https://github.com/rollingedition/book-time-series-forecasting/blob/59bd5abfe1489fe93d5d2b7768ce9baf13e569b5/examples/lgbm-feature-sets.py), passes these two lags to `MLForecast`, and the rest is the library's job.
 
 The [clock rule from Chapter 3](#mark-clock-change-hours-as-missing) reaches the lags too. The Mar 30, 2014 gap hour is set to missing, so any feature that reads it is missing as well. The example takes the history of an Apr 1, 2014 cutoff. It holds 1 masked hour, and 1 row has a lag that reads it: the row 24 hours after the gap. Before each window's model is fitted, its masked hours are filled from that window's own history: each takes the mean of the hour before and the hour after, and reads nothing after the cutoff. The masked hour is then a filled reading, so the row that reads it keeps a value, and LightGBM never receives a missing value from a lag. The rule is a stated choice, not a measured optimum. The count printed beside it is what a reader should check.
 
@@ -78,7 +78,7 @@ A feature is worth keeping when it lowers the error on windows the model did not
 
 The example reports two scores. The first is the MAE pooled over every client-hour in the windows, the single number for the whole supplier. The second is MASE for each client, averaged over the eight clients. MASE divides each client's error by a scale: the mean absolute error that seasonal naive makes in sample on that client's own readings. The book uses one scale function everywhere, `scoring.book_scale`. The scale reads every reading before the first scored window of the set, Apr 18, 2014 at 00:00, with clock-change hours masked, so it does not depend on the windows scored and cannot leak. One client needs care. MT_115 starts reading on Jan 14, 2014, and the zeros before its first reading are left out of its scale, because it is counted from its first reading. [Chapter 4](#meet-the-late-starters) teaches that rule for late starters.
 
-Example `lgbm-feature-sets` (Python 3.13.16 · holidays 0.108 · lightgbm 4.7.0 · mlforecast 1.1.0 · numpy 2.4.6 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.2:
+Example `lgbm-feature-sets` (Python 3.13.16 · holidays 0.108 · lightgbm 4.7.0 · mlforecast 1.1.0 · numpy 2.5.4 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.3:
 
 ```python
 """Choose the feature set of a global LightGBM forecast of SUBSET8 on the decision windows (B-5, B-9, B-10): four ordinary
@@ -185,7 +185,7 @@ The [shift test from Chapter 3](#check-a-backtest-for-leakage) carries over with
 
 Before you run the example, predict which model has the lower error: the one with a lag of 1, or the one without it. The example fits both, on the same training rows and the same settings, for each of the three standard cutoffs. The honest model uses lags 24 and 168. The leaky model adds a lag of 1, read from the whole series for the target hours, which is what the table built once would do.
 
-Example `lag-leak-check` (Python 3.13.16 · holidays 0.108 · lightgbm 4.7.0 · mlforecast 1.1.0 · numpy 2.4.6 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.2:
+Example `lag-leak-check` (Python 3.13.16 · holidays 0.108 · lightgbm 4.7.0 · mlforecast 1.1.0 · numpy 2.5.4 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.3:
 
 ```python
 """Catch a lag that leaks: a lag of 1 reads the hour before each target hour, which is not known at a 24-hour cutoff."""

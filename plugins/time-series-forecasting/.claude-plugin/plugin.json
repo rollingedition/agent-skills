@@ -1,7 +1,7 @@
 {
   "name": "time-series-forecasting",
   "displayName": "Time Series Forecasting",
-  "version": "2026.11.2",
+  "version": "2026.11.3",
   "description": "How to forecast demand a day ahead and check that the forecast holds up: baselines, backtests that never see the future, statistical models, one LightGBM model for all clients, totals that add up, and calibrated prediction intervals, on hourly electricity demand from thirty clients.",
   "author": {
     "name": "Rolling Edition",

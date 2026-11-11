@@ -3,12 +3,12 @@ title: "Time Series Forecasting"
 chapter: "Set the baselines a model must beat"
 chapter_id: beat-the-naive-baselines
 book: time-series-forecasting
-edition: 2026.11.2
+edition: 2026.11.3
 verified: 2026-11-11
-edition_code: RHYP-H8RM
+edition_code: PAPV-2BKC
 canonical: https://rollingedition.com/time-series-forecasting/beat-the-naive-baselines
 license: CC BY 4.0
-attribution: "“Set the baselines a model must beat,” chapter 2 of Time Series Forecasting, Edition 2026.11.2, examples passed Nov 11, 2026. By Rolling Edition, https://rollingedition.com/time-series-forecasting/beat-the-naive-baselines. Text CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Set the baselines a model must beat,” chapter 2 of Time Series Forecasting, Edition 2026.11.3, examples passed Nov 11, 2026. By Rolling Edition, https://rollingedition.com/time-series-forecasting/beat-the-naive-baselines. Text CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Set the baselines a model must beat
 
@@ -42,7 +42,7 @@ Each rule fails in a known way, visible in its formula. Naive gives every hour o
 
 Naive and seasonal naive come from statsforecast (2.1.1). Its classes `Naive` and `SeasonalNaive` are in `statsforecast/models.py`. The seasonal naive rule is the one [Hyndman and Athanasopoulos](https://otexts.com/fpp3/toolbox.html#sec-simple-methods) give for seasonal data: the forecast is the last observed value from the same season. Average of weeks is not a library method, so `examples/lib/baselines.py` computes it in pandas, where the rule can be read. Each window reads only its own history, and a lag missing from that history raises an error instead of being skipped.
 
-Example `naive-baselines-held-out-week` (Python 3.13.16 · numpy 2.4.6 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.2:
+Example `naive-baselines-held-out-week` (Python 3.13.16 · numpy 2.5.4 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.3:
 
 ```python
 """Score the three baselines for the lead client over the held-out week: naive, seasonal naive, average of weeks."""
@@ -125,7 +125,7 @@ The scale reads every reading before the first test day, which is 17352 hours, a
 
 The next example puts the scale to work on the held-out week. It scores the three baselines with the scale from history and with the scale from the whole series, and both scales mask the clock-change readings.
 
-Example `mase-scale-leak-check` (Python 3.13.16 · numpy 2.4.6 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.2:
+Example `mase-scale-leak-check` (Python 3.13.16 · numpy 2.5.4 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.3:
 
 ```python
 """Score the lead client's held-out week in MASE with a scale from history and with a scale from the whole series.
@@ -216,7 +216,7 @@ The two scales are 7.1005 kWh from history and 7.1126 kWh from the whole series.
 
 Why is the effect so small? The test week is 0.959 percent of the whole-series readings. The whole-series scale is roughly the history scale moved toward the test week's own swing, by that share. The test week's own mean day-to-day difference is 8.3607 kWh, against 7.1005 kWh for the history, so the week swings more than the history does. The share times that gap is the leak, and the ratio above is its size. The leak therefore grows in two ways. It grows when more of the scale's rows are test hours, as in a test period much longer than one week, such as the year of cutoffs in Chapter 3. It also grows when the test week's swing sits further from the history's. A quieter week would pull the whole-series scale down and make every MASE larger, so the same leak can flatter a model in one week and penalise it in another.
 
-The clock changes are a second, smaller point, and this chapter handles them as Chapter 3 does. The history holds 4 clock-change readings: the two gap hours and the two repeat hours of the March and October changes in 2013 and 2014. The gap hours read zero, and the repeat hours hold two hours of energy under one label, as the [data card](https://github.com/rollingedition/book-time-series-forecasting/blob/953a258e81dbd2d9435cf15185da38a7d3a7a49c/examples/data/README.md) describes. The scale keeps those pairs as recorded at 7.1121 kWh, and it leaves out the pairs that touch them at 7.1005 kWh. A masked reading is neither zero nor a copy. It is missing, so the pairs that touch it drop out of the mean. The chapter's scale therefore masks them. [Chapter 3 gives the reason](#meet-the-clock-changes), and it sets them to missing in every training set and every score.
+The clock changes are a second, smaller point, and this chapter handles them as Chapter 3 does. The history holds 4 clock-change readings: the two gap hours and the two repeat hours of the March and October changes in 2013 and 2014. The gap hours read zero, and the repeat hours hold two hours of energy under one label, as the [data card](https://github.com/rollingedition/book-time-series-forecasting/blob/59bd5abfe1489fe93d5d2b7768ce9baf13e569b5/examples/data/README.md) describes. The scale keeps those pairs as recorded at 7.1121 kWh, and it leaves out the pairs that touch them at 7.1005 kWh. A masked reading is neither zero nor a copy. It is missing, so the pairs that touch it drop out of the mean. The chapter's scale therefore masks them. [Chapter 3 gives the reason](#meet-the-clock-changes), and it sets them to missing in every training set and every score.
 
 **Working rule:** Pass a scale only the readings before the first test day, mask its clock-change readings, and print the last reading it uses. Check that this reading is the hour before the first test day. A small difference between the two scales does not show the procedure is right. The row check does.
 

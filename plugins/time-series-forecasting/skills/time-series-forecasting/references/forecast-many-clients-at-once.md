@@ -3,12 +3,12 @@ title: "Time Series Forecasting"
 chapter: "Forecast many clients with one model"
 chapter_id: forecast-many-clients-at-once
 book: time-series-forecasting
-edition: 2026.11.2
+edition: 2026.11.3
 verified: 2026-11-11
-edition_code: RHYP-H8RM
+edition_code: PAPV-2BKC
 canonical: https://rollingedition.com/time-series-forecasting/forecast-many-clients-at-once
 license: CC BY 4.0
-attribution: "“Forecast many clients with one model,” chapter 6 of Time Series Forecasting, Edition 2026.11.2, examples passed Nov 11, 2026. By Rolling Edition, https://rollingedition.com/time-series-forecasting/forecast-many-clients-at-once. Text CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Forecast many clients with one model,” chapter 6 of Time Series Forecasting, Edition 2026.11.3, examples passed Nov 11, 2026. By Rolling Edition, https://rollingedition.com/time-series-forecasting/forecast-many-clients-at-once. Text CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Forecast many clients with one model
 
@@ -40,7 +40,7 @@ Once the rows share one table, the model no longer knows which client a row belo
 
 The rule for keeping an identifier is the one Chapter 5 sets for every feature: keep it only if it lowers the mean per-client MASE on decision windows that the reported windows do not use. The held-out week runs from Dec 25 to Dec 31, 2014, and it has seven daily cutoffs. The three standard cutoffs, Dec 29 to Dec 31, 2014, are the reported scores, so the decision does not use them, and it does not use Dec 25 to Dec 28, 2014 either. The decision windows are four ordinary days before the held-out week: cutoffs on Nov 25, Nov 26, Dec 2 and Dec 3, all in 2014, each forecasting 24 hours. None of their scored hours falls on a Portuguese holiday. The one holiday of 2014 that falls in this stretch, Dec 8, 2014, is skipped. The calendar lists no holiday on Dec 1, 2014.
 
-Example `client-identifier-check` (Python 3.13.16 · holidays 0.108 · lightgbm 4.7.0 · mlforecast 1.1.0 · numpy 2.4.6 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.2:
+Example `client-identifier-check` (Python 3.13.16 · holidays 0.108 · lightgbm 4.7.0 · mlforecast 1.1.0 · numpy 2.5.4 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.3:
 
 ```python
 """Test whether a client identifier lowers the global model's per-client error, on the four decision cutoffs of late
@@ -123,7 +123,7 @@ A series begins at its first reading. Before that, the meter reports zeros, and 
 
 The rule refuses a cutoff in two cases only: a client has no non-zero reading before the cutoff, or it has fewer than 48 hours of history since its first reading. It does not skip the client, because a skipped client makes a total that is quietly short. The rule does not catch a gap or a run of zeros in the middle of a series, and a meter replaced under the same id passes too, because its zeros are not leading. The scale catches a gap, because it refuses a series that is not one unbroken hourly series. Nothing in the forecast checks for one, so a gap there shows only as fewer training rows.
 
-Example `start-rule-leak-check` (Python 3.13.16 · holidays 0.108 · lightgbm 4.7.0 · mlforecast 1.1.0 · numpy 2.4.6 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.2:
+Example `start-rule-leak-check` (Python 3.13.16 · holidays 0.108 · lightgbm 4.7.0 · mlforecast 1.1.0 · numpy 2.5.4 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.3:
 
 ```python
 """Check that the start rule reads only rows before each cutoff, refuses the cutoffs the data's flag predicts, and removes
@@ -181,7 +181,7 @@ The example tries nine cutoffs. 3 are refused, and 6 are accepted. The refusals 
 
 The same checks run on a deliberately broken version. It reads each first reading from the whole series, which is the leak the check is written for. On that version the refusals differ from the flag at 2 cutoffs, the history changes at 2 cutoffs, and 2 accepted cutoffs drop a client without a message. Each check fails on it, so a pass on the real rule means something.
 
-Example `global-model-raw-starts` (Python 3.13.16 · holidays 0.108 · lightgbm 4.7.0 · mlforecast 1.1.0 · numpy 2.4.6 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.2:
+Example `global-model-raw-starts` (Python 3.13.16 · holidays 0.108 · lightgbm 4.7.0 · mlforecast 1.1.0 · numpy 2.5.4 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.3:
 
 ```python
 """Run the global model with and without the start rule. On the February cutoffs of Chapter 4, where a late starter's zeros
@@ -283,7 +283,7 @@ The headline is the mean per-client MASE, the measure Chapter 2 defines. MASE di
 
 The scale is part of the score. MT_115's scale is 2.22 kWh if the zeros before its first reading are kept, and 4.58 kWh with the book's rule, which counts it from its first reading on Jan 14, 2014. MT_039 and MT_179 move the same way, from 3.28 to 5.21 kWh and from 3.04 to 5.91 kWh. On the standard cutoffs the same forecasts score a mean MASE of 1.01 with the scale kept without the start rule, and 0.91 with the book's scale. That difference is the scale, not the model. A score computed with a different scale rule is not comparable with one computed with the book's rule, so every score should record the rule it used.
 
-Example `global-model-thirty-clients` (Python 3.13.16 · holidays 0.108 · lightgbm 4.7.0 · mlforecast 1.1.0 · numpy 2.4.6 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.2:
+Example `global-model-thirty-clients` (Python 3.13.16 · holidays 0.108 · lightgbm 4.7.0 · mlforecast 1.1.0 · numpy 2.5.4 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.3:
 
 ```python
 """Forecast all thirty clients with one global LightGBM on the three standard cutoffs, with the start rule applied to each

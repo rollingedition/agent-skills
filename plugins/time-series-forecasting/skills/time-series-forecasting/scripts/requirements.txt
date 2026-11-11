@@ -20,7 +20,7 @@ markupsafe==3.0.4
 matplotlib==3.11.2
 mlforecast==1.1.0
 narwhals==2.28.0
-numpy==2.4.6
+numpy==2.5.4
 optuna==5.0.0
 packaging==26.3
 pandas==2.3.3
