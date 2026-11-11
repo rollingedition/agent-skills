@@ -1,8 +1,8 @@
 {
   "name": "time-series-forecasting",
   "displayName": "Time Series Forecasting",
-  "version": "2026.11.1",
-  "description": "Forecasts you can trust, from baselines and backtests to uncertainty you can act on.",
+  "version": "2026.11.2",
+  "description": "How to forecast demand a day ahead and check that the forecast holds up: baselines, backtests that never see the future, statistical models, one LightGBM model for all clients, totals that add up, and calibrated prediction intervals, on hourly electricity demand from thirty clients.",
   "author": {
     "name": "Rolling Edition",
     "url": "https://rollingedition.com/"

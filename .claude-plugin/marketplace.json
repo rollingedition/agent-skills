@@ -16,7 +16,7 @@
     {
       "name": "data-governance-as-code",
       "source": "./plugins/data-governance-as-code",
-      "description": "Governing a data platform with code that runs in CI: a catalog where every table has an owner and every column a classification, personal data found automatically, lineage from pipelines, access policies as tested Rego enforced as row filters and column masks, retention, consent and erasure that remove data, an audit trail, and the same rules for data that trains or grounds AI.",
+      "description": "Governing a data platform with code that runs in CI: a tested catalog, finding personal data, lineage from pipelines, access policies enforced as row filters and column masks, erasure that removes data, an audit trail, and rules for data used by AI, on an online learning platform's Iceberg tables.",
       "category": "learning",
       "homepage": "https://rollingedition.com/data-governance-as-code"
     },
@@ -44,7 +44,7 @@
     {
       "name": "time-series-forecasting",
       "source": "./plugins/time-series-forecasting",
-      "description": "Forecasts you can trust, from baselines and backtests to uncertainty you can act on.",
+      "description": "How to forecast demand a day ahead and check that the forecast holds up: baselines, backtests that never see the future, statistical models, one LightGBM model for all clients, totals that add up, and calibrated prediction intervals, on hourly electricity demand from thirty clients.",
       "category": "learning",
       "homepage": "https://rollingedition.com/time-series-forecasting"
     },

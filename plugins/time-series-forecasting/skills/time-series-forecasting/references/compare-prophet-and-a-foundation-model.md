@@ -3,12 +3,12 @@ title: "Time Series Forecasting"
 chapter: "Compare Prophet and a foundation model"
 chapter_id: compare-prophet-and-a-foundation-model
 book: time-series-forecasting
-edition: 2026.11.1
+edition: 2026.11.2
 verified: 2026-11-11
-edition_code: HK8M-ENSS
+edition_code: RHYP-H8RM
 canonical: https://rollingedition.com/time-series-forecasting/compare-prophet-and-a-foundation-model
 license: CC BY 4.0
-attribution: "“Compare Prophet and a foundation model,” chapter 9 of Time Series Forecasting, Edition 2026.11.1, examples passed Nov 11, 2026. By Rolling Edition, https://rollingedition.com/time-series-forecasting/compare-prophet-and-a-foundation-model. Text CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Compare Prophet and a foundation model,” chapter 9 of Time Series Forecasting, Edition 2026.11.2, examples passed Nov 11, 2026. By Rolling Edition, https://rollingedition.com/time-series-forecasting/compare-prophet-and-a-foundation-model. Text CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Compare Prophet and a foundation model
 
@@ -38,7 +38,7 @@ The comparison uses the three standard cutoffs, at 00:00 on Dec 29, Dec 30 and D
 
 We chose the holiday table on decision windows, not on the standard cutoffs. The ordinary decision windows hold no holiday in their scored hours, so they cannot test a holiday table at all. The holiday decision windows can, so the choice uses both kinds.
 
-Example `prophet-holiday-decision` (Python 3.13.16 · holidays 0.108 · lightgbm 4.7.0 · mlforecast 1.1.0 · numpy 2.4.6 · pandas 2.3.3 · prophet 1.5.0 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.1:
+Example `prophet-holiday-decision` (Python 3.13.16 · holidays 0.108 · lightgbm 4.7.0 · mlforecast 1.1.0 · numpy 2.4.6 · pandas 2.3.3 · prophet 1.5.0 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.2:
 
 ```python
 """Prophet with and without the Portuguese holiday table, on the holiday decision windows for SUBSET8 (B-9, B-10): the
@@ -100,7 +100,7 @@ The standard cutoffs tell a different story, which we report without using it to
 
 Daily and weekly seasonality are on, and yearly is off. These are the choices Prophet makes for itself on eight weeks of hourly data: yearly needs at least 730 days, weekly at least two weeks, and daily at least two days of sub-daily data (`forecaster.py`, lines 1187, 1209 and 1223). We set them explicitly and did not tune them. The interval is 95%, set in code and printed as `Prophet interval level`, so coverage sits beside the recordings' 95% ranges. Prophet draws its interval samples from numpy's global generator, so the code sets the seed (`SEED`) before each predict. The fit itself is deterministic.
 
-Example `prophet-thirty-clients-backtest` (Python 3.13.16 · holidays 0.108 · lightgbm 4.7.0 · mlforecast 1.1.0 · numpy 2.4.6 · pandas 2.3.3 · prophet 1.5.0 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.1:
+Example `prophet-thirty-clients-backtest` (Python 3.13.16 · holidays 0.108 · lightgbm 4.7.0 · mlforecast 1.1.0 · numpy 2.4.6 · pandas 2.3.3 · prophet 1.5.0 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.2:
 
 ```python
 """Prophet for each of the thirty clients on the three standard cutoffs, with a 95% interval. Its forecasts are scored on
@@ -193,7 +193,7 @@ The output is, for each client, cutoff and hour, five quantiles for the next 24 
 
 Not every requested quantile is trained. The package is trained on 21 levels, from 0.01 to 0.99 ([Ansari et al. (2025)](https://arxiv.org/abs/2510.15821)). The levels 0.1, 0.5 and 0.9 are among them, so they are read directly. The levels 0.025 and 0.975 are not, so the package interpolates each one linearly between the two nearest trained levels: 0.01 and 0.05 for the lower, and 0.95 and 0.99 for the upper. The code is `interpolate_quantiles` in `chronos/utils.py`, called from `predict_quantiles` in `chronos2/pipeline.py` ([chronos-forecasting source](https://files.pythonhosted.org/packages/79/0e/f205d4a1841e3740045c40e9e8caeff584937eb561831144ca7b93a29d49/chronos_forecasting-2.3.2.tar.gz)). The manifest names the interpolated levels, and a 95% range built from them is partly the package's interpolation.
 
-Example `recorded-chronos2-check` (Python 3.13.16 · holidays 0.108 · lightgbm 4.7.0 · mlforecast 1.1.0 · numpy 2.4.6 · pandas 2.3.3 · prophet 1.5.0 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.1:
+Example `recorded-chronos2-check` (Python 3.13.16 · holidays 0.108 · lightgbm 4.7.0 · mlforecast 1.1.0 · numpy 2.4.6 · pandas 2.3.3 · prophet 1.5.0 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.2:
 
 ```python
 """Check the recorded Chronos-2 outputs before any score reads them: each file's SHA-256 against manifest.json, the shape
@@ -235,7 +235,7 @@ A forecast with five quantiles can be scored in two ways. The median, the 0.5 qu
 
 The scoring runs on the same thirty clients, cutoffs, 2,160 hours and MASE scale as [the Prophet run](#run-prophet-on-the-same-cutoffs). The global model and seasonal naive are rebuilt in each example, not copied from Chapter 6, so every model goes through one scoring path.
 
-Example `recorded-chronos2-score` (Python 3.13.16 · holidays 0.108 · lightgbm 4.7.0 · mlforecast 1.1.0 · numpy 2.4.6 · pandas 2.3.3 · prophet 1.5.0 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.1:
+Example `recorded-chronos2-score` (Python 3.13.16 · holidays 0.108 · lightgbm 4.7.0 · mlforecast 1.1.0 · numpy 2.4.6 · pandas 2.3.3 · prophet 1.5.0 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.2:
 
 ```python
 """Score the recorded Chronos-2 forecasts on the same three standard cutoffs and MASE scale as the other models. The median
@@ -299,7 +299,7 @@ coverage 95 Chronos: 0.944
 interval score 95 Chronos: 958.19
 ```
 
-Example `recorded-nhits-score` (Python 3.13.16 · holidays 0.108 · lightgbm 4.7.0 · mlforecast 1.1.0 · numpy 2.4.6 · pandas 2.3.3 · prophet 1.5.0 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.1:
+Example `recorded-nhits-score` (Python 3.13.16 · holidays 0.108 · lightgbm 4.7.0 · mlforecast 1.1.0 · numpy 2.4.6 · pandas 2.3.3 · prophet 1.5.0 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.2:
 
 ```python
 """Score the recorded NHITS forecasts on the same three cutoffs and MASE scale as Chronos-2 and the other models. The
@@ -391,7 +391,7 @@ This edition runs no neural model. Its two neural forecasts are recorded, and th
 
 NHITS is a neural forecaster from the neuralforecast library, which packages neural forecasters for panels of series. The library is Apache-2.0 ([neuralforecast metadata](https://pypi.org/pypi/neuralforecast/3.3.0/json)). We record NHITS the way Chronos-2 is recorded, with its own script, pinned version and manifest, and score it beside Chronos-2 on the same contexts, cutoffs, scale and metrics. Its recording trains once for each cutoff on the same thirty 1,344-hour contexts that Chronos-2 was given. The input window is 168 hours, one week, and the horizon is 24 hours. The five levels are trained directly under the MQLoss loss, with one output for each level. The scaler is neuralforecast's standard scaler, the seed is fixed, and the run is on a CPU. Each cutoff's model sees only that cutoff's context, so no reading after the cutoff reaches it. The weights are not shipped.
 
-Example `recorded-nhits-check` (Python 3.13.16 · holidays 0.108 · lightgbm 4.7.0 · mlforecast 1.1.0 · numpy 2.4.6 · pandas 2.3.3 · prophet 1.5.0 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.1:
+Example `recorded-nhits-check` (Python 3.13.16 · holidays 0.108 · lightgbm 4.7.0 · mlforecast 1.1.0 · numpy 2.4.6 · pandas 2.3.3 · prophet 1.5.0 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.2:
 
 ```python
 """Check the recorded NHITS outputs before any score reads them: the file's SHA-256 against manifest.json, the shape of the

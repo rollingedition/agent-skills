@@ -3,12 +3,12 @@ title: "Time Series Forecasting"
 chapter: "Keep the forecast running"
 chapter_id: keep-the-forecast-running
 book: time-series-forecasting
-edition: 2026.11.1
+edition: 2026.11.2
 verified: 2026-11-11
-edition_code: HK8M-ENSS
+edition_code: RHYP-H8RM
 canonical: https://rollingedition.com/time-series-forecasting/keep-the-forecast-running
 license: CC BY 4.0
-attribution: "“Keep the forecast running,” chapter 10 of Time Series Forecasting, Edition 2026.11.1, examples passed Nov 11, 2026. By Rolling Edition, https://rollingedition.com/time-series-forecasting/keep-the-forecast-running. Text CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Keep the forecast running,” chapter 10 of Time Series Forecasting, Edition 2026.11.2, examples passed Nov 11, 2026. By Rolling Edition, https://rollingedition.com/time-series-forecasting/keep-the-forecast-running. Text CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Keep the forecast running
 
@@ -36,7 +36,7 @@ The cadence is the choice that remains. We considered two cadences, a refit ever
 
 We choose between the cadences on the decision windows: four ordinary days, Nov 25, Nov 26, Dec 2 and Dec 3, 2014. None of them is a Portuguese holiday, and the held-out week is not used. The rule is the lower mean MASE on those days. MASE is the mean absolute error divided by a scale, the in-sample error of the seasonal naive forecast ([FPP3, Chapter 5](https://otexts.com/fpp3/toolbox.html)). Every run in this chapter uses one scale per client, read from readings before Nov 25, 2014 under the rule in [Chapter 2](#take-the-mase-scale-from-history). The decision days, the calibration days and the held-out week share that yardstick. The decision and calibration histories reach back over the clock change of Oct 26, 2014. The loop fills that 01:00 hour from the hours either side, as [Chapter 3](#the-october-hour-that-holds-two) does.
 
-Example `refit-cadence-decision` (Python 3.13.16 · holidays 0.108 · lightgbm 4.7.0 · mlforecast 1.1.0 · numpy 2.4.6 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.1:
+Example `refit-cadence-decision` (Python 3.13.16 · holidays 0.108 · lightgbm 4.7.0 · mlforecast 1.1.0 · numpy 2.4.6 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.2:
 
 ```python
 """Choose the refit cadence on the decision windows, Nov 25 to Dec 3, 2014. Both cadences forecast every day from its own
@@ -115,7 +115,7 @@ The band in each row is built the way [Chapter 8](#build-intervals-from-residual
 
 A log proves less than it appears to unless its checks can fail. The rule is that a model and a forecast read only readings that had arrived by the time they were made. The log therefore records two arrival times for each row. `fit_read_by` is the last arrival among the readings the model was fitted on, and it must be no later than the model's refit day. `read_by` is the last arrival among the readings the forecast read, and it must be no later than the cutoff. A comparison of `written_at` with the arrival of a reading would not test this. The replay writes `written_at` as the cutoff, so that comparison passes for any code. In production, `written_at` would come from the append-only store's clock. A replay can only label it.
 
-Example `rolling-refit-seven-days` (Python 3.13.16 · holidays 0.108 · lightgbm 4.7.0 · mlforecast 1.1.0 · numpy 2.4.6 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.1:
+Example `rolling-refit-seven-days` (Python 3.13.16 · holidays 0.108 · lightgbm 4.7.0 · mlforecast 1.1.0 · numpy 2.4.6 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.2:
 
 ```python
 """Run the held-out week, Dec 25 to Dec 31, 2014: one forecast a day from its own midnight cutoff, with the weekly refit
@@ -217,7 +217,7 @@ ValueError: y column contains null values.
 
 There are two ways to fill the gap. Forward fill repeats the last reading that arrived. That flattens the evening, because the lead client's 18:00 to 23:00 values all become the 17:00 value, and lag 24 carries that flat evening into the next day's evening forecast. Filling from the same hour a week earlier keeps the evening's shape. The choice was made on the decision windows, not the held-out week.
 
-Example `late-fill-decision` (Python 3.13.16 · holidays 0.108 · lightgbm 4.7.0 · mlforecast 1.1.0 · numpy 2.4.6 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.1:
+Example `late-fill-decision` (Python 3.13.16 · holidays 0.108 · lightgbm 4.7.0 · mlforecast 1.1.0 · numpy 2.4.6 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.2:
 
 ```python
 """Choose how a late reading is filled, on the decision windows, Nov 25 to Dec 3, 2014. For each decision cutoff, the lead
@@ -272,7 +272,7 @@ The daily scores from the [last section](#score-the-log-as-actuals-arrive) need 
 
 The factor of two is the book's rule of thumb. We know of no published threshold for this kind of flag, so the number is ours, and we label it as one. We checked it on the decision windows. The largest ordinary decision day is 1.44 times the reference, and no decision day is flagged at a factor of two (0 flagged). A smaller factor, such as 1.5, would leave little margin over that ordinary day, so a slightly unusual ordinary day could be flagged. We kept two for its margin. Four ordinary days cannot show how often ordinary days get flagged.
 
-Example `drift-flag-rolling` (Python 3.13.16 · holidays 0.108 · lightgbm 4.7.0 · mlforecast 1.1.0 · numpy 2.4.6 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.1:
+Example `drift-flag-rolling` (Python 3.13.16 · holidays 0.108 · lightgbm 4.7.0 · mlforecast 1.1.0 · numpy 2.4.6 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.2:
 
 ```python
 """Flag drift against the backtest. The reference is the median daily MASE of the calibration days, Dec 9 to Dec 20, 2014,
@@ -334,7 +334,7 @@ The second trigger needs a sense of what ordinary coverage looks like. From Dec 
 
 Its change is invented for the test and is not a fact about the supplier's data. From Dec 27, 2014, every reading of all thirty clients is multiplied by 0.6, as if demand had dropped by 40%. The held-out week then runs on the changed readings, with the same cadence, reference, rule and bands as before.
 
-Example `drift-after-a-change` (Python 3.13.16 · holidays 0.108 · lightgbm 4.7.0 · mlforecast 1.1.0 · numpy 2.4.6 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.1:
+Example `drift-after-a-change` (Python 3.13.16 · holidays 0.108 · lightgbm 4.7.0 · mlforecast 1.1.0 · numpy 2.4.6 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.2:
 
 ```python
 """How a change shows up in the flags. This is a stated test, not a fact about the data: from Dec 27, 2014 every reading of

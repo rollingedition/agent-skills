@@ -3,12 +3,12 @@ title: "Data Governance as Code"
 chapter: "Governing data for AI"
 chapter_id: governing-data-for-ai
 book: data-governance-as-code
-edition: 2026.11.21
-verified: 2026-11-10
-edition_code: 249N-3RTC
+edition: 2026.11.22
+verified: 2026-11-11
+edition_code: 52FE-HY24
 canonical: https://rollingedition.com/data-governance-as-code/governing-data-for-ai
 license: CC BY 4.0
-attribution: "“Governing data for AI,” chapter 9 of Data Governance as Code, Edition 2026.11.21, examples passed Nov 10, 2026. By Rolling Edition, https://rollingedition.com/data-governance-as-code/governing-data-for-ai. Text CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Governing data for AI,” chapter 9 of Data Governance as Code, Edition 2026.11.22, examples passed Nov 11, 2026. By Rolling Edition, https://rollingedition.com/data-governance-as-code/governing-data-for-ai. Text CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Governing data for AI
 
@@ -24,7 +24,7 @@ On the platform, consent to one use doesn't cover another: the question a learne
 
 `crm.learners.ai_training_consent` records whether a learner agreed to their text training the platform's AI, and [chapter 5](#narrow-by-attribute) made it an attribute the access policy reads: a read of `learning.reviews` for the purpose `ai-training` keeps only the reviews whose author's answer is true, with contact details removed. `lib.ai_data.read` runs the `SELECT` of `pipelines/review_corpus.sql` through [the enforcement layer](#enforcing-policies-on-queries) as `analyst-1`, the data-science principal, stating the purpose, and `lib.ai_data.build` refuses to run unless the layer filters on the column the consent answer names. Compare what the job gets with what the plain pipeline, `pipelines/review_corpus.sql` run as written, copies, and with a consent filter written by hand:
 
-Example `corpus-consent-filter` (Python 3.12.15 · datasketch 2.0.0 · duckdb 2.0.0 · mlcroissant 1.1.1 · openlineage-python 1.55.0 · phonenumbers 9.0.43 · presidio-analyzer 2.2.366 · presidio-anonymizer 2.2.366 · pyarrow 26.0.1 · pyiceberg 0.12.0 · pyyaml 6.0.3 · regopy 1.5.2 · sqlglot 30.30.0 · tldextract 5.4.0), passing in Edition 2026.11.21:
+Example `corpus-consent-filter` (Python 3.12.15 · datasketch 2.0.0 · duckdb 2.0.0 · mlcroissant 1.1.1 · openlineage-python 1.55.0 · phonenumbers 9.0.43 · presidio-analyzer 2.2.366 · presidio-anonymizer 2.2.366 · pyarrow 26.0.1 · pyiceberg 0.12.0 · pyyaml 6.0.3 · regopy 1.5.2 · sqlglot 30.30.0 · tldextract 5.4.0), passing in Edition 2026.11.22:
 
 ```python
 from collections import Counter
@@ -99,7 +99,7 @@ Consent decides whose text may enter the corpus. It doesn't make the text free o
 
 The reviews arrive from the enforcement layer with its `redact_contacts` mask applied, which replaces emails and phone numbers with `[email]` and `[phone]` ([chapter 6](#write-masks-as-sql)). [Chapter 3](#tune-the-recognizers)'s detector, `lib.pii.platform_detector`, runs Presidio's pattern recognizers with no language model, and no pattern finds a name. So `lib.ai_data.detector` adds a Presidio deny list of the names the platform knows, every word of every instructor's name, which Presidio escapes and matches as a whole word, ignoring case unless told otherwise ([source](https://github.com/data-privacy-stack/presidio/blob/2.2.364/presidio-analyzer/presidio_analyzer/pattern_recognizer.py)). The list comes from `crm.instructors`, which `analyst-1` may not read. So the governance team's own job, named in `[names]` in `governance/ai_data.toml`, builds it with the platform's own access, as the enforcement layer reads `crm.learners` for consent, and hands the corpus job the list, never the table; the card records which job built it and how many words it holds. `lib.ai_data.known_names` stands for that job. Each value found becomes a keyed pseudonym, which [the next section](#consistent-pseudonyms) builds. Measure each step on the reviews the corpus reads, then try a longer list, with every learner's name in it too:
 
-Example `corpus-personal-data-left` (Python 3.12.15 · datasketch 2.0.0 · duckdb 2.0.0 · mlcroissant 1.1.1 · openlineage-python 1.55.0 · phonenumbers 9.0.43 · presidio-analyzer 2.2.366 · presidio-anonymizer 2.2.366 · pyarrow 26.0.1 · pyiceberg 0.12.0 · pyyaml 6.0.3 · regopy 1.5.2 · sqlglot 30.30.0 · tldextract 5.4.0), passing in Edition 2026.11.21:
+Example `corpus-personal-data-left` (Python 3.12.15 · datasketch 2.0.0 · duckdb 2.0.0 · mlcroissant 1.1.1 · openlineage-python 1.55.0 · phonenumbers 9.0.43 · presidio-analyzer 2.2.366 · presidio-anonymizer 2.2.366 · pyarrow 26.0.1 · pyiceberg 0.12.0 · pyyaml 6.0.3 · regopy 1.5.2 · sqlglot 30.30.0 · tldextract 5.4.0), passing in Edition 2026.11.22:
 
 ```python
 from lib import ai_data, pii
@@ -161,7 +161,7 @@ The enforcement layer's mask leaves 0 of 19 emails and every name, 120 of 120. T
 
 No names left is a result about this data. The labelled spans are generated, and the generated reviews name only instructors, so they can't contain the case a list of instructors misses, such as a classmate's name. For names nobody listed, the detector to try is a named-entity model. Chapter 3 [compared one](#compare-a-named-entity-model), OpenAI's Privacy Filter, from a recording of its detections, scored against the labelled spans with `lib.pii.score`. Measure it the same way on the reviews the corpus reads:
 
-Example `privacy-filter-on-the-corpus` (Python 3.12.15 · datasketch 2.0.0 · duckdb 2.0.0 · mlcroissant 1.1.1 · openlineage-python 1.55.0 · phonenumbers 9.0.43 · presidio-analyzer 2.2.366 · presidio-anonymizer 2.2.366 · pyarrow 26.0.1 · pyiceberg 0.12.0 · pyyaml 6.0.3 · regopy 1.5.2 · sqlglot 30.30.0 · tldextract 5.4.0), passing in Edition 2026.11.21:
+Example `privacy-filter-on-the-corpus` (Python 3.12.15 · datasketch 2.0.0 · duckdb 2.0.0 · mlcroissant 1.1.1 · openlineage-python 1.55.0 · phonenumbers 9.0.43 · presidio-analyzer 2.2.366 · presidio-anonymizer 2.2.366 · pyarrow 26.0.1 · pyiceberg 0.12.0 · pyyaml 6.0.3 · regopy 1.5.2 · sqlglot 30.30.0 · tldextract 5.4.0), passing in Edition 2026.11.22:
 
 ```python
 from collections import Counter
@@ -225,7 +225,7 @@ A detected name can be replaced by a placeholder, `<PERSON>`, or by a pseudonym:
 
 The corpus job uses its own keyed hash instead, through Presidio's `custom` operator, which takes a lambda whose "return type must be a string". `lib.ai_data.pseudonym` computes an HMAC with SHA-256 of the entity type and the case-folded value, under a key only the corpus job holds, and keeps eight hexadecimal digits. HMAC is the construction RFC 2104 describes for keying a hash, and one of its stated goals is "To have a well understood cryptographic analysis of the strength of the authentication mechanism based on reasonable assumptions on the underlying hash function" ([RFC 2104](https://www.rfc-editor.org/rfc/rfc2104)). Python's standard library has it, as `hmac`, so the job has no reason to key a hash any other way. Take two of the corpus's reviews that name the same instructor, and replace the name both ways:
 
-Example `keyed-pseudonyms` (Python 3.12.15 · datasketch 2.0.0 · duckdb 2.0.0 · mlcroissant 1.1.1 · openlineage-python 1.55.0 · phonenumbers 9.0.43 · presidio-analyzer 2.2.366 · presidio-anonymizer 2.2.366 · pyarrow 26.0.1 · pyiceberg 0.12.0 · pyyaml 6.0.3 · regopy 1.5.2 · sqlglot 30.30.0 · tldextract 5.4.0), passing in Edition 2026.11.21:
+Example `keyed-pseudonyms` (Python 3.12.15 · datasketch 2.0.0 · duckdb 2.0.0 · mlcroissant 1.1.1 · openlineage-python 1.55.0 · phonenumbers 9.0.43 · presidio-analyzer 2.2.366 · presidio-anonymizer 2.2.366 · pyarrow 26.0.1 · pyiceberg 0.12.0 · pyyaml 6.0.3 · regopy 1.5.2 · sqlglot 30.30.0 · tldextract 5.4.0), passing in Edition 2026.11.22:
 
 ```python
 from collections import Counter
@@ -300,7 +300,7 @@ Once its names are [pseudonymized](#consistent-pseudonyms), the corpus's next pr
 
 `lib.ai_data.deduplicate` removes exact copies first, by SHA-256 of the case-folded text with runs of white space made one. It compares what's left as sets of 5-character shingles with datasketch's `MinHash` and `MinHashLSH`, which returns candidate pairs, and confirms each candidate by its exact Jaccard similarity. A confirmed pair at 0.8 or more is a near-duplicate, unless it differs only in a name, and of each group of duplicates the record with the lowest review ID stays. Run it on the corpus's pseudonymized reviews:
 
-Example `corpus-duplicates` (Python 3.12.15 · datasketch 2.0.0 · duckdb 2.0.0 · mlcroissant 1.1.1 · openlineage-python 1.55.0 · phonenumbers 9.0.43 · presidio-analyzer 2.2.366 · presidio-anonymizer 2.2.366 · pyarrow 26.0.1 · pyiceberg 0.12.0 · pyyaml 6.0.3 · regopy 1.5.2 · sqlglot 30.30.0 · tldextract 5.4.0), passing in Edition 2026.11.21:
+Example `corpus-duplicates` (Python 3.12.15 · datasketch 2.0.0 · duckdb 2.0.0 · mlcroissant 1.1.1 · openlineage-python 1.55.0 · phonenumbers 9.0.43 · presidio-analyzer 2.2.366 · presidio-anonymizer 2.2.366 · pyarrow 26.0.1 · pyiceberg 0.12.0 · pyyaml 6.0.3 · regopy 1.5.2 · sqlglot 30.30.0 · tldextract 5.4.0), passing in Edition 2026.11.22:
 
 ```python
 from collections import Counter
@@ -359,7 +359,7 @@ Of 436 reviews read, only 96 texts are distinct: 340 are exact copies of another
 
 Why pairs that differ only in a name stay apart comes down to what one threshold means at different lengths. Compare the corpus's reviews with the names as written, with keyed pseudonyms and with plain placeholders, then split every pair of distinct texts by whether it differs only in a name:
 
-Example `names-and-near-duplicates` (Python 3.12.15 · datasketch 2.0.0 · duckdb 2.0.0 · mlcroissant 1.1.1 · openlineage-python 1.55.0 · phonenumbers 9.0.43 · presidio-analyzer 2.2.366 · presidio-anonymizer 2.2.366 · pyarrow 26.0.1 · pyiceberg 0.12.0 · pyyaml 6.0.3 · regopy 1.5.2 · sqlglot 30.30.0 · tldextract 5.4.0), passing in Edition 2026.11.21:
+Example `names-and-near-duplicates` (Python 3.12.15 · datasketch 2.0.0 · duckdb 2.0.0 · mlcroissant 1.1.1 · openlineage-python 1.55.0 · phonenumbers 9.0.43 · presidio-analyzer 2.2.366 · presidio-anonymizer 2.2.366 · pyarrow 26.0.1 · pyiceberg 0.12.0 · pyyaml 6.0.3 · regopy 1.5.2 · sqlglot 30.30.0 · tldextract 5.4.0), passing in Edition 2026.11.22:
 
 ```python
 from itertools import combinations
@@ -428,7 +428,7 @@ It's an S-shaped curve: a pair well below the threshold is rarely a candidate, a
 
 With 96 distinct texts, the platform can afford to compare every pair exactly, 4,560 pairs, and that gives the truth to measure LSH against. LSH sees only similarity, so it must return every pair at 0.8, whatever the name rule then decides. Run LSH tuned for the threshold itself, 0.8, and tuned lower, each with datasketch's default hashing and with the hashing it used before its 2.0.0 release:
 
-Example `lsh-misses-near-duplicates` (Python 3.12.15 · datasketch 2.0.0 · duckdb 2.0.0 · mlcroissant 1.1.1 · openlineage-python 1.55.0 · phonenumbers 9.0.43 · presidio-analyzer 2.2.366 · presidio-anonymizer 2.2.366 · pyarrow 26.0.1 · pyiceberg 0.12.0 · pyyaml 6.0.3 · regopy 1.5.2 · sqlglot 30.30.0 · tldextract 5.4.0), passing in Edition 2026.11.21:
+Example `lsh-misses-near-duplicates` (Python 3.12.15 · datasketch 2.0.0 · duckdb 2.0.0 · mlcroissant 1.1.1 · openlineage-python 1.55.0 · phonenumbers 9.0.43 · presidio-analyzer 2.2.366 · presidio-anonymizer 2.2.366 · pyarrow 26.0.1 · pyiceberg 0.12.0 · pyyaml 6.0.3 · regopy 1.5.2 · sqlglot 30.30.0 · tldextract 5.4.0), passing in Edition 2026.11.22:
 
 ```python
 from itertools import combinations
@@ -517,7 +517,7 @@ A record that can't be traced to its source can't be checked, corrected or remov
 
 `lib.ai_data.build` writes every record with its provenance beside the review's own columns: `source_table`, `review_id`, `job` and `run_id`. It sends the job's run events with `lib.lineage.record`, and one choice there matters. The lineage is parsed from the query as the enforcement layer ran it, the rewrite with the consent filter and the mask in it, not from the SQL in `pipelines/review_corpus.sql`. Build the corpus, then follow a record back:
 
-Example `corpus-provenance` (Python 3.12.15 · datasketch 2.0.0 · duckdb 2.0.0 · mlcroissant 1.1.1 · openlineage-python 1.55.0 · phonenumbers 9.0.43 · presidio-analyzer 2.2.366 · presidio-anonymizer 2.2.366 · pyarrow 26.0.1 · pyiceberg 0.12.0 · pyyaml 6.0.3 · regopy 1.5.2 · sqlglot 30.30.0 · tldextract 5.4.0), passing in Edition 2026.11.21:
+Example `corpus-provenance` (Python 3.12.15 · datasketch 2.0.0 · duckdb 2.0.0 · mlcroissant 1.1.1 · openlineage-python 1.55.0 · phonenumbers 9.0.43 · presidio-analyzer 2.2.366 · presidio-anonymizer 2.2.366 · pyarrow 26.0.1 · pyiceberg 0.12.0 · pyyaml 6.0.3 · regopy 1.5.2 · sqlglot 30.30.0 · tldextract 5.4.0), passing in Edition 2026.11.22:
 
 ```python
 from lib import ai_data, lineage, pipelines
@@ -578,7 +578,7 @@ A dataset card tells whoever trains or audits a model what's in its data, where 
 
 `lib.ai_data.card` generates the platform's card with mlcroissant 1.1.1, MLCommons' Python library for Croissant. The run supplies the counts, the corpus file's SHA-256, a field for every column, and three PROV-O properties: the tables the pipeline's own SQL reads, which the values come from, as `prov:wasDerivedFrom`; the table the enforcement layer's rewrite adds, which only decides which rows exist, as `prov:wasInfluencedBy`; and the run, as `prov:wasGeneratedBy`. mlcroissant writes them through its `extra_properties` argument but adds no `prov` prefix to the card's context, so the module adds it. The creator is the owner of `ai.review_corpus` in `governance/metadata.toml`. The licence, the name, URL, description and use cases come from `governance/ai_data.toml`, and `lib.ai_data.card_problems` is the platform's own check of the result. Generate the card, first with mlcroissant's default `conformsTo`:
 
-Example `corpus-dataset-card` (Python 3.12.15 · datasketch 2.0.0 · duckdb 2.0.0 · mlcroissant 1.1.1 · openlineage-python 1.55.0 · phonenumbers 9.0.43 · presidio-analyzer 2.2.366 · presidio-anonymizer 2.2.366 · pyarrow 26.0.1 · pyiceberg 0.12.0 · pyyaml 6.0.3 · regopy 1.5.2 · sqlglot 30.30.0 · tldextract 5.4.0), passing in Edition 2026.11.21:
+Example `corpus-dataset-card` (Python 3.12.15 · datasketch 2.0.0 · duckdb 2.0.0 · mlcroissant 1.1.1 · openlineage-python 1.55.0 · phonenumbers 9.0.43 · presidio-analyzer 2.2.366 · presidio-anonymizer 2.2.366 · pyarrow 26.0.1 · pyiceberg 0.12.0 · pyyaml 6.0.3 · regopy 1.5.2 · sqlglot 30.30.0 · tldextract 5.4.0), passing in Edition 2026.11.22:
 
 ```python
 from lib import ai_data
@@ -663,7 +663,7 @@ A corpus fails quietly. The model trains, the card is published, and the problem
 
 Like marketing's list in [chapter 7](#consent-at-query-time), a corpus records who had consented on the day it was built. Take the corpus that `lib.ai_data.build` writes in the nightly run of Oct 1, the Oct 1 build, and withdraw the consent of the author of one of its records. Then rebuild the corpus in the same folder the next night, without generating its card again, and check each build against today's consent, as a training run does before it starts:
 
-Example `consent-withdrawn-after-build` (Python 3.12.15 · datasketch 2.0.0 · duckdb 2.0.0 · mlcroissant 1.1.1 · openlineage-python 1.55.0 · phonenumbers 9.0.43 · presidio-analyzer 2.2.366 · presidio-anonymizer 2.2.366 · pyarrow 26.0.1 · pyiceberg 0.12.0 · pyyaml 6.0.3 · regopy 1.5.2 · sqlglot 30.30.0 · tldextract 5.4.0), passing in Edition 2026.11.21:
+Example `consent-withdrawn-after-build` (Python 3.12.15 · datasketch 2.0.0 · duckdb 2.0.0 · mlcroissant 1.1.1 · openlineage-python 1.55.0 · phonenumbers 9.0.43 · presidio-analyzer 2.2.366 · presidio-anonymizer 2.2.366 · pyarrow 26.0.1 · pyiceberg 0.12.0 · pyyaml 6.0.3 · regopy 1.5.2 · sqlglot 30.30.0 · tldextract 5.4.0), passing in Edition 2026.11.22:
 
 ```python
 from datetime import timedelta

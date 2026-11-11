@@ -3,12 +3,12 @@ title: "Time Series Forecasting"
 chapter: "Quantify forecast uncertainty"
 chapter_id: quantify-forecast-uncertainty
 book: time-series-forecasting
-edition: 2026.11.1
+edition: 2026.11.2
 verified: 2026-11-11
-edition_code: HK8M-ENSS
+edition_code: RHYP-H8RM
 canonical: https://rollingedition.com/time-series-forecasting/quantify-forecast-uncertainty
 license: CC BY 4.0
-attribution: "“Quantify forecast uncertainty,” chapter 8 of Time Series Forecasting, Edition 2026.11.1, examples passed Nov 11, 2026. By Rolling Edition, https://rollingedition.com/time-series-forecasting/quantify-forecast-uncertainty. Text CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Quantify forecast uncertainty,” chapter 8 of Time Series Forecasting, Edition 2026.11.2, examples passed Nov 11, 2026. By Rolling Edition, https://rollingedition.com/time-series-forecasting/quantify-forecast-uncertainty. Text CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Quantify forecast uncertainty
 
@@ -43,7 +43,7 @@ The library that does this for the book's model is mlforecast, at version 1.1.0.
 
 The first example uses mlforecast's class with three calibration windows, and scores the three standard evaluation cutoffs: Dec 29, Dec 30 and Dec 31, 2014, each at 00:00. The three days are the held-out week's last three days, and they are the days this chapter scores. The example refits the global model at each cutoff. mlforecast calibrates each cutoff on the three cutoffs before it.
 
-Example `conformal-three-windows` (Python 3.13.16 · holidays 0.108 · lightgbm 4.7.0 · mlforecast 1.1.0 · numpy 2.4.6 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.1:
+Example `conformal-three-windows` (Python 3.13.16 · holidays 0.108 · lightgbm 4.7.0 · mlforecast 1.1.0 · numpy 2.4.6 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.2:
 
 ```python
 """mlforecast's own conformal intervals, with three calibration windows, on the three standard cutoffs. Each cutoff is
@@ -119,7 +119,7 @@ Twelve windows with thirty clients give 360 residuals for each hour of the day. 
 
 Two choices in this design were made on the decision windows, not on the held-out evaluation. The decision windows are the four cutoffs from Nov 25 to Dec 3, 2014. Their calibration is Nov 9 to 20, 2014, twelve holiday-free days that end four days before the first decision cutoff, the same shape as the held-out design. The windows are scored on their own, and the held-out evaluation is not read.
 
-Example `conformal-decision-windows` (Python 3.13.16 · holidays 0.108 · lightgbm 4.7.0 · mlforecast 1.1.0 · numpy 2.4.6 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.1:
+Example `conformal-decision-windows` (Python 3.13.16 · holidays 0.108 · lightgbm 4.7.0 · mlforecast 1.1.0 · numpy 2.4.6 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.2:
 
 ```python
 """The two choices of the calibration design, decided on the four decision windows before the held-out week: scaling each
@@ -196,7 +196,7 @@ The finite-sample levels settle the second choice. They move each quantile level
 
 The held-out evaluation then reports the same design on the standard cutoffs.
 
-Example `conformal-earlier-windows` (Python 3.13.16 · holidays 0.108 · lightgbm 4.7.0 · mlforecast 1.1.0 · numpy 2.4.6 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.1:
+Example `conformal-earlier-windows` (Python 3.13.16 · holidays 0.108 · lightgbm 4.7.0 · mlforecast 1.1.0 · numpy 2.4.6 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.2:
 
 ```python
 """Conformal bands for every client, calibrated on twelve holiday-free days before the scored week, with each client's
@@ -292,7 +292,7 @@ The supplier buys one amount for each hour, and the costs of the two errors set 
 
 With the illustrative costs from [section 1](#why-one-number-is-not-enough), `tau` is 0.75. The rule says to buy the quantile of the demand at that level, for each hour. The quantile at level `tau` is the purchase that minimises the quantile loss at that level (Gneiting and Raftery, 2007). The loss is `tau * (y - q)` when the reading `y` is at or above the purchase `q`, and `(1 - tau) * (q - y)` when it is below. The quantile loss is not a cost in kWh or in money. It is the rule that the quantile minimises, and it has the same shape as the supplier's cost. Multiplying it by `cu + co` gives the cost exactly, which the example checks.
 
-Example `buy-ahead-level-by-cost` (Python 3.13.16 · holidays 0.108 · lightgbm 4.7.0 · mlforecast 1.1.0 · numpy 2.4.6 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.1:
+Example `buy-ahead-level-by-cost` (Python 3.13.16 · holidays 0.108 · lightgbm 4.7.0 · mlforecast 1.1.0 · numpy 2.4.6 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.2:
 
 ```python
 """The buy level for the total, from the two costs. The critical fractile, cu / (cu + co), is the quantile that minimises
