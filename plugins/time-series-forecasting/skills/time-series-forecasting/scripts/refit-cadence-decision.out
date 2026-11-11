@@ -1,0 +1,17 @@
+decision days: 4
+rows read by one refit: 40320
+refits, daily: 4
+MAE, daily: 66.81
+mean MASE, daily: 0.754
+refits, weekly: 2
+MAE, weekly: 67.64
+mean MASE, weekly: 0.746
+mean MASE, daily minus weekly: 0.008
+chosen cadence: weekly
+mean MASE, model aged 0 days: 0.754
+mean MASE, model aged 1 days: 0.747
+mean MASE, model aged 2 days: 0.748
+mean MASE, model aged 3 days: 0.741
+mean MASE, model aged 4 days: 0.748
+mean MASE, model aged 5 days: 0.758
+mean MASE, model aged 6 days: 0.750

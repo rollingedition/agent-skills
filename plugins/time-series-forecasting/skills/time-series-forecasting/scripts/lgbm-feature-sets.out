@@ -1,0 +1,35 @@
+clients: 8
+decision windows: 11
+scored hours: 2112
+Portuguese holidays in 2013 and 2014: 18
+holiday hours in the decision windows: 1344
+MAE SeasonalNaive: 305.21
+MAE lags_only: 280.57
+MAE with_calendar: 270.57
+MAE with_holidays: 267.40
+MAE unscaled lags_only: 304.03
+MAE unscaled with_calendar: 271.63
+MAE unscaled with_holidays: 280.75
+mean MASE SeasonalNaive: 0.934
+mean MASE lags_only: 0.886
+mean MASE with_calendar: 0.894
+mean MASE with_holidays: 0.893
+mean MASE unscaled lags_only: 1.115
+mean MASE unscaled with_calendar: 1.119
+mean MASE unscaled with_holidays: 1.139
+MASE MT_268 SeasonalNaive: 0.840
+MASE MT_268 lags_only: 0.797
+MASE MT_268 with_calendar: 0.758
+MASE MT_268 with_holidays: 0.789
+MASE MT_268 unscaled lags_only: 0.855
+MASE MT_268 unscaled with_calendar: 0.871
+MASE MT_268 unscaled with_holidays: 0.936
+standard cutoffs, mean MASE SeasonalNaive: 1.162
+standard cutoffs, mean MASE lags_only: 1.057
+standard cutoffs, mean MASE with_calendar: 1.165
+standard cutoffs, mean MASE with_holidays: 1.134
+standard cutoffs, mean MASE unscaled lags_only: 1.357
+standard cutoffs, mean MASE unscaled with_calendar: 1.494
+standard cutoffs, mean MASE unscaled with_holidays: 1.486
+masked hours in the history: 1
+rows whose lag reads a masked hour: 1

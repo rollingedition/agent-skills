@@ -1,0 +1,11 @@
+decision windows: 11
+holiday decision windows: 7
+clients: 8
+scored hours: 2112
+holiday hours in the decision windows: 1344
+mean MASE WithHolidays: 1.070
+mean MASE NoHolidays: 1.061
+mean MASE SeasonalNaive: 0.934
+hours where the forecasts differ: 768
+clients where holidays help: 2
+holiday table kept: no

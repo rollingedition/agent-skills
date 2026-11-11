@@ -1,0 +1,39 @@
+first reading MT_039: 2013-10-03
+first reading MT_115: 2014-01-14
+first reading MT_179: 2013-12-20
+zero share of history MT_115, 2014-02-01: 68
+zero share of history MT_179, 2014-02-01: 23
+zero share of history MT_115, 2014-02-15: 43
+zero share of history MT_179, 2014-02-15: 0
+zero share of history MT_115, 2014-02-28: 20
+zero share of history MT_179, 2014-02-28: 0
+forecast hours that differ, standard: 0
+scored hours, february: 2160
+forecast hours that differ, february: 2160
+MAE late starters, start, february: 4.60
+MAE other clients, start, february: 77.53
+MAE MT_039, start, february: 4.64
+MAE MT_115, start, february: 4.62
+MAE MT_179, start, february: 4.54
+MAE late starters, raw, february: 4.60
+MAE other clients, raw, february: 77.95
+MAE MT_039, raw, february: 4.57
+MAE MT_115, raw, february: 4.68
+MAE MT_179, raw, february: 4.53
+clients in MASE, february: 30
+MASE MT_039, start, february: 0.78
+MASE MT_039, raw, february: 0.77
+MASE MT_115, start, february: 0.90
+MASE MT_115, raw, february: 0.91
+MASE MT_179, start, february: 0.54
+MASE MT_179, raw, february: 0.54
+mean MASE, start, february: 0.70
+mean MASE, raw, february: 0.71
+MASE scale MT_039, start rule: 5.21
+MASE scale MT_039, counterfactual raw: 3.28
+MASE scale MT_115, start rule: 4.58
+MASE scale MT_115, counterfactual raw: 2.22
+MASE scale MT_179, start rule: 5.91
+MASE scale MT_179, counterfactual raw: 3.04
+mean MASE global, counterfactual raw scale, standard cutoffs: 1.01
+mean MASE global, book scale, standard cutoffs: 0.91

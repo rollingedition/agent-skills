@@ -1,0 +1,21 @@
+Prophet interval level: 95
+Prophet holiday table: off
+clients scored: 30
+scored hours: 2160
+clients where Prophet beats seasonal naive: 9
+clients where Prophet beats the global model: 6
+MAE Prophet: 182.44
+MAE SeasonalNaive: 148.26
+MAE Global: 122.81
+RMSE Prophet: 764.88
+RMSE SeasonalNaive: 780.48
+RMSE Global: 678.81
+mean MASE Prophet: 1.35
+mean MASE SeasonalNaive: 1.18
+mean MASE Global: 0.91
+mean MASE Prophet SUBSET8: 1.39
+mean MASE SeasonalNaive SUBSET8: 1.16
+mean MASE Global SUBSET8: 1.03
+coverage 95 Prophet: 0.918
+interval score 95 Prophet: 932.66
+mean MASE Prophet with holidays, not chosen: 1.27

@@ -1,0 +1,39 @@
+horizon hours: 24
+windows: 3
+fits that chose ETS(A,Ad,A): 1
+fits that chose ETS(A,N,A): 17
+fits that chose ETS(M,N,A): 6
+clients: 8
+scored hours per client: 72
+MAE ZZA: 365.24
+RMSE ZZA: 553.11
+MASE ZZA: 1.17
+MAE SeasonalNaive: 423.68
+RMSE SeasonalNaive: 591.25
+MASE SeasonalNaive: 1.16
+coverage 95 ZZA: 0.925
+clients where ZZA has lower MASE: 4
+forms MT_014, one per cutoff: ETS(A,N,A) ETS(A,N,A) ETS(A,N,A)
+MASE MT_014 ZZA: 1.08
+MASE MT_014 SeasonalNaive: 0.97
+forms MT_064, one per cutoff: ETS(A,N,A) ETS(A,N,A) ETS(A,N,A)
+MASE MT_064 ZZA: 1.27
+MASE MT_064 SeasonalNaive: 1.08
+forms MT_115, one per cutoff: ETS(M,N,A) ETS(M,N,A) ETS(M,N,A)
+MASE MT_115 ZZA: 0.95
+MASE MT_115 SeasonalNaive: 1.31
+forms MT_166, one per cutoff: ETS(A,Ad,A) ETS(A,N,A) ETS(A,N,A)
+MASE MT_166 ZZA: 1.18
+MASE MT_166 SeasonalNaive: 1.29
+forms MT_217, one per cutoff: ETS(M,N,A) ETS(M,N,A) ETS(M,N,A)
+MASE MT_217 ZZA: 1.78
+MASE MT_217 SeasonalNaive: 1.25
+forms MT_268, one per cutoff: ETS(A,N,A) ETS(A,N,A) ETS(A,N,A)
+MASE MT_268 ZZA: 0.94
+MASE MT_268 SeasonalNaive: 0.89
+forms MT_319, one per cutoff: ETS(A,N,A) ETS(A,N,A) ETS(A,N,A)
+MASE MT_319 ZZA: 1.11
+MASE MT_319 SeasonalNaive: 1.26
+forms MT_370, one per cutoff: ETS(A,N,A) ETS(A,N,A) ETS(A,N,A)
+MASE MT_370 ZZA: 1.05
+MASE MT_370 SeasonalNaive: 1.25

@@ -5,6 +5,7 @@
     "./plugins/data-governance-as-code/skills",
     "./plugins/model-context-protocol-in-practice/skills",
     "./plugins/open-table-formats/skills",
-    "./plugins/primer-on-search-relevance/skills"
+    "./plugins/primer-on-search-relevance/skills",
+    "./plugins/time-series-forecasting/skills"
   ]
 }

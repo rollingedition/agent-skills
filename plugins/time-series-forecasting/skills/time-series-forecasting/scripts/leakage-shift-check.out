@@ -1,0 +1,8 @@
+cutoffs: 3
+rows compared: 4032
+rows differing for the trailing mean: 0
+rows differing for the peeking mean: 3
+rows differing for lag 1: 0
+target hours compared: 72
+target hours differing for lag 1: 69
+target hours differing for lag 24: 0

@@ -1,0 +1,18 @@
+clients scored: 30
+windows: 3
+scored hours: 2160
+clients left out of MASE: 0
+clients with no reading before 2013-12-15, check: 2
+clients with any row before 2013-12-15, broken count: 30
+clients in MASE: 30
+clients where global beats seasonal naive: 23
+clients where seasonal naive wins: MT_001, MT_128, MT_141, MT_179, MT_217, MT_268, MT_294
+MAE SeasonalNaive: 148.26
+MAE global: 122.81
+MAE plain: 119.03
+RMSE SeasonalNaive: 780.48
+RMSE global: 678.81
+RMSE plain: 657.63
+mean MASE SeasonalNaive: 1.18
+mean MASE global: 0.91
+mean MASE plain: 0.98

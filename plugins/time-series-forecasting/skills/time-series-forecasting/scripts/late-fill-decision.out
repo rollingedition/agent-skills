@@ -1,0 +1,6 @@
+readings late for each decision cutoff: 6
+hours scored, forward fill: 24
+MAE, lead client hours 18 to 23, forward fill: 7.92
+hours scored, week fill: 24
+MAE, lead client hours 18 to 23, week fill: 5.03
+chosen late fill: week

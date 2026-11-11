@@ -1,0 +1,11 @@
+gap hours in actuals: 8
+gap hours that read zero: 5
+gap-hour MAE with no rule: 2322.69
+other-hour MAE with no rule: 234.21
+median client ratio, gap hour to other hours, no rule: 7.93
+next-day MAE at 1am with no rule: 2393.01
+next-day 1am forecasts that are zero, no rule: 5
+median client ratio, next-day 1am to other hours, no rule: 9.92
+NaN forecasts without the fill: 8
+next-day MAE at 1am with the rule: 274.41
+other-hour MAE with the rule: 228.31

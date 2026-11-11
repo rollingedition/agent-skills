@@ -1,0 +1,13 @@
+reference, median daily MASE: 0.72
+flag above, MASE: 1.43
+largest decision day, times the reference: 1.44
+decision days flagged: 0
+MASE 2014-12-25: 4.62
+MASE 2014-12-26: 2.00
+MASE 2014-12-27: 0.73
+MASE 2014-12-28: 0.76
+MASE 2014-12-29: 0.85
+MASE 2014-12-30: 0.76
+MASE 2014-12-31: 1.14
+held-out days flagged: 2
+flagged held-out days: 2014-12-25, 2014-12-26

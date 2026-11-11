@@ -1,0 +1,19 @@
+first decision cutoff: 2014-11-25
+last decision cutoff: 2014-12-03
+clients: 30
+windows: 4
+scored hours: 2880
+decision hours on a holiday: 0
+MAE plain: 70.72
+MAE identifier: 66.81
+RMSE plain: 316.50
+RMSE identifier: 303.68
+mean MASE plain: 0.77
+mean MASE identifier: 0.75
+clients where the identifier lowers MASE: 23
+of the 15 largest clients, where the identifier lowers MASE: 10
+of the 15 smallest clients, where the identifier lowers MASE: 13
+largest client: MT_370
+pooled MAE change from the largest client, kWh: -3.80
+pooled MAE change, all clients, kWh: -3.92
+identifier kept: yes

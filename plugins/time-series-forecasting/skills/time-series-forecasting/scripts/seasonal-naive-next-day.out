@@ -1,0 +1,17 @@
+horizon hours: 24
+windows: 7
+scored hours: 168
+missing forecasts: 0
+mean demand: 46.62
+mean demand 2014-12-24: 47.58
+mean demand 2014-12-25: 38.40
+MAE: 8.36
+RMSE: 10.87
+MAE 2014-12-25: 9.41
+MAE 2014-12-26: 12.16
+MAE 2014-12-27: 5.10
+MAE 2014-12-28: 11.16
+MAE 2014-12-29: 8.68
+MAE 2014-12-30: 5.26
+MAE 2014-12-31: 6.75
+history with one hour removed refused: yes

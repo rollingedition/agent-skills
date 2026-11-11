@@ -1,0 +1,19 @@
+windows: 7
+scored hours: 168
+missing forecasts: 0
+mean demand: 46.62
+naive MAE: 8.16
+seasonal naive MAE: 8.36
+average of weeks MAE: 8.96
+naive worst window MAE: 11.01
+naive worst window: Dec 30, 2014
+naive MAE Dec 25 window: 5.84
+naive MAE Dec 26 window: 10.36
+seasonal naive worst window MAE: 12.16
+seasonal naive worst window: Dec 26, 2014
+seasonal naive MAE Dec 25 window: 9.41
+seasonal naive MAE Dec 26 window: 12.16
+average of weeks worst window MAE: 22.09
+average of weeks worst window: Dec 25, 2014
+average of weeks MAE Dec 25 window: 22.09
+average of weeks MAE Dec 26 window: 12.33

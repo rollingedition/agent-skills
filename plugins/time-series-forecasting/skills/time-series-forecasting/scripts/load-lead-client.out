@@ -1,0 +1,13 @@
+clients in the file: 30
+clients with 17520 rows: 30
+rows: 17520
+first reading: 2013-01-01 00:00
+last reading: 2014-12-31 23:00
+normal rows: 17516
+before_first_reading rows: 0
+clock_change_gap rows: 2
+clock_change_repeat rows: 2
+history rows per window: 1344
+longest history rows: 1344
+first history reading: 2014-10-30 00:00
+clock-change rows in held-out histories: 0

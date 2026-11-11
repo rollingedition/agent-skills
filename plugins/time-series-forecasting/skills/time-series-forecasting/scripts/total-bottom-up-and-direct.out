@@ -1,0 +1,19 @@
+decision cutoffs: 4
+decision holiday hours: 0
+MAE bottom-up, decision windows: 1267.47
+MAE direct, decision windows: 1678.62
+MAE direct with a scaled target, decision windows: 1705.71
+chosen direct target: unscaled
+MAE bottom-up without identifier, decision windows: 1383.29
+chosen total method: bottom-up
+scored hours: 72
+MASE scale of the total: 2689.26
+MAE SeasonalNaive: 3639.41
+MAE bottom-up: 2985.88
+MAE direct: 3423.11
+MASE SeasonalNaive: 1.35
+MASE bottom-up: 1.11
+MASE direct: 1.27
+MAE bottom-up without identifier: 2837.66
+clock-free hours where the total differs from the sum of the thirty clients: 0
+scale changes after poisoning readings from each scored cutoff: 0

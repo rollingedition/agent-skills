@@ -1,0 +1,16 @@
+calibration windows: 12
+holiday hours in calibration: 0
+calibration hours shared with scored: 0
+calibration residuals per hour of the day: 360
+largest client: MT_370
+mean hourly load of the largest client: 17499.81
+coverage at 80: 0.739
+mean width at 80: 267.62
+interval score at 80: 673.89
+coverage at 95: 0.902
+mean width at 95: 532.00
+interval score at 95: 1326.80
+lowest client coverage at 80: 0.472
+largest client coverage at 80, unscaled residuals: 0.000
+coverage at 80 from three calibration days: 0.711
+coverage at 80 with finite-sample levels: 0.741

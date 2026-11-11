@@ -1,0 +1,12 @@
+horizon hours: 24
+windows: 3
+clients: 8
+scored hours per client: 72
+MAE ARIMA: 386.13
+RMSE ARIMA: 576.30
+MASE ARIMA: 1.09
+MAE SeasonalNaive: 423.68
+RMSE SeasonalNaive: 591.25
+MASE SeasonalNaive: 1.16
+MASE gap, SeasonalNaive minus ARIMA: 0.07
+clients where ARIMA has lower MASE: 5

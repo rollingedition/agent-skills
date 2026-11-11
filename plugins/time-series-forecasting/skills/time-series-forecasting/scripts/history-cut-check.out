@@ -1,0 +1,5 @@
+history rows: 1344
+first history timestamp: 2014-11-03 00:00
+last history timestamp: 2014-12-28 23:00
+history rows with ds at or before the cutoff: 1345
+target-day readings in that cut: 1

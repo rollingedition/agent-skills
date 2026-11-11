@@ -1,0 +1,7 @@
+cutoffs: 3
+rows compared: 72
+rows differing for lag 1: 69
+rows differing for lag 24: 0
+rows differing for lag 168: 0
+MAE honest, lags 24 and 168: 5.36
+MAE leaky, lags 1, 24 and 168: 2.87

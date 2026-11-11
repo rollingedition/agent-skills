@@ -1,0 +1,16 @@
+scored hours: 2160
+calibration windows per cutoff: 3
+residuals per client and hour: 3
+highest coverage three windows allow, any level: 0.750
+simulated coverage at 80, exchangeable errors: 0.656
+simulated coverage at 95, exchangeable errors: 0.732
+coverage at 80: 0.690
+mean width at 80: 281.07
+coverage at 80 on 2014-12-29: 0.756
+coverage at 80 on 2014-12-30: 0.676
+coverage at 80 on 2014-12-31: 0.637
+mean absolute error on 2014-12-29: 114.62
+mean absolute error on 2014-12-30: 94.42
+mean absolute error on 2014-12-31: 163.37
+coverage at 95: 0.750
+mean width at 95: 355.39

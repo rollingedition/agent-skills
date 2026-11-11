@@ -1,0 +1,16 @@
+cutoffs checked: 9
+cutoffs refused by the start rule: 3
+cutoffs expected to be refused, from the flag: 3
+cutoffs where the refusal differs from the flag: 0
+cutoffs accepted: 6
+accepted cutoffs with a client missing from the history: 0
+cutoffs whose history changes when the future is poisoned: 0
+rows the start rule removes, accepted cutoffs: 2064
+removed rows that are not zero: 0
+broken version, cutoffs checked: 9
+broken version, cutoffs refused by the start rule: 1
+broken version, cutoffs expected to be refused, from the flag: 3
+broken version, cutoffs where the refusal differs from the flag: 2
+broken version, cutoffs accepted: 8
+broken version, accepted cutoffs with a client missing from the history: 2
+broken version, cutoffs whose history changes when the future is poisoned: 2

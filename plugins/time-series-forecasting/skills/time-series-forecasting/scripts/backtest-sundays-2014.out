@@ -1,0 +1,15 @@
+windows: 52
+history hours per series, min over windows: 1344
+history hours per series, max over windows: 1344
+Sunday windows on a Portuguese holiday: 1
+client left out of MASE: MT_115
+scored hours: 9936
+scored hours before a first reading: 48
+MAE: 382.02
+RMSE: 1369.57
+largest client by absolute error: MT_370
+largest client's share of absolute error, percent: 88.69
+clients in MASE: 7
+mean MASE: 0.97
+lowest client MASE: 0.77
+highest client MASE: 1.26

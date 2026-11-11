@@ -1,0 +1,14 @@
+horizon hours: 24
+windows: 7
+scored hours: 168
+missing forecasts: 0
+windows that chose ETS(A,N,A): 7
+MAE: 8.86
+RMSE: 10.91
+MAE 2014-12-25: 13.51
+MAE 2014-12-26: 11.21
+MAE 2014-12-27: 4.17
+MAE 2014-12-28: 10.03
+MAE 2014-12-29: 9.53
+MAE 2014-12-30: 6.33
+MAE 2014-12-31: 7.25

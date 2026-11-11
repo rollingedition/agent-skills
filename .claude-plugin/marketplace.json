@@ -42,6 +42,13 @@
       "homepage": "https://rollingedition.com/primer-on-search-relevance"
     },
     {
+      "name": "time-series-forecasting",
+      "source": "./plugins/time-series-forecasting",
+      "description": "Forecasts you can trust, from baselines and backtests to uncertainty you can act on.",
+      "category": "learning",
+      "homepage": "https://rollingedition.com/time-series-forecasting"
+    },
+    {
       "name": "rolling-edition",
       "source": "./library",
       "category": "learning",

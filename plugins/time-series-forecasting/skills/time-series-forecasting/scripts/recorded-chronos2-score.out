@@ -1,0 +1,22 @@
+clients scored: 30
+scored hours: 2160
+clients where Chronos beats seasonal naive: 27
+MAE Chronos: 100.13
+MAE SeasonalNaive: 148.26
+MAE Global: 122.81
+RMSE Chronos: 655.39
+RMSE SeasonalNaive: 780.48
+RMSE Global: 678.81
+mean MASE Chronos: 0.81
+mean MASE SeasonalNaive: 1.18
+mean MASE Global: 0.91
+mean MASE Chronos SUBSET8: 0.87
+mean MASE SeasonalNaive SUBSET8: 1.16
+mean MASE Global SUBSET8: 1.03
+quantile loss 0.1 Chronos: 39.44
+quantile loss 0.5 Chronos: 50.07
+quantile loss 0.9 Chronos: 17.85
+coverage 80 Chronos: 0.749
+interval score 80 Chronos: 572.89
+coverage 95 Chronos: 0.944
+interval score 95 Chronos: 958.19

@@ -1,0 +1,28 @@
+cost of a kWh short: 3.00
+cost of a kWh unused: 1.00
+critical fractile: 0.75
+scored hours: 72
+residuals per hour for the total: 12
+highest coverage the total's residuals allow: 0.846
+simulated coverage at 80, exchangeable errors: 0.682
+mean absolute error of the total, calibration days: 2415.51
+mean absolute error of the total, scored days: 2985.88
+total coverage at 80: 0.667
+total coverage at 80 with finite-sample levels, not used: 0.736
+total coverage at 80 on 2014-12-29: 0.625
+total coverage at 80 on 2014-12-30: 0.708
+total coverage at 80 on 2014-12-31: 0.667
+total mean absolute error on 2014-12-29: 2448.53
+total mean absolute error on 2014-12-30: 2149.78
+total mean absolute error on 2014-12-31: 4359.32
+mean cost at 0.50: 5087.95
+hours short at 0.50: 0.528
+mean cost at 0.75: 3843.61
+hours short at 0.75: 0.403
+mean cost at 0.90: 3667.43
+hours short at 0.90: 0.222
+quantile loss at critical fractile, times both costs: 3843.61
+mean hourly total bound from the total: 31983.95
+mean hourly total bound from the sum of client bounds: 32388.77
+hours short at critical fractile, sum of client bounds: 0.306
+mean cost at critical fractile, sum of client bounds: 3729.17

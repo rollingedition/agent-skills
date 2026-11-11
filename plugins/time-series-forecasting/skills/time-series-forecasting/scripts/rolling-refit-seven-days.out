@@ -1,0 +1,26 @@
+refit every (days): 7
+refit days in the week: 2014-12-29
+models used in the week: 2
+log rows: 5040
+calibration residuals per hour, pooled over clients: 360
+log rows whose model read only readings in by its refit day: 5040
+log rows whose forecast read only readings in by its cutoff: 5040
+leaky log rows whose model read only readings in by its refit day: 0
+readings that arrived late: 6
+forecast inputs filled, Dec 29: 6
+Dec 28 complete at: 09:00 on Dec 29, 2014
+MAE 2014-12-25: 447.59
+MAE 2014-12-26: 203.43
+MAE 2014-12-27: 54.14
+MAE 2014-12-28: 71.67
+MAE 2014-12-29: 111.64
+MAE 2014-12-30: 87.37
+MAE 2014-12-31: 167.15
+coverage 80 2014-12-25: 0.232
+coverage 80 2014-12-26: 0.431
+coverage 80 2014-12-27: 0.790
+coverage 80 2014-12-28: 0.764
+coverage 80 2014-12-29: 0.713
+coverage 80 2014-12-30: 0.782
+coverage 80 2014-12-31: 0.701
+leaky MAE 2014-12-25: 351.79

@@ -1,0 +1,9 @@
+outputs checked: 1
+hash mismatches: 0
+rows: 2160
+clients: 30
+windows: 3
+interpolated levels: 0
+rows with quantiles out of order: 22
+largest quantile crossing, kWh: 21.11
+inverted 80 or 95 ranges: 0

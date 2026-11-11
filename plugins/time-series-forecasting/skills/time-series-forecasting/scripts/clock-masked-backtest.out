@@ -1,0 +1,7 @@
+masked hours in scored windows: 16
+scored hours without the mask: 9936
+MAE without the mask: 382.02
+mean MASE without the mask: 0.97
+scored hours with the mask: 9920
+MAE with the mask: 380.25
+mean MASE with the mask: 0.96

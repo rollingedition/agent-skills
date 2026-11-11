@@ -1,0 +1,28 @@
+calibration windows: 12
+holiday hours in calibration: 0
+calibration hours shared with scored: 0
+residuals per hour of the day: 360
+unscaled, coverage at 80: 0.809
+unscaled, interval score at 80: 603.88
+unscaled, coverage at 95: 0.957
+unscaled, interval score at 95: 1950.32
+unscaled, lowest client coverage at 80: 0.021
+scaled, coverage at 80: 0.834
+scaled, interval score at 80: 336.72
+scaled, coverage at 95: 0.954
+scaled, interval score at 95: 581.28
+scaled, lowest client coverage at 80: 0.365
+unscaled, finite, coverage at 80: 0.811
+unscaled, finite, interval score at 80: 604.19
+unscaled, finite, coverage at 95: 0.959
+unscaled, finite, interval score at 95: 1961.48
+unscaled, finite, lowest client coverage at 80: 0.021
+scaled, finite, coverage at 80: 0.835
+scaled, finite, interval score at 80: 337.31
+scaled, finite, coverage at 95: 0.956
+scaled, finite, interval score at 95: 592.35
+scaled, finite, lowest client coverage at 80: 0.375
+total, coverage at 80: 0.948
+total, interval score at 80: 9268.36
+total, finite, coverage at 80: 0.990
+total, finite, interval score at 80: 10724.99

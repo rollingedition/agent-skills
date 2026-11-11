@@ -1,0 +1,21 @@
+scale rows from history: 17352
+last scale reading from history: Dec 24, 2014 23:00
+scale rows from whole series: 17520
+last reading of whole series: Dec 31, 2014 23:00
+test week share of whole-series rows in percent: 0.959
+clock-change rows in scale history: 4
+test week own mean day-to-day difference: 8.3607
+scale from history as recorded: 7.1121
+scale from history clock changes masked: 7.1005
+scale from whole series clock changes masked: 7.1126
+naive MASE from history scale: 1.15
+naive MASE from whole-series scale: 1.15
+naive MASE ratio whole-series over history: 0.9983
+seasonal naive MASE from history scale: 1.18
+seasonal naive MASE from whole-series scale: 1.18
+seasonal naive MASE ratio whole-series over history: 0.9983
+average of weeks MASE from history scale: 1.26
+average of weeks MASE from whole-series scale: 1.26
+average of weeks MASE ratio whole-series over history: 0.9983
+seasonal naive MASE from history scale at four decimals: 1.1775
+seasonal naive MASE from whole-series scale at four decimals: 1.1755

@@ -1,0 +1,39 @@
+start rule drops, SUBSET8: 9072
+flagged before_first_reading, SUBSET8: 9072
+zero percent before 2014-02-01: 68
+raw history hours 2014-02-01: 1344
+raw form 2014-02-01: ETS(A,N,N)
+raw mean forecast 2014-02-01: 16.43
+raw mean actual 2014-02-01: 24.06
+MAE raw 2014-02-01: 8.81
+start history hours 2014-02-01: 432
+start form 2014-02-01: ETS(M,Ad,A)
+start mean forecast 2014-02-01: 23.88
+start mean actual 2014-02-01: 24.06
+MAE start 2014-02-01: 3.72
+zero percent before 2014-02-15: 43
+raw history hours 2014-02-15: 1344
+raw form 2014-02-15: ETS(A,N,A)
+raw mean forecast 2014-02-15: 24.54
+raw mean actual 2014-02-15: 27.11
+MAE raw 2014-02-15: 4.29
+start history hours 2014-02-15: 768
+start form 2014-02-15: ETS(M,Ad,A)
+start mean forecast 2014-02-15: 23.84
+start mean actual 2014-02-15: 27.11
+MAE start 2014-02-15: 4.77
+zero percent before 2014-02-28: 20
+raw history hours 2014-02-28: 1344
+raw form 2014-02-28: ETS(A,N,A)
+raw mean forecast 2014-02-28: 23.73
+raw mean actual 2014-02-28: 23.54
+MAE raw 2014-02-28: 2.93
+start history hours 2014-02-28: 1080
+start form 2014-02-28: ETS(M,Ad,A)
+start mean forecast 2014-02-28: 22.48
+start mean actual 2014-02-28: 23.54
+MAE start 2014-02-28: 2.73
+MAE raw, three windows: 5.34
+MAE raw, 2014-02-15 and 2014-02-28: 3.61
+MAE start, three windows: 3.74
+MAE start, 2014-02-15 and 2014-02-28: 3.75

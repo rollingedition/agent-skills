@@ -1,0 +1,9 @@
+repeat hours in actuals: 8
+repeat-hour MAE with no rule: 637.18
+other-hour MAE with no rule: 397.96
+median client ratio, repeat hour to other hours, no rule: 6.98
+next-day MAE at 1am with no rule: 1524.26
+median client ratio, next-day 1am to other hours, no rule: 7.53
+NaN forecasts without the fill: 8
+next-day MAE at 1am with the rule: 184.22
+other-hour MAE with the rule: 394.23

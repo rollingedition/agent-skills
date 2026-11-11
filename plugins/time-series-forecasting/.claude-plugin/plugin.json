@@ -1,0 +1,23 @@
+{
+  "name": "time-series-forecasting",
+  "displayName": "Time Series Forecasting",
+  "version": "2026.11.1",
+  "description": "Forecasts you can trust, from baselines and backtests to uncertainty you can act on.",
+  "author": {
+    "name": "Rolling Edition",
+    "url": "https://rollingedition.com/"
+  },
+  "homepage": "https://rollingedition.com/time-series-forecasting",
+  "repository": "https://github.com/rollingedition/agent-skills",
+  "license": "CC-BY-4.0",
+  "keywords": [
+    "time-series-forecasting",
+    "feature-engineering",
+    "model-evaluation"
+  ],
+  "icon": "./icon.png",
+  "documentationUrl": "https://rollingedition.com/assistants#agent-skills",
+  "supportUrl": "https://rollingedition.com/assistants#trouble",
+  "privacyPolicyUrl": "https://rollingedition.com/policies/privacy#mcp",
+  "termsOfServiceUrl": "https://rollingedition.com/policies/terms"
+}

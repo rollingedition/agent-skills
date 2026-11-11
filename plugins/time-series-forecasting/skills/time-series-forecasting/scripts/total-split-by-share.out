@@ -1,0 +1,13 @@
+decision holiday hours: 0
+mean per-client MASE bottom-up, decision windows: 0.75
+mean per-client MASE top-down, decision windows: 2.37
+chosen client method: bottom-up
+scored hours: 2160
+mean per-client MAE bottom-up: 122.81
+mean per-client MAE top-down: 218.95
+mean per-client MASE bottom-up: 0.91
+mean per-client MASE top-down: 2.59
+clients where top-down has the lower MAE: 0
+mean per-client MAE with the true total split by share: 171.80
+largest client share of the total, first cutoff: 0.56
+shares changed after poisoning readings from their cutoff: 0

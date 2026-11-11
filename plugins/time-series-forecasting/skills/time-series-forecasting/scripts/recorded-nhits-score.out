@@ -1,0 +1,22 @@
+clients scored: 30
+scored hours: 2160
+clients where NHITS beats seasonal naive: 24
+MAE NHITS: 136.61
+MAE SeasonalNaive: 148.26
+MAE Global: 122.81
+RMSE NHITS: 649.41
+RMSE SeasonalNaive: 780.48
+RMSE Global: 678.81
+mean MASE NHITS: 1.03
+mean MASE SeasonalNaive: 1.18
+mean MASE Global: 0.91
+mean MASE NHITS SUBSET8: 1.17
+mean MASE SeasonalNaive SUBSET8: 1.16
+mean MASE Global SUBSET8: 1.03
+quantile loss 0.1 NHITS: 27.66
+quantile loss 0.5 NHITS: 68.31
+quantile loss 0.9 NHITS: 40.58
+coverage 80 NHITS: 0.700
+interval score 80 NHITS: 682.37
+coverage 95 NHITS: 0.877
+interval score 95 NHITS: 1250.94

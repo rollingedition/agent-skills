@@ -1,0 +1,8 @@
+gap rows: 57
+gap rows that read zero: 40
+gap rows that read above zero: 17
+gap rows below 5 percent of their neighbours: 55
+gap rows at or above 5 percent of their neighbours: 2
+median gap ratio to neighbours: 0.000
+repeat rows: 58
+median repeat ratio to neighbours: 1.948
