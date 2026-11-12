@@ -3,12 +3,12 @@ title: "Data Governance as Code"
 chapter: "Audit and evidence"
 chapter_id: audit-and-evidence
 book: data-governance-as-code
-edition: 2026.11.24
+edition: 2026.11.25
 verified: 2026-11-12
-edition_code: 7X69-5ZK7
+edition_code: 766W-JH9C
 canonical: https://rollingedition.com/data-governance-as-code/audit-and-evidence
 license: CC BY 4.0
-attribution: "“Audit and evidence,” chapter 8 of Data Governance as Code, Edition 2026.11.24, examples passed Nov 12, 2026. By Rolling Edition, https://rollingedition.com/data-governance-as-code/audit-and-evidence. Text CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Audit and evidence,” chapter 8 of Data Governance as Code, Edition 2026.11.25, examples passed Nov 12, 2026. By Rolling Edition, https://rollingedition.com/data-governance-as-code/audit-and-evidence. Text CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Audit and evidence
 
@@ -28,7 +28,7 @@ NIST's catalog of security controls gives a checklist for those fields. Control 
 
 `lib.audit.Audited` takes a catalog and a `Log`, the audit log's file. Its `sql` method takes the same arguments as `Enforcer.sql`, plus `via`, the assistant that sent the query when one did. It plans the query, asks the policy about every table the query reads, writes one record, and only then hands the rewritten query to DuckDB. So no query reaches DuckDB through the layer without a record, and when the record can't be written, the query doesn't run. [Chapter 6](#query-on-someones-behalf) left this chapter one case: when the course assistant answers `instructor-17`, the query runs as the instructor, and both identities belong in the log. The example sends that query, then has the assistant try to put names to the ratings:
 
-Example `decision-record` (Python 3.12.15 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0 · regopy 1.5.2 · sqlglot 30.30.0), passing in Edition 2026.11.24:
+Example `decision-record` (Python 3.12.15 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0 · regopy 1.5.2 · sqlglot 30.30.0), passing in Edition 2026.11.25:
 
 ```python
 from lib import audit
@@ -107,7 +107,7 @@ The risk is the query text. A support agent who looks a learner up by the email 
 
 On the platform, `agent-a05` looks up an EMEA learner by email, then by ID, and `analyst-1` reads learners' emails, which the policy pseudonymizes. The example never prints the email or the ID:
 
-Example `query-without-literals` (Python 3.12.15 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0 · regopy 1.5.2 · sqlglot 30.30.0), passing in Edition 2026.11.24:
+Example `query-without-literals` (Python 3.12.15 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0 · regopy 1.5.2 · sqlglot 30.30.0), passing in Edition 2026.11.25:
 
 ```python
 from lib import audit
@@ -168,7 +168,7 @@ The last lines show what the key does. The rewrite is code in the repository, so
 
 DuckDB takes a value in more ways than a quoted string, and a name can hold one too. The second example, a regression test for `normalized`, types the same learner's email, name and ID into `agent-a05`'s queries in each of those ways:
 
-Example `query-shape-hard-cases` (Python 3.12.15 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0 · regopy 1.5.2 · sqlglot 30.30.0), passing in Edition 2026.11.24:
+Example `query-shape-hard-cases` (Python 3.12.15 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0 · regopy 1.5.2 · sqlglot 30.30.0), passing in Edition 2026.11.25:
 
 ```python
 import json
@@ -247,7 +247,7 @@ A [decision record](#record-every-decision) holds the request, but a decision de
 
 On the platform, `analyst-1` reads learners' emails and gets pseudonyms. Later, a pull request adds `analyst-1` to support for EMEA, the change [chapter 6](#test-who-sees-what) caught with its who-sees-what test. Make that change, then replay the old record under each revision:
 
-Example `explain-old-decision` (Python 3.12.15 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0 · regopy 1.5.2 · sqlglot 30.30.0), passing in Edition 2026.11.24:
+Example `explain-old-decision` (Python 3.12.15 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0 · regopy 1.5.2 · sqlglot 30.30.0), passing in Edition 2026.11.25:
 
 ```python
 from lib import audit, policy
@@ -308,7 +308,7 @@ A digest per file detects a change to a closed file. A **hash chain** detects a 
 
 The example replays `lib.audit.DAY`, the 13 queries the platform received on Oct 1, and writes the head down at noon, at record 9. Then it tampers with copies of the log. Before noon, record 3, `agent-a05`'s lookup of a learner's contact details, is handed to another agent, once as a plain edit and once with the chain rebuilt. After noon, record 12, the denied read by `someone-else`, the user the platform doesn't know, is removed, once plainly and once with the chain rebuilt; and the day's last two records are cut off. Before you run it, predict which of the five the chain finds on its own, and which against the noon head.
 
-Example `chain-catches-edit` (Python 3.12.15 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0 · regopy 1.5.2 · sqlglot 30.30.0), passing in Edition 2026.11.24:
+Example `chain-catches-edit` (Python 3.12.15 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0 · regopy 1.5.2 · sqlglot 30.30.0), passing in Edition 2026.11.25:
 
 ```python
 import json
@@ -385,7 +385,7 @@ DuckDB's log isn't an audit log. Each entry holds the SQL text, with connection,
 
 On the platform, replay `lib.audit.DAY`, the day's 13 queries, and check. Then send two more queries through the layer, one its caller never fetches and one it narrows to five rows, read a learner's email through the layer's connection, around the layer, and check again:
 
-Example `query-log-cross-check` (Python 3.12.15 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0 · regopy 1.5.2 · sqlglot 30.30.0), passing in Edition 2026.11.24:
+Example `query-log-cross-check` (Python 3.12.15 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0 · regopy 1.5.2 · sqlglot 30.30.0), passing in Edition 2026.11.25:
 
 ```python
 from lib import audit
@@ -444,7 +444,7 @@ The platform's [audit log](#record-every-decision) says what each person read, a
 
 `lib.audit.review` evaluates the platform's policy for every user in `users.toml` against every table, reads the log, and lists for each user the tables they may read, the tables they read, the grants they didn't use, their denied queries with the assistant that sent them, and anything someone should look at. To give it something stale to find, the example adds `analyst-2` to the users, still listed in `bi`, a group the policy no longer has, as happens when a group is retired and nobody edits the users file:
 
-Example `access-review` (Python 3.12.15 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0 · regopy 1.5.2 · sqlglot 30.30.0), passing in Edition 2026.11.24:
+Example `access-review` (Python 3.12.15 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0 · regopy 1.5.2 · sqlglot 30.30.0), passing in Edition 2026.11.25:
 
 ```python
 from lib import audit, policy
@@ -529,7 +529,7 @@ The [chain check](#chain-the-records), the [cross-check](#cross-check-the-query-
 
 Every section names the policy revision it was computed under, the digests of its inputs, and what anyone needs to compute it again: the archived bundle, the test files, `metadata.toml` and the tables' schemas, the audit log. The engine cross-check can be computed again only in part, and says so. It keeps the keyed digest of every query DuckDB ran, so anyone holding the audit log can redo its two counts, but only the layer could read DuckDB's log, once, before emptying it. Generate the report for the platform on Oct 1, with every table and pipeline output in the catalog, [chapter 7](#retention-consent-erasure)'s erasure of a learner logged at 07:00, and the day's queries:
 
-Example `evidence-report` (Python 3.12.15 · duckdb 2.0.0 · openlineage-python 1.55.0 · pyarrow 26.0.1 · pyiceberg 0.12.0 · pyyaml 6.0.3 · regopy 1.5.2 · sqlglot 30.30.0), passing in Edition 2026.11.24:
+Example `evidence-report` (Python 3.12.15 · duckdb 2.0.0 · openlineage-python 1.55.0 · pyarrow 26.0.1 · pyiceberg 0.12.0 · pyyaml 6.0.3 · regopy 1.5.2 · sqlglot 30.30.0), passing in Edition 2026.11.25:
 
 ```python
 import json
@@ -603,7 +603,7 @@ The report claims nothing about any law or framework. It states what was checked
 
 An audit trail fails quietly: nothing breaks when it stops being complete, true or read. The failure that matters most is logging that the audited code can switch off, and DuckDB's query log is that kind: it belongs to the process it records. The example sets up two enforcement layers. The first doesn't lock its configuration, like any layer built without `lib.audit`; code holding its connection tries to log to a file, switches the log off, then reads a learner's email around the layer. The second is `lib.audit`'s, locked; the same kind of code tries to switch the log off, reads around the layer, then empties the log:
 
-Example `query-log-switched-off` (Python 3.12.15 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0 · regopy 1.5.2 · sqlglot 30.30.0), passing in Edition 2026.11.24:
+Example `query-log-switched-off` (Python 3.12.15 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0 · regopy 1.5.2 · sqlglot 30.30.0), passing in Edition 2026.11.25:
 
 ```python
 import duckdb

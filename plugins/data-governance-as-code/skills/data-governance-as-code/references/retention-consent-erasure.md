@@ -3,12 +3,12 @@ title: "Data Governance as Code"
 chapter: "Retention, consent and erasure"
 chapter_id: retention-consent-erasure
 book: data-governance-as-code
-edition: 2026.11.24
+edition: 2026.11.25
 verified: 2026-11-12
-edition_code: 7X69-5ZK7
+edition_code: 766W-JH9C
 canonical: https://rollingedition.com/data-governance-as-code/retention-consent-erasure
 license: CC BY 4.0
-attribution: "“Retention, consent and erasure,” chapter 7 of Data Governance as Code, Edition 2026.11.24, examples passed Nov 12, 2026. By Rolling Edition, https://rollingedition.com/data-governance-as-code/retention-consent-erasure. Text CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Retention, consent and erasure,” chapter 7 of Data Governance as Code, Edition 2026.11.25, examples passed Nov 12, 2026. By Rolling Edition, https://rollingedition.com/data-governance-as-code/retention-consent-erasure. Text CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Retention, consent and erasure
 
@@ -43,7 +43,7 @@ counted_from = "paid_at"
 
 Closed tickets are kept two years, events one year, and payments 3,650 days, a placeholder that [the erasure plan](#plan-erasure-from-lineage) relies on. The tickets rule should count from when a ticket was closed, but the table records only `opened_at`, so a ticket opened 25 months ago and closed last week goes at once. The platform lives with that because adding a `closed_at` column is the support team's change to their own table, not the governance team's; until they make it, the rule errs toward deleting early. `lib.retention.due` turns a rule and a day into an Iceberg filter. Count the rows due on the book's "today", Oct 1, 2026, and 90 days later:
 
-Example `retention-rules-due` (Python 3.12.15 · duckdb 2.0.0 · openlineage-python 1.55.0 · pyarrow 26.0.1 · pyiceberg 0.12.0 · pyyaml 6.0.3 · sqlglot 30.30.0), passing in Edition 2026.11.24:
+Example `retention-rules-due` (Python 3.12.15 · duckdb 2.0.0 · openlineage-python 1.55.0 · pyarrow 26.0.1 · pyiceberg 0.12.0 · pyyaml 6.0.3 · sqlglot 30.30.0), passing in Edition 2026.11.25:
 
 ```python
 """Which rows the platform's retention rules no longer keep, counted against a day the job is given, never the clock."""
@@ -104,7 +104,7 @@ With [the rules in a file](#retention-rules-in-a-file), the retention job delete
 
 `lib.retention.apply` deletes, for each rule, the rows `due` returns for the day it's given, and records the rule's table and the day in the commit's snapshot summary, so the table's own history says why the rows went. Apply the platform's rules on Oct 1, 2026, apply them again, read each table as it is now and by time travel to the snapshot before the delete, and expire the old snapshots by age:
 
-Example `apply-retention` (Python 3.12.15 · duckdb 2.0.0 · openlineage-python 1.55.0 · pyarrow 26.0.1 · pyiceberg 0.12.0 · pyyaml 6.0.3 · sqlglot 30.30.0), passing in Edition 2026.11.24:
+Example `apply-retention` (Python 3.12.15 · duckdb 2.0.0 · openlineage-python 1.55.0 · pyarrow 26.0.1 · pyiceberg 0.12.0 · pyyaml 6.0.3 · sqlglot 30.30.0), passing in Edition 2026.11.25:
 
 ```python
 """Apply the retention rules on the book's "today": Iceberg row deletes, which leave the old rows in older snapshots."""
@@ -173,7 +173,7 @@ The time-travel lines matter most here. Read as it is now, `learning.events` hol
 
 On the platform, consent is an attribute of the data that the access policy reads, as [chapter 5](#narrow-by-attribute) set it up: marketing's row filter keeps only learners whose `marketing_consent` is true, and the course assistant's keeps only the reviews whose authors' `ai_training_consent` is true. So a withdrawal needs no change to the policy. The CRM, the application where learners manage their accounts, syncs the new value into `crm.learners`, and the next query marketing runs through the enforcement layer, which [chapter 6](#enforcing-policies-on-queries) builds to rewrite every query, returns one learner fewer. Withdraw learner 3590's marketing consent, and compare what marketing sees and the tables hold before the withdrawal, after it, and after the marketing pipeline runs again:
 
-Example `consent-withdrawal` (Python 3.12.15 · duckdb 2.0.0 · openlineage-python 1.55.0 · pyarrow 26.0.1 · pyiceberg 0.12.0 · pyyaml 6.0.3 · regopy 1.5.2 · sqlglot 30.30.0), passing in Edition 2026.11.24:
+Example `consent-withdrawal` (Python 3.12.15 · duckdb 2.0.0 · openlineage-python 1.55.0 · pyarrow 26.0.1 · pyiceberg 0.12.0 · pyyaml 6.0.3 · regopy 1.5.2 · sqlglot 30.30.0), passing in Edition 2026.11.25:
 
 ```python
 """A learner withdraws marketing consent: one attribute changes, and marketing's next query returns one learner fewer.
@@ -256,7 +256,7 @@ An erasure keeps an excepted table's rows until the table's [retention rule](#re
 
 Finding a derived table isn't the same as finding the learner's rows in it. `lib.retention.plan` looks at the lineage edges into each table the walk reaches, for a column copied unchanged, an IDENTITY edge in OpenLineage's terms, from the learner's ID or from the ID of one of their rows, such as a review. If there is one, the plan deletes by that column. If there's none, the learner's rows only shaped the table, and the plan runs the table's job again once the sources are erased. The catalog the plan reads is the platform as the request finds it, weeks after the withdrawal: `crm.learners` holds learner 3590's withdrawn consent, and the four pipelines of [chapter 4](#lineage-from-pipelines), which build the analytics, marketing and AI tables, have run since, with their lineage recorded. Plan learner 3590's erasure:
 
-Example `erasure-plan` (Python 3.12.15 · duckdb 2.0.0 · openlineage-python 1.55.0 · phonenumbers 9.0.43 · presidio-analyzer 2.2.366 · pyarrow 26.0.1 · pyiceberg 0.12.0 · pyyaml 6.0.3 · sqlglot 30.30.0 · tldextract 5.4.0), passing in Edition 2026.11.24:
+Example `erasure-plan` (Python 3.12.15 · duckdb 2.0.0 · openlineage-python 1.55.0 · phonenumbers 9.0.43 · presidio-analyzer 2.2.366 · pyarrow 26.0.1 · pyiceberg 0.12.0 · pyyaml 6.0.3 · sqlglot 30.30.0 · tldextract 5.4.0), passing in Edition 2026.11.25:
 
 ```python
 """Plan one learner's erasure: the tables that hold their learner_id, then every table lineage says their rows reach,
@@ -323,7 +323,7 @@ Text can name a person in rows the plan doesn't delete, such as another learner'
 
 [The plan](#plan-erasure-from-lineage) says where learner 3590's data is, and `lib.retention.erase` carries it out, in its order. It deletes each step's rows with `Table.delete`, sources first, writes the rows an exception keeps again with the exception's columns empty, and runs the job of each table the plan rebuilds once the sources are done. Every commit records the request's ID, `erasure-0001`, in its snapshot summary. A summary is written into the table's metadata files, which Iceberg keeps after the snapshot expires: all of them by default, and the last `write.metadata.previous-versions-max`, 100 by default, with `write.metadata.delete-after-commit.enabled` set ([Iceberg maintenance](https://iceberg.apache.org/docs/latest/maintenance/), [Iceberg configuration](https://iceberg.apache.org/docs/latest/configuration/)). So the summary holds only the request's ID, which [the erasure register](#erased-learner-comes-back) pairs with a keyed hash of the learner's ID, and never the learner's email. Erase the learner, then read two tables as they are now and by time travel:
 
-Example `erase-learner` (Python 3.12.15 · duckdb 2.0.0 · openlineage-python 1.55.0 · pyarrow 26.0.1 · pyiceberg 0.12.0 · pyyaml 6.0.3 · sqlglot 30.30.0), passing in Edition 2026.11.24:
+Example `erase-learner` (Python 3.12.15 · duckdb 2.0.0 · openlineage-python 1.55.0 · pyarrow 26.0.1 · pyiceberg 0.12.0 · pyyaml 6.0.3 · sqlglot 30.30.0), passing in Edition 2026.11.25:
 
 ```python
 """Carry out the erasure plan with Iceberg row deletes. The current snapshots no longer hold the learner; the snapshots
@@ -396,7 +396,7 @@ Across the plan's tables, 6 snapshots still hold the rows the erasure deleted, a
 
 PyIceberg 0.12.0 does less. Its `table.maintenance.expire_snapshots()` commits one change, which removes the snapshots from the table's metadata, and deletes no file ([source](https://github.com/apache/iceberg-python/blob/pyiceberg-0.12.0/pyiceberg/table/update/snapshot.py)), though its documentation offers it to "clean up table metadata and reduce storage costs" ([PyIceberg API](https://py.iceberg.apache.org/api/)). Nothing in it reads `gc.enabled`, and only its command-line tool reads the `history.expire` settings. An issue asks for expiry to delete files too ([issue 2604](https://github.com/apache/iceberg-python/issues/2604)). Take `crm.learners` with 3 snapshots, the load and two deletes, once with `gc.enabled=false` and once with `history.expire.min-snapshots-to-keep=3`. Expire both by age with PyIceberg, `older_than` the current time, and with `lib.retention.expire`, which reads the two settings first:
 
-Example `expiry-ignores-table-settings` (Python 3.12.15 · duckdb 2.0.0 · openlineage-python 1.55.0 · pyarrow 26.0.1 · pyiceberg 0.12.0 · pyyaml 6.0.3 · sqlglot 30.30.0), passing in Edition 2026.11.24:
+Example `expiry-ignores-table-settings` (Python 3.12.15 · duckdb 2.0.0 · openlineage-python 1.55.0 · pyarrow 26.0.1 · pyiceberg 0.12.0 · pyyaml 6.0.3 · sqlglot 30.30.0), passing in Edition 2026.11.25:
 
 ```python
 """PyIceberg's snapshot expiry ignores two of the table's own settings, gc.enabled and min-snapshots-to-keep. The
@@ -446,7 +446,7 @@ With garbage collection off, PyIceberg's expiry by age left 1 of the 3 snapshots
 
 For an erasure, both settings mean the job can't finish: a table that keeps a snapshot from before the delete still holds the person. A job that stopped at that table would already have deleted rows from the tables before it, and would leave every table after it unexpired, so the check belongs before the first delete. `lib.retention.erase_everywhere` runs `lib.retention.blocked` on every table in the plan first: garbage collection off, more than one snapshot to keep, or a branch or tag besides `main`. If any table fails, the job refuses to start and names every such table. Turn off garbage collection on `crm.learners`, keep three snapshots of `learning.events`, then run the job and the scan:
 
-Example `erasure-refuses-to-start` (Python 3.12.15 · duckdb 2.0.0 · openlineage-python 1.55.0 · pyarrow 26.0.1 · pyiceberg 0.12.0 · pyyaml 6.0.3 · sqlglot 30.30.0), passing in Edition 2026.11.24:
+Example `erasure-refuses-to-start` (Python 3.12.15 · duckdb 2.0.0 · openlineage-python 1.55.0 · pyarrow 26.0.1 · pyiceberg 0.12.0 · pyyaml 6.0.3 · sqlglot 30.30.0), passing in Edition 2026.11.25:
 
 ```python
 """The erasure job checks every table in its plan before it changes any. When a table's own settings would keep the
@@ -496,7 +496,7 @@ Once [the old snapshots are expired](#expire-snapshots), the files only they ref
 
 So `lib.retention` removes them itself, from what the metadata tables PyIceberg exposes as `table.inspect` say a table references. `lib.retention.referenced` collects the metadata files, current and logged, every snapshot's manifest list, every manifest (a manifest lists data files, with each file's column statistics), every data and delete file live in any snapshot, and any statistics files. Every other file under the table's location is unreferenced, and `lib.retention.sweep` deletes the ones older than the minimum age its caller passes. `governance/retention.toml` sets that age to 72 hours, Java's default, and `lib.retention.min_file_age` reads it. After the erasure, expire the plan's tables, sweep with that age and then with none, and check every file for the learner:
 
-Example `sweep-unreferenced-files` (Python 3.12.15 · duckdb 2.0.0 · openlineage-python 1.55.0 · pyarrow 26.0.1 · pyiceberg 0.12.0 · pyyaml 6.0.3 · sqlglot 30.30.0), passing in Edition 2026.11.24:
+Example `sweep-unreferenced-files` (Python 3.12.15 · duckdb 2.0.0 · openlineage-python 1.55.0 · pyarrow 26.0.1 · pyiceberg 0.12.0 · pyyaml 6.0.3 · sqlglot 30.30.0), passing in Edition 2026.11.25:
 
 ```python
 """After the erasure, expire the old snapshots, then remove the files no snapshot references. PyIceberg's expiry
@@ -555,7 +555,7 @@ The spec says why: "When a file is replaced or deleted from the dataset, its man
 
 Typed by hand, those properties would drift from the classifications. `lib.retention.properties` generates them instead, from `governance/metadata.toml` and the `[statistics]` section of `governance/retention.toml`: `none` for every column classified `personal` or `sensitive`, and for every column nobody has classified, the same fail-closed default the access policy uses. It adds the `history.expire` settings from the rules' `[snapshots]` section. `lib.retention.apply_properties` sets them on every table and rewrites each table's data once, because a metrics mode applies only to the files written after it's set; expiry and a sweep then remove the files from before. Erase learner 4998, whose email is the largest bound in the manifest of `crm.learners`, on two platforms, one with default statistics and one with the generated properties:
 
-Example `statistics-off-for-personal-columns` (Python 3.12.15 · duckdb 2.0.0 · openlineage-python 1.55.0 · pyarrow 26.0.1 · pyiceberg 0.12.0 · pyyaml 6.0.3 · sqlglot 30.30.0), passing in Edition 2026.11.24:
+Example `statistics-off-for-personal-columns` (Python 3.12.15 · duckdb 2.0.0 · openlineage-python 1.55.0 · pyarrow 26.0.1 · pyiceberg 0.12.0 · pyyaml 6.0.3 · sqlglot 30.30.0), passing in Edition 2026.11.25:
 
 ```python
 """Generate each table's properties from the classifications, so manifests keep no values of personal columns, then
@@ -627,7 +627,7 @@ The cost is pruning. Iceberg uses the bounds in manifests to skip files a query'
 
 `lib.retention.scan` reads every file under the catalog's warehouse, each with its own format's reader, and looks for the learner's traces, which `lib.retention.traces` noted before the erasure: the IDs of every row the plan deletes, by column, and the first 15 characters, lowercased, of each identifying value. Fifteen, because a manifest keeps a largest value's first 15 characters unchanged and raises the 16th by one, so a search for 16 misses a person whose value is a file's largest, as learner 4998's email is. A Parquet file is read as rows. A manifest or manifest list, both Avro, is read record by record with PyIceberg's Avro reader: every string in it, bounds included, and the bounds of each ID column, decoded by the schema the manifest carries. A metadata file is read as text. In a table an exception keeps, the learner's IDs are expected, so there the scan looks only for values, including those of the columns the exception erased. `lib.retention.erase_everywhere` runs the whole job: plan, note the traces, check every table, erase, expire, sweep. Run it on the platform with the generated properties, then scan:
 
-Example `verify-erasure` (Python 3.12.15 · duckdb 2.0.0 · openlineage-python 1.55.0 · pyarrow 26.0.1 · pyiceberg 0.12.0 · pyyaml 6.0.3 · sqlglot 30.30.0), passing in Edition 2026.11.24:
+Example `verify-erasure` (Python 3.12.15 · duckdb 2.0.0 · openlineage-python 1.55.0 · pyarrow 26.0.1 · pyiceberg 0.12.0 · pyyaml 6.0.3 · sqlglot 30.30.0), passing in Edition 2026.11.25:
 
 ```python
 """The whole erasure job on the platform with statistics off for protected columns, ending with a scan of every file
@@ -704,7 +704,7 @@ Retention and erasure fail quietly: a delete that succeeds looks the same whethe
 
 Besides the CRM's sync, the warehouse reloads all of `crm.learners` each night from the application's export, and the erasure ran in the warehouse only. Erase learner 3590 everywhere [the plan](#plan-erasure-from-lineage) says, then run the nightly reload and the pipelines that read it:
 
-Example `erased-learner-returns` (Python 3.12.15 · duckdb 2.0.0 · openlineage-python 1.55.0 · pyarrow 26.0.1 · pyiceberg 0.12.0 · pyyaml 6.0.3 · sqlglot 30.30.0), passing in Edition 2026.11.24:
+Example `erased-learner-returns` (Python 3.12.15 · duckdb 2.0.0 · openlineage-python 1.55.0 · pyarrow 26.0.1 · pyiceberg 0.12.0 · pyyaml 6.0.3 · sqlglot 30.30.0), passing in Edition 2026.11.25:
 
 ```python
 """An erased learner comes back: the warehouse's copy of the CRM is reloaded each night from the application's
