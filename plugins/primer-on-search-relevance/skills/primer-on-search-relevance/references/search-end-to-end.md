@@ -3,12 +3,12 @@ title: "A Primer on Search Relevance"
 chapter: "Search, end to end"
 chapter_id: search-end-to-end
 book: primer-on-search-relevance
-edition: 2026.11.5
-verified: 2026-11-10
-edition_code: CKSM-TBXZ
+edition: 2026.11.6
+verified: 2026-11-12
+edition_code: R33J-KWQ9
 canonical: https://rollingedition.com/primer-on-search-relevance/search-end-to-end
 license: CC BY 4.0
-attribution: "“Search, end to end,” chapter 1 of A Primer on Search Relevance, Edition 2026.11.5, examples passed Nov 10, 2026. By Rolling Edition, https://rollingedition.com/primer-on-search-relevance/search-end-to-end. Text CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Search, end to end,” chapter 1 of A Primer on Search Relevance, Edition 2026.11.6, examples passed Nov 12, 2026. By Rolling Edition, https://rollingedition.com/primer-on-search-relevance/search-end-to-end. Text CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Search, end to end
 
@@ -22,7 +22,7 @@ Before you can improve a search system, you need three things: the items it sear
 
 The store's data, which the book's examples search and score, is real. It is a sample of WANDS, a public product-search dataset that Wayfair published with a paper at ECIR 2022 ([Chen et al., 2022](https://easychair.org/publications/preprint/wm4R)), under the MIT licence ([licence](https://github.com/wayfair/WANDS/blob/main/LICENSE)). The full dataset has 42,994 products, 480 queries and 233,448 judgments ([repository](https://github.com/wayfair/WANDS)). The queries are a stratified sample of real shopper queries from a quarter's search log in 2021, and each label is the majority vote of up to three trained annotators (Chen et al., sections 4.1 and 5). The script `prep/wands_sample.py` draws the book's sample, and the sample's data card, `examples/data/wands/README.md`, says how. Setup code that many examples need lives in the book's shared modules, short files in `examples/lib/` that you can open and read. The examples load the sample through one of them, `lib.store`:
 
-Example `load-the-store` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.5:
+Example `load-the-store` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.6:
 
 ```python
 import pandas as pd
@@ -90,7 +90,7 @@ The examples use bm25s 0.3.16, a Python library for BM25. By default, it scores 
 
 In the store, take the test query `clear shower curtain`. A shopper who types it wants a transparent curtain, and the catalog holds many curtains that aren't clear, plus accessories that share the words. Here are BM25's top 10 products:
 
-Example `first-bm25-search` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.4 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.5:
+Example `first-bm25-search` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.4 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.6:
 
 ```python
 from lib.lexical import LexicalSearch
@@ -134,7 +134,7 @@ A ranking means little until you know what the shopper wanted. Judgments supply 
 
 For the store's query `clear shower curtain`, put each of BM25's top 10 products next to its judgment. A product nobody judged for this query shows as `unjudged`:
 
-Example `judge-first-results` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.4 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.5:
+Example `judge-first-results` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.4 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.6:
 
 ```python
 from lib.lexical import LexicalSearch
@@ -208,7 +208,7 @@ The WANDS paper scores search with nDCG@10 too, with gains of 1.0, 0.5 and 0 for
 
 Take [BM25's ranking of `clear shower curtain`](#check-against-judgments): a partial product first, then exact and partial curtains, then three irrelevant hooks. Compute DCG, the ideal DCG and their ratio by hand, then compare with `lib.metrics`, the shared module that holds the book's metrics:
 
-Example `ndcg-for-one-query` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.4 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.5:
+Example `ndcg-for-one-query` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.4 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.6:
 
 ```python
 import math
@@ -260,7 +260,7 @@ Next to nDCG@10, `evaluate` reports **judged@10**: the share of the top 10 that 
 
 In the store, run [BM25](#rank-with-bm25) on every test query, keeping the top 100 products for each, and score the run:
 
-Example `bm25-test-scores` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.4 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.5:
+Example `bm25-test-scores` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.4 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.6:
 
 ```python
 from lib.lexical import LexicalSearch
@@ -338,7 +338,7 @@ The store's embeddings come from the open model `Snowflake/snowflake-arctic-embe
 
 For `clear shower curtain`, semantic search returns:
 
-Example `first-semantic-search` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.5:
+Example `first-semantic-search` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.6:
 
 ```python
 from lib.metrics import ndcg_at_k
@@ -400,7 +400,7 @@ Each product is a vector of 768 numbers. The top 10 holds 5 exact products, agai
 
 One query can mislead, so compare the two rankers on every test query:
 
-Example `compare-lexical-semantic` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.4 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.5:
+Example `compare-lexical-semantic` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.4 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.6:
 
 ```python
 from lib.lexical import LexicalSearch
@@ -472,7 +472,7 @@ RRF is short enough to write by hand, as two functions: `rrf_scores` scores one 
 
 Before you read the output, predict the hybrid's mean nDCG@10. [BM25 scores 0.725 and semantic retrieval 0.830](#search-by-meaning). Will their fusion score above semantic retrieval, between the two, or below BM25?
 
-Example `hybrid-rrf` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.4 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.5:
+Example `hybrid-rrf` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.4 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.6:
 
 ```python
 from lib.lexical import LexicalSearch
@@ -558,7 +558,7 @@ A cross-encoder is a language model, but not a **large language model (LLM)**. A
 
 The store's cross-encoder is the open model `Alibaba-NLP/gte-reranker-modernbert-base`, chosen for the same reason as [the embedding model](#search-by-meaning): it is open and under the Apache 2.0 licence, so anyone can rerun the recording. Its recording, `recordings/cross_encoder.py`, saves the model's scores once, for every product in the union of BM25's and semantic retrieval's top 100 for each query, so every product in the hybrid's top 50 has a score. The example reorders the top 50 of [the hybrid run](#fuse-with-rrf), BM25 and semantic retrieval fused with RRF, by those scores, keeps the rest in place, and scores the result:
 
-Example `cross-encoder-rerank` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.4 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.5:
+Example `cross-encoder-rerank` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.4 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.6:
 
 ```python
 from lib.fusion import reciprocal_rank_fusion
@@ -612,7 +612,7 @@ Reranking scores 0.798, against 0.812 for the hybrid run it started from. It imp
 
 To see what reranking does to a single query, look at one where it lowered the score, `refrigerator with ice an water in door`:
 
-Example `rerank-one-query` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.4 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.5:
+Example `rerank-one-query` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.4 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.6:
 
 ```python
 import re
@@ -691,7 +691,7 @@ The judges marked that refrigerator exact, so by the dataset's definition it ful
 
 **The tokenizer drops words without telling you.** bm25s's default tokenizer keeps only tokens of two or more characters and doesn't stem words ([bm25s tokenizer](https://raw.githubusercontent.com/xhluca/bm25s/0.3.15/bm25s/tokenization.py)). Run it on a train query and a test query, and count the products it can't match:
 
-Example `tokenizer-drops-terms` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.4 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.5:
+Example `tokenizer-drops-terms` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.4 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.6:
 
 ```python
 import bm25s

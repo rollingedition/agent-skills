@@ -3,12 +3,12 @@ title: "A Primer on Search Relevance"
 chapter: "Retrieval for LLM applications"
 chapter_id: retrieval-for-llm-applications
 book: primer-on-search-relevance
-edition: 2026.11.5
-verified: 2026-11-10
-edition_code: CKSM-TBXZ
+edition: 2026.11.6
+verified: 2026-11-12
+edition_code: R33J-KWQ9
 canonical: https://rollingedition.com/primer-on-search-relevance/retrieval-for-llm-applications
 license: CC BY 4.0
-attribution: "“Retrieval for LLM applications,” chapter 10 of A Primer on Search Relevance, Edition 2026.11.5, examples passed Nov 10, 2026. By Rolling Edition, https://rollingedition.com/primer-on-search-relevance/retrieval-for-llm-applications. Text CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Retrieval for LLM applications,” chapter 10 of A Primer on Search Relevance, Edition 2026.11.6, examples passed Nov 12, 2026. By Rolling Edition, https://rollingedition.com/primer-on-search-relevance/retrieval-for-llm-applications. Text CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Retrieval for LLM applications
 
@@ -33,7 +33,7 @@ Why not put the whole catalog in the prompt and skip retrieval? It has to fit, a
 
 In the store, the recording of answers ([Score each answer](#retrieval-bounds-the-answer)) put five products in each prompt, after these instructions: "You help shoppers at an online furniture and home-goods store. Using only the products listed below, answer the shopper. Recommend up to three products that fit, cite each one by its ID, and say plainly if none of them fit. Don't mention products that aren't listed." Count the words of the whole catalog as the LLM would read it, and compare:
 
-Example `catalog-against-the-context` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.4 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.5:
+Example `catalog-against-the-context` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.4 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.6:
 
 ```python
 from statistics import median
@@ -76,7 +76,7 @@ the catalog against the recording's window, at one token per word: 133 times
 the catalog against 200,000 tokens, at one token per word: 5.5 times
 ```
 
-Even with the book's sample cutting descriptions to about 400 characters ([data card](https://github.com/rollingedition/book-primer-on-search-relevance/blob/975f0c078e472eb1d3e9202a4a5feaddae27d052/examples/data/wands/README.md)), the catalog holds 1,091,544 words, and a prompt with five products holds a median of 536: the catalog is 2,035 times larger. The examples have no tokenizer for this model, so they count words. The recording set a context window of 8192 tokens. If every word were a single token, the catalog would fill that window 133 times over, and the vendor's 200,000 tokens 5.5 times over. The store has to retrieve.
+Even with the book's sample cutting descriptions to about 400 characters ([data card](https://github.com/rollingedition/book-primer-on-search-relevance/blob/d8bc0cbbe2485ee8945a1dd5960c81f99adca561/examples/data/wands/README.md)), the catalog holds 1,091,544 words, and a prompt with five products holds a median of 536: the catalog is 2,035 times larger. The examples have no tokenizer for this model, so they count words. The recording set a context window of 8192 tokens. If every word were a single token, the catalog would fill that window 133 times over, and the vendor's 200,000 tokens 5.5 times over. The store has to retrieve.
 
 **Working rule:** Put a few retrieved items in the prompt, not the collection, and choose how many by measuring answers on train queries at several sizes, because more context can help or hurt. The store's recording answered only the test queries, five products each, so five is a fixed setting here, not a measured one. Consider sending the whole collection only when it fits well inside the window, and then test it against retrieval on the same queries.
 
@@ -94,7 +94,7 @@ The store's recording answered each test query three times, as "I'm looking for"
 
 Before you run it, predict what the LLM does with the random context, where the prompt tells it to "say plainly if none of them fit". Of the 30 answers, how many will recommend nothing?
 
-Example `rag-answers-by-context` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.4 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.5:
+Example `rag-answers-by-context` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.4 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.6:
 
 ```python
 from lib.generation import PLANNED_TEST_COMPARISONS, THRESHOLD, report_planned, score_answers
@@ -213,7 +213,7 @@ Check citations at two levels, cheapest first. The first is exact and needs no m
 
 In the store, the answer recording's schema asked for the cited IDs as a list of integers in a field of their own (`schemas` in the manifest). The schema describes the field's form; it says nothing about which IDs go in it, or how many. The example checks each of the [recorded answers](#retrieval-bounds-the-answer) against its context, and compares the field with the context IDs written in the answer's text. The text can't reveal an ID from outside the context, which would look like any other number an answer writes, such as a size. That is why the IDs belong in a field:
 
-Example `citations-inside-the-context` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.4 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.5:
+Example `citations-inside-the-context` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.4 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.6:
 
 ```python
 from lib.generation import ids_in_text
@@ -256,7 +256,7 @@ Support isn't relevance. A citation can be faithful to the product's text and st
 
 Read one of the store's answers by hand first: the one for the test query `medium size chandelier`, from the semantic context. Then count the human grades of every product cited in the [recorded answers](#retrieval-bounds-the-answer) from the semantic and BM25 contexts:
 
-Example `faithful-but-partial` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.4 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.5:
+Example `faithful-but-partial` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.4 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.6:
 
 ```python
 from collections import Counter
@@ -321,7 +321,7 @@ Which measure tracks the answers? Salemi and Zamani found that relevance labels 
 
 In the store, take every context that a retriever built for the [recorded answers](#retrieval-bounds-the-answer), two per test query. The first example builds context recall and context precision by hand, checks them against `lib.metrics.recall_at_k` and the copies in `lib.generation`, and works through one context:
 
-Example `context-measures-by-hand` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.4 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.5:
+Example `context-measures-by-hand` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.4 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.6:
 
 ```python
 from lib import generation
@@ -379,7 +379,7 @@ Over the 60 contexts, context recall equals `recall_at_k` every time (yes), and 
 
 The second example correlates each measure with the answer's [exact share](#retrieval-bounds-the-answer), the share of its cited products judged exact. It computes Spearman's correlation by hand, as Pearson's correlation of the ranks, and checks it against SciPy's `spearmanr`:
 
-Example `context-measures-against-answers` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.4 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.5:
+Example `context-measures-against-answers` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.4 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.6:
 
 ```python
 import pandas as pd
@@ -431,11 +431,11 @@ A **retrievable unit** is the piece of text that retrieval scores and returns, a
 
 A small unit can also lose what it is about. A vendor's engineering post reports that adding chunk-specific context to each chunk before embedding it "reduced the top-20-chunk retrieval failure rate by 35%", a vendor's claim about its own method ([Anthropic, 2024](https://www.anthropic.com/news/contextual-retrieval)).
 
-The store's products are short, partly because the book's sample cuts every description to about 400 characters ([data card](https://github.com/rollingedition/book-primer-on-search-relevance/blob/975f0c078e472eb1d3e9202a4a5feaddae27d052/examples/data/wands/README.md)). Of the descriptions, 5,933 end in that cut, and 1,568 products have none. Non-empty descriptions run to a median of 68 words, and the whole text that search reads runs to at most 140 words per product. The store's full product pages would be longer. Even so, each product is a short text about one thing, so cutting it into chunks isn't the store's question. Its question is which part of each product to index. A sentence from a description shows the risk: the last sentence of the chandelier's description from [the support check](#check-citation-support) reads `the antler 's durability and beauty will last a lifetime .`, which never says what the product is.
+The store's products are short, partly because the book's sample cuts every description to about 400 characters ([data card](https://github.com/rollingedition/book-primer-on-search-relevance/blob/d8bc0cbbe2485ee8945a1dd5960c81f99adca561/examples/data/wands/README.md)). Of the descriptions, 5,933 end in that cut, and 1,568 products have none. Non-empty descriptions run to a median of 68 words, and the whole text that search reads runs to at most 140 words per product. The store's full product pages would be longer. Even so, each product is a short text about one thing, so cutting it into chunks isn't the store's question. Its question is which part of each product to index. A sentence from a description shows the risk: the last sentence of the chandelier's description from [the support check](#check-citation-support) reads `the antler 's durability and beauty will last a lifetime .`, which never says what the product is.
 
 The recorded embeddings cover each product's whole text, so the example tries other units with BM25 only. Choosing a unit is tuning, so it uses the 50 train queries. It indexes five units: the whole product (the text `lib.lexical` indexes), the name alone, the description alone, each of the 35,061 description sentences on its own, and each sentence with the product's name, class and category in front, a simple form of adding context to each chunk. The last sentence of a cut description is a fragment. The sentences with the other fields keep every field the whole product has. A product with no description gets one unit of those fields, the same as its whole text, so the two units differ only in cutting the description. `UnitSearch` in `lib.generation` ranks each product by its best-scoring unit, so the run still lists products. The example reports the precision@5 and recall@5 that a five-product context would have, with judged@5, the share of the top 5 with a judgment. `UnitSearch` orders equal scores by `product_id`, so the example also reverses that rule and counts the train queries whose top 5 changes:
 
-Example `retrievable-unit-on-train` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.4 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.5:
+Example `retrievable-unit-on-train` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.4 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.6:
 
 ```python
 import numpy as np
@@ -532,7 +532,7 @@ An agent's searches are queries, and they need not look like a shopper's. In a l
 
 In the store, the agent's recording gave it each test query as the shopper's request, and one tool, `search`, described as "Search the store's catalog. Returns the top 5 products: ID, name, class and attributes." It may search up to 3 times, with any wording, then reply with three product IDs. The tool returns no description. The recording ran twice, with the same model and prompt: once with BM25 behind the tool, and once with semantic retrieval, which embedded the agent's search text with the same embedding model as the products. As with [the answers' contexts](#retrieval-bounds-the-answer), the traces store each BM25 search's results in bm25s's own tie order, so 7 of the 32 searches get results that differ from what `lib.lexical` returns, 6 only in order. The example reads the traces:
 
-Example `agent-searches-in-traces` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.4 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.5:
+Example `agent-searches-in-traces` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.4 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.6:
 
 ```python
 from lib.lexical import LexicalSearch
@@ -591,7 +591,7 @@ The first search is the same under both tools for 30 queries, as expected: the a
 
 The agent rarely looks again. With BM25 it makes 32 searches in all, and 29 traces stop after one. With semantic retrieval it makes 35, and 27 stop after one. Where do the words of a later search come from? The second example compares each later search with the words already searched, and with the names, classes and attributes the tool had shown:
 
-Example `agent-later-searches` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.4 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.5:
+Example `agent-later-searches` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.4 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.6:
 
 ```python
 from lib.generation import shown, words
@@ -637,7 +637,7 @@ An agent told to pick from its search results should pick only what they return,
 
 The store's [recorded agent](#read-agent-searches) searches the catalog up to 3 times with one tool, then picks three products. The second of the chapter's [two planned comparisons](#retrieval-for-llm-applications), established if its permutation p-value is below 0.025, scores those picks under each tool by [precision@3](#count-relevant-in-top-k): exact picks divided by 3, so a missing pick counts as a miss. The example counts, for each tool, the traces with fewer than three picks, picks the tool never returned, picks nobody judged, traces whose searches never returned an exact product, and traces that saw an exact product and picked none. As an exploratory check, it compares the picks with the tool's own top 3 for the first search:
 
-Example `agent-picks-by-tool` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.4 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.5:
+Example `agent-picks-by-tool` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.4 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.6:
 
 ```python
 import pandas as pd

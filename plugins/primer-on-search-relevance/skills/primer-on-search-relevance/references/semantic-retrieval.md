@@ -3,12 +3,12 @@ title: "A Primer on Search Relevance"
 chapter: "Semantic retrieval"
 chapter_id: semantic-retrieval
 book: primer-on-search-relevance
-edition: 2026.11.5
-verified: 2026-11-10
-edition_code: CKSM-TBXZ
+edition: 2026.11.6
+verified: 2026-11-12
+edition_code: R33J-KWQ9
 canonical: https://rollingedition.com/primer-on-search-relevance/semantic-retrieval
 license: CC BY 4.0
-attribution: "“Semantic retrieval,” chapter 6 of A Primer on Search Relevance, Edition 2026.11.5, examples passed Nov 10, 2026. By Rolling Edition, https://rollingedition.com/primer-on-search-relevance/semantic-retrieval. Text CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Semantic retrieval,” chapter 6 of A Primer on Search Relevance, Edition 2026.11.6, examples passed Nov 12, 2026. By Rolling Edition, https://rollingedition.com/primer-on-search-relevance/semantic-retrieval. Text CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Semantic retrieval
 
@@ -26,7 +26,7 @@ Search uses the encoder as a **bi-encoder**: it encodes each product by itself, 
 
 The store's encoder is `Snowflake/snowflake-arctic-embed-m-v1.5`, an open model with 109 million parameters under the Apache-2.0 licence ([model card](https://huggingface.co/Snowflake/snowflake-arctic-embed-m-v1.5)). Its family's training kept only documents "primarily identified as English" ([Merrick et al., 2024](https://arxiv.org/abs/2405.05374)). We chose it because anyone may use it commercially, it's small, and it was trained so that its vectors can be shortened, which [the section on dimensions](#truncate-dimensions-test-loss) tests. The examples never run the model. They read a **recording**: vectors that the script `recordings/embeddings.py` computed once, at a pinned revision, and saved at unit length, so every example sees the same numbers. The model card asks you to "use the query prefix below (just on the query)", so the script adds that prefix to each query and embeds products as they are. Examples read the vectors through `lib.recorded.embeddings()`:
 
-Example `inspect-recorded-embeddings` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.5:
+Example `inspect-recorded-embeddings` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.6:
 
 ```python
 import re
@@ -108,7 +108,7 @@ cosine(q, d) = dot(q, d) / (length(q) × length(d))
 
 In the store, every query is compared with every product this way. For the test query `clear shower curtain`, compute the dot product and the cosine by hand for its most similar product, and check the cosine with scikit-learn 1.9.1. Then see what happens when vectors aren't unit length. Keep the first 256 of each vector's 768 numbers, a shortcut that [the section on dimensions](#truncate-dimensions-test-loss) tests, but skip the rescaling, and rank every query's products both ways:
 
-Example `cosine-by-hand` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1 · scikit-learn 1.9.1 · scipy 1.18.1), passing in Edition 2026.11.5:
+Example `cosine-by-hand` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1 · scikit-learn 1.9.1 · scipy 1.18.1), passing in Edition 2026.11.6:
 
 ```python
 import numpy as np
@@ -166,7 +166,7 @@ Retrieval by embeddings is a **nearest-neighbour search**: find the k products w
 
 In the store, [chapter 1's semantic search](#search-by-meaning) took its rankings from `lib.semantic.SemanticSearch`. Build its core by hand for the 30 test queries with NumPy 2.5.4, then check it twice: against `lib.semantic`, and against faiss's `IndexFlatIP`, which computes the inner product with every vector. With `IndexFlatL2`, it is one of the two faiss indexes that "can guarantee exact results" ([faiss wiki](https://github.com/facebookresearch/faiss/wiki/Guidelines-to-choose-an-index)):
 
-Example `exact-search-numpy` (Python 3.12.15 · faiss-cpu 1.15.1 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.5:
+Example `exact-search-numpy` (Python 3.12.15 · faiss-cpu 1.15.1 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.6:
 
 ```python
 import faiss
@@ -221,7 +221,7 @@ One matrix product computes 360,000 similarities, 12,000 per query. The hand-bui
 
 What decides whether exact search is enough is its cost. Its work grows in step with the catalog: one similarity per product, for every query. Its memory is the vectors themselves:
 
-Example `exact-search-memory` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.5:
+Example `exact-search-memory` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.6:
 
 ```python
 from lib.recorded import embeddings
@@ -255,7 +255,7 @@ When [exact search](#exact-nearest-neighbours-numpy) costs too much, an **approx
 
 The store doesn't need an index, but a store with millions of products would, and a catalog small enough to check every answer is the place to learn the trade-off. Build HNSW over the store's 12,000 products with `hnsw_index(product_vectors, links=32)`, `lib.vectors`'s name for `M = 32`. Then sweep `efSearch` from 16 to 256 on the [train queries](#store-data):
 
-Example `hnsw-efsearch-sweep` (Python 3.12.15 · faiss-cpu 1.15.1 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.5:
+Example `hnsw-efsearch-sweep` (Python 3.12.15 · faiss-cpu 1.15.1 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.6:
 
 ```python
 import faiss
@@ -350,7 +350,7 @@ The smallest `efSearch` in the sweep at which no train query is at 0 is 96, but 
 
 An index tuned on train queries still has to be checked on queries it hasn't seen, by its [recall against exact search](#hnsw-recall-for-speed) and by its effect on the judged scores. In the store, these are the chapter's 2 planned test comparisons: the HNSW index at faiss's default `efSearch` of 16, and at the setting chosen on the train queries, each against exact search. A difference is established when its paired [permutation test](#permutation-test-on-queries) gives p below 0.025, with the [t-test and an interval](#when-a-difference-is-established) at the matching level beside it. The example also asks for `k = 100`, because [hybrid retrieval](#fuse-with-rrf) fuses each retriever's top 100:
 
-Example `hnsw-test-recall` (Python 3.12.15 · faiss-cpu 1.15.1 · numpy 2.5.4 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.5:
+Example `hnsw-test-recall` (Python 3.12.15 · faiss-cpu 1.15.1 · numpy 2.5.4 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.6:
 
 ```python
 import numpy as np
@@ -432,7 +432,7 @@ At the chosen `efSearch` of 144, recall@10 against exact search is 1.000, the nD
 
 The graph also costs memory, on top of the vectors:
 
-Example `hnsw-index-memory` (Python 3.12.15 · faiss-cpu 1.15.1 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.5:
+Example `hnsw-index-memory` (Python 3.12.15 · faiss-cpu 1.15.1 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.6:
 
 ```python
 import faiss
@@ -473,7 +473,7 @@ Each product has 32 links on the upper layers and 64 on the bottom one, twice `M
 
 In the store, few queries hold a digit. Compare BM25 and semantic retrieval on each of them, from both splits. This is an exploratory diagnosis: nothing is tuned on it, and a handful of queries can't establish anything:
 
-Example `digits-in-queries` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.4 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.5:
+Example `digits-in-queries` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.4 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.6:
 
 ```python
 import pandas as pd
@@ -526,7 +526,7 @@ products whose text has 7 qt: 8
 
 Of the 7 queries with a digit, semantic retrieval scores higher on 4 and BM25 on 3, and 2 of the gaps are under 0.03, so neither ranker wins them all. For `7qt slow cooker`, BM25 fails: 0 products contain the word `7qt`, while 8 write `7 qt`. For the test query `48 inch kitchen hood`, BM25 scores higher. Here is semantic retrieval's top 10 for it:
 
-Example `hood-query-digits` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.4 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.5:
+Example `hood-query-digits` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.4 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.6:
 
 ```python
 from lib.lexical import LexicalSearch
@@ -581,7 +581,7 @@ In semantic retrieval's top 10, 8 hoods have a width of 48. The others are a 36-
 
 One query can't show a pattern. To see how the model handles sizes in general, use **probe queries**: pairs of queries written for the book that differ only in a size, a code or a negation, which `recordings/probes.py` embeds with the same model. One of them repeats the test query `48 inch kitchen hood` word for word. Probes have no judgments, so the example counts what their top 10s hold and never scores them. The right size comes from the width in `attributes` for the hoods, and from the name for the rest:
 
-Example `probe-pair-overlap` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.5:
+Example `probe-pair-overlap` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.6:
 
 ```python
 from lib.recorded import probes
@@ -660,7 +660,7 @@ For these probes, the model mostly finds the right size. The two hood probes sha
 
 A product code should match one product exactly. To an encoder, it's a rare string of letters and digits. Two pairs of the [probe queries](#embeddings-match-digits) test codes: one built on a code no product holds, taken from the train query `ines shag rug w003096809`, and one built on a screen resolution that exactly one product's text holds:
 
-Example `code-probes` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.4 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.5:
+Example `code-probes` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.4 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.6:
 
 ```python
 from lib.lexical import LexicalSearch
@@ -729,7 +729,7 @@ In the store, 0 of the queries contain "no", "not", "without" or "non", so the j
 
 Before you run it, predict: how many of semantic retrieval's top 10 for `rug that is not round` are named round?
 
-Example `negation-probes` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.4 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.5:
+Example `negation-probes` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.4 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.6:
 
 ```python
 import bm25s
@@ -819,7 +819,7 @@ Every dimension costs 4 bytes per product as a 32-bit float, and every similarit
 
 The model card of the store's encoder ([Turn text into embeddings](#turn-text-into-embeddings)) documents shortening to 256 dimensions. `lib.recorded.embeddings(dims=...)` keeps the first `dims` numbers of each vector and normalizes again. Score each length on the train queries:
 
-Example `truncate-embeddings` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.5:
+Example `truncate-embeddings` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.6:
 
 ```python
 from lib.metrics import evaluate
@@ -856,7 +856,7 @@ Output:
 
 At 256 dimensions a product takes 1,024 bytes instead of 3,072, and mean nDCG@10 moves from 0.772 to 0.762. At 128 it is 0.680, with [judged@10](#score-every-test-query) at 0.874 against 0.964, so part of that fall could come from products nobody judged. Is the change real, or noise among 50 queries? Test it with `lib.significance.compare`, which runs [chapter 3's permutation test](#permutation-test-on-queries), its [paired t-test](#paired-t-test-on-queries) and its [bootstrap interval](#report-the-size-of-a-gap). These comparisons use train queries, so they tune the vector size; they aren't evidence about the test queries:
 
-Example `truncation-paired-test` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.5:
+Example `truncation-paired-test` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.6:
 
 ```python
 from lib.metrics import evaluate
@@ -919,7 +919,7 @@ For the store, the decision follows from its size, not from the test. Its full v
 
 **A similarity is not a confidence.** It's tempting to show nothing when the best similarity is low. But similarities aren't on one scale across queries:
 
-Example `similarity-scale` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.5:
+Example `similarity-scale` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.6:
 
 ```python
 import numpy as np
@@ -975,7 +975,7 @@ On the test queries, `liberty hardware francisco` has the weakest best match, at
 
 **Typos move vectors.** For BERT-based retrievers not trained on misspellings, "typos can lead to a significant drop in retrieval and ranking effectiveness" ([Zhuang and Zuccon, 2021](https://arxiv.org/abs/2108.12139)). 4 of the store's queries contain a typo, and the probes include each one spelled correctly. A corrected probe asks for the same thing as its query, so the example scores it with that query's judgments:
 
-Example `spelling-probes` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.4 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.5:
+Example `spelling-probes` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.4 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.6:
 
 ```python
 from lib.lexical import LexicalSearch
