@@ -3,12 +3,12 @@ title: "Data Governance as Code"
 chapter: "Finding personal data"
 chapter_id: finding-personal-data
 book: data-governance-as-code
-edition: 2026.11.23
+edition: 2026.11.24
 verified: 2026-11-12
-edition_code: 4TXR-45EN
+edition_code: 7X69-5ZK7
 canonical: https://rollingedition.com/data-governance-as-code/finding-personal-data
 license: CC BY 4.0
-attribution: "“Finding personal data,” chapter 3 of Data Governance as Code, Edition 2026.11.23, examples passed Nov 12, 2026. By Rolling Edition, https://rollingedition.com/data-governance-as-code/finding-personal-data. Text CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Finding personal data,” chapter 3 of Data Governance as Code, Edition 2026.11.24, examples passed Nov 12, 2026. By Rolling Edition, https://rollingedition.com/data-governance-as-code/finding-personal-data. Text CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Finding personal data
 
@@ -26,7 +26,7 @@ The cheapest evidence about a column is its schema: its name and its type. A rul
 
 The platform keeps its rules in `governance/pii.toml`, the file that holds every setting of its detector and is reviewed like the metadata. The rules are 8 regular expressions on lowercased column names, each naming the entity it suggests, and the first match wins. The same file maps each entity to a classification: a phone number to `personal`, a card number or an IBAN to `sensitive`. `lib.pii.by_name` applies the rules. Run them over every column of the catalog, and compare them with the reviewed metadata:
 
-Example `column-name-rules` (Python 3.12.15 · duckdb 2.0.0 · phonenumbers 9.0.43 · presidio-analyzer 2.2.366 · pyarrow 26.0.1 · pyiceberg 0.12.0 · pyyaml 6.0.3 · tldextract 5.4.0), passing in Edition 2026.11.23:
+Example `column-name-rules` (Python 3.12.15 · duckdb 2.0.0 · phonenumbers 9.0.43 · presidio-analyzer 2.2.366 · pyarrow 26.0.1 · pyiceberg 0.12.0 · pyyaml 6.0.3 · tldextract 5.4.0), passing in Edition 2026.11.24:
 
 ```python
 from pyiceberg.types import StringType
@@ -95,7 +95,7 @@ To read values, the platform uses Presidio, an open-source library for finding a
 
 Load every predefined recognizer on that engine, and run it on one of the platform's support tickets:
 
-Example `presidio-offline-engine` (Python 3.12.15 · duckdb 2.0.0 · phonenumbers 9.0.43 · presidio-analyzer 2.2.366 · pyarrow 26.0.1 · pyiceberg 0.12.0 · pyyaml 6.0.3 · spacy 3.8.18 · tldextract 5.4.0), passing in Edition 2026.11.23:
+Example `presidio-offline-engine` (Python 3.12.15 · duckdb 2.0.0 · phonenumbers 9.0.43 · presidio-analyzer 2.2.366 · pyarrow 26.0.1 · pyiceberg 0.12.0 · pyyaml 6.0.3 · spacy 3.8.18 · tldextract 5.4.0), passing in Edition 2026.11.24:
 
 ```python
 import spacy
@@ -160,7 +160,7 @@ Scanning every value of every text column is too slow for a warehouse of any siz
 
 DuckDB's reservoir sample takes a seed, but its docs warn that "fixing the seed only guarantees a reproducible sample when DuckDB runs single-threaded (`SET threads = 1`)" ([DuckDB 2.0.0 docs](https://duckdb.org/docs/2.0/sql/samples)). `lib.pii.sample` sets one thread, filters out NULLs and then draws a seeded reservoir sample. Draw 20 notes from `crm.learners` twice, then work out how many you'd need:
 
-Example `seeded-column-sample` (Python 3.12.15 · duckdb 2.0.0 · phonenumbers 9.0.43 · presidio-analyzer 2.2.366 · pyarrow 26.0.1 · pyiceberg 0.12.0 · pyyaml 6.0.3 · tldextract 5.4.0), passing in Edition 2026.11.23:
+Example `seeded-column-sample` (Python 3.12.15 · duckdb 2.0.0 · phonenumbers 9.0.43 · presidio-analyzer 2.2.366 · pyarrow 26.0.1 · pyiceberg 0.12.0 · pyyaml 6.0.3 · tldextract 5.4.0), passing in Edition 2026.11.24:
 
 ```python
 import math
@@ -223,7 +223,7 @@ and the n that gives a 99% chance is ln(0.01) / ln(1 − p). This is a rule of t
 
 Classify all 64 columns of the catalog, sampling the 29 text columns with the platform's detector, whose recognizers [a later section](#tune-the-recognizers) chooses, and compare the proposals with the reviewed metadata:
 
-Example `classify-sampled-columns` (Python 3.12.15 · duckdb 2.0.0 · phonenumbers 9.0.43 · presidio-analyzer 2.2.366 · pyarrow 26.0.1 · pyiceberg 0.12.0 · pyyaml 6.0.3 · tldextract 5.4.0), passing in Edition 2026.11.23:
+Example `classify-sampled-columns` (Python 3.12.15 · duckdb 2.0.0 · phonenumbers 9.0.43 · presidio-analyzer 2.2.366 · pyarrow 26.0.1 · pyiceberg 0.12.0 · pyyaml 6.0.3 · tldextract 5.4.0), passing in Edition 2026.11.24:
 
 ```python
 from lib import metadata, pii
@@ -315,7 +315,7 @@ A column-level answer is enough to classify `support.tickets.body`, but not to m
 
 Run Presidio with its defaults over all 5,000 tickets and reviews, and score its 3,902 detections against the 4,292 labelled spans:
 
-Example `measure-pattern-recognizers` (Python 3.12.15 · duckdb 2.0.0 · phonenumbers 9.0.43 · presidio-analyzer 2.2.366 · pyarrow 26.0.1 · pyiceberg 0.12.0 · pyyaml 6.0.3 · tldextract 5.4.0), passing in Edition 2026.11.23:
+Example `measure-pattern-recognizers` (Python 3.12.15 · duckdb 2.0.0 · phonenumbers 9.0.43 · presidio-analyzer 2.2.366 · pyarrow 26.0.1 · pyiceberg 0.12.0 · pyyaml 6.0.3 · tldextract 5.4.0), passing in Edition 2026.11.24:
 
 ```python
 import re
@@ -446,7 +446,7 @@ The truth has its own limits, because the text is generated. Every ticket and re
 
 `governance/pii.toml` keeps 6 recognizers, for the identifiers the platform's text can hold, each with its own threshold. The phone regions aren't a setting: `lib.pii.countries` reads the countries the learners live in from `crm.learners`, so the regions follow the data. Run four settings against the same truth:
 
-Example `tune-pattern-recognizers` (Python 3.12.15 · duckdb 2.0.0 · phonenumbers 9.0.43 · presidio-analyzer 2.2.366 · pyarrow 26.0.1 · pyiceberg 0.12.0 · pyyaml 6.0.3 · tldextract 5.4.0), passing in Edition 2026.11.23:
+Example `tune-pattern-recognizers` (Python 3.12.15 · duckdb 2.0.0 · phonenumbers 9.0.43 · presidio-analyzer 2.2.366 · pyarrow 26.0.1 · pyiceberg 0.12.0 · pyyaml 6.0.3 · tldextract 5.4.0), passing in Edition 2026.11.24:
 
 ```python
 from lib import pii
@@ -527,7 +527,7 @@ One number goes the wrong way: fewer texts come out fully masked than with the d
 
 [The tuned recognizers](#tune-the-recognizers) score well on totals, and totals hide where they fail. A pattern detector fails in three ways: there's no pattern for the thing at all, its pattern or its validation rejects the value, or it matches something that only looks personal. The platform's tickets plant cases of each kind, as its data card says: names typed in lowercase, initials, first names that are ordinary words, phone numbers typed without separators, and invoice numbers, order numbers and dates of a problem, which [the truth](#finding-personal-data) leaves unlabelled. Count each with the platform's detector. A case counts as caught when some detection overlaps it, whatever its label:
 
-Example `pattern-hard-cases` (Python 3.12.15 · duckdb 2.0.0 · phonenumbers 9.0.43 · presidio-analyzer 2.2.366 · pyarrow 26.0.1 · pyiceberg 0.12.0 · pyyaml 6.0.3 · tldextract 5.4.0), passing in Edition 2026.11.23:
+Example `pattern-hard-cases` (Python 3.12.15 · duckdb 2.0.0 · phonenumbers 9.0.43 · presidio-analyzer 2.2.366 · pyarrow 26.0.1 · pyiceberg 0.12.0 · pyyaml 6.0.3 · tldextract 5.4.0), passing in Edition 2026.11.24:
 
 ```python
 from collections import Counter
@@ -607,7 +607,7 @@ The card pattern's shape causes the card misses. It accepts 13 to 17 digits star
 
 The book's examples never run a model, so they read a recording of its output. The recording, `data/recorded/pii-entities/`, which this chapter and [chapter 9](#replace-personal-data) use, holds every span the model found in every ticket and review, with its offsets, its text and the model's label. `recordings/pii_entities.py` made it on a CPU with the model's reference decoder, `opf` ([code](https://github.com/openai/privacy-filter/tree/f7f00ca7fb869683eb732c010299d901457f19c3)), which chooses the best sequence of labels for a whole text, so most spans come back in one piece rather than token by token. It used the default operating point, all six of the decoder's transition biases at 0 ([calibration file](https://huggingface.co/openai/privacy-filter/blob/7ffa9a043d54d1be65afb281eddf0ffbe629385b/original/viterbi_calibration.json)), which can be set "for improved recall" instead (section 2.3.2). The manifest pins the model's revision and the SHA-256 of its weights, so anyone can record it again and compare, and `lib.pii.recorded` refuses spans that don't match the text at their offsets. The recording keeps the model's labels. The example maps them to the truth's entity types, `account_number` to both card numbers and IBANs, so a different mapping never needs a new recording. Score the model, the platform's patterns, and both together, masking whatever either finds:
 
-Example `privacy-filter-spans` (Python 3.12.15 · duckdb 2.0.0 · phonenumbers 9.0.43 · presidio-analyzer 2.2.366 · pyarrow 26.0.1 · pyiceberg 0.12.0 · pyyaml 6.0.3 · tldextract 5.4.0), passing in Edition 2026.11.23:
+Example `privacy-filter-spans` (Python 3.12.15 · duckdb 2.0.0 · phonenumbers 9.0.43 · presidio-analyzer 2.2.366 · pyarrow 26.0.1 · pyiceberg 0.12.0 · pyyaml 6.0.3 · tldextract 5.4.0), passing in Edition 2026.11.24:
 
 ```python
 from lib import pii
@@ -729,7 +729,7 @@ The model finds most of the names and addresses the patterns can't. Card numbers
 
 OpenAI's card for Privacy Filter lists where it fails: "under-detection of uncommon personal names, regional naming conventions, initials, honorific-heavy references, or domain-specific identifiers; over-redaction of public entities, locations, or common nouns when local context is ambiguous" ([OpenAI, 2026](https://cdn.openai.com/pdf/c66281ed-b638-456a-8ce1-97e9f5264a90/OpenAI-Privacy-Filter-Model-Card.pdf), section 4.3). Check that list against [the hard cases](#where-patterns-fail) the tickets plant:
 
-Example `privacy-filter-hard-cases` (Python 3.12.15 · duckdb 2.0.0 · phonenumbers 9.0.43 · presidio-analyzer 2.2.366 · pyarrow 26.0.1 · pyiceberg 0.12.0 · pyyaml 6.0.3 · tldextract 5.4.0), passing in Edition 2026.11.23:
+Example `privacy-filter-hard-cases` (Python 3.12.15 · duckdb 2.0.0 · phonenumbers 9.0.43 · presidio-analyzer 2.2.366 · pyarrow 26.0.1 · pyiceberg 0.12.0 · pyyaml 6.0.3 · tldextract 5.4.0), passing in Edition 2026.11.24:
 
 ```python
 from collections import Counter
@@ -800,7 +800,7 @@ Reading the misses also says how much they matter. Of the 387 names the model mi
 
 [The comparison with the patterns](#compare-a-named-entity-model) scored the model by exact and overlap matching, which both need a label of the span's type. Masking doesn't read the label: a card number the model labels `private_phone` is still hidden. Classification does, because `governance/pii.toml` maps each entity type to a classification, a phone number to `personal` and a card number to `sensitive`. Measure the model's coverage beside its recall, and the labels it gives the platform's card numbers, phone numbers and addresses:
 
-Example `privacy-filter-labels` (Python 3.12.15 · duckdb 2.0.0 · phonenumbers 9.0.43 · presidio-analyzer 2.2.366 · pyarrow 26.0.1 · pyiceberg 0.12.0 · pyyaml 6.0.3 · tldextract 5.4.0), passing in Edition 2026.11.23:
+Example `privacy-filter-labels` (Python 3.12.15 · duckdb 2.0.0 · phonenumbers 9.0.43 · presidio-analyzer 2.2.366 · pyarrow 26.0.1 · pyiceberg 0.12.0 · pyyaml 6.0.3 · tldextract 5.4.0), passing in Edition 2026.11.24:
 
 ```python
 from lib import pii
@@ -855,7 +855,7 @@ A classification describes a column at one moment, and [chapter 2](#catch-schema
 
 On the platform, the support team wants a number to call learners back on for tickets opened by phone, and adds a column called `callback_number` to `support.tickets`. Edit a description first, then add the column, fill it from the learners' phone numbers, and classify only the field IDs that `governance/metadata.toml` lacks:
 
-Example `reclassify-new-columns` (Python 3.12.15 · duckdb 2.0.0 · phonenumbers 9.0.43 · presidio-analyzer 2.2.366 · pyarrow 26.0.1 · pyiceberg 0.12.0 · pyyaml 6.0.3 · tldextract 5.4.0), passing in Edition 2026.11.23:
+Example `reclassify-new-columns` (Python 3.12.15 · duckdb 2.0.0 · phonenumbers 9.0.43 · presidio-analyzer 2.2.366 · pyarrow 26.0.1 · pyiceberg 0.12.0 · pyyaml 6.0.3 · tldextract 5.4.0), passing in Edition 2026.11.24:
 
 ```python
 from pyiceberg.types import StringType
