@@ -1,7 +1,7 @@
 # Licence
 
-This agent skill is *Business Intelligence with Agents*, Edition 2026.11.7, from Rolling Edition, under the Creative Commons Attribution 4.0 International licence (CC BY 4.0): https://creativecommons.org/licenses/by/4.0/
+This agent skill is *Business Intelligence with Agents*, Edition 2026.11.8, from Rolling Edition, under the Creative Commons Attribution 4.0 International licence (CC BY 4.0): https://creativecommons.org/licenses/by/4.0/
 
 Give this credit when you share or adapt it, and say what you changed:
 
-> Business Intelligence with Agents, Edition 2026.11.7, examples passed Nov 10, 2026. By Rolling Edition, https://rollingedition.com/business-intelligence-with-agents. Text CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people.
+> Business Intelligence with Agents, Edition 2026.11.8, examples passed Nov 12, 2026. By Rolling Edition, https://rollingedition.com/business-intelligence-with-agents. Text CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people.

@@ -3,12 +3,12 @@ title: "Business Intelligence with Agents"
 chapter: "Give the agent layered context"
 chapter_id: layered-context
 book: business-intelligence-with-agents
-edition: 2026.11.7
-verified: 2026-11-10
-edition_code: ZNJE-JAVW
+edition: 2026.11.8
+verified: 2026-11-12
+edition_code: 4VTV-2H9T
 canonical: https://rollingedition.com/business-intelligence-with-agents/layered-context
 license: CC BY 4.0
-attribution: "“Give the agent layered context,” chapter 4 of Business Intelligence with Agents, Edition 2026.11.7, examples passed Nov 10, 2026. By Rolling Edition, https://rollingedition.com/business-intelligence-with-agents/layered-context. Text CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Give the agent layered context,” chapter 4 of Business Intelligence with Agents, Edition 2026.11.8, examples passed Nov 12, 2026. By Rolling Edition, https://rollingedition.com/business-intelligence-with-agents/layered-context. Text CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Give the agent layered context
 
@@ -22,7 +22,7 @@ A schema tells a model which tables exist, what their columns are called and wha
 
 The book's measure of this is the shop's golden questions, which chapter 3 built: questions with a verified answer, split into a dev set for tuning context and prompts and a held-out test set for checking the result once. Every layer in this chapter is added to the schema, so the schema is the first layer, and the place to start is what it leaves open. `build_context()` in `lib/context.py`, the shared module that builds every layer in this chapter, returns the schema layer when it's asked for nothing else.
 
-Example `schema-digest` (Python 3.12.15 · duckdb 2.0.0), passing in Edition 2026.11.7:
+Example `schema-digest` (Python 3.12.15 · duckdb 2.0.0), passing in Edition 2026.11.8:
 
 ```python
 """What the schema tells the model about revenue, and three totals for March 2026 that all fit it."""
@@ -79,7 +79,7 @@ The shop's notes live in `examples/data/shop/columns.toml`, one entry per table 
 
 To see what the notes do, the example replays the recording `context-layers`. It holds the pinned model's SQL for every dev question of kind `answer`, written once with each layer set this chapter measures, using the prompt `LAYERED_SQL` in `lib/prompts.py`. The recording was made by `recordings/record_context_layers.py`, with the same model, sampling and seed as chapter 1's, and the examples replay it by the hash of the exact messages.
 
-Example `column-descriptions` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.30.0), passing in Edition 2026.11.7:
+Example `column-descriptions` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.30.0), passing in Edition 2026.11.8:
 
 ```python
 """Add notes on columns whose names mislead, and see which dev questions the recorded model now gets right."""
@@ -135,7 +135,7 @@ The shop's glossary is `examples/data/shop/glossary.toml`. Its entries define re
 
 The glossary wasn't written blind, and the book's history shows how it changed. In the same change that recorded the model's first dev replies, with the schema alone, the entry for orders was corrected: it had said that order counts leave out cancelled orders, which disagreed with the finance team's golden SQL. The entries for units sold and for customers who ordered were added in that change too, and the column note on `status` was reworded to match. Later, after the test questions had been recorded with the schema alone, the refund-rate entry was changed to the book-wide definition that chapter 5 uses and that test question `gq-028` also follows: refunded amount divided by gross revenue, because a refund pays back tax and only gross revenue includes it. Each change made the glossary agree with golden SQL that it was then scored against. That is how a dev score gets fitted to dev, and [the check on test](#check-layers-on-test) comes back to what it costs.
 
-Example `glossary-context` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.30.0), passing in Edition 2026.11.7:
+Example `glossary-context` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.30.0), passing in Edition 2026.11.8:
 
 ```python
 """Add the business glossary on top of the column notes, and see what it changes on the dev questions."""
@@ -191,7 +191,7 @@ The shop's verified queries live in `examples/data/shop/verified_queries.toml`. 
 
 Retrieval in `lib/context.py` is lexical, with no embeddings. `question_terms()` lowercases the question, drops common words and masks three kinds of word: numbers, month names and the shop's three region codes. Every other word stays as it is. `QueryIndex` scores each verified question against the masked question with TF-IDF and cosine similarity, and `search()` keeps at most three matches that score at least 0.4. This is a cheap stand-in for the selection in [Gao et al.](https://arxiv.org/abs/2308.15363), not a reproduction of it: it masks far fewer words, and it drops the second step, which compares draft SQL.
 
-Example `retrieve-similar-queries` (Python 3.12.15 · duckdb 2.0.0), passing in Edition 2026.11.7:
+Example `retrieve-similar-queries` (Python 3.12.15 · duckdb 2.0.0), passing in Edition 2026.11.8:
 
 ```python
 """Retrieve the verified queries most like a question, by TF-IDF over masked question words."""
@@ -250,7 +250,7 @@ Fitting a context to a budget means deciding what to leave out, and that decisio
 
 Token counts in `lib/context.py` are estimates: `estimate_tokens()` divides the number of characters by 3.5, because the examples don't load the model's tokenizer. The example checks that estimate against the count the model's tokenizer reported when the prompt was recorded, then fits the context for the average-order-value question, `gq-009`, to an illustrative budget of 2,400 tokens under two priorities.
 
-Example `context-token-budget` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.30.0), passing in Edition 2026.11.7:
+Example `context-token-budget` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.30.0), passing in Edition 2026.11.8:
 
 ```python
 """Fit one question's layered context to a token budget, and check the token estimate against the model's count."""
@@ -306,7 +306,7 @@ Each layer so far was judged by the questions it fixed and broke. To choose whic
 
 The shop's dev split has 24 golden questions. This chapter scores the 17 of kind `answer`. The other 7 should be declined, because the warehouse can't answer them or the role asking may not see the answer, and a prompt that only writes SQL can't decline, so they would score as wrong under every layer set; chapters 8 and 9 score them. Each layer set adds one layer to the one before: the schema alone, then column notes, then the glossary, then up to three retrieved verified queries. The outcomes come from `grade()` in `lib/golden.py`, as in every chapter: correct when the result matches the golden result, wrong when it runs and doesn't, error when it doesn't run. The first layer set, the schema alone, isn't [chapter 3's baseline](#golden-questions) either. That baseline used the schema-only prompt and scored every question in each split, while this run uses the layered prompt `LAYERED_SQL` with no other layer filled in and scores the answer questions only, so its numbers differ.
 
-Example `layer-ablation-dev` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.30.0), passing in Edition 2026.11.7:
+Example `layer-ablation-dev` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.30.0), passing in Edition 2026.11.8:
 
 ```python
 """Score each layer set on the dev split's answer questions, replaying the recorded model's SQL for each."""
@@ -398,7 +398,7 @@ The schema alone gets 3 of the 17 right, and 5 of its queries don't run. Column 
 
 The totals say how much each layer helped. The failures say what the next layer should be, so the next two examples read them. The first takes the schema-only queries that don't run and finds the column DuckDB couldn't find.
 
-Example `missing-columns-schema-only` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.30.0), passing in Edition 2026.11.7:
+Example `missing-columns-schema-only` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.30.0), passing in Edition 2026.11.8:
 
 ```python
 """Why the dev queries written with the schema alone don't run: the column each one names, and the tables that have it."""
@@ -452,7 +452,7 @@ Every failure is a column the model put on the wrong table. Of the 5, 3 ask the 
 
 The second example prints the query for each dev question that all four layers still don't get right.
 
-Example `what-stays-wrong` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.30.0), passing in Edition 2026.11.7:
+Example `what-stays-wrong` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.30.0), passing in Edition 2026.11.8:
 
 ```python
 """The dev questions that stay wrong with all four layers: each one's query, and whether gq-007 fails only on spelling."""
@@ -541,7 +541,7 @@ This is the book's measurement on one synthetic warehouse, one 4-billion-paramet
 
 The [ablation](#measure-each-layer) chose all four layers on the dev split, the questions the chapter tuned on. The set that scored best there still has to be checked once on the held-out test split, together with the schema alone, so the comparison isn't flattered by having been chosen on the same questions. The recording `context-layers-test` holds the model's SQL for the 17 test questions of kind `answer`, under those two layer sets only. The example also scores each question against its best-matching verified query, which the next paragraphs need.
 
-Example `best-layers-on-test` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.30.0), passing in Edition 2026.11.7:
+Example `best-layers-on-test` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.30.0), passing in Edition 2026.11.8:
 
 ```python
 """Choose the best layer set on the dev split, then score it once on the held-out test split beside the schema alone."""

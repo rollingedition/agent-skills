@@ -1,7 +1,7 @@
 {
   "name": "business-intelligence-with-agents",
   "displayName": "Business Intelligence with Agents",
-  "version": "2026.11.7",
+  "version": "2026.11.8",
   "description": "Agents that turn business questions into trusted insights, from your warehouse: layered context, governed metrics in a semantic layer, guarded SQL, answers that say when they can't be given, access rules the agent can't talk its way past, and evaluation on your own golden questions, served over MCP, all on DuckDB, sqlglot and MetricFlow.",
   "author": {
     "name": "Rolling Edition",

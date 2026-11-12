@@ -10,7 +10,7 @@ This repository is generated from the books, so changes made here are overwritte
 
 | Book | Skill | Edition | Examples |
 | --- | --- | --- | --- |
-| [Business Intelligence with Agents](https://rollingedition.com/business-intelligence-with-agents) | `business-intelligence-with-agents` | 2026.11.7 | 78 of 78 examples pass |
+| [Business Intelligence with Agents](https://rollingedition.com/business-intelligence-with-agents) | `business-intelligence-with-agents` | 2026.11.8 | 78 of 78 examples pass |
 | [Data Governance as Code](https://rollingedition.com/data-governance-as-code) | `data-governance-as-code` | 2026.11.23 | 108 of 108 examples pass |
 | [Model Context Protocol in Practice](https://rollingedition.com/model-context-protocol-in-practice) | `model-context-protocol-in-practice` | 2026.11.10 | 70 of 70 examples pass |
 | [Open Table Formats](https://rollingedition.com/open-table-formats) | `open-table-formats` | 2026.11.5 | 39 of 39 examples pass |
