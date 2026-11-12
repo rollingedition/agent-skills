@@ -1,0 +1,3 @@
+classifier forward passes: 1
+generative forward passes: 8
+answer tokens, end token not counted: 7

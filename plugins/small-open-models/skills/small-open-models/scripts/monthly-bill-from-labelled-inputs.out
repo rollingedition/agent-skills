@@ -1,0 +1,16 @@
+example input, messages per month: 100000
+example input, price per million input tokens, USD: 1.0
+example input, price per million output tokens, USD: 4.0
+example input, output tokens per message: 6
+example input, machine cost per hour, USD: 0.4
+example input, hours per month: 730
+example input, utilisation: 0.5
+recorded input, router messages per second, one per call: 19.0
+input tokens per message, hosted prompt (counted with SmolLM2-135M-Instruct, a stand-in tokenizer): 587
+example hosted price per message (example prices), USD: 0.000611
+example hosted bill per month (example prices), USD: 61.10
+example machine bill per month (example cost per hour), USD: 292.00
+machine capacity per month (recorded rate, example utilisation): 24966000
+example machine cost per message at capacity (example cost per hour), USD: 0.000012
+example volume within machine capacity: yes
+example values, cheaper route at the input volume: hosted

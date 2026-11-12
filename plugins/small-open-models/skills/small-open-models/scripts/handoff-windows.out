@@ -1,0 +1,23 @@
+dev hand-off rate (baseline): 148/1003 (14.8%)
+drift rule: more than 10 points from the baseline
+weeks 3 and 4: simulated replay of sample messages 51 to 100
+week 1 messages: 25
+week 1 handed off: 6/25 (24.0%)
+week 1 drift: no
+week 1 lowest confidence: 0.479
+week 1 right among messages not handed off: 17/19
+week 2 messages: 25
+week 2 handed off: 4/25 (16.0%)
+week 2 drift: no
+week 2 lowest confidence: 0.378
+week 2 right among messages not handed off: 19/21
+week 3 messages: 25
+week 3 handed off: 9/25 (36.0%)
+week 3 drift: yes
+week 3 lowest confidence: 0.246
+week 3 right among messages not handed off: 16/16
+week 4 messages: 25
+week 4 handed off: 0/25 (0.0%)
+week 4 drift: yes
+week 4 lowest confidence: 0.981
+week 4 right among messages not handed off: 25/25

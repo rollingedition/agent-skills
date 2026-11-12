@@ -1,0 +1,6 @@
+adapter: banking77-lora-v1
+handoff threshold from manifest: 0.63
+messages on test_200: 200
+accuracy on test_200: 172/200 (86.0%)
+handed off: 33/200 (16.5%)
+accuracy on messages not handed off: 156/167 (93.4%)

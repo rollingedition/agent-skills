@@ -1,0 +1,5 @@
+training rows labelled by the teacher: 1000
+teacher agrees with gold on training rows: 549/1000 (54.9%)
+teacher disagrees with gold on training rows: 451/1000 (45.1%)
+messages on test_200 with a teacher answer: 200/200
+teacher accuracy on test_200: 109/200 (54.5%)

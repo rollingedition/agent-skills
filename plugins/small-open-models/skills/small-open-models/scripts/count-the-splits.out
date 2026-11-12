@@ -1,0 +1,10 @@
+train rows: 10003
+dev rows: 1003
+test rows: 3080
+labels: 77
+test per label min: 40
+test per label max: 40
+train per label min: 35
+train per label max: 187
+test_1001 per label min: 13
+test_1001 per label max: 13

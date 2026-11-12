@@ -1,0 +1,19 @@
+dev messages used: 500 of 1003
+banking77-distilled-v1 dev threshold reaching 0.90 accuracy not handed off: no
+banking77-distilled-v1 threshold chosen on dev: 0.68
+banking77-distilled-v1 accuracy on test_200: 69/200 (34.5%)
+banking77-distilled-v1 handed off: 150/200 (75.0%)
+banking77-distilled-v1 accuracy on messages not handed off: 28/50 (56.0%)
+banking77-gold-1000-v1 dev threshold reaching 0.90 accuracy not handed off: no
+banking77-gold-1000-v1 threshold chosen on dev: 0.97
+banking77-gold-1000-v1 accuracy on test_200: 77/200 (38.5%)
+banking77-gold-1000-v1 handed off: 197/200 (98.5%)
+banking77-gold-1000-v1 accuracy on messages not handed off: 3/3 (100.0%)
+test_200 messages the student gets right and the control gets wrong: 24/200
+test_200 messages the control gets right and the student gets wrong: 32/200
+banking77-distilled-v1 training rows: 1000
+banking77-distilled-v1 training steps: 125
+banking77-gold-1000-v1 training rows: 1000
+banking77-gold-1000-v1 training steps: 125
+banking77-lora-v1 training rows: 9000
+banking77-lora-v1 training steps: 1125

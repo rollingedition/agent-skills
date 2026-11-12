@@ -1,0 +1,12 @@
+adapter: banking77-lora-v1
+base revision matches pin: yes
+manifest matches pin: yes
+settings matching: 3/3
+files matching: 3/3
+route may load: yes
+threshold copy: manifest matches pin no, settings 3/3, files 3/3
+threshold copy refused by make_app: yes
+extra-key copy: manifest matches pin yes, settings 3/3, files 2/3
+extra-key copy refused by make_app: yes
+warnings naming the extra key while PEFT loads the copy: 1
+that warning: UserWarning: Unexpected keyword arguments ['future_key'] for class LoraConfig, these are ignored.

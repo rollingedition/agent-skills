@@ -1,0 +1,11 @@
+responses: 40
+status codes: [200]
+response keys: ['adapter', 'confidence', 'handed_off', 'team', 'version']
+handed off: 8/40
+team names outside the list: 0
+not handed off, team is the gold label: 30/32
+handed off, team is None: 8/8
+adapter: banking77-lora-v1
+version: v1
+status on an empty body: 422
+detail is a list: True

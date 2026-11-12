@@ -1,0 +1,8 @@
+week 1 drift: no
+week 2 drift: no
+week 3 drift: yes
+week 4 drift: yes
+weeks drifting: 2/4
+longest run of drifting weeks: 2
+rule: retrain when two consecutive weeks drift
+retrain trigger: fired

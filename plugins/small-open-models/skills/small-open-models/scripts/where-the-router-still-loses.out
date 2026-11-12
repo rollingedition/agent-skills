@@ -1,0 +1,9 @@
+messages on test_200: 200
+router banking77-lora-v1 correct: 172/200 (86.0%)
+stand-in correct: 109/200 (54.5%)
+router threshold from manifest: 0.63
+router handed off: 33/200 (16.5%)
+right for the stand-in, wrong for the router: 6/200 (3.0%)
+of those, handed off by the router: 3/6
+wrong for the router and sent as an answer: 11/200 (5.5%)
+right for the router, wrong for the stand-in: 69/200

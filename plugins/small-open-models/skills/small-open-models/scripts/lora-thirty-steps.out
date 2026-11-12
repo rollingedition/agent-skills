@@ -1,0 +1,14 @@
+trainable parameters: 505152
+LoRA parameters: 460800
+head parameters: 44352
+training steps: 30
+batch size: 8
+seed: 0
+loss at step 10: 4.13
+loss at step 20: 6.12
+loss at step 30: 4.38
+loss of a uniform guess over 77 teams: 4.34
+messages on test_200: 200
+accuracy on test_200: 5/200 (2.5%)
+handed off at placeholder 0.50: 200/200 (100.0%)
+accuracy on messages not handed off: not defined (0 messages not handed off)

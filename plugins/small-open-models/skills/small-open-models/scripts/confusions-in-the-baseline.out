@@ -1,0 +1,32 @@
+messages: 1001
+wrong answers: 441
+wrong rate: 44.1% (441 of 1001)
+pair 1 count: 13
+pair 1 gold: Refund_not_showing_up
+pair 1 answer: request_refund
+pair 1 of gold team: 13/13
+pair 2 count: 13
+pair 2 gold: failed_transfer
+pair 2 answer: transfer_not_received_by_recipient
+pair 2 of gold team: 13/13
+pair 3 count: 12
+pair 3 gold: card_arrival
+pair 3 answer: card_delivery_estimate
+pair 3 of gold team: 12/13
+teams never answered: 4
+never answered 1 team: Refund_not_showing_up
+never answered 1 messages: 13
+never answered 1 most often as: request_refund
+never answered 1 most often count: 13
+never answered 2 team: card_arrival
+never answered 2 messages: 13
+never answered 2 most often as: card_delivery_estimate
+never answered 2 most often count: 12
+never answered 3 team: failed_transfer
+never answered 3 messages: 13
+never answered 3 most often as: transfer_not_received_by_recipient
+never answered 3 most often count: 13
+never answered 4 team: order_physical_card
+never answered 4 messages: 13
+never answered 4 most often as: get_physical_card
+never answered 4 most often count: 10

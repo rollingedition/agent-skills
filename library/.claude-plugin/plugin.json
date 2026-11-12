@@ -1,7 +1,7 @@
 {
   "name": "rolling-edition",
   "displayName": "Rolling Edition",
-  "version": "2026.1112.747",
+  "version": "2026.1112.1924",
   "description": "Every Rolling Edition book as an agent skill, built from its current edition, and the read-only MCP server that searches, reads and cites every book.",
   "author": {
     "name": "Rolling Edition",

@@ -1,0 +1,6 @@
+input tokens per message, hosted prompt (counted with SmolLM2-135M-Instruct, a stand-in tokenizer): 587
+example hosted price per message (example prices), USD: 0.000611
+example machine bill per month (example cost per hour), USD: 292.00
+machine capacity per month (recorded rate, example utilisation): 24966000
+example break-even messages per month (example prices and cost per hour): 477906
+break-even within machine capacity: yes

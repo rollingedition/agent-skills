@@ -1,0 +1,24 @@
+{
+  "name": "small-open-models",
+  "displayName": "Small Open Models",
+  "version": "2026.11.1",
+  "description": "How to replace a hosted model with one you run for a single job, and when it is the wrong choice: measuring the task, choosing a base model, prompting, LoRA fine-tuning, distillation, quantization, CPU serving, versions and hand-offs to people, on a bank's support messages from BANKING77.",
+  "author": {
+    "name": "Rolling Edition",
+    "url": "https://rollingedition.com/"
+  },
+  "homepage": "https://rollingedition.com/small-open-models",
+  "repository": "https://github.com/rollingedition/agent-skills",
+  "license": "CC-BY-4.0",
+  "keywords": [
+    "fine-tuning",
+    "large-language-models",
+    "natural-language-processing",
+    "model-evaluation"
+  ],
+  "icon": "./icon.png",
+  "documentationUrl": "https://rollingedition.com/assistants#agent-skills",
+  "supportUrl": "https://rollingedition.com/assistants#trouble",
+  "privacyPolicyUrl": "https://rollingedition.com/policies/privacy#mcp",
+  "termsOfServiceUrl": "https://rollingedition.com/policies/terms"
+}

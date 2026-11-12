@@ -1,0 +1,5 @@
+messages over 64 tokens: 1/200
+messages over 128 tokens where classify() cuts: 0/200
+repeated message tokens before the cut: 132
+repeated message tokens after the cut: 128
+truncation side: right

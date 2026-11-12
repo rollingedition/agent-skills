@@ -1,0 +1,12 @@
+dev messages used: 500 of 1003
+dev threshold reaching 0.90 accuracy not handed off: no
+student threshold chosen on dev: 0.68
+banking77-distilled-v1 accuracy on test_200: 69/200 (34.5%)
+banking77-distilled-v1 handed off: 150/200 (75.0%)
+banking77-distilled-v1 accuracy on messages not handed off: 28/50 (56.0%)
+banking77-lora-v1 accuracy on test_200: 172/200 (86.0%)
+banking77-lora-v1 handed off: 33/200 (16.5%)
+banking77-lora-v1 accuracy on messages not handed off: 156/167 (93.4%)
+student answers equal to teacher answers on test_200: 100/200 (50.0%)
+student errors on test_200: 131/200 (65.5%)
+student errors equal to the teacher's answer: 36/131

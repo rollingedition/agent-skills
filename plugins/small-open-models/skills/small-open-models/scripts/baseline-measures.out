@@ -1,0 +1,8 @@
+messages: 1001
+placeholder threshold: 0.5
+accuracy: 560/1001 (55.9%)
+handed off: 30/1001 (3.0%)
+accuracy on messages not handed off: 554/971 (57.1%)
+threshold above every confidence: 1.01
+handed off at that threshold: 1001/1001 (100.0%)
+accuracy on messages not handed off at that threshold: not defined (0 messages not handed off)

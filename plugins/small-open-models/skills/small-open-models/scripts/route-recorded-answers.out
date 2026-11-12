@@ -1,0 +1,5 @@
+messages: 40
+placeholder threshold: 0.5
+accuracy: 20/40 (50.0%)
+handed off: 2/40 (5.0%)
+accuracy on messages not handed off: 20/38 (52.6%)

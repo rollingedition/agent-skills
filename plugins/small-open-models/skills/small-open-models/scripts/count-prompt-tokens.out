@@ -1,0 +1,6 @@
+messages: 40
+prompt tokens min: 580
+prompt tokens median: 585
+prompt tokens max: 614
+prompt tokens total: 23493
+prompt tokens mean, rounded: 587

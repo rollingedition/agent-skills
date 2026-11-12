@@ -1,0 +1,15 @@
+135m-chat answers outside the team list: 0/200
+135m-chat correct: 11/200 (5.5%)
+135m-chat distinct teams given: 17
+135m-chat most given team: topping_up_by_card, 55/200
+135m-chat gold for most given team: 1/200
+135m-raw answers outside the team list: 0/200
+135m-raw correct: 9/200 (4.5%)
+135m-raw distinct teams given: 18
+135m-raw most given team: card_arrival, 165/200
+135m-raw gold for most given team: 0/200
+360m-raw answers outside the team list: 0/200
+360m-raw correct: 12/200 (6.0%)
+360m-raw distinct teams given: 8
+360m-raw most given team: card_payment_wrong_exchange_rate, 94/200
+360m-raw gold for most given team: 4/200

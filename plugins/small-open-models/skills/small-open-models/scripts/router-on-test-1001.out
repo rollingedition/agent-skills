@@ -1,0 +1,8 @@
+messages on test_1001: 1001
+router banking77-lora-v1 correct: 847/1001 (84.6%)
+stand-in correct: 560/1001 (55.9%)
+router handed off: 146/1001 (14.6%)
+right for the stand-in, wrong for the router: 48/1001
+of those, handed off by the router: 22/48
+wrong for the router and sent as an answer: 76/1001 (7.6%)
+right for the router, wrong for the stand-in: 335/1001

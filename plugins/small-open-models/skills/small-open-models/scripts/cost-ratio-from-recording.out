@@ -1,0 +1,12 @@
+machine: a cloud machine with 4 vCPUs and 15 GiB of memory
+threads: 4
+messages on test_200: 200
+stand-in rate, one per call (messages a second): 0.32
+classifier fp32 rate, one per call (messages a second): 19.0
+classifier fp32 rate, batches of 16 (messages a second): 33.0
+classifier int8 rate, batches of 16 (messages a second): 29.0
+fp32 over stand-in, one per call, throughput ratio: 60.8
+fp32 over stand-in, batches of 16, throughput ratio: 104.0
+int8 over stand-in, batches of 16, throughput ratio: 91.8
+int8 over fp32, batches of 16, throughput ratio: 0.9
+predictions agreeing, fp32 and int8: 200/200

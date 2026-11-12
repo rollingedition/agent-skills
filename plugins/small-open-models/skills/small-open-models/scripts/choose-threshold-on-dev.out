@@ -1,0 +1,11 @@
+dev messages: 1003
+target accuracy on messages not handed off: 0.90
+chosen threshold: 0.63
+threshold in manifest: 0.63
+chosen threshold matches manifest: yes
+threshold 0.50 handed off: 80/1003 (8.0%)
+threshold 0.50 accuracy on messages not handed off: 811/923 (87.9%)
+threshold 0.63 handed off: 148/1003 (14.8%)
+threshold 0.63 accuracy on messages not handed off: 770/855 (90.1%)
+threshold 0.90 handed off: 352/1003 (35.1%)
+threshold 0.90 accuracy on messages not handed off: 620/651 (95.2%)

@@ -1,0 +1,9 @@
+messages on test_200: 200
+stand-in correct: 109/200 (54.5%)
+adapter banking77-lora-v1 correct: 172/200 (86.0%)
+stand-in placeholder threshold: 0.50
+stand-in handed off: 9/200 (4.5%)
+adapter threshold from manifest: 0.63
+adapter handed off: 33/200 (16.5%)
+right for the adapter, wrong for the stand-in: 69/200
+right for the stand-in, wrong for the adapter: 6/200

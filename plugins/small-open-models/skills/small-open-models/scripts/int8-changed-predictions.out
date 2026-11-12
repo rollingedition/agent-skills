@@ -1,0 +1,11 @@
+handoff threshold from manifest: 0.63
+messages on test_200: 200
+float32 accuracy on test_200: 172/200 (86.0%)
+float32 handed off: 33/200 (16.5%)
+float32 accuracy on messages not handed off: 156/167 (93.4%)
+int8 accuracy on test_200: 172/200 (86.0%)
+int8 handed off: 33/200 (16.5%)
+int8 accuracy on messages not handed off: 156/167 (93.4%)
+predictions changed by int8: 0/200 (0.0%)
+hand-off decisions changed by int8: 0/200
+predictions changed with the head in int8 too: 1/200

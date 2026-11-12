@@ -1,0 +1,17 @@
+dev messages: 1003
+band 0.0-0.2 messages: 1
+band 0.0-0.2 correct: 1/1 (100.0%)
+band 0.0-0.2 mean confidence: 19.9%
+band 0.2-0.4 messages: 41
+band 0.2-0.4 correct: 10/41 (24.4%)
+band 0.2-0.4 mean confidence: 32.9%
+band 0.4-0.6 messages: 92
+band 0.4-0.6 correct: 49/92 (53.3%)
+band 0.4-0.6 mean confidence: 51.0%
+band 0.6-0.8 messages: 123
+band 0.6-0.8 correct: 84/123 (68.3%)
+band 0.6-0.8 mean confidence: 70.6%
+band 0.8-1.0 messages: 746
+band 0.8-1.0 correct: 693/746 (92.9%)
+band 0.8-1.0 mean confidence: 96.4%
+messages in bands: 1003
