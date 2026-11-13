@@ -1,0 +1,5 @@
+rank 8, parameters trained: 819,200
+rank 8, share of the model's parameters: 0.23%
+rank 64, parameters trained: 6,553,600
+rank 64, share of the model's parameters: 1.81%
+parameters trained by full fine-tuning: 361,821,120

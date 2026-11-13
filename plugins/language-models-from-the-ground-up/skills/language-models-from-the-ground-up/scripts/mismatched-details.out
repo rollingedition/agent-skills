@@ -1,0 +1,4 @@
+perplexity, as trained: 24.3
+perplexity, RoPE pairing neighbouring numbers: 112.2
+perplexity, RoPE with base 100,000: 26.4
+perplexity, no RoPE: 182.0

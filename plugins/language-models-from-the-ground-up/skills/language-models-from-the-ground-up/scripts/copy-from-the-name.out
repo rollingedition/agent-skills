@@ -1,0 +1,8 @@
+name as sold, P(cover): 0.97
+name as sold, P(set): 0.02
+name without cover, P(cover): 0.00
+name without cover, P(set): 0.29
+name ending in set, P(cover): 0.00
+name ending in set, P(set): 0.70
+training descriptions with 'this outdoor patio furniture': 6
+followed by cover: 2

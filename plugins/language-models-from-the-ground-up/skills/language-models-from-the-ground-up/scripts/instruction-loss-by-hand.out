@@ -1,0 +1,4 @@
+tokens predicted in the text: 96
+tokens the instruction loss counts, the response's: 90
+average loss over every token: 2.267
+average loss over the response only: 2.132

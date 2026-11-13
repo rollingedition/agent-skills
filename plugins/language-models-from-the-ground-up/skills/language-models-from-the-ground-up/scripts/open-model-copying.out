@@ -1,0 +1,6 @@
+SmolLM2-360M, name as sold, P(cover): 0.75
+SmolLM2-360M, name as sold, P(set): 0.00
+SmolLM2-360M, name without cover, P(cover): 0.02
+SmolLM2-360M, name without cover, P(set): 0.02
+SmolLM2-360M, name ending in set, P(cover): 0.01
+SmolLM2-360M, name ending in set, P(set): 0.77

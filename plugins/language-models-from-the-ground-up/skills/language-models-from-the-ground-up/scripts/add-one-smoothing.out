@@ -1,0 +1,6 @@
+vocabulary: 25,909
+P(table | coffee) counted: 0.896
+P(table | coffee) add-one: 0.042
+training perplexity, counted: 16.9
+training perplexity, add-one: 1,232.8
+validation perplexity, add-one: 1,575.1

@@ -1,0 +1,56 @@
+width 64, 4 epochs, parameters: 478,656
+width 64, 4 epochs, steps: 4,284
+width 64, 4 epochs, best epoch: 4
+width 64, 4 epochs, perplexity on names: 36.9
+width 64, 4 epochs, perplexity on descriptions: 35.9
+width 64, 4 epochs, perplexity on names, last epoch: 36.9
+width 64, 4 epochs, perplexity on descriptions, last epoch: 35.9
+width 128, 4 epochs, parameters: 1,334,144
+width 128, 4 epochs, steps: 4,284
+width 128, 4 epochs, best epoch: 4
+width 128, 4 epochs, perplexity on names: 27.6
+width 128, 4 epochs, perplexity on descriptions: 24.7
+width 128, 4 epochs, perplexity on names, last epoch: 27.6
+width 128, 4 epochs, perplexity on descriptions, last epoch: 24.7
+width 256, 4 epochs, parameters: 4,273,920
+width 256, 4 epochs, steps: 4,284
+width 256, 4 epochs, best epoch: 4
+width 256, 4 epochs, perplexity on names: 23.5
+width 256, 4 epochs, perplexity on descriptions: 19.5
+width 256, 4 epochs, perplexity on names, last epoch: 23.5
+width 256, 4 epochs, perplexity on descriptions, last epoch: 19.5
+width 128, 16 epochs, parameters: 1,334,144
+width 128, 16 epochs, steps: 17,136
+width 128, 16 epochs, best epoch: 15
+width 128, 16 epochs, perplexity on names: 24.0
+width 128, 16 epochs, perplexity on descriptions: 19.9
+width 128, 16 epochs, perplexity on names, last epoch: 24.1
+width 128, 16 epochs, perplexity on descriptions, last epoch: 19.9
+a quarter of the data, 4 epochs, parameters: 1,334,144
+a quarter of the data, 4 epochs, steps: 1,072
+a quarter of the data, 4 epochs, best epoch: 4
+a quarter of the data, 4 epochs, perplexity on names: 51.9
+a quarter of the data, 4 epochs, perplexity on descriptions: 54.1
+a quarter of the data, 4 epochs, perplexity on names, last epoch: 51.9
+a quarter of the data, 4 epochs, perplexity on descriptions, last epoch: 54.1
+half the data, 4 epochs, parameters: 1,334,144
+half the data, 4 epochs, steps: 2,144
+half the data, 4 epochs, best epoch: 4
+half the data, 4 epochs, perplexity on names: 35.2
+half the data, 4 epochs, perplexity on descriptions: 34.8
+half the data, 4 epochs, perplexity on names, last epoch: 35.2
+half the data, 4 epochs, perplexity on descriptions, last epoch: 34.8
+a quarter of the data, 16 epochs, parameters: 1,334,144
+a quarter of the data, 16 epochs, steps: 4,288
+a quarter of the data, 16 epochs, best epoch: 11
+a quarter of the data, 16 epochs, perplexity on names: 40.0
+a quarter of the data, 16 epochs, perplexity on descriptions: 39.6
+a quarter of the data, 16 epochs, perplexity on names, last epoch: 44.1
+a quarter of the data, 16 epochs, perplexity on descriptions, last epoch: 45.9
+half the data, 8 epochs, parameters: 1,334,144
+half the data, 8 epochs, steps: 4,288
+half the data, 8 epochs, best epoch: 8
+half the data, 8 epochs, perplexity on names: 30.4
+half the data, 8 epochs, perplexity on descriptions: 28.6
+half the data, 8 epochs, perplexity on names, last epoch: 30.4
+half the data, 8 epochs, perplexity on descriptions, last epoch: 28.6

@@ -1,0 +1,12 @@
+embedding (shared with the output): 530,176
+attention: 262,144
+feed-forward: 540,672
+normalization: 1,152
+total: 1,334,144
+embedding's share of the total: 40%
+layers: 4
+width: 128
+heads: 4
+feed-forward width: 352
+longest text, in tokens: 160
+vocabulary: 4,142

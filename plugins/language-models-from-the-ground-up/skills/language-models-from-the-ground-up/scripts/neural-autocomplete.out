@@ -1,0 +1,9 @@
+bar          -> with 0.22, cabinet 0.14, cart 0.13
+patio bar    -> stool 0.63, with 0.23, & 0.05
+outdoor bar  -> stool 0.40, with 0.13, & 0.12
+kitchen bar  -> & 0.53, with 0.17, cart 0.09
+wine bar     -> with 0.23, cabinet 0.16, </s> 0.14
+P(stool | outdoor bar): 0.40
+cosine(patio, outdoor) in the model's embeddings: 0.16
+cosine(patio, kitchen) in the model's embeddings: 0.07
+cosine(patio, wine) in the model's embeddings: 0.10

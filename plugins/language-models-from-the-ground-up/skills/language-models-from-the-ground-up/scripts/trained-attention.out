@@ -1,0 +1,17 @@
+layers: 4
+heads per layer: 4
+dimensions per head: 32
+name: double</w> chaise</w> patio</w> furniture</w> cover</w>
+description so far: protect</w> your</w> outdoor</w> patio</w> furniture</w> from</w> har sh</w> elements</w> with</w> this</w> outdoor</w> patio</w> furniture</w>
+P(next token is cover</w>): 0.97
+layer 1, head 1: current:furniture</w> 0.80, description:furniture</w> 0.11, description:elements</w> 0.03
+layer 1, head 2: current:furniture</w> 0.31, name:furniture</w> 0.13, description:furniture</w> 0.11
+layer 1, head 3: current:furniture</w> 0.18, description:patio</w> 0.18, <sep> 0.12
+layer 1, head 4: description:protect</w> 0.17, current:furniture</w> 0.14, description:patio</w> 0.11
+layer 4, head 1: name:cover</w> 0.48, name:double</w> 0.18, name:furniture</w> 0.13
+layer 4, head 2: name:cover</w> 0.37, <s> 0.13, name:chaise</w> 0.11
+layer 4, head 3: description:patio</w> 0.27, current:furniture</w> 0.25, description:outdoor</w> 0.21
+layer 4, head 4: description:with</w> 0.38, description:from</w> 0.21, description:elements</w> 0.06
+last-layer head with the most weight on the name's cover: head 1
+its weight on the name's cover: 0.48
+its weight on from, after the description's earlier furniture: 0.00

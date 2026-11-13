@@ -1,0 +1,13 @@
+embedding (shared with the output): 47,185,920 (13%)
+attention: 78,643,200 (22%)
+feed-forward: 235,929,600 (65%)
+normalization: 62,400 (0%)
+total: 361,821,120
+layers: 32
+width: 960
+query heads: 15
+key and value heads: 5
+feed-forward width: 2560
+vocabulary: 49,152
+one layer's query weights: [960, 960]
+one layer's key weights: [320, 960]

@@ -1,0 +1,7 @@
+validation perplexity: inf
+validation word pairs: 33,336
+pairs never seen in training: 8,278
+share never seen in training: 25%
+names with an unseen pair: 3,724
+validation names: 4,282
+first unseen pairs: [name] [name], [name] 4, wood half-circle

@@ -1,0 +1,13 @@
+longest text, in tokens: 8,192
+SmolLM2-135M, weights in 16-bit numbers, in GB: 0.3
+SmolLM2-135M, key and value cache per token, in KB: 23
+SmolLM2-135M, cache for the longest text, in GB: 0.19
+SmolLM2-135M, cache for the longest text without grouping, in GB: 0.57
+SmolLM2-360M, weights in 16-bit numbers, in GB: 0.7
+SmolLM2-360M, key and value cache per token, in KB: 41
+SmolLM2-360M, cache for the longest text, in GB: 0.34
+SmolLM2-360M, cache for the longest text without grouping, in GB: 1.01
+SmolLM2-1.7B, weights in 16-bit numbers, in GB: 3.4
+SmolLM2-1.7B, key and value cache per token, in KB: 197
+SmolLM2-1.7B, cache for the longest text, in GB: 1.61
+SmolLM2-1.7B, cache for the longest text without grouping, in GB: 1.61

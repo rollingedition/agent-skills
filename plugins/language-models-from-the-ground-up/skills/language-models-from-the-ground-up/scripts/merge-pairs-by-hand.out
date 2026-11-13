@@ -1,0 +1,10 @@
+merge 1: 'e' + '</w>' -> 'e</w>'  (35,498 times)
+merge 2: 'r' + '</w>' -> 'r</w>'  (24,635 times)
+merge 3: 'i' + 'n' -> 'in'  (21,312 times)
+merge 4: 'd' + '</w>' -> 'd</w>'  (20,216 times)
+merge 5: 't' + '</w>' -> 't</w>'  (18,628 times)
+merge 6: 'a' + 'n' -> 'an'  (15,697 times)
+merge 7: 'e' + 'r</w>' -> 'er</w>'  (12,981 times)
+merge 8: 's' + 't' -> 'st'  (12,781 times)
+table spelled now: ['t', 'a', 'b', 'l', 'e</w>']
+same merges as lib.bpe.train: True

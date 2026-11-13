@@ -1,0 +1,5 @@
+validation perplexity, network share 0.0: 23.1
+validation perplexity, network share 0.2: 21.9
+validation perplexity, network share 0.3: 22.1
+validation perplexity, network share 0.5: 22.9
+validation perplexity, network share 1.0: 36.4

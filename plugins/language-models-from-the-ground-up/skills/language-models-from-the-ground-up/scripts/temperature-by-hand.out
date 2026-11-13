@@ -1,0 +1,11 @@
+text so far: this welcome sign is a great way to add
+tokens in the vocabulary: 4,142
+temperature 0.5, top 3: "a" 0.61, "style" 0.20, "some" 0.11
+temperature 0.5, tokens needed to cover 90% of the probability: 3
+temperature 0.5, probability outside temperature 1.0's 90% cover: 0%
+temperature 1.0, top 3: "a" 0.26, "style" 0.15, "some" 0.11
+temperature 1.0, tokens needed to cover 90% of the probability: 78
+temperature 1.0, probability outside temperature 1.0's 90% cover: 10%
+temperature 1.5, top 3: "a" 0.09, "style" 0.06, "some" 0.05
+temperature 1.5, tokens needed to cover 90% of the probability: 640
+temperature 1.5, probability outside temperature 1.0's 90% cover: 42%

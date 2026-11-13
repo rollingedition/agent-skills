@@ -1,0 +1,7 @@
+order 4: kept 0.2500, passed down 0.7500
+order 3: kept 0.8056, passed down 0.1667
+order 2: kept 0.0630, passed down 0.1275
+order 1: kept 0.0007, passed down 0.0318
+by hand: 0.8621
+lib.ngrams: 0.8621
+probabilities after the context, summed: 1.0000

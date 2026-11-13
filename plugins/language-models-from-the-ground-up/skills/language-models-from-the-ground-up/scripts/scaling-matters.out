@@ -1,0 +1,6 @@
+size 4, unscaled, average largest weight in a row: 0.45
+size 4, scaled, average largest weight in a row: 0.25
+size 32, unscaled, average largest weight in a row: 0.78
+size 32, scaled, average largest weight in a row: 0.24
+size 256, unscaled, average largest weight in a row: 0.92
+size 256, scaled, average largest weight in a row: 0.25

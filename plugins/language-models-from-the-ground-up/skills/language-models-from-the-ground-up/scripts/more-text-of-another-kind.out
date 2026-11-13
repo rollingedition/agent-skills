@@ -1,0 +1,5 @@
+learned from names: 36.4
+learned from all: 59.0
+training tokens, names: 337,071
+training tokens, names and descriptions: 2,744,320
+all-text model, validation perplexity by epoch: 73.6, 64.0, 60.8, 59.0

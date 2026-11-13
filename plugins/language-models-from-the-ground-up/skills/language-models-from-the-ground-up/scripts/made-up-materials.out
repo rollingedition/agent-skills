@@ -1,0 +1,19 @@
+products asked, each with its description given: 40
+products whose name or description names a material: 28
+products whose name and description name none: 12
+base model, data names a material, supported: 24
+base model, data names a material, made up: 2
+base model, data names a material, none: 2
+base model, data names a material, declined: 0
+base model, data names none, supported: 0
+base model, data names none, made up: 7
+base model, data names none, none: 5
+base model, data names none, declined: 0
+tuned model, data names a material, supported: 23
+tuned model, data names a material, made up: 3
+tuned model, data names a material, none: 2
+tuned model, data names a material, declined: 0
+tuned model, data names none, supported: 0
+tuned model, data names none, made up: 8
+tuned model, data names none, none: 4
+tuned model, data names none, declined: 0

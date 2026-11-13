@@ -1,0 +1,8 @@
+text so far: this welcome sign is a great way to add a touch of rustic charm to your home . it is made of natural wood and features a distressed finish with a
+penalty factor: 1.3
+same as lib.decoding.penalize: True
+next token, without a penalty: distressed 0.20, black 0.03, weathered 0.03
+P(distressed), without a penalty: 0.20
+next token, with the penalty: black 0.04, weathered 0.03, distressed 0.03
+P(distressed), with the penalty: 0.03
+greedy with the penalty: this welcome sign is a great way to add style and functionality to any room . the worn look of these beautiful signs are made from natural coir , so it can be used indoors or outdoors .

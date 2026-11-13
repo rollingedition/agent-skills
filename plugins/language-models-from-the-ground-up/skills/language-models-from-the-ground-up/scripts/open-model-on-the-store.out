@@ -1,0 +1,9 @@
+validation names scored: 500
+names, per-token perplexity, the store's model: 25.8
+names, per-token perplexity, SmolLM2-360M: 564.8
+names, per-word perplexity, the store's model: 199.3
+names, per-word perplexity, SmolLM2-360M: 54,352.8
+names after a label, per-word perplexity, SmolLM2-360M: 67,101.5
+descriptions scored: 446
+descriptions, per-word perplexity, the store's model: 37.0
+descriptions, per-word perplexity, SmolLM2-360M: 61.2

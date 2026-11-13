@@ -1,0 +1,8 @@
+root mean square entering block 1, before: 0.10
+root mean square entering block 1, after: 1.00
+same as lib.transformer.rms_norm, entering block 1: True
+largest mean of a position's numbers after, entering block 1: 0.23
+root mean square leaving the last block, before: 1.16
+root mean square leaving the last block, after: 1.00
+same as lib.transformer.rms_norm, leaving the last block: True
+largest mean of a position's numbers after, leaving the last block: 0.26

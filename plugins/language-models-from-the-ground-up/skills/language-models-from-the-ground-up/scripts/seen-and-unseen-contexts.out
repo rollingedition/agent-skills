@@ -1,0 +1,5 @@
+validation tokens with a context seen in training: 70%
+4-gram perplexity, seen contexts: 17.9
+network perplexity, seen contexts: 26.1
+4-gram perplexity, unseen contexts: 41.2
+network perplexity, unseen contexts: 78.5

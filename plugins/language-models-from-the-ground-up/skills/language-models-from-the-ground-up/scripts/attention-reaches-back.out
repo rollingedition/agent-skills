@@ -1,0 +1,12 @@
+description tokens measured: 20,571
+average attention weight of a description token, by layer:
+  layer 1: 4 or more tokens back 0.42, on <s> and <sep> 0.12
+  layer 2: 4 or more tokens back 0.39, on <s> and <sep> 0.04
+  layer 3: 4 or more tokens back 0.58, on <s> and <sep> 0.13
+  layer 4: 4 or more tokens back 0.47, on <s> and <sep> 0.13
+all layers, weight 4 or more tokens back: 0.46
+an even spread's weight 4 or more tokens back: 0.85
+all layers, weight on <s> and <sep>: 0.11
+an even spread's weight on <s> and <sep>: 0.05
+products with a description: 262
+descriptions that repeat a token of the name: 244

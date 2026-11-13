@@ -1,0 +1,4 @@
+P(umbrella is a real neighbour of patio), before: 0.500
+P(umbrella is a real neighbour of patio), after 3 steps: 0.525
+P(sofa, 48 are real neighbours), before: 0.500, 0.500
+P(sofa, 48 are real neighbours), after 3 steps: 0.475, 0.475

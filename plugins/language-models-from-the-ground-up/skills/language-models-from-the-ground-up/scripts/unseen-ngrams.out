@@ -1,0 +1,7 @@
+training tokens: 337,071
+validation tokens: 42,422
+1-grams in validation never seen in training: 0.1%
+2-grams in validation never seen in training: 12.7%
+3-grams in validation never seen in training: 31.1%
+4-grams in validation never seen in training: 43.9%
+5-grams in validation never seen in training: 53.4%

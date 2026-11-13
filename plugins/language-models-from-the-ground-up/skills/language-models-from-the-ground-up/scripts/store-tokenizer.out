@@ -1,0 +1,8 @@
+different words in training text: 49,315
+characters and the end marker: 137
+tokens in the vocabulary: 4,138
+set of 2 barstools -> set</w> of</w> 2</w> bar stools</w>
+sled coffee table -> sled</w> coffee</w> table</w>
+chair chairs -> chair</w> chairs</w>
+48 49 -> 48</w> 4 9</w>
+noise noise-free -> noise</w> no i se -free</w>

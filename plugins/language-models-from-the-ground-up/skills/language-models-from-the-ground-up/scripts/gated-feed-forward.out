@@ -1,0 +1,6 @@
+silu(-3), silu(0), silu(3): -0.14, 0.00, 2.86
+hidden units: 352
+hidden units nearly shut at a position (gate under 0.05 in size), on average: 49
+fewest and most nearly shut at a position: 33 and 67
+positions: 133
+output shape: (133, 128)

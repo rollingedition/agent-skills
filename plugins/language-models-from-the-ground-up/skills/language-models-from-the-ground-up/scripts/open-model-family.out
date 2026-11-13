@@ -1,0 +1,25 @@
+SmolLM2-135M, layers: 30
+SmolLM2-135M, width: 576
+SmolLM2-135M, query heads: 9
+SmolLM2-135M, query heads per key and value head: 3
+SmolLM2-135M, feed-forward width: 1,536
+SmolLM2-135M, RoPE base: 100,000
+SmolLM2-135M, parameters: 134,515,008
+SmolLM2-135M, embedding's share: 21%
+SmolLM2-360M, layers: 32
+SmolLM2-360M, width: 960
+SmolLM2-360M, query heads: 15
+SmolLM2-360M, query heads per key and value head: 3
+SmolLM2-360M, feed-forward width: 2,560
+SmolLM2-360M, RoPE base: 100,000
+SmolLM2-360M, parameters: 361,821,120
+SmolLM2-360M, embedding's share: 13%
+SmolLM2-1.7B, layers: 24
+SmolLM2-1.7B, width: 2,048
+SmolLM2-1.7B, query heads: 32
+SmolLM2-1.7B, query heads per key and value head: 1
+SmolLM2-1.7B, feed-forward width: 8,192
+SmolLM2-1.7B, RoPE base: 130,000
+SmolLM2-1.7B, parameters: 1,711,376,384
+SmolLM2-1.7B, embedding's share: 6%
+SmolLM2-360M, parameters in the recorded weights: 361,821,120

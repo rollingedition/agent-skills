@@ -1,0 +1,23 @@
+{
+  "name": "language-models-from-the-ground-up",
+  "displayName": "Language Models from the Ground Up",
+  "version": "2026.11.9",
+  "description": "How a language model works, built one part at a time: next-word prediction, tokens, embeddings, a neural model, attention and the transformer, training a small model on a CPU, choosing words, what an open model holds inside, and how instruction tuning changes it.",
+  "author": {
+    "name": "Rolling Edition",
+    "url": "https://rollingedition.com/"
+  },
+  "homepage": "https://rollingedition.com/language-models-from-the-ground-up",
+  "repository": "https://github.com/rollingedition/agent-skills",
+  "license": "CC-BY-4.0",
+  "keywords": [
+    "large-language-models",
+    "deep-learning",
+    "natural-language-processing"
+  ],
+  "icon": "./icon.png",
+  "documentationUrl": "https://rollingedition.com/assistants#agent-skills",
+  "supportUrl": "https://rollingedition.com/assistants#trouble",
+  "privacyPolicyUrl": "https://rollingedition.com/policies/privacy#mcp",
+  "termsOfServiceUrl": "https://rollingedition.com/policies/terms"
+}

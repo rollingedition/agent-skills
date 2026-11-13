@@ -1,0 +1,4 @@
+set of 2 barstools -> set Ġof Ġ 2 Ġbar st ools | same as the library: True
+sled coffee table -> s led Ġcoffee Ġtable | same as the library: True
+6.5 qt . slow cooker -> 6 . 5 Ġq t Ġ. Ġslow Ġcooker | same as the library: True
+pre-tokenizer steps: Digits, ByteLevel | digits one at a time: True

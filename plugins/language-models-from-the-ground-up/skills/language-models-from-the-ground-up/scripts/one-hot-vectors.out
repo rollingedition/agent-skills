@@ -1,0 +1,5 @@
+numbers in each vector: 2000
+cosine(patio, outdoor): 0.0
+cosine(patio, sofa): 0.0
+cosine(patio, patio): 1.0
+share of training tokens with a vector: 91%

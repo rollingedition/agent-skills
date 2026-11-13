@@ -1,0 +1,8 @@
+1-gram validation perplexity: 687.2
+2-gram validation perplexity: 46.9
+3-gram validation perplexity: 24.9
+4-gram validation perplexity: 23.1
+5-gram validation perplexity: 23.5
+4-grams seen once: 164,374
+4-grams seen twice: 18,359
+discount estimated from them: 0.82

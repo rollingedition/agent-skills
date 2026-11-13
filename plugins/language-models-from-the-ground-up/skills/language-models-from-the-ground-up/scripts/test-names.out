@@ -1,0 +1,6 @@
+test names: 4,281
+test perplexity, the 4-gram baseline: 22.9
+test perplexity, the window model: 35.4
+test perplexity, the window model mixed with the counts, share 0.2: 21.6
+test perplexity, the store's transformer: 23.7
+test perplexity, the store's transformer mixed with the counts, share 0.5: 18.3

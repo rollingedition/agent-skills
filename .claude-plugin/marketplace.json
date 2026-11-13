@@ -21,6 +21,13 @@
       "homepage": "https://rollingedition.com/data-governance-as-code"
     },
     {
+      "name": "language-models-from-the-ground-up",
+      "source": "./plugins/language-models-from-the-ground-up",
+      "description": "How a language model works, built one part at a time: next-word prediction, tokens, embeddings, a neural model, attention and the transformer, training a small model on a CPU, choosing words, what an open model holds inside, and how instruction tuning changes it.",
+      "category": "learning",
+      "homepage": "https://rollingedition.com/language-models-from-the-ground-up"
+    },
+    {
       "name": "model-context-protocol-in-practice",
       "source": "./plugins/model-context-protocol-in-practice",
       "description": "Tools and data for agents, for engineers who know APIs: what MCP adds to an HTTP API and when it's the wrong choice, and how to design, build, secure, test and run MCP servers and clients on specification revision 2026-07-28 with the Python SDK, mcp 2.x, with a migration path from the 2025 revisions.",

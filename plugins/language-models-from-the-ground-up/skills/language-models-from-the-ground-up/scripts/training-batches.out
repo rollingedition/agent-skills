@@ -1,0 +1,10 @@
+training texts: 34,252
+tokens in them: 2,843,222
+texts cut at the length limit, 160 tokens: 1.0%
+texts per batch: 32
+one batch's inputs and targets: (32, 151) (32, 151)
+share of targets that are padding, over one shuffled epoch: 46%
+least and most padding in a batch: 30% and 59%
+steps per epoch: 1,071
+epochs in the recorded run: 16
+steps in the recorded run: 17,136

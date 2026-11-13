@@ -1,0 +1,5 @@
+P(table | coffee): 0.896  (1129 of 1260)
+P(mug | coffee): 0.036  (45 of 1260)
+P(jar | coffee): 0.010  (13 of 1260)
+P(lamp | coffee): 0.000  (0 of 1260)
+sum over every word after coffee: 1.0

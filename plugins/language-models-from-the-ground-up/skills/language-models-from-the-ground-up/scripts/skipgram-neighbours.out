@@ -1,0 +1,8 @@
+training loss, first batch: 4.16
+training loss, last 100 batches: 2.05
+patio</w>    -> porch</w> 0.77, bistro</w> 0.69, garden</w> 0.69, couch</w> 0.67
+outdoor</w>  -> indoor</w> 0.75, patio</w> 0.66, garden</w> 0.65, living</w> 0.61
+sofa</w>     -> couch</w> 0.85, sleeper</w> 0.84, chaise</w> 0.80, sectional</w> 0.78
+oak</w>      -> walnut</w> 0.91, espresso</w> 0.84, weathered</w> 0.81, glossy</w> 0.80
+blue</w>     -> beige</w> 0.88, gray</w> 0.87, green</w> 0.85, brown</w> 0.80
+48</w>       -> 36</w> 0.94, 32</w> 0.92, 1.5</w> 0.89, 24</w> 0.89

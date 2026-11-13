@@ -1,0 +1,6 @@
+different characters in training names: 86
+validation characters never seen in training: 2
+they are: soft hyphen, latin small letter t with cedilla
+validation tokens as words: 29,054
+validation tokens as characters: 174,142
+characters per word: 6.0

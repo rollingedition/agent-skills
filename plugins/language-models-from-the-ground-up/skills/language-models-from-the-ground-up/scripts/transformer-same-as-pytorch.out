@@ -1,0 +1,4 @@
+PyTorch version: 2.14.1+cpu
+positions compared: 133
+logits compared: 550,886
+same as PyTorch to 4 decimal places: True

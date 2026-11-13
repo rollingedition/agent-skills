@@ -1,0 +1,5 @@
+beta: 0.1
+tuned model favours the preferred answer more than the reference does, margin: 0.40
+tuned model favours the preferred answer more than the reference does, loss: 0.513
+tuned model favours it less, margin: -0.40
+tuned model favours it less, loss: 0.913

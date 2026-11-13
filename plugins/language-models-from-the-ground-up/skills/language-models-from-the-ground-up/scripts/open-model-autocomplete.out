@@ -1,0 +1,6 @@
+bar          -> 'ry' 0.05, 'ley' 0.05, 'b' 0.04
+patio bar    -> '\n' 0.21, 'be' 0.06, ',' 0.06
+outdoor bar  -> '\n' 0.28, ',' 0.06, '\n\n' 0.04
+kitchen bar  -> '\n' 0.37, '\n\n' 0.03, ',' 0.02
+wine bar     -> '\n' 0.20, ',' 0.09, '\n\n' 0.03
+P(stool | outdoor bar), SmolLM2-360M: 0.0002

@@ -1,0 +1,13 @@
+bar          transformer   -> with 0.17, & 0.14, and 0.09
+bar          half and half -> & 0.19, with 0.14, unit 0.07
+patio bar    transformer   -> stool 0.51, table 0.25, set 0.02
+patio bar    half and half -> stool 0.69, table 0.13, & 0.01
+outdoor bar  transformer   -> stool 0.50, with 0.05, table 0.04
+outdoor bar  half and half -> stool 0.28, & 0.12, with 0.12
+P(stool | outdoor bar), transformer: 0.50
+P(stool | outdoor bar), 4-gram: 0.06
+P(stool | outdoor bar), half and half: 0.28
+kitchen bar  transformer   -> room 0.14, with 0.08, cabinet 0.08
+kitchen bar  half and half -> with 0.14, & 0.12, room 0.07
+wine bar     transformer   -> with 0.43, <sep> 0.22, cabinet 0.08
+wine bar     half and half -> with 0.30, <sep> 0.21, cabinet 0.13

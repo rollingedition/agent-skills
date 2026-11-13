@@ -1,0 +1,6 @@
+tuned model, supported answers: 23
+tuned model, supported answers, average probability per token: 0.65
+tuned model, made up answers: 11
+tuned model, made up answers, average probability per token: 0.45
+tuned model, supported answers above 0.5 per token: 21 of 23
+tuned model, made up answers above 0.5 per token: 3 of 11

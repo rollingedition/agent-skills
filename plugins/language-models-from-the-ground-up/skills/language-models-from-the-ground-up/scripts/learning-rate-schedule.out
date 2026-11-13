@@ -1,0 +1,9 @@
+warm-up steps: 200
+peak step size: 0.003
+weight decay: 0.1
+step size at step 0: 1.50e-05
+step size at step 100: 1.51e-03
+step size at step 200: 3.00e-03
+step size at step 8,568: 1.68e-03
+step size at step 17,135: 3.00e-04
+same as the recorded step sizes: True

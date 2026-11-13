@@ -1,0 +1,8 @@
+validation products: 4,282
+validation products with no description: 597
+training products with no description: 14%
+training products named as bulbs with no description: 24%
+longest description, in tokens: 60
+greedy description: this welcome sign is a great way to add a touch of rustic charm to your home . it is made of natural wood and features a distressed finish with a distressed finish . this welcome sign is made of wood and has a distressed finish that adds a rustic touch to your home . this sign is made from
+4-token phrases it uses twice or more: this welcome sign is | to your home .
+P(the description is empty), 5 light light bulb: 0.28

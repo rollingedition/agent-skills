@@ -1,0 +1,8 @@
+average weight on the previous token (rows: layers, columns: heads):
+  layer 1: 0.03  0.06  0.13  0.10
+  layer 2: 0.32  0.13  0.27  0.24
+  layer 3: 0.13  0.33  0.09  0.07
+  layer 4: 0.11  0.07  0.35  0.27
+head with the most weight on the previous token: layer 4, head 3
+its weight on the previous token: 0.35
+an even spread's weight on the previous token: 0.07

@@ -1,0 +1,16 @@
+SmolLM2 vocabulary: 49,152
+set of 2 barstools
+  SmolLM2: set Ġof Ġ 2 Ġbar st ools
+  store:   set</w> of</w> 2</w> bar stools</w>
+6.5 qt . slow cooker
+  SmolLM2: 6 . 5 Ġq t Ġ. Ġslow Ġcooker
+  store:   6.5</w> qt</w> .</w> slow</w> cooker</w>
+48 '' wide genuine leather wingback chair
+  SmolLM2: 4 8 Ġ'' Ġwide Ġgenuine Ġleather Ġwing back Ġchair
+  store:   48</w> ''</w> wide</w> genuine</w> leather</w> wingback</w> chair</w>
+tokens per validation name, SmolLM2: 10.53
+tokens per validation name, store: 9.91
+tokens per validation name, words: 6.79
+sled at the start of a text: s led Ġcoffee Ġtable
+sled after a space: Ġsled Ġcoffee Ġtable
+SmolLM2 tokens per word: 1.55

@@ -1,0 +1,8 @@
+dimensions per token: 64
+patio</w>    -> outdoor</w> 0.84, bistro</w> 0.79, porch</w> 0.79, lounge</w> 0.77
+outdoor</w>  -> patio</w> 0.84, porch</w> 0.82, indoor</w> 0.80, furniture</w> 0.74
+sofa</w>     -> sectional</w> 0.93, chaise</w> 0.90, loveseat</w> 0.89, lounge</w> 0.87
+oak</w>      -> walnut</w> 0.96, veneers</w> 0.90, espresso</w> 0.89, weathered</w> 0.88
+blue</w>     -> green</w> 0.86, beige</w> 0.86, pur 0.80, abstract</w> 0.79
+48</w>       -> 36</w> 0.94, 32</w> 0.93, 24</w> 0.92, 30</w> 0.89
+cosine(patio, outdoor): 0.84

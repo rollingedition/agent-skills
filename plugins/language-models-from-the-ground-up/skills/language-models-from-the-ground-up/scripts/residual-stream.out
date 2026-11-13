@@ -1,0 +1,7 @@
+length of the vectors entering layer 1: 1.17
+layer 1: attention adds 2.90, feed-forward adds 3.00, vectors now 4.65
+layer 2: attention adds 2.05, feed-forward adds 2.90, vectors now 6.14
+layer 3: attention adds 2.26, feed-forward adds 4.12, vectors now 8.46
+layer 4: attention adds 4.08, feed-forward adds 6.33, vectors now 13.16
+length of the vectors leaving the last layer: 13.16
+largest number in the stream: 50.6

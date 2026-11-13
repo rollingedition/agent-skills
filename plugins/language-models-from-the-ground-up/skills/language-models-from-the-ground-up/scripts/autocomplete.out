@@ -1,0 +1,7 @@
+coffee     -> 'table' 0.90, 'mug' 0.04, ',' 0.02
+bar        -> 'stool' 0.32, 'pull' 0.18, '&' 0.15
+kitchen    -> 'sink' 0.17, 'island' 0.16, 'canister' 0.12
+outdoor    -> 'door' 0.22, 'patio' 0.07, 'area' 0.06
+patio bar  -> 'stool' 0.32, 'pull' 0.18, '&' 0.15
+training names containing 'outdoor door': 215
+of them, followed by 'mat': 214

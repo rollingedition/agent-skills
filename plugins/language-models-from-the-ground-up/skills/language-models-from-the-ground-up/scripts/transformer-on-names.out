@@ -1,0 +1,6 @@
+validation tokens scored, each name's end included: 46,704
+validation perplexity on names, transformer share 0.0: 23.1
+validation perplexity on names, transformer share 0.3: 18.7
+validation perplexity on names, transformer share 0.5: 18.4
+validation perplexity on names, transformer share 0.7: 18.8
+validation perplexity on names, transformer share 1.0: 24.0

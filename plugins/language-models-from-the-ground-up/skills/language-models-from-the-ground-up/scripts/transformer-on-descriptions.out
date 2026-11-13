@@ -1,0 +1,11 @@
+products scored: 446
+description tokens scored: 35,651
+4-gram baseline, validation perplexity on descriptions: 22.5
+transformer, validation perplexity on descriptions: 20.1
+half and half, validation perplexity on descriptions: 14.7
+description tokens whose 3-token context is in the training texts: 74%
+4-gram, seen contexts: 16.3
+transformer, seen contexts: 16.6
+4-gram, unseen contexts: 57.6
+transformer, unseen contexts: 35.0
+this 4-gram, trained on whole texts, validation perplexity on names: 27.7

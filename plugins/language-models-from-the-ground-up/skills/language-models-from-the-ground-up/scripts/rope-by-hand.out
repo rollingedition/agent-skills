@@ -1,0 +1,4 @@
+length kept by the rotation, for the query and the key: True
+score with the key at 2 and the query at 5: 0.217
+score with the key at 12 and the query at 15: 0.217
+score with the key at 2 and the query at 8: -0.765

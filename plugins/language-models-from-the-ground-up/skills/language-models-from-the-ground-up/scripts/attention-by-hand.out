@@ -1,0 +1,7 @@
+attention weights (rows attend to columns):
+  <s>         [0.02 0.97 0.01 0.  ]
+  sled</w>    [0.21 0.52 0.16 0.11]
+  coffee</w>  [0.04 0.   0.03 0.94]
+  table</w>   [0.16 0.   0.03 0.81]
+each row sums to 1: True
+output shape: (4, 4)

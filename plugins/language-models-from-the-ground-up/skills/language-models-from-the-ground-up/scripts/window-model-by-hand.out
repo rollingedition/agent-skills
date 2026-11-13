@@ -1,0 +1,13 @@
+context: <s> <s> patio</w> bar</w>
+embeddings shape: (1, 4, 64)
+joined shape: (1, 256)
+hidden shape: (1, 256)
+logits shape: (1, 4140)
+vocabulary size: 4,140
+parameters: 1,394,732
+parameters in embedding: 264,960
+parameters in hidden_w: 65,536
+parameters in output_w: 1,059,840
+P(stool</w> | patio bar): 0.63
+P(with</w> | patio bar): 0.23
+P(&</w> | patio bar): 0.05

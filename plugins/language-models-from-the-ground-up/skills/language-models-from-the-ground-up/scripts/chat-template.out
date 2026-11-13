@@ -1,0 +1,10 @@
+request: Write a short product description for: front porch welcome sign wall décor
+what the tuned model reads, with its chat template:
+<|im_start|>system
+You are a helpful AI assistant named SmolLM, trained by Hugging Face<|im_end|>
+<|im_start|>user
+Write a short product description for: front porch welcome sign wall décor<|im_end|>
+<|im_start|>assistant
+
+tuned model, with the template: "Welcome to our front porch welcome sign wall décor, a space that brings warmth and comfort to your home. This wall is a statement piece that showcases your personality and style. With a mix of rustic and modern elements, you can create a unique and inviting atmosphere that reflects your individuality.
+tuned model, without it: .

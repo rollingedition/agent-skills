@@ -1,0 +1,8 @@
+chair</w> : chairs</w> :: table</w> : ? -> tables</w>, cup</w>, stools</w>
+chair</w> : chairs</w> :: lamp</w> : ? -> tops</w>, coffee</w>, tray</w>
+black</w> : white</w> :: dark</w> : ? -> brown</w>, blue</w>, glossy</w>
+lamps in the vocabulary: False
+light in the vocabulary: True
+light</w>    -> lights</w>, bulb</w>, dimmable</w>, candle</w>
+dark</w>     -> brown</w>, walnut</w>, gray</w>, espresso</w>
+small</w>    -> smaller</w>, larger</w>, displaying</w>, storing</w>

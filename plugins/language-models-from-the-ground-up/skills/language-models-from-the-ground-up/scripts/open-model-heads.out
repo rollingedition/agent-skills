@@ -1,0 +1,8 @@
+texts averaged: 50
+heads in all: 480
+heads with more than half their weight on the previous token: 3
+the most weight a head puts on the previous token: 0.79
+average weight on the first token, layers 1 to 4: 0.13
+average weight on the first token, layers 5 to 32: 0.61
+heads with more than half their weight on the first token: 286
+an even spread's weight on the previous token, and on the first: 0.05

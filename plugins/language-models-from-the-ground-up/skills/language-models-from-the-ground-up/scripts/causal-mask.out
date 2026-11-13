@@ -1,0 +1,8 @@
+weights with the causal mask:
+  <s>         [1. 0. 0. 0.]
+  sled</w>    [0.29 0.71 0.   0.  ]
+  coffee</w>  [0.58 0.01 0.41 0.  ]
+  table</w>   [0.16 0.   0.03 0.81]
+weight on later tokens: 0.0
+output at coffee changes with the last token, without the mask: True
+output at coffee changes with the last token, with the mask: False
