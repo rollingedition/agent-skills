@@ -1,3 +1,4 @@
+"""Computes the paired t statistic and its p-value by hand for two gaps, and checks each p-value against SciPy's ttest_rel. The prose's point rests on the t and p lines printed for each gap."""
 import math
 
 from scipy.stats import t, ttest_rel
@@ -17,6 +18,7 @@ ndcg = {name: evaluate(run, judgments)["ndcg@10"] for name, run in runs.items()}
 for after, before in [("semantic", "bm25"), ("hybrid", "semantic")]:
     difference = ndcg[after] - ndcg[before]
     n = len(difference)
+    # ddof=1 divides by n - 1, the sample standard deviation the t-test uses
     standard_error = difference.std(ddof=1) / math.sqrt(n)      # how much the mean would move between samples
     statistic = difference.mean() / standard_error
     p_value = 2 * t.sf(abs(statistic), df=n - 1)               # both tails of the t distribution

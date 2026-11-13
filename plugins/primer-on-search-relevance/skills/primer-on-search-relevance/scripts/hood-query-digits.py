@@ -1,10 +1,11 @@
+"""Lists semantic retrieval's top 10 for 48 inch kitchen hood with each hood's width, read from the attributes column the embeddings never saw. The prose's point rests on the two width-48 lines, one for each ranker."""
 from lib.lexical import LexicalSearch
 from lib.semantic import SemanticSearch
 from lib.store import load_products, load_queries, qrels
 
 LABELS = {2: "exact", 1: "partial", 0: "irrelevant"}
 products = load_products()
-query_id = 482
+query_id = 482  # 48 inch kitchen hood, a test query
 query = load_queries().at[query_id, "query"]
 judgments = qrels()[query_id]
 # The width sits in the attributes column, which the embeddings never saw: product_text leaves it out.
@@ -19,6 +20,7 @@ for rank, product_id in enumerate(semantic, start=1):
     print(f"{rank:>2}   {label:<10} {width[product_id]:>5g}  {products.at[product_id, 'name'][:50]}")
 
 print()
+# exact: a 48-inch hood is 48 wide, where probe-pair-overlap allows half an inch for hoods listed at 35.75
 for name, top in [("semantic", semantic), ("bm25", bm25)]:
     print(f"{name}, width 48 in the top 10:", (width[top] == 48).sum())
     print(f"{name}, exact in the top 10:", sum(judgments.get(product_id) == 2 for product_id in top))

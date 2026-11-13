@@ -1,3 +1,4 @@
+"""Adds each product's attributes, names and values, to its indexed text as one more field, and checks that single candidate on train and test. The prose's point rests on the two lines that count exact products with clear, and on the test permutation p line."""
 from lib.lexical_by_hand import InvertedIndex, report_test_comparison, tokenize
 from lib.metrics import evaluate
 from lib.store import load_products, load_queries, product_text, qrels
@@ -10,6 +11,7 @@ exact = [product_id for product_id, grade in qrels("test")[246].items() if grade
 print("exact products for query 246:", len(exact))
 print("exact, with clear in their text:", sum("clear" in tokenize(text[product_id]) for product_id in exact))
 print("exact, with clear in text or attributes:", sum("clear" in tokenize(with_attributes[product_id]) for product_id in exact))
+# a product whose attributes say clear and whose text does not, to show what the field adds
 found = next(product_id for product_id in exact
              if "clear" in tokenize(products.at[product_id, "attributes"]) and "clear" not in tokenize(text[product_id]))
 print(f"for example: {products.at[found, 'name']} -> {products.at[found, 'attributes']}")
@@ -29,4 +31,5 @@ print()
 for query_id in [246, 58]:                       # clear shower curtain, medium size chandelier: test queries
     for label, frame in scores["test"].items():
         print(f"query {query_id} ndcg@10, {label}: {frame.at[query_id, 'ndcg@10']:.3f}")
+# the planned test comparison: permutation test, t-test and bootstrap interval
 report_test_comparison(scores["test"]["with attributes"]["ndcg@10"], scores["test"]["one field"]["ndcg@10"])

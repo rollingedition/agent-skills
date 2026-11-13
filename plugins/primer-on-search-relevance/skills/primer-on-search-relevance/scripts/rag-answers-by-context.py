@@ -1,3 +1,6 @@
+"""Scores the recorded answers on the human grades, context by context, and makes the first planned comparison. The
+point rests on the mean exact share and recommend-nothing lines, and on the permutation p-value of the
+comparison."""
 from lib.generation import PLANNED_TEST_COMPARISONS, THRESHOLD, report_planned, score_answers
 from lib.lexical import LexicalSearch
 from lib.recorded import rag_answers
@@ -8,10 +11,12 @@ stored = answers[answers["context"] == "bm25"].set_index("query_id")["context_id
 rerun = LexicalSearch(load_products()).run(load_queries("test"), k=5)                 # ties by product_id
 differ = [q for q in stored.index if stored[q] != rerun[q]]
 print("bm25 contexts that differ from lib.lexical:", len(differ))
+# a match as sets means the same five products in another order: a tie-break, not a different context
 print("bm25 contexts that differ from lib.lexical only in order:", sum(set(stored[q]) == set(rerun[q]) for q in differ))
 
 scores = score_answers(answers, qrels("test"))            # one row per test query and context, on human grades
 for context, rows in scores.groupby("context", sort=False):
+    # held: the context holds an exact product; nothing: the answer cites no product
     held, nothing = rows["exact in context"] > 0, rows["cited"] == 0
     print(f"{context}, unjudged products in the contexts: {rows['unjudged in context'].sum()}")
     print(f"{context}, contexts with an exact product: {held.sum()}")
@@ -32,4 +37,5 @@ print("answers that cite more exact products than their context holds:",
 print("planned test comparisons:", len(PLANNED_TEST_COMPARISONS))
 print(f"p-value threshold: {THRESHOLD:.3f}")
 share = scores.pivot(index="query_id", columns="context", values="exact share")
+# the first planned comparison: semantic minus BM25 on the exact share, tested at THRESHOLD
 report_planned("answers, semantic over bm25", share["semantic"], share["bm25"])

@@ -1,3 +1,6 @@
+"""Scores every candidate for one train query by weighted RRF, by hand, and checks the ranking against
+lib.blend.weighted_rrf. The prose's point rests on the top product's two ranks and its score, and on the count of
+places that match the library."""
 from lib.blend import weighted_rrf
 from lib.lexical import LexicalSearch
 from lib.semantic import SemanticSearch
@@ -12,6 +15,7 @@ query_id = 36                                                # laundry basket wi
 
 def part(ranking, weight, product_id):
     """weight / (k + rank) from one ranking, or 0 when the product isn't in it."""
+    # index counts from 0, so one is added to get the rank
     return weight / (k + ranking.index(product_id) + 1) if product_id in ranking else 0.0
 
 

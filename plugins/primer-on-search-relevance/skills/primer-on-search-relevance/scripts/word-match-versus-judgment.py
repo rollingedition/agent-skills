@@ -1,3 +1,6 @@
+"""Checks whether a full word match makes a judged pair exact, and how many exact pairs have a text that misses a
+query word, with and without attributes. The prose's point rests on the `of them exact` line and the
+`of them, still missing one with attributes added` line."""
 import re
 
 from lib.store import load_labels, load_products, load_queries, product_text
@@ -13,7 +16,9 @@ text_words = {product_id: words(text) for product_id, text in product_text(produ
 attribute_words = {product_id: words(text) for product_id, text in products["attributes"].items()}
 query_words = {query_id: words(query) for query_id, query in queries["query"].items()}
 pairs = list(zip(labels["query_id"], labels["product_id"]))
+# on sets, <= asks whether every query word is in the product's text
 labels["in text"] = [query_words[query_id] <= text_words[product_id] for query_id, product_id in pairs]
+# | is set union: the product's text words with its attribute words added
 labels["in text or attributes"] = [query_words[query_id] <= text_words[product_id] | attribute_words[product_id]
                                    for query_id, product_id in pairs]
 
@@ -28,7 +33,7 @@ print(f"exact pairs: {len(exact):,}")
 print(f"exact pairs whose text misses a query word: {(~exact['in text']).sum():,}")
 print(f"of them, still missing one with attributes added: {(~exact['in text or attributes']).sum():,}")
 
-curtains = list(exact.loc[exact["query_id"] == 246, "product_id"])                 # clear shower curtain
+curtains = list(exact.loc[exact["query_id"] == 246, "product_id"])                 # query 246: clear shower curtain
 unsaid = [product_id for product_id in curtains if "clear" not in text_words[product_id]]
 print("exact products for clear shower curtain:", len(curtains))
 print("of them without the word clear in their text:", len(unsaid))

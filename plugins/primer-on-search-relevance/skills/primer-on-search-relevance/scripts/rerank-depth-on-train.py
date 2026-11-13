@@ -1,3 +1,6 @@
+"""Reranks semantic retrieval's top 5 to 75 with the recorded cross-encoder scores, on the train queries, and prints nDCG@10
+at each depth. The prose's point rests on the change from the depth before, which shows where the gain flattens and then
+falls."""
 from lib.metrics import evaluate
 from lib.ranking import rerank
 from lib.recorded import cross_encoder_scores
@@ -7,6 +10,7 @@ from lib.store import load_queries, qrels
 queries, judgments = load_queries("train"), qrels("train")      # choosing a depth is tuning: train queries
 semantic = SemanticSearch().run(queries, k=100)
 recorded = cross_encoder_scores()
+# the recorded cross-encoder score of each (query, product) pair
 score = dict(zip(zip(recorded["query_id"], recorded["product_id"]), recorded["score"]))
 train_pairs = recorded[recorded["query_id"].isin(queries.index)]
 
@@ -17,4 +21,5 @@ for depth in [5, 10, 20, 30, 50, 75]:
     print(f"depth {depth}, train ndcg@10: {mean:.3f}")
     print(f"depth {depth}, change from the depth before: {mean - previous:+.3f}")
     previous = mean
+# every candidate needs its own cross-encoder score, so this counts the recorded pairs per query
 print(f"pairs per query to score every candidate, median: {train_pairs.groupby('query_id').size().median():.0f}")

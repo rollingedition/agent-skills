@@ -1,3 +1,6 @@
+"""For the misspelled word in two test queries, `tye` and the real-word error `an`, counts how often each nearby catalog word comes before the query's next
+word, and shows the context-free corrector's choice. The prose's point rests on the "catalog count of ... the
+corrector's choice" lines."""
 import re
 from collections import Counter
 
@@ -11,6 +14,7 @@ pairs = Counter(pair for words in words_per_product for pair in zip(words, words
 
 # tye in "tye dye duvet cover", an in "refrigerator with ice an water in door": each word, the word after it
 for word, after in [("tye", "dye"), ("an", "water")]:
+    # the typed word and each catalog word one edit away, ranked by how often each comes before the next word
     options = sorted(((pairs[(edit, after)], edit) for edit in edits1(word) | {word} if edit in counts), reverse=True)
     for count, edit in options[:3]:
         print(f"catalog count of {edit} {after}:", count)

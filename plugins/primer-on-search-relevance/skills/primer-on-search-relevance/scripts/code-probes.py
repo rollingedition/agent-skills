@@ -1,3 +1,4 @@
+"""Compares the top 10s of two probe queries that differ only in a code no product holds, and shows where one product ranks for two resolutions, semantically and with BM25. The prose's point rests on the shared-top-10 line for the code and on the rank lines for the resolutions."""
 from lib.lexical import LexicalSearch
 from lib.recorded import probes
 from lib.semantic import SemanticSearch
@@ -24,9 +25,10 @@ print("that product:", products.at[holder[0], "name"])
 print("products in the Projectors class:", (products["product_class"] == "Projectors").sum())
 for row in probe_queries.index[probe_queries["pair"] == "resolution"]:
     query = probe_queries.at[row, "query"]
-    ranked = semantic.search_vector(probe_vectors[row], k=len(products))
-    lexical = list(bm25.search(query, k=100).index)
-    print(f"{query}, its semantic rank: {list(ranked.index).index(holder[0]) + 1}")
+    ranked = semantic.search_vector(probe_vectors[row], k=len(products))  # ranks every product, so the rank is exact
+    lexical = list(bm25.search(query, k=100).index)  # BM25 ranks are read from its top 100 only
+    print(f"{query}, its semantic rank: {list(ranked.index).index(holder[0]) + 1}")  # ranks count from 1
     print(f"{query}, its similarity: {ranked[holder[0]]:.3f}")
+    # the best product other than this one
     print(f"{query}, similarity of the next product: {ranked.drop(holder[0]).iloc[0]:.3f}")
     print(f"{query}, its bm25 rank:", lexical.index(holder[0]) + 1 if holder[0] in lexical else "not in the top 100")

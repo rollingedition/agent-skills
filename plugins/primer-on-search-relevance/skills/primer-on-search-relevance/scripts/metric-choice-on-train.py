@@ -1,3 +1,4 @@
+"""Scores semantic retrieval and the hybrid four ways on the train queries and names the higher scorer for each metric. The prose's point rests on the "higher" lines, the count of metrics each ranker wins, and the largest gap."""
 from lib.fusion import reciprocal_rank_fusion
 from lib.lexical import LexicalSearch
 from lib.metrics import evaluate
@@ -23,6 +24,7 @@ winners = []
 for metric in means["semantic"]:
     for name in runs:
         print(f"{name} {metric}: {means[name][metric]:.3f}")
+    # max keeps the first name it meets, so on an exact tie the order of runs decides
     winners.append(max(runs, key=lambda name: means[name][metric]))
     print(f"higher {metric}: {winners[-1]}")
 for name in runs:

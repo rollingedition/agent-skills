@@ -1,3 +1,6 @@
+"""Reads the pointwise LLM's answers for the test queries, one call per product, and reranks semantic retrieval's top 20 by
+their scores. The prose's point rests on the distinct-scores line, which shows how coarse the scores are, and on the
+planned comparison's p-value."""
 from lib.metrics import evaluate
 from lib.ranking import DEPTH, rerank, report_planned
 from lib.recorded import llm_pointwise, manifest
@@ -13,7 +16,9 @@ print(f"calls per query: {len(answers) // answers['query_id'].nunique()}")
 print(f"answers without a score: {answers['score'].isna().sum()}")
 print(f"distinct scores per query, median: {answers.groupby('query_id')['score'].nunique().median():.0f}")
 print(f"share of products scored 100: {(answers['score'] == 100).mean():.3f}")
+# each answered product's human grade, or missing when nobody judged it
 people = answers.apply(lambda row: judgments[row["query_id"]].get(row["product_id"]), axis=1)
+# grades 2, 1 and 0 are exact, partial and irrelevant, the labels the LLM was asked for
 for label, grade in [("exact", 2), ("partial", 1), ("irrelevant", 0)]:
     print(f"products the llm labels {label}: {(answers['label'] == label).sum()}")
     print(f"products people judged {label}: {(people == grade).sum()}")
@@ -24,6 +29,7 @@ reranked = rerank(semantic, score, DEPTH)                       # equal scores k
 counts = answers.groupby("query_id")["score"].value_counts()          # products per score, for each query
 shared = {query_id: sum(counts[(query_id, score[(query_id, product_id)])] > 1 for product_id in reranked[query_id][:10])
           for query_id in queries.index}                                # top-10 products that share their score
+# more than 5 of the top 10 share a score: most of the list is decided by the tie-break
 print(f"queries where most of the reranked top 10 shares its score: {sum(n > 5 for n in shared.values())}")
 before, after = evaluate(semantic, judgments), evaluate(reranked, judgments)
 for name, frame in [("semantic", before), ("llm pointwise", after)]:

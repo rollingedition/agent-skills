@@ -1,3 +1,4 @@
+"""Fills the pairs nobody judged with each prompt's grades, then rescores the four rankers and the planned verdicts with the filled grades. The prose's point rests on the 'that change' lines, which list the rankers and verdicts that move when the holes are filled."""
 from lib.agreement import LABELS, PLANNED, PROMPTS, chapter_one_runs, fill_unjudged, graded_pairs, llm_qrels, planned_verdicts
 from lib.metrics import evaluate
 from lib.store import load_products, load_queries, qrels
@@ -14,6 +15,7 @@ pairs = graded_pairs("test")                      # every product in the top 10 
 unjudged = pairs[pairs["human"].isna()]
 print(f"pairs in the test pool: {len(pairs)}\nof them, unjudged: {len(unjudged)}")
 for name, run in runs.items():
+    # people[query_id] holds the human judgments for a query, so a product missing from it was never judged
     missing = sum(product_id not in people[query_id] for query_id, ranking in run.items() for product_id in ranking[:10])
     print(f"unjudged products in the top 10s, {name}: {missing}")
 lights = unjudged[unjudged["query_id"] == 133]                             # outdoor light fixtures
@@ -30,6 +32,7 @@ for prompt in PROMPTS:
     filled = {name: evaluate(run, fill_unjudged(people, llm_qrels(prompt)))["ndcg@10"] for name, run in runs.items()}
     print("\n".join(f"{name} ndcg@10, filled by the {prompt} prompt: {filled[name].mean():.3f}" for name in runs))
     print(f"order, filled by the {prompt} prompt: {' > '.join(order(filled))}")
+    # compares the two orders place by place
     moved = [name for name, place in zip(order(filled), order(human)) if name != place]
     print(f"rankers that change place when filled, {prompt} prompt: {', '.join(moved) or 'none'}")
     changed = [pair for pair, established in planned_verdicts(filled, threshold).items()

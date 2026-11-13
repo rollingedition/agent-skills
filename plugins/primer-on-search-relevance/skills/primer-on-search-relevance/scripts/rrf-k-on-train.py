@@ -1,3 +1,6 @@
+"""Fuses BM25 and semantic retrieval with six values of k on the train queries, and tests the best k against the
+default k = 60. The prose's point rests on the rank ratios at k = 1 and k = 60, on the best k, and on its permutation
+p-value."""
 from lib.fusion import reciprocal_rank_fusion
 from lib.lexical import LexicalSearch
 from lib.metrics import evaluate
@@ -9,6 +12,7 @@ products, queries, judgments = load_products(), load_queries("train"), qrels("tr
 bm25 = LexicalSearch(products).run(queries, k=100)
 semantic = SemanticSearch().run(queries, k=100)
 
+# RRF gives rank r the score 1 / (k + r), so rank 1 over rank 10 is (k + 10) / (k + 1)
 for k in [1, 60]:
     print(f"rank 1 over rank 10 at k={k}: {(1 / (k + 1)) / (1 / (k + 10)):.3f}")
 scores = {k: evaluate(reciprocal_rank_fusion([bm25, semantic], k=k), judgments)["ndcg@10"]

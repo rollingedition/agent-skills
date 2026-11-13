@@ -1,3 +1,4 @@
+"""Puts BM25's top 10 for `clear shower curtain` beside each product's judgment, and counts the labels. The prose's reading of the top 10 rests on the labelled rows and the `in the top 10` lines after them."""
 from lib.lexical import LexicalSearch
 from lib.store import load_products, load_queries, qrels
 
@@ -9,6 +10,7 @@ query = load_queries().at[query_id, "query"]
 judgments = qrels()[query_id]                        # {product_id: grade} for this query
 
 top = LexicalSearch(products).search(query, k=10).index
+# a product with no judgment for this query is unjudged, not irrelevant
 results = [LABELS.get(judgments.get(product_id), "unjudged") for product_id in top]
 print("query:", query)
 print()

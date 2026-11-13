@@ -1,3 +1,4 @@
+"""Ranks the store's products for `clear shower curtain` by the similarity of their recorded embeddings to the query's, and prints the top 10 with each judgment. The prose's point rests on the top 10 counts and the similarity spread line."""
 from lib.metrics import ndcg_at_k
 from lib.recorded import manifest
 from lib.semantic import SemanticSearch
@@ -14,7 +15,8 @@ print("embedding model:", manifest("embeddings")["model"])
 print("dimensions:", semantic.products.shape[1])
 print("query:", load_queries().at[query_id, "query"])
 print()
-similarity = semantic.search(query_id, k=10)  # the query's embedding against every product's
+# the query's vector against every product's: unit-length vectors, so each dot product is a cosine
+similarity = semantic.search(query_id, k=10)
 for rank, (product_id, score) in enumerate(similarity.items(), start=1):
     label = LABELS.get(judgments.get(product_id), "unjudged")
     print(f"{rank:>2}  {score:.3f}  {label:<10}  {products.at[product_id, 'name'][:50]}")

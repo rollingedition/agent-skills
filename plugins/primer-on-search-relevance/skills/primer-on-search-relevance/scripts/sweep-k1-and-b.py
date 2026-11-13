@@ -1,3 +1,4 @@
+"""Sweeps k1 and b over the stemmed index on train queries, picks the best setting, and checks it against the defaults on test queries. The prose's point rests on the train best and grid-edge lines, and on the test permutation p line."""
 import pandas as pd
 
 from lib.lexical_by_hand import InvertedIndex, report_test_comparison
@@ -6,6 +7,7 @@ from lib.store import load_products, load_queries, product_text, qrels
 
 index = InvertedIndex(product_text(load_products()), stem=True)     # stemmed terms, k1 and b set per search
 train, test = load_queries("train"), load_queries("test")
+# the grid: five values of k1 and five of b, with the defaults 1.5 and 0.75 among them
 k1_values, b_values = [0.5, 0.9, 1.2, 1.5, 2.0], [0.0, 0.25, 0.5, 0.75, 1.0]
 
 
@@ -14,13 +16,16 @@ def scores(queries, split, k1, b):
     return evaluate(index.run(queries, k1=k1, b=b), qrels(split))
 
 
+# one column per b, one row per k1
 grid = pd.DataFrame({b: {k1: scores(train, "train", k1, b)["ndcg@10"].mean() for k1 in k1_values} for b in b_values})
 print("train ndcg@10, k1 down and b across:")
 print(grid.round(3).to_string())
+# the (k1, b) pair with the highest mean nDCG@10 on train
 best_k1, best_b = grid.stack().idxmax()
 print("settings in the grid:", grid.size)
 print(f"best k1 on train: {best_k1}")
 print(f"best b on train: {best_b}")
+# a best value at an end of the grid can mean a better one lies beyond it
 edge = best_k1 in (k1_values[0], k1_values[-1]) or best_b in (b_values[0], b_values[-1])
 print("best setting on the grid's edge:", "yes" if edge else "no")
 print(f"train ndcg@10 at the train best: {grid.at[best_k1, best_b]:.3f}")
@@ -32,4 +37,5 @@ runs = {"at k1 1.5, b 0.75": scores(test, "test", 1.5, 0.75), "at the train best
 for name, frame in runs.items():
     print(f"test ndcg@10 {name}: {frame['ndcg@10'].mean():.3f}")
     print(f"test judged@10 {name}: {frame['judged@10'].mean():.3f}")
+# the planned test comparison: permutation test, t-test and bootstrap interval
 report_test_comparison(runs["at the train best"]["ndcg@10"], runs["at k1 1.5, b 0.75"]["ndcg@10"])

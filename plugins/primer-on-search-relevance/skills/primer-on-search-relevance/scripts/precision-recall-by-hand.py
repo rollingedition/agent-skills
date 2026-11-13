@@ -1,3 +1,4 @@
+"""Counts the exact products in BM25's top 10 for one query, computes precision and recall by hand, and checks them against lib.metrics, then finds the best score each test query could reach. The prose's point rests on the "exact in the top 10" and "exact products judged" lines, and on the ceiling lines after the blank line."""
 import pandas as pd
 
 from lib.lexical import LexicalSearch
@@ -6,6 +7,7 @@ from lib.store import load_products, load_queries, qrels
 
 queries, judgments = load_queries("test"), qrels("test")
 ranking = list(LexicalSearch(load_products()).search(queries.at[246, "query"], k=10).index)  # clear shower curtain
+# grade 2 is exact; a product the judges never graded is absent from this dict, so it is not exact
 exact = {product_id for product_id, grade in judgments[246].items() if grade == 2}
 
 found = sum(product_id in exact for product_id in ranking[:10])
@@ -19,7 +21,9 @@ print(f"recall@10 from lib.metrics: {recall_at_k(ranking, judgments[246], 10):.3
 # the best any ranking can do: a top 10 that holds as many exact products as the query has
 exact_counts = pd.Series({query_id: sum(grade == 2 for grade in per_query.values())
                           for query_id, per_query in judgments.items()})
+# a top 10 can hold at most 10 exact products, and no more than the query has
 best_precision = exact_counts.clip(upper=10) / 10
+# only 10 results are shown, so at most 10 of a query's exact products can be retrieved
 best_recall = exact_counts.clip(upper=10) / exact_counts
 print()
 print("queries where precision@10 can't reach 1:", (best_precision < 1).sum())

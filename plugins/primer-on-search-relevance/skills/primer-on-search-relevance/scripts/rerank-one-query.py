@@ -1,3 +1,4 @@
+"""Shows the hybrid and reranked top 5 for one query whose nDCG@10 the reranker lowered, with each product's cross-encoder score and judgment. The prose's point rests on the two rank lines and the two nDCG@10 lines."""
 import re
 
 from lib.fusion import reciprocal_rank_fusion
@@ -19,6 +20,7 @@ score = recorded[recorded["query_id"] == query_id].set_index("product_id")["scor
 bm25 = {query_id: list(LexicalSearch(products).search(query, k=100).index)}
 semantic = {query_id: list(SemanticSearch().search(query_id, k=100).index)}
 hybrid = reciprocal_rank_fusion([bm25, semantic])[query_id]
+# the top 50 are reordered by score; the rest stay in the hybrid's order
 reranked = sorted(hybrid[:50], key=score.get, reverse=True) + hybrid[50:]
 
 print("query:", query)

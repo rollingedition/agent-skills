@@ -1,3 +1,5 @@
+"""Scores each typo query, and the variant spelling tye dye, with BM25, and with recorded embeddings where the corrected
+text has one, as typed and as corrected. The prose's point rests on the nDCG@10 lines for queries 20 and 224 (train) and the corrected BM25 line for 459 (test)."""
 from lib.lexical import LexicalSearch
 from lib.metrics import ndcg_at_k
 from lib.queries import correct_query, word_counts
@@ -10,6 +12,7 @@ counts = word_counts(product_text(products))
 bm25, semantic = LexicalSearch(products), SemanticSearch()
 probe_queries, probe_vectors = probes()      # recorded embeddings of the four typo queries, spelled correctly
 spelling = probe_queries[probe_queries["kind"] == "spelling"]
+# the probes' embeddings, keyed by the correctly spelled text, so a corrected query can find its own
 spelled = {row["query"]: probe_vectors[index] for index, row in spelling.iterrows()}
 typo_queries = spelling["of_query_id"].astype(int).tolist()
 print("typo queries:", len(typo_queries))

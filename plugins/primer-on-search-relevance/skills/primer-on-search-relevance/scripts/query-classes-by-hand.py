@@ -1,3 +1,6 @@
+"""A naive Bayes query classifier built by hand from product text, checked against scikit-learn's MultinomialNB and
+compared with each query's exact products. The prose's point rests on the two "queries where most exact products
+have" lines and on the agreement line with MultinomialNB."""
 import numpy as np
 
 from lib.queries import class_rows, train_classifier
@@ -11,6 +14,7 @@ classes = np.array(sorted(rows["label"].unique()))
 print("product classes:", len(classes))
 print("products without a class:", (products["product_class"] == "").sum())
 print("products with several classes:", products["product_class"].str.contains("|", regex=False).sum())
+# query classes whose name matches no product class
 missing = queries["query_class"].dropna()[lambda names: ~names.isin(classes)]
 print("query classes that no product has:", len(missing))
 print("query classes that no product has, names:", "; ".join(missing))
@@ -25,11 +29,13 @@ print("same predictions as MultinomialNB:", (predicted == model.predict(query_wo
 
 queries = queries.assign(predicted=predicted)
 print("predicted class equals query_class:", (queries["predicted"] == queries["query_class"]).sum())
+# judgment grade 2 is exact; a product's classes are joined by |, so they're split before matching
 exact = labels[labels["grade"] == 2].join(products["product_class"].str.split("|"), on="product_id")
 for column, name in [("predicted", "predicted class"), ("query_class", "query_class")]:
     share = [exact.loc[exact["query_id"] == query_id, "product_class"].apply(lambda names: label in names).mean()
              for query_id, label in queries[column].items()]
     print(f"queries where most exact products have the {name}:", (np.array(share) > 0.5).sum())
+# outdoor light fixtures, desk and chair set, and pool floats
 for query_id in [133, 255, 410]:
     query, split, label = queries.loc[query_id, ["query", "split", "predicted"]]
     print(f"{query_id} ({split}): {query} -> {label}"

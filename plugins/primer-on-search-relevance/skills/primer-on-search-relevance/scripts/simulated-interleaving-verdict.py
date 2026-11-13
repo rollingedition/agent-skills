@@ -1,3 +1,4 @@
+"""Sign tests on simulated interleaved searches, at 100, 1,000 and 10,000 searches, for two pairs of rankers and a third pair with BM25's ties reversed. The prose's point rests on the 'verdict changes' line and the 100-search lines for the hybrid against semantic retrieval."""
 import numpy as np
 from scipy import stats
 
@@ -11,6 +12,7 @@ for grade, label in [(2, "exact"), (1, "partial"), (0, "irrelevant")]:      # th
     print(f"{label} click probability: {NAVIGATIONAL['click'][grade]}")
     print(f"{label} stop probability: {NAVIGATIONAL['stop'][grade]}")
 
+# lexsort's last key sorts first: the score, highest first, then the product_id, highest first among ties
 def ties_reversed(scores):              # BM25's ranking, with equal scores in descending product_id order instead
     return scores.index[np.lexsort((-scores.index.to_numpy(), -scores.to_numpy()))].tolist()
 
@@ -26,8 +28,10 @@ pairs = {"semantic against bm25": (semantic, bm25), "hybrid against semantic": (
          "hybrid with bm25 ties reversed against semantic": (reciprocal_rank_fusion([bm25_reversed, semantic]), semantic)}
 below = {}
 for name, (run_a, run_b) in pairs.items():
+    # a fresh seed for each pair, so every pair sees the same 10,000 queries
     outcomes = simulate_interleaving(run_a, run_b, judgments, 10_000, np.random.default_rng(2026))
     for searches in [100, 1_000, 10_000]:
+        # the first 100, 1,000 or 10,000 of the same searches, so the three verdicts share data
         wins, losses = (outcomes[:searches] == 1).sum(), (outcomes[:searches] == -1).sum()
         p = stats.binomtest(wins, wins + losses).pvalue                  # sign test; ties left out
         below[name, searches] = p < 0.05

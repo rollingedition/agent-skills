@@ -1,3 +1,6 @@
+"""Resamples the train queries with a fixed seed and counts which α wins each resample, for the weighted sum and for
+weighted RRF on the same resamples. The prose's point rests on the α tuned on all train queries and on the counts of
+resamples choosing each α."""
 import numpy as np
 import pandas as pd
 
@@ -15,10 +18,12 @@ blends = {"weighted sum": scores_by_alpha(lambda alpha: weighted_sum(tables, alp
 
 resamples = 1000
 print("resamples:", resamples)
+# a fixed seed, so every run draws the same resamples
 rng = np.random.default_rng(2026)
 draws = [rng.integers(0, len(queries), len(queries)) for _ in range(resamples)]   # the same draws for both
 for name, per_query in blends.items():                       # per_query: train queries x alphas
     print(f"{name} alpha tuned on all train queries: {best_alpha(per_query)}")
-    chosen = pd.Series([per_query.iloc[draw].mean().idxmax() for draw in draws])  # best alpha per resample
+    # best alpha per resample; idxmax takes the first, smaller alpha when two tie
+    chosen = pd.Series([per_query.iloc[draw].mean().idxmax() for draw in draws])
     for alpha, count in chosen.value_counts().sort_index().items():
         print(f"{name} resamples choosing alpha {alpha}: {count}")

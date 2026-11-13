@@ -1,3 +1,6 @@
+"""Counts, in each conversation's top 10, the products that keep the refinement and the products of the right kind, for
+the follow-up alone, the joined turns, the standalone query, and the standalone query filtered by the value. The prose's
+point rests on the "refinement in text or attributes" and "right kind with the refinement" lines."""
 import numpy as np
 
 from lib.queries import mentions
@@ -9,6 +12,7 @@ products, judgments, semantic = load_products(), qrels("test"), SemanticSearch()
 attributes, text = products["attributes"], product_text(products)        # the embeddings read only the text
 conversations, vectors = llm_conversations()                 # follow-ups we wrote for the book, not shoppers'
 print("conversations:", len(conversations))
+# row 4, the fifth conversation, which the example prints
 example = conversations.iloc[4]
 print(f"first query: {load_queries().at[example['query_id'], 'query']}")
 print(f"follow-up: {example['follow_up']}")
@@ -16,6 +20,7 @@ print(f"standalone: {example['standalone']}")
 
 shares, filtered_lengths = {}, []                            # shares: (top 10, measure) -> one share per conversation
 for row, (first, value) in enumerate(zip(conversations["query_id"], conversations["value"])):
+    # the standalone query's top 100, the pool the filter draws from
     standalone = semantic.search_vector(vectors["standalone"][row], k=100).index
     stated = mentions(standalone, value, attributes) | mentions(standalone, value, text)
     tops = {"first query": semantic.search(first, k=10).index,
@@ -27,6 +32,7 @@ for row, (first, value) in enumerate(zip(conversations["query_id"], conversation
     for name, top in tops.items():
         in_attributes = mentions(top, value, attributes)
         in_either = in_attributes | mentions(top, value, text)
+        # the first query's grade 1 (partial) or 2 (exact); a product with no judgment counts as 0
         right_kind = np.array([judgments[first].get(product_id, 0) >= 1 for product_id in top], dtype=bool)
         for measure, hits in [("refinement in attributes", in_attributes), ("refinement in text or attributes", in_either),
                               ("right kind", right_kind), ("right kind with the refinement", in_either & right_kind)]:

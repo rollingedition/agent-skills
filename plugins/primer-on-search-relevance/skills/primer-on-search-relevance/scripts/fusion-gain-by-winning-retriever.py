@@ -1,3 +1,6 @@
+"""Compares BM25, semantic retrieval and their RRF fusion on the train queries, then splits the queries by which
+retriever wins. The prose's point rests on the hybrid-minus-semantic lines, which give the net change, and on the mean
+change within each winning group."""
 from lib.fusion import reciprocal_rank_fusion
 from lib.lexical import LexicalSearch
 from lib.metrics import evaluate
@@ -21,6 +24,7 @@ for name, after, before in [("semantic minus bm25", semantic_scores, bm25_scores
     print(f"{name}, t-test p: {result['t-test p']:.3f}")
 print()
 
+# rounded to 3 places, so float noise can't make a query a win or a loss
 change = (hybrid_scores["ndcg@10"] - semantic_scores["ndcg@10"]).round(3)   # fusion against semantic alone
 lead = (bm25_scores["ndcg@10"] - semantic_scores["ndcg@10"]).round(3)       # above 0 means BM25 wins
 for name, group in [("bm25 wins", lead > 0), ("semantic wins", lead < 0)]:

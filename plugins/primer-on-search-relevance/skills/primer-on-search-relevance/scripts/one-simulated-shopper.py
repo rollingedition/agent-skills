@@ -1,3 +1,4 @@
+"""One simulated navigational shopper walks the team-draft list for clear shower curtain, clicking and leaving by the cascade model. The prose's point rests on the two 'clicks for' lines and the verdict line, and on the 'same clicks' line that checks lib.experiments."""
 import numpy as np
 
 from lib.experiments import NAVIGATIONAL, cascade_clicks, team_draft
@@ -12,11 +13,14 @@ bm25 = list(LexicalSearch(products).search(queries.at[246, "query"], k=100).inde
 shown, teams = team_draft(semantic, bm25, np.random.default_rng(7))       # the team-draft example's list
 team_names = {"a": "semantic", "b": "bm25"}
 
+# the same seed as the check at the end, so both draw the same clicks
 rng = np.random.default_rng(2026)
 clicks = []
 for position, product_id in enumerate(shown):
     grade = judgments.get(product_id, 0)                                  # unjudged counts as 0
+    # click and stop probabilities for the grade: 0 irrelevant, 1 partial, 2 exact
     clicked = rng.random() < NAVIGATIONAL["click"][grade]
+    # the second draw happens only after a click, the order cascade_clicks uses
     leaves = clicked and rng.random() < NAVIGATIONAL["stop"][grade]        # only a click can end the visit
     label = LABELS.get(judgments.get(product_id), "unjudged")
     print(f"{position + 1:>2}  {team_names[teams[position]]:<8}  {label:<10}  {'clicks' if clicked else '':<6}  {'leaves' if leaves else ''}")

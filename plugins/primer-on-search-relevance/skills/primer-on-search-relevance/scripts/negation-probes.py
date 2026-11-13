@@ -1,3 +1,4 @@
+"""Counts what each negation probe's top 10 holds for semantic retrieval and for BM25, without scoring it. The prose's point rests on the semantic top 10 lines for the rug, coffee-table and sofa probes."""
 import bm25s
 
 from lib.lexical import LexicalSearch
@@ -10,10 +11,12 @@ probe_queries, probe_vectors = probes()
 products = load_products()
 names, text = products["name"].str.lower(), product_text(products).str.lower()
 semantic, bm25 = SemanticSearch(), LexicalSearch(products)
+# armless and round are matched in product names, glass in the full text
 FEATURES = {"arms": ("armless", names), "glass": ("glass", text), "round": ("round", names)}
 
 negated = load_queries()["query"].str.contains(r"\b(?:no|not|without|non)\b")
 print("store queries with no, not, without or non:", negated.sum())
+# the tokenizer settings LexicalSearch uses, so these are the terms BM25 searches
 tokens = bm25s.tokenize(["rug that is not round"], stopwords="en", return_ids=False, show_progress=False)
 print("bm25 terms of rug that is not round:", " ".join(tokens[0]))
 print("products named armless:", names.str.contains(r"\barmless\b").sum())

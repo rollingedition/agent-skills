@@ -1,3 +1,4 @@
+"""Writes DCG and nDCG from scratch and checks them against lib.metrics on every test query of three runs, then prints one query's grades beside its best possible grades. The prose's point rests on the largest-difference line and on the ndcg@10 line for luau string lights, read with the grade lines above it."""
 import math
 
 from lib.fusion import reciprocal_rank_fusion
@@ -9,12 +10,15 @@ from lib.store import load_products, load_queries, qrels
 
 def dcg(grades, k):
     """Each grade divided by log2 of its position plus one, added up over the top k."""
+    # positions count from 1, so the first result is divided by log2(2)
     return sum(grade / math.log2(position + 1) for position, grade in enumerate(grades[:k], start=1))
 
 
 def ndcg(ranking, judgments, k=10):
     """DCG of the ranking over DCG of the best order of every judged product (unjudged counts as 0)."""
+    # the ideal ranking: every judged product, best grade first
     ideal = dcg(sorted(judgments.values(), reverse=True), k)
+    # a product nobody judged counts as grade 0 in the ranking
     return dcg([judgments.get(product_id, 0) for product_id in ranking], k) / ideal
 
 

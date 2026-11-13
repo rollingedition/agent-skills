@@ -1,3 +1,4 @@
+"""Compares the hybrid and BM25 query by query on nDCG@10, then lists the three largest losses and the largest gain with its judged@10. The prose's point rests on the mean and median difference lines and on the largest-gain lines."""
 from lib.fusion import reciprocal_rank_fusion
 from lib.lexical import LexicalSearch
 from lib.metrics import evaluate
@@ -9,6 +10,7 @@ bm25 = LexicalSearch(load_products()).run(queries, k=100)
 hybrid = reciprocal_rank_fusion([bm25, SemanticSearch().run(queries, k=100)])
 before, after = evaluate(bm25, judgments), evaluate(hybrid, judgments)
 
+# rounded to three decimals first, so a difference that rounds to 0 counts as a tie; sorted from the largest loss up
 difference = (after["ndcg@10"] - before["ndcg@10"]).round(3).sort_values()   # one value per test query
 print(f"mean difference: {difference.mean():.3f}")
 print(f"median difference: {difference.median():.3f}")
@@ -18,6 +20,7 @@ print("tied:", (difference == 0).sum())
 
 print("\nhybrid's three largest losses:")
 print(queries.loc[difference.index[:3], "query"].to_frame().assign(difference=difference[:3]).to_string())
+# the last one after sorting: the largest gain
 largest = difference.index[-1]
 print("\nlargest gain:", queries.at[largest, "query"])
 print(f"its gain: {difference[largest]:.3f}")

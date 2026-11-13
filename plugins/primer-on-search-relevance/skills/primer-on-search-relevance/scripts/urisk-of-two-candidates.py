@@ -1,3 +1,4 @@
+"""URisk for full semantic retrieval and for the 128-number version, each against BM25, with every loss counted alpha + 1 times. The prose's point rests on the 'semantic 128 urisk with alpha 1' line, read against its mean change."""
 from lib.lexical import LexicalSearch
 from lib.metrics import evaluate
 from lib.semantic import SemanticSearch
@@ -9,6 +10,7 @@ ALPHA = 1                                   # each loss counts alpha + 1 times: 
 
 def urisk(change, alpha):
     """Mean change per query, with every loss counted alpha + 1 times (TREC 2013 Web track)."""
+    # gains are the positive changes; losses are the negative ones, made positive
     wins, losses = change.clip(lower=0).sum(), -change.clip(upper=0).sum()
     return (wins - (alpha + 1) * losses) / len(change)
 
@@ -20,6 +22,7 @@ candidates = {"semantic": SemanticSearch(), "semantic 128": SemanticSearch(dims=
 print(f"bm25 judged@10: {baseline['judged@10'].mean():.3f}")
 evaluated = {name: evaluate(search.run(queries, k=100), judgments) for name, search in candidates.items()}
 for name, scores in evaluated.items():
+    # rounded to 3 decimals, so the wins and losses count the printed changes
     change = (scores["ndcg@10"] - baseline["ndcg@10"]).round(3)
     print(f"{name} judged@10: {scores['judged@10'].mean():.3f}")
     print(f"{name} mean change: {change.mean():.3f}")

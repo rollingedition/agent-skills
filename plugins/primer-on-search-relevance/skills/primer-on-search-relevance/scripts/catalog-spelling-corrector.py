@@ -1,3 +1,5 @@
+"""A spelling corrector built from the catalog's word counts, run on every query and checked against
+lib.queries.correct_query. The prose's point rests on the "queries changed" line and on the line that says whether both correctors agree."""
 import re
 from collections import Counter
 
@@ -24,6 +26,7 @@ def correct(word):
         return word
     candidates = {edit for edit in edits1(word) if edit in counts} or {
         two for edit in edits1(word) for two in edits1(edit) if two in counts}
+    # the most common candidate; on a tie in counts, the alphabetically first one
     return max(sorted(candidates), key=counts.get) if candidates else word
 
 

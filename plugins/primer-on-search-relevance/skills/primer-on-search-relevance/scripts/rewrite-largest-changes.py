@@ -1,3 +1,6 @@
+"""For each retriever, finds the test queries whose nDCG@10 moves most under the rewrite, and counts the unjudged
+products in each rewritten top 10. The prose's point rests on the largest-loss and largest-gain lines, and on the
+spelling-only check for BM25's largest gain."""
 from bm25s.stopwords import STOPWORDS_EN
 
 from lib.lexical import LexicalSearch
@@ -23,9 +26,11 @@ for retriever, (rewritten, typed) in rewrite_runs(queries, bm25, SemanticSearch(
 
 # BM25's largest gain: score the query with only its spelling fixed (chapter 6's probe), apart from the added words
 query_id = largest[("bm25", "gain")]
+# the spelling probes, keyed by the test query each one corrects
 spelled = probes()[0].dropna(subset=["of_query_id"]).set_index("of_query_id")["query"]
 if query_id in spelled.index:
     for name, text in [("typed", queries.at[query_id, "query"]), ("spelling fixed only", spelled[query_id])]:
         ranking = list(bm25.search(text, k=10).index)
         print(f"bm25, largest gain, ndcg@10 {name}: {ndcg_at_k(ranking, judgments[query_id], 10):.3f}")
+    # bm25s's English stop words, which it drops before matching
     print("bm25 stop words among an and and:", ", ".join(word for word in ["an", "and"] if word in STOPWORDS_EN))

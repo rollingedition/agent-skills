@@ -1,3 +1,6 @@
+"""Chooses each blend's α on the train queries, runs both once on the test queries, and compares each with semantic
+retrieval at the corrected threshold. The prose's point rests on the two mean differences and their permutation
+p-values, and the assert checks that neither clears the threshold."""
 from lib.blend import best_alpha, candidates, scores_by_alpha, weighted_rrf, weighted_sum
 from lib.lexical import LexicalSearch
 from lib.metrics import evaluate
@@ -28,6 +31,7 @@ for name, blend in test.items():
     alpha = best_alpha(scores_by_alpha(train[name], qrels("train")))       # train only
     scores = evaluate(blend(alpha), qrels("test"))
     judged.append(scores["judged@10"].mean())
+    # the interval's level matches the corrected threshold
     result = compare(scores["ndcg@10"], semantic_scores["ndcg@10"], confidence=1 - threshold)
     print(f"{name} alpha chosen on train: {alpha}")
     print(f"{name} ndcg@10: {scores['ndcg@10'].mean():.3f}")
@@ -35,6 +39,7 @@ for name, blend in test.items():
     print(f"{name} permutation p: {result['permutation p']:.3f}")
     print(f"{name} t-test p: {result['t-test p']:.3f}")
     print(f"{name} interval: {result['ci low']:.3f} to {result['ci high']:.3f}")
-    print(f"{name} established: {result['permutation p'] < threshold}")
+    # neither difference is established: each permutation p-value stays at or above the corrected threshold
+    assert result['permutation p'] >= threshold
 print(f"lowest judged@10: {min(judged):.3f}")
 print(f"highest judged@10: {max(judged):.3f}")

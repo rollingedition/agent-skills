@@ -1,3 +1,4 @@
+"""Builds the store's inverted index by hand from each product's tokenized text, then looks up a train query's terms in it. The prose's point rests on the lines that count products with every query term and with any query term, and on the line for the product code."""
 from collections import Counter
 
 from lib.lexical_by_hand import tokenize
@@ -13,6 +14,7 @@ for product_id, text in product_text(load_products()).items():
 
 print(f"vocabulary: {len(postings):,} terms")
 print(f"average product length: {sum(lengths.values()) / len(lengths):.1f} terms")
+# (product ID, term frequency) pairs, starting from product 1
 print("postings for cooker, first 3:", list(postings["cooker"].items())[:3])
 print()
 query = load_queries().at[62, "query"]

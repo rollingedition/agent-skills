@@ -1,9 +1,11 @@
+"""Builds the 3×3 table of the store's grades against the short prompt's on the train pool, then computes observed agreement, chance agreement and kappa from it. The prose's point rests on the printed kappa by hand, which matches the scikit-learn line."""
 import numpy as np
 from sklearn.metrics import cohen_kappa_score
 
 from lib.agreement import graded_pairs
 
 pairs = graded_pairs("train")                     # up to 4 human-judged pairs per label per train query
+# the grades are nullable integers; plain ones compare and count the way the formulas below expect
 human, llm = pairs["human"].astype(int), pairs["short"].astype(int)
 grades = [2, 1, 0]                                # exact, partial, irrelevant
 counts = np.array([[((human == row) & (llm == column)).sum() for column in grades] for row in grades])

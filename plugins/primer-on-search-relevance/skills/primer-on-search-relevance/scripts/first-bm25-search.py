@@ -1,3 +1,4 @@
+"""Searches the store's catalog with BM25 for one test query and prints the top 10 products. The prose's point that BM25 matches words rather than things rests on the names at the bottom of the list."""
 from lib.lexical import LexicalSearch
 from lib.store import load_products, load_queries
 
@@ -8,5 +9,6 @@ lexical = LexicalSearch(products)              # BM25 over name, class, category
 scores = lexical.search(query, k=10)           # the 10 highest scores, best first
 print("query:", query)
 print()
+# names cut to 55 characters so that each row fits on one line
 for rank, (product_id, score) in enumerate(scores.items(), start=1):
     print(f"{rank:>2}  {product_id:>5}  {score:5.2f}  {products.at[product_id, 'name'][:55]}")

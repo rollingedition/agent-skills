@@ -1,3 +1,6 @@
+"""Reads the listwise LLM's answers for the test queries, in both orders, and reranks semantic retrieval's top 20 by the
+answer given in semantic order. The prose's point rests on the planned comparison's p-value, and on the repair count,
+which shows how many answers needed a fix."""
 from lib.metrics import evaluate
 from lib.ranking import DEPTH, report_planned
 from lib.recorded import llm_listwise, manifest
@@ -7,14 +10,17 @@ from lib.store import load_queries, qrels
 queries, judgments = load_queries("test"), qrels("test")       # scored on the human judgments, not the LLM's
 semantic = SemanticSearch().run(queries, k=100)
 answers = llm_listwise()                                        # one call per query and order shown
+# the answers hold one row per product, so keep one row per call: one call per query and order
 calls = answers.drop_duplicates(["query_id", "order"])
 print(f"listwise calls, both orders: {len(calls)}")
+# valid is false where the recording repaired a repeated or missing number
 print(f"answers that needed repair: {(~calls['valid']).sum()}")
 print(f"products per call: {answers.groupby(['query_id', 'order']).size().max()}")
 print("prompt asks for:", manifest("llm-rerank")["prompts"]["listwise"].splitlines()[-1].replace("{n}", str(DEPTH)))
 
 shown_in_semantic_order = answers[answers["order"] == "semantic"].sort_values(["query_id", "position"])
 order = shown_in_semantic_order.groupby("query_id")["product_id"].apply(list)
+# the reranked top 20, then the rest of semantic retrieval's list in place: ranking[DEPTH:] starts at the 21st product
 reranked = {query_id: order[query_id] + ranking[DEPTH:] for query_id, ranking in semantic.items()}
 before, after = evaluate(semantic, judgments), evaluate(reranked, judgments)
 for name, frame in [("semantic", before), ("llm listwise", after)]:

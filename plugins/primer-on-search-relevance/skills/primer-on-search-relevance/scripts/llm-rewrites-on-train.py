@@ -1,3 +1,5 @@
+"""Prints the store's recorded LLM rewrites for a few train queries, then scores BM25 and semantic retrieval on the
+train queries, typed and rewritten. The prose's point rests on the nDCG@10 lines for both retrievers."""
 from lib.lexical import LexicalSearch
 from lib.metrics import evaluate
 from lib.recorded import llm_rewrites, manifest
@@ -10,12 +12,15 @@ print("embedding model:", recording["embedding_model"])
 print("rewrite prompt, first line:", recording["prompts"]["rewrite"].split("\n")[0])
 table, rewrite_vectors, _ = llm_rewrites()
 rewrites = table.set_index("query_id")["rewrite"]
+# the embeddings come in the table's row order, not query order: row maps each query_id to its row
 row = {query_id: position for position, query_id in enumerate(table["query_id"])}
+# a spelling fix, a product code, and malachi sled
 for query_id in [20, 205, 313]:
     print(f"rewrite of {load_queries().at[query_id, 'query']}: {rewrites[query_id]}")
 
 queries, judgments = load_queries("train"), qrels("train")
 products = load_products()
+# judgment grade 2 is exact
 exact = [product_id for product_id, grade in judgments[313].items() if grade == 2]
 print("exact products for malachi sled:", "; ".join(products.loc[exact, "name"]))
 bm25, semantic = LexicalSearch(products), SemanticSearch()

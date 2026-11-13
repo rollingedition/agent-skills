@@ -1,3 +1,6 @@
+"""Scores HyDE, its parts and their combinations with BM25 and semantic retrieval on the train queries, then runs HyDE
+against semantic retrieval as the chapter's last planned comparison on the test queries. The prose's point rests on
+the train lines for the hypothetical product alone and on the planned comparison's lines."""
 import numpy as np
 
 from lib.lexical import LexicalSearch
@@ -7,6 +10,7 @@ from lib.recorded import llm_rewrites
 from lib.semantic import SemanticSearch
 from lib.store import load_products, load_queries, qrels
 
+# the hypothetical products' embeddings come in the table's row order; zip pairs each with its query_id
 table, _, hypothetical_vectors = llm_rewrites()
 hypothetical, vectors = table.set_index("query_id")["hypothetical"], dict(zip(table["query_id"], hypothetical_vectors))
 bm25, semantic = LexicalSearch(load_products()), SemanticSearch()

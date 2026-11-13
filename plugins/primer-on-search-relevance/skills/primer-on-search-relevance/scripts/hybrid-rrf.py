@@ -1,3 +1,4 @@
+"""Fuses BM25 and semantic retrieval with reciprocal rank fusion, by hand for one query and then for every test query. The prose's point rests on the hybrid's `ndcg@10` line and on the two scores printed for the first product, which agree."""
 from lib.lexical import LexicalSearch
 from lib.metrics import evaluate
 from lib.semantic import SemanticSearch
@@ -18,6 +19,7 @@ def reciprocal_rank_fusion(runs, k=60, depth=100):
     fused = {}
     for query_id in runs[0]:
         scores = rrf_scores([run[query_id] for run in runs], k)
+        # equal scores fall back to product_id, so neither ranking wins ties by being passed first
         fused[query_id] = sorted(scores, key=lambda product_id: (-scores[product_id], product_id))[:depth]
     return fused
 
@@ -27,10 +29,12 @@ bm25, semantic = LexicalSearch(products).run(queries, k=100), SemanticSearch().r
 hybrid = reciprocal_rank_fusion([bm25, semantic])
 
 for place, product_id in zip(["first", "second"], hybrid[246]):       # query 246, "clear shower curtain"
+    # list.index counts from 0, and a rank counts from 1
     bm25_rank, semantic_rank = bm25[246].index(product_id) + 1, semantic[246].index(product_id) + 1
     print(f"{place} product: {products.at[product_id, 'name']}")
     print(f"{place} product's bm25 rank: {bm25_rank}")
     print(f"{place} product's semantic rank: {semantic_rank}")
+    # the formula with the two ranks in it, where k = 60
     print(f"{place} product's score by hand: {1 / (60 + bm25_rank) + 1 / (60 + semantic_rank):.5f}")
     print(f"{place} product's score from rrf_scores: {rrf_scores([bm25[246], semantic[246]])[product_id]:.5f}")
 

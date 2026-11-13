@@ -1,3 +1,4 @@
+"""Loads the store's sample and prints its size, how its queries split, and how its judgments are labelled. The prose quotes the split from the `train queries` and `test queries` lines."""
 import pandas as pd
 
 from lib.store import DATA, load_labels, load_products, load_queries

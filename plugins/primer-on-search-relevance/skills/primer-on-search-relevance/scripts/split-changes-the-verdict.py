@@ -1,3 +1,4 @@
+"""Runs the reranked-minus-semantic comparison on the test queries and on the train queries, so the verdict can be compared across the two samples. The prose's point rests on the two gap lines and the higher-scoring-run lines."""
 from lib.fusion import reciprocal_rank_fusion
 from lib.lexical import LexicalSearch
 from lib.metrics import evaluate
@@ -13,6 +14,7 @@ for split in ["test", "train"]:                      # the same comparison on an
     queries, judgments = load_queries(split), qrels(split)
     semantic = embeddings.run(queries, k=100)
     hybrid = reciprocal_rank_fusion([lexical.run(queries, k=100), semantic])
+    # as in chapter 1: rerank the top 50 and keep the rest in hybrid order
     reranked = {query_id: sorted(ranking[:50], key=lambda product_id: score[(query_id, product_id)], reverse=True)
                 + ranking[50:] for query_id, ranking in hybrid.items()}
     result = compare(evaluate(reranked, judgments)["ndcg@10"], evaluate(semantic, judgments)["ndcg@10"])

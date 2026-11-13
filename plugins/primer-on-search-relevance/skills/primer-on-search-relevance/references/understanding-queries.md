@@ -3,22 +3,24 @@ title: "A Primer on Search Relevance"
 chapter: "Understanding queries"
 chapter_id: understanding-queries
 book: primer-on-search-relevance
-edition: 2026.11.7
+edition: 2026.11.8
 verified: 2026-11-13
-edition_code: K7KC-57DV
+edition_code: W7B6-3VSA
 canonical: https://rollingedition.com/primer-on-search-relevance/understanding-queries
 license: CC BY 4.0
-attribution: "“Understanding queries,” chapter 8 of A Primer on Search Relevance, Edition 2026.11.7, examples passed Nov 13, 2026. By Rolling Edition, https://rollingedition.com/primer-on-search-relevance/understanding-queries. Text CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Understanding queries,” chapter 8 of A Primer on Search Relevance, Edition 2026.11.8, examples passed Nov 13, 2026. By Rolling Edition, https://rollingedition.com/primer-on-search-relevance/understanding-queries. Text CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Understanding queries
 
 By the end of this chapter you can change a shopper's query before retrieval: correct its spelling, write its units one way, expand it with synonyms, predict its product class, rewrite it with a large language model, search with a product that model imagines, and turn a follow-up into a standalone query. You can also decide, from human judgments, whether each change helps the retriever it feeds.
 
-The store whose search this book follows, an online seller of furniture and home goods ([chapter 1](#store-data)), gets short queries, and some of them can't match the products the shopper wants. `ligth bulb` misspells a word. `7qt slow cooker` writes its size as a term that 0 products contain. For `midcentury tv unit`, [chapter 7 counts](#learned-sparse-splade) 25 [exact](#store-data) products, of which 0 contain `midcentury` and 0 contain `unit`. A shopper who types `in white` after a search for a desk means a white desk, but the words alone don't say so. **Query understanding** is everything a search system does to a query before retrieval to close gaps like these: it corrects, normalizes, expands, classifies and rewrites. Chapters 5 to 7 changed the retrievers. This chapter changes the query and keeps the retrievers fixed: [BM25](#rank-with-bm25), the book's unstemmed baseline in `lib.lexical`, and [semantic retrieval](#search-by-meaning), which compares the query's embedding with each product's, both computed in advance by `Snowflake/snowflake-arctic-embed-m-v1.5`.
+Some of the short queries that shoppers type into [the store](#store-data)'s search box can't match the products they want. `ligth bulb` misspells a word. `7qt slow cooker` writes its size as a term that 0 products contain. For `midcentury tv unit`, [chapter 7 counts](#learned-sparse-splade) 25 [exact](#store-data) products, of which 0 contain `midcentury` and 0 contain `unit`.
 
-Three of the techniques use a **large language model** (LLM), a model trained on large amounts of text to generate text in response to a prompt. The store's LLM is `gemma4:12b-it-q4_K_M`, an open model that Google publishes under the Apache 2.0 licence ([model card](https://ai.google.dev/gemma/docs/core/model_card_4)). The examples never call it. Two scripts, `recordings/llm_rewrites.py` and `recordings/llm_conversations.py`, ran it once, at temperature 0 with a fixed seed, and saved its outputs as **recordings**, which the examples read through `lib.recorded`. Each recording's `manifest.json` holds the full prompts. We chose the model because anyone can download it and run it on their own machine, so anyone can rerun the recordings. The LLM sees only the shopper's words, never a product. Every score in the chapter uses the human judgments.
+A shopper who types `in white` after a search for a desk means a white desk, but the words alone don't say so. **Query understanding** is everything a search system does to a query before retrieval to close gaps like these: it corrects, normalizes, expands, classifies and rewrites. Chapters 5 to 7 changed the retrievers. This chapter changes the query and keeps the retrievers fixed: [BM25](#rank-with-bm25), the book's unstemmed baseline in `lib.lexical`, and [semantic retrieval](#search-by-meaning), which compares the query's embedding with each product's, both computed in advance by `Snowflake/snowflake-arctic-embed-m-v1.5`.
 
-Every setting is chosen on the 50 [train queries](#store-data), and the 30 test queries are kept for reporting. Before reading any test result, the chapter fixes 5 planned comparisons on the test queries, each against the same retriever on the query as typed:
+Three of the techniques use the store's LLM. It is `gemma4:12b-it-q4_K_M`, an open model that Google publishes under the Apache 2.0 licence ([model card](https://ai.google.dev/gemma/docs/core/model_card_4)). Nothing in the examples calls it. Two scripts, `recordings/llm_rewrites.py` and `recordings/llm_conversations.py`, ran it once, at temperature 0 with a fixed seed, and saved its outputs as **recordings**, which the examples read through `lib.recorded`. Each recording's `manifest.json` holds the full prompts. The recordings use the same open model and settings as chapter 4's. The LLM sees only the shopper's words, never a product. Every score in the chapter uses the human judgments.
+
+Every setting is chosen on the 50 [train queries](#store-data), and the 30 test queries are kept for reporting. The chapter settled its 5 planned comparisons on the test queries before it read any of their results. Each one is a retriever with one change, measured against the same retriever on the query as typed:
 
 1. BM25 with a [synonym list](#expand-with-synonyms)
 2. semantic retrieval with a [boost for the predicted class](#boost-predicted-class)
@@ -26,23 +28,25 @@ Every setting is chosen on the 50 [train queries](#store-data), and the 30 test 
 4. semantic retrieval on the LLM's rewrite
 5. semantic retrieval with [HyDE](#hyde-hypothetical-products), which averages the query's embedding with that of a product the LLM imagines
 
-By [the book's rule](#when-a-difference-is-established), a difference is established when its paired [permutation test](#permutation-test-on-queries) gives a p-value below 0.01, 0.05 divided by the number of planned comparisons. The [paired t-test](#paired-t-test-on-queries) and a 99% [bootstrap interval](#report-the-size-of-a-gap) stand beside it. Spelling correction, unit normalization and follow-up rewriting each touch too few queries to test, so their sections are diagnoses, not tests.
+Each planned comparison must clear [the book's rule](#when-a-difference-is-established): a p-value below 0.01 on its paired [permutation test](#permutation-test-on-queries), which is 0.05 divided by the number of planned comparisons. The [paired t-test](#paired-t-test-on-queries) and a 99% [bootstrap interval](#report-the-size-of-a-gap) stand beside it. Spelling correction, unit normalization and follow-up rewriting each touch too few queries to test, so their sections are exploratory.
 
 ## Correct spelling against the catalog's words {#correct-spelling-from-catalog}
 
-The first gap is a typo, as in `ligth bulb`. In [BM25](#rank-with-bm25), a misspelled word matches only products with the same misspelling, and it can move the query's embedding away from the products it means, as [chapter 6 shows](#semantic-retrieval-in-production). Search queries hold many such errors: one study of web search reports that "Roughly 10-15% of the queries sent to search engines contain errors" ([Cucerzan and Brill, 2004](https://aclanthology.org/W04-3238/)). The classic corrector is the **noisy channel** model: for a typed word t, choose the correction c that maximizes P(c) × P(t | c) ([Kernighan et al., 1990](https://aclanthology.org/C90-2036/)). P(c) says how common the candidate word is. P(t | c), the error model, says how likely a shopper who meant c is to type t. Kernighan et al. take as candidates the words one edit from the typo: a deletion, an insertion, a replacement or a swap of two neighbouring letters. The number of insertions, deletions and replacements that turn one string into another is their **edit distance** ([Manning et al., 2008](https://nlp.stanford.edu/IR-book/html/htmledition/edit-distance-1.html)), and the corrector here also counts a swap as one edit. A textbook states the two principles in plain terms: of the correct spellings, choose the nearest, and between near ties, choose the more common ([Manning et al., 2008](https://nlp.stanford.edu/IR-book/html/htmledition/implementing-spelling-correction-1.html)). Norvig writes such a corrector in a few lines ([Norvig](https://norvig.com/spell-correct.html)).
+The first gap is a typo, as in `ligth bulb`. In [BM25](#rank-with-bm25), a misspelled word matches only products with the same misspelling, and it can move the query's embedding away from the products it means, as [chapter 6 shows](#semantic-retrieval-in-production). Search queries hold many such errors. One study of web search, [Cucerzan and Brill (2004)](https://aclanthology.org/W04-3238/), reports that roughly 10 to 15 percent of the queries sent to search engines contain errors. The classic corrector is the **noisy channel** model: for a typed word t, choose the correction c that maximizes P(c) × P(t | c) ([Kernighan et al., 1990](https://aclanthology.org/C90-2036/)). P(c) says how common the candidate word is. P(t | c), the error model, says how likely a shopper who meant c is to type t. Kernighan et al. take as candidates the words one edit from the typo: a deletion, an insertion, a replacement or a swap of two neighbouring letters. The number of insertions, deletions and replacements that turn one string into another is their **edit distance** ([Manning et al., 2008](https://nlp.stanford.edu/IR-book/html/htmledition/edit-distance-1.html)), and the corrector here also counts a swap as one edit. A textbook states the two principles in plain terms: of the correct spellings, choose the nearest, and between near ties, choose the more common ([Manning et al., 2008](https://nlp.stanford.edu/IR-book/html/htmledition/implementing-spelling-correction-1.html)). Norvig writes such a corrector in a few lines ([Norvig](https://norvig.com/spell-correct.html)).
 
 ```text
 correction(t) = argmax over candidates c of  P(c) × P(t | c)
 ```
 
-The **lexicon**, the list of words that count as correct, decides what gets corrected. Web search engines take it from their query logs, choosing "the correction that is most common among queries typed in by other users" (Manning et al.). The store has no log, so its lexicon comes from the catalog's text. Where the lexicon comes from matters for brand names: in product search, a corrector "must distinguish genuine misspellings from novel brand names that use unconventional spelling" ([Guo et al., 2024](https://arxiv.org/abs/2410.11655)).
+The **lexicon**, the list of words that count as correct, decides what gets corrected. Web search engines build theirs from query logs, so the correction they pick is the one most common among other users' queries (Manning et al.). The store has no log, so its lexicon comes from the catalog's text. Where the lexicon comes from matters for brand names, because a corrector in product search has to tell genuine misspellings from new brands spelled unconventionally ([Guo et al., 2024](https://arxiv.org/abs/2410.11655)).
 
-In the store, build the corrector with the crudest error model: a word in the lexicon stays, one edit beats two, and P(c), how common each candidate is, breaks ties between candidates the same number of edits away. Run it on all 80 queries:
+The corrector here uses the crudest error model: a word in the lexicon stays, one edit beats two, and P(c), how common each candidate is, breaks ties between candidates the same number of edits away. Run it on all 80 queries, and see which ones it changes:
 
-Example `catalog-spelling-corrector` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1 · scikit-learn 1.9.1 · scipy 1.18.1), passing in Edition 2026.11.7:
+Example `catalog-spelling-corrector` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1 · scikit-learn 1.9.1 · scipy 1.18.1), passing in Edition 2026.11.8:
 
 ```python
+"""A spelling corrector built from the catalog's word counts, run on every query and checked against
+lib.queries.correct_query. The prose's point rests on the "queries changed" line and on the line that says whether both correctors agree."""
 import re
 from collections import Counter
 
@@ -69,6 +73,7 @@ def correct(word):
         return word
     candidates = {edit for edit in edits1(word) if edit in counts} or {
         two for edit in edits1(word) for two in edits1(edit) if two in counts}
+    # the most common candidate; on a tie in counts, the alphabetically first one
     return max(sorted(candidates), key=counts.get) if candidates else word
 
 
@@ -106,13 +111,18 @@ catalog count of malachi: 5
 catalog count of luau: 4
 ```
 
-The catalog uses 19,680 distinct words. The corrector changes 4 queries, and the shared function `lib.queries.correct_query` makes the same corrections. Of those, 3 are [train queries](#store-data), and the corrector spells each one as [chapter 6's spelling probes](#semantic-retrieval-in-production) do: the correctly spelled copies of the typo queries that chapter 6 wrote for the book. The corrector leaves the brands alone, because the catalog uses them: `kohler` 71 times and `whitehaven` 60. Some of the words it keeps are rare, such as `malachi`, used 5 times, and `luau`, used 4. A lexicon that left out rare words would treat both as typos.
+The catalog uses 19,680 distinct words, and the corrector changes 4 queries. Of those, 3 are [train queries](#store-data). The shared function `lib.queries.correct_query` makes the same corrections, and the corrector spells each train query as [chapter 6's spelling probes](#semantic-retrieval-in-production) do: the correctly spelled copies of the typo queries that chapter 6 wrote for the book.
+
+The corrector leaves the brands alone, because the catalog uses them: `kohler` 71 times and `whitehaven` 60. Some words it keeps are rare, such as `malachi`, used 5 times, and `luau`, used 4. A lexicon that left out rare words would treat both as typos.
 
 The corrector's failures are in test queries. `tye dye duvet cover` becomes `the dye duvet cover`: `tye` is one edit from `tie` (45 times in the catalog) and from `the` (20389), and P(c) picks the common word. And `refrigerator with ice an water in door` keeps its `an`. That is a **real-word error**: every word is spelled right, as in "flew form Heathrow" ([Manning et al., 2008](https://nlp.stanford.edu/IR-book/html/htmledition/context-sensitive-spelling-correction-1.html)). Both need context. For `tye` and for `an`, count how often each catalog word within one edit of it comes right before the next word of the query, `dye` or `water`:
 
-Example `spelling-context-counts` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1 · scikit-learn 1.9.1 · scipy 1.18.1), passing in Edition 2026.11.7:
+Example `spelling-context-counts` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1 · scikit-learn 1.9.1 · scipy 1.18.1), passing in Edition 2026.11.8:
 
 ```python
+"""For the misspelled word in two test queries, `tye` and the real-word error `an`, counts how often each nearby catalog word comes before the query's next
+word, and shows the context-free corrector's choice. The prose's point rests on the "catalog count of ... the
+corrector's choice" lines."""
 import re
 from collections import Counter
 
@@ -126,6 +136,7 @@ pairs = Counter(pair for words in words_per_product for pair in zip(words, words
 
 # tye in "tye dye duvet cover", an in "refrigerator with ice an water in door": each word, the word after it
 for word, after in [("tye", "dye"), ("an", "water")]:
+    # the typed word and each catalog word one edit away, ranked by how often each comes before the next word
     options = sorted(((pairs[(edit, after)], edit) for edit in edits1(word) | {word} if edit in counts), reverse=True)
     for count, edit in options[:3]:
         print(f"catalog count of {edit} {after}:", count)
@@ -149,11 +160,13 @@ the corrector's choice for an: an
 catalog count of an water, the corrector's choice: 0
 ```
 
-Before `dye`, the catalog's text has `tie` 18 times, and the corrector's choice, `the`, 0. Before `water`, it has `and` 59 times, ahead of `a` at 20, and `an` 0. For these two queries, a corrector that scored each candidate with its neighbouring word would pick `tie` and `and`. Now measure each corrected query on its own judgments:
+Before `dye`, the catalog's text has `tie` 18 times, and the corrector's choice, `the`, 0. Before `water`, `and` comes 59 times, ahead of `a` at 20, while `an`, the corrector's choice, has 0. For these two queries, a corrector that scored each candidate with its neighbouring word would pick `tie` and `and`. Each corrected query can now be scored against its own judgments, which shows whether the change helps:
 
-Example `measure-spelling-corrections` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.4 · pandas 3.1.1 · scikit-learn 1.9.1 · scipy 1.18.1), passing in Edition 2026.11.7:
+Example `measure-spelling-corrections` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.4 · pandas 3.1.1 · scikit-learn 1.9.1 · scipy 1.18.1), passing in Edition 2026.11.8:
 
 ```python
+"""Scores each typo query, and the variant spelling tye dye, with BM25, and with recorded embeddings where the corrected
+text has one, as typed and as corrected. The prose's point rests on the nDCG@10 lines for queries 20 and 224 (train) and the corrected BM25 line for 459 (test)."""
 from lib.lexical import LexicalSearch
 from lib.metrics import ndcg_at_k
 from lib.queries import correct_query, word_counts
@@ -166,6 +179,7 @@ counts = word_counts(product_text(products))
 bm25, semantic = LexicalSearch(products), SemanticSearch()
 probe_queries, probe_vectors = probes()      # recorded embeddings of the four typo queries, spelled correctly
 spelling = probe_queries[probe_queries["kind"] == "spelling"]
+# the probes' embeddings, keyed by the correctly spelled text, so a corrected query can find its own
 spelled = {row["query"]: probe_vectors[index] for index, row in spelling.iterrows()}
 typo_queries = spelling["of_query_id"].astype(int).tolist()
 print("typo queries:", len(typo_queries))
@@ -219,19 +233,25 @@ of them, test queries: 1
 459 (test): no recorded embedding of the corrected text
 ```
 
-For the train query `foutains with brick look`, BM25's nDCG@10 goes from 0.356 to 0.507 and semantic retrieval from 0.353 to 0.645. For `twin over full bunk beds cool desins`, only semantic retrieval moves, from 0.565 to 0.616, and for `ligth bulb` neither does. For `refrigerator with ice an water in door`, the corrector changes nothing, and a correct fix couldn't help BM25 either. Of the typed `an` and the correct `and`, bm25s drops `an, and` as stop words, and chapter 6's copy of the query spelled with `and` scores 0.501, the same as the query as typed. For `tye dye duvet cover`, BM25 scores 0.953 either way, because `the` is a stop word and `tye` matches no product, so both versions search the same terms. Semantic retrieval can't be scored on the corrected text, because the recordings hold no embedding of it. The store has 4 typo queries, 1 of them a test query, and the smallest two-sided permutation p-value that so few could give is 0.125.
+The correction matters most for `foutains with brick look` (train). Semantic retrieval goes from 0.353 to 0.645, and BM25 from 0.356 to 0.507.
+
+Of the other two train typos, `twin over full bunk beds cool desins`, moves only semantic retrieval, from 0.565 to 0.616, and `ligth bulb` moves neither retriever. For `refrigerator with ice an water in door`, the corrector changes nothing, and a correct fix couldn't help BM25 either. Of the typed `an` and the correct `and`, bm25s drops `an, and` as stop words, and chapter 6's copy of the query spelled with `and` scores 0.501, the same as the query as typed.
+
+For `tye dye duvet cover`, BM25 scores 0.953 either way, because `the` is a stop word and `tye` matches no product, so both versions search the same terms. Semantic retrieval can't be scored on the corrected text, because the recordings hold no embedding of it. The store has 4 typo queries, of which 1 is a test query, and the smallest two-sided permutation p-value that so few could give is 0.125.
 
 **Working rule:** Build the lexicon from your catalog, and from your query log once you have one, and correct only words it doesn't hold, so that brand names survive. Before you correct a word, check its neighbours: a corrector without context turns variant spellings into common words and misses real-word errors. Score each correction on the typo queries' own judgments, and collect many more typo queries than the store has before you test a corrector.
 
 ## Normalize units the way the catalog writes them {#normalize-units}
 
-A typo has one right spelling; a size, as in `7qt slow cooker`, often has several. **Normalization** maps the different ways of writing one thing to a single form, on the products and on the query alike. In the store, sizes need it. [Chapter 5](#split-text-into-terms) found that `7qt` and `7 qt` never match each other, because the tokenizer drops the one-character `7`. A normalizer that joins each number to its unit, written one way, turns both into one term, `7qt`. It has to run on the product text when you build the index, and on every query. It also has to produce terms the tokenizer keeps whole. The tokenizer splits words at a decimal point, so `3.7qt` would become `7qt`. To prevent that, the shared function `lib.queries.normalize_units` writes the point as an underscore, which the tokenizer keeps inside a word. It also leaves `in` alone when a number or `one` follows, as in `3 in 1`.
+A typo has one right spelling; a size, as in `7qt slow cooker`, often has several. **Normalization** maps the different ways of writing one thing to a single form, on the products and on the query alike. Sizes in this catalog need it. [Chapter 5](#split-text-into-terms) found that `7qt` and `7 qt` never match each other, because the tokenizer drops the one-character `7`. A normalizer that joins each number to its unit, written one way, turns both into one term, `7qt`. It has to run on the product text when you build the index, and on every query. It also has to produce terms the tokenizer keeps whole. The tokenizer splits words at a decimal point, so `3.7qt` would become `7qt`. To prevent that, the shared function `lib.queries.normalize_units` writes the point as an underscore, which the tokenizer keeps inside a word. It also leaves `in` alone when a number or `one` follows, as in `3 in 1`.
 
-In the store, a rule written from the queries would cover `qt`, `in`, `inch` and `"`. Before you trust it, count how the catalog writes inches. The example counts them, prints the terms that the tokenizer makes of a few normalized texts, then builds BM25 three times: over the text as written, normalized by that first rule, and normalized by `normalize_units`, which also handles the catalog's two apostrophes, `''`, for inches. It scores every query, train or test, that gives a number with a unit:
+A rule written from the queries would cover `qt`, `in`, `inch` and `"`. Before you trust it, count how the catalog writes inches. We count them first, print the terms the tokenizer makes of a few normalized texts, and build BM25 three times: over the text as written, normalized by that first rule, and normalized by `normalize_units`, which also handles the catalog's two apostrophes, `''`, for inches. We score every query, train or test, that gives a number with a unit:
 
-Example `normalize-units-both-sides` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.4 · pandas 3.1.1 · pystemmer 3.1.0 · scikit-learn 1.9.1 · scipy 1.18.1), passing in Edition 2026.11.7:
+Example `normalize-units-both-sides` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.4 · pandas 3.1.1 · pystemmer 3.1.0 · scikit-learn 1.9.1 · scipy 1.18.1), passing in Edition 2026.11.8:
 
 ```python
+"""Counts how the catalog writes inches, prints the terms the tokenizer makes of normalized texts, and scores BM25 on
+every query with a unit under three rules. The prose's point rests on the "bm25 ndcg@10" lines for queries 62 and 482."""
 from lib.lexical import LexicalSearch
 from lib.lexical_by_hand import tokenize
 from lib.metrics import ndcg_at_k
@@ -240,10 +260,13 @@ from lib.store import load_products, load_queries, product_text, qrels
 
 products, queries, judgments = load_products(), load_queries(), qrels()
 text = product_text(products).str.lower()
+# the catalog's spellings of inches after a number; -? also takes a hyphen, as in 48-inch
 for name, unit in [("''", r"''"), ('"', r"\""), ("inch", r"-?inch")]:
     print(f"products that write a number then {name}:", text.str.contains(rf"\d\s*{unit}").sum())
 
+# the first rule, written from the queries' units: lib's inch spellings (inches, inch, in, ") without the two apostrophes; quarts are always included
 first_try = unit_rules([spelling for spelling in INCH_SPELLINGS if spelling != "''"])   # written from queries
+# None leaves the text as written, with no normalization
 rules = {"as written": None, "first try": first_try, "normalized": unit_rules()}
 checks = [("3.7-quart slow cooker", "normalized"), ("3 in 1 sofa bed", "normalized"), ("1 in twin", "normalized"),
           ("48 '' range hood", "first try"), ("48 '' range hood", "normalized")]
@@ -258,6 +281,7 @@ for name, rule in rules.items():
             rewritten[column] = rewritten[column].map(lambda value: normalize_units(value, rule))
     searches[name] = LexicalSearch(rewritten)
 
+# queries with a number and a unit: qt, in, inch or a double quote
 with_units = queries[queries["query"].str.contains(r"\d\s*(?:qt|in\b|inch|\")")]
 print("queries with a unit:", len(with_units))
 print("of them, test queries:", (with_units["split"] == "test").sum())
@@ -301,21 +325,27 @@ of them, test queries: 2
 482 (test), bm25 ndcg@10 normalized: 1.000
 ```
 
-The catalog writes a number followed by two apostrophes in 3014 products, by `"` in 65 and by `inch` in 215. The tokenizer reads `3.7-quart slow cooker`, normalized, as `3_7qt slow cooker`, and `3 in 1 sofa bed` as `sofa bed`. `normalize_units` still misreads `1 in twin` as `1in twin`, which is why the terms are worth printing.
+The catalog's usual way to write inches is the one a rule written from the queries misses: two apostrophes after a number, in 3014 products, against 65 for `"` and 215 for `inch`.
 
-For the train query `7qt slow cooker`, normalizing takes BM25's nDCG@10 from 0.554 to 0.930, and the first rule gives 0.930. The test query `48 inch kitchen hood` shows what the first rule loses by missing the two apostrophes: it scores 1.000 as written and 0.824 under the first rule. The query becomes `48in`, while the first rule leaves a hood written `48 ''` as `48 range hood`, and the full rule makes it `48in range hood`. With the full rule, the hood query scores 1.000. The other train query, `48 in entry table with side by side drawer`, scores 0.569 as written and 0.569 normalized, and the test query about a barn door 0.592 and 0.592. That makes 4 queries with a unit, 2 of them [test queries](#store-data): too few for a test, so this is a diagnosis.
+The tokenizer reads `3.7-quart slow cooker`, normalized, as `3_7qt slow cooker`, and `3 in 1 sofa bed` as `sofa bed`. `normalize_units` still misreads `1 in twin` as `1in twin`, which is why the terms are worth printing.
+
+Normalizing lifts the train query `7qt slow cooker`: BM25's nDCG@10 goes from 0.554 to 0.930, and the first rule gives 0.930. The test query `48 inch kitchen hood` shows what the first rule loses by missing the two apostrophes. It scores 1.000 as written and 0.824 under the first rule. The query becomes `48in`, while the first rule leaves a hood written `48 ''` as `48 range hood`, and the full rule makes it `48in range hood`. With the full rule, the hood query scores 1.000.
+
+The other train query, `48 in entry table with side by side drawer`, scores 0.569 as written and 0.569 normalized, and the test query about a sliding barn door scores 0.592 and 0.592. That makes 4 queries with a unit, 2 of them [test queries](#store-data): too few to test.
 
 **Working rule:** Write normalization rules from the catalog's text, not from the queries, by counting every way it writes each unit. Print the terms the tokenizer makes of the normalized text, because a rule that looks right can produce terms that match the wrong products. Apply the same rules to products and queries in one release, and rebuild the index. When the catalog keeps sizes in fields, such as the width in `attributes`, match the size against the field instead, as [chapter 6 suggests](#codes-carry-no-weight).
 
 ## Expand queries with a synonym list {#expand-with-synonyms}
 
-Some gaps are neither typos nor units but different words for one thing, as when the exact products for `midcentury tv unit` say `stand`. **Query expansion** adds terms to a query so that it can match products that use other words for the same thing. "Use of query expansion generally increases recall" ([Manning et al., 2008](https://nlp.stanford.edu/IR-book/html/htmledition/query-expansion-1.html)), the share of the relevant products that a search finds. It can cost precision, the share of found products that are relevant: "query expansion may also significantly decrease precision, particularly when the query contains ambiguous terms" ([Manning et al., 2008](https://nlp.stanford.edu/IR-book/html/htmledition/automatic-thesaurus-generation-1.html)). An added word can match products the shopper didn't ask for, and move the query away from its meaning, which is called **query drift**. Expansion terms can come from a hand-built list of synonyms, or from the results. **Pseudo-relevance feedback** assumes the top results are relevant and adds their terms to the query, which makes drift its known risk ([Manning et al., 2008](https://nlp.stanford.edu/IR-book/html/htmledition/pseudo-relevance-feedback-1.html)).
+Some gaps are neither typos nor units but different words for one thing, as when the exact products for `midcentury tv unit` say `stand`. **Query expansion** adds terms to a query so that it can match products that use other words for the same thing. Expansion generally increases recall, the share of the relevant products that a search finds ([Manning et al., 2008](https://nlp.stanford.edu/IR-book/html/htmledition/query-expansion-1.html)). It can also significantly decrease precision, the share of found products that are relevant, particularly when the query contains ambiguous terms ([Manning et al., 2008](https://nlp.stanford.edu/IR-book/html/htmledition/automatic-thesaurus-generation-1.html)). An added word can match products the shopper didn't ask for, and move the query away from its meaning, which is called **query drift**. Expansion terms can come from a hand-built list of synonyms, or from the results. **Pseudo-relevance feedback** assumes the top results are relevant and adds their terms to the query, which makes drift its known risk ([Manning et al., 2008](https://nlp.stanford.edu/IR-book/html/htmledition/pseudo-relevance-feedback-1.html)).
 
-In the store, `lib.queries.SYNONYMS` holds 14 groups of interchangeable words, such as `stand` and `unit`, written by reading the train queries whose exact products miss a query word. When a query contains a word or phrase from a group, `expand` appends the group's other members, and BM25 searches the result. Measure it on the train queries, then make the first of the chapter's [five planned comparisons](#understanding-queries) on the test queries, which counts as established if p is below 0.01:
+Here `lib.queries.SYNONYMS` holds 14 groups of interchangeable words, such as `stand` and `unit`, written by reading the train queries whose exact products miss a query word. When a query contains a word or phrase from a group, `expand` appends the group's other members, and BM25 searches the result. Measure it on the train queries, then make the first of the chapter's [planned comparisons](#understanding-queries) on the test queries:
 
-Example `synonym-expansion-train-and-test` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.4 · pandas 3.1.1 · scikit-learn 1.9.1 · scipy 1.18.1), passing in Edition 2026.11.7:
+Example `synonym-expansion-train-and-test` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.4 · pandas 3.1.1 · scikit-learn 1.9.1 · scipy 1.18.1), passing in Edition 2026.11.8:
 
 ```python
+"""Expands each query with the synonym list, scores BM25 on the train and test queries as typed and expanded, and
+runs the list's planned test comparison. The prose's point rests on the "synonyms, bm25" lines of that comparison."""
 from lib.lexical import LexicalSearch
 from lib.metrics import evaluate
 from lib.queries import PLANNED_TEST_COMPARISONS, SYNONYMS, THRESHOLD, expand, report_planned
@@ -336,6 +366,7 @@ for split in ["train", "test"]:
         print(f"{split} judged@10 {name}: {scores[split, name]['judged@10'].mean():.3f}")
 for query in queries.loc[changed, "query"]:                   # the test queries the list changes
     print(f"test query changed: {query}")
+    # expand returns the query, a space, then the added words, so this slice keeps only the added words
     print(f"words the list adds to it: {expand(query)[len(query) + 1:]}")
 
 change = (scores["train", "expanded"]["ndcg@10"] - scores["train", "typed"]["ndcg@10"]).round(3)
@@ -343,6 +374,7 @@ print(f"train queries better, worse: {(change > 0).sum()}, {(change < 0).sum()}"
 print(f"share of the net train gain from the largest gain: {change.max() / change.sum():.3f}")
 for kind, query_id in [("gain", change.idxmax()), ("loss", change.idxmin())]:
     query = load_queries().at[query_id, "query"]
+    # the same slice: everything after the query and the space that expand puts between them
     added = expand(query)[len(query) + 1:]
     print(f"largest train {kind}: {query}")
     print(f"largest train {kind}, words added: {added}")
@@ -395,15 +427,19 @@ synonyms, bm25, 99% interval: 0.000 to 0.000
 synonyms, bm25, interval agrees: yes
 ```
 
-The list changes 14 train queries. Mean [nDCG@10](#score-one-ranking) goes from 0.695 to 0.722, and [judged@10](#score-every-test-query), the share of the top 10 with a judgment, from 0.930 to 0.944. The numbers of changed queries that score better and worse are 6, 5, and one query carries a share of 0.473 of the net gain: `midcentury tv unit`, which gains +0.632 with `stand mid century` added. The list was written from these queries, so even these numbers flatter it. The largest loss, -0.176, shows drift: `wire basket with dividers` gets `hamper`, and 4 products whose names contain `hamper` enter its top 10. 4 of them are unjudged, so the metric counts them as irrelevant, which for hampers is a fair guess.
+The list changes 14 train queries. Mean [nDCG@10](#score-one-ranking) goes from 0.695 to 0.722, and [judged@10](#score-every-test-query), the share of the top 10 with a judgment, rises too, from 0.930 to 0.944.
+
+Of the changed train queries, 6, 5 score better and worse, respectively, and one query, `midcentury tv unit`, accounts for 0.473 of the net gain, gaining +0.632 with `stand mid century` added. The list was written from these queries, so even these numbers flatter it.
+
+The largest loss, -0.176, shows drift: `wire basket with dividers` gets `hamper`, and 4 products whose names contain `hamper` enter its top 10. Of those, 4 are unjudged, so the metric counts them as irrelevant, which for hampers is a fair guess.
 
 On the test queries, the list changes 1 query, `indoor multi tiered plant stand`, by adding `unit`. Judged@10 stays at 0.927, and the difference isn't established ([planned comparisons](#understanding-queries-decisions)). On the queries it was written from, the list helped about as many queries as it hurt, and queries it wasn't written for rarely contain its words.
 
-**Working rule:** Keep a synonym list for vocabulary gaps you have seen, write each entry from a failing query, and read the products each entry adds before you keep it. Never report a list's gain on the queries you wrote it from, and keep an entry only if a test on held-out queries shows a gain. Test any expansion of semantic retrieval first: the LLM's rewrites, which add synonyms and also broaden and drop words, [hurt it](#rewrite-queries-with-llm). When the gaps are too many to list, try [stemming](#stem-word-forms) or [learned sparse retrieval](#learned-sparse-splade) instead.
+**Working rule:** Keep a synonym list for vocabulary gaps you have seen, write each entry from a failing query, and read the products each entry adds before you keep it. Never report a list's gain on the queries you wrote it from, and keep an entry only if a planned comparison on the test queries shows a gain. Test any expansion of semantic retrieval first: the LLM's rewrites, which add synonyms and also broaden and drop words, [hurt it](#rewrite-queries-with-llm). When the gaps are too many to list, try [stemming](#stem-word-forms) or [learned sparse retrieval](#learned-sparse-splade) instead.
 
 ## Train a query classifier on product text {#classify-queries-from-products}
 
-Instead of changing a query's words, a system can predict what kind of product the query asks for. **Query classification** assigns a query to a class in the store's taxonomy, such as `Range Hoods`. In product search, "mapping a query to a pre-defined product taxonomy is an important step in e-commerce query understanding pipeline" ([Skinner and Kallumadi, 2019](https://ceur-ws.org/Vol-2410/paper37.pdf)): a predicted class can steer retrieval toward the right part of the catalog. Training a classifier usually takes labelled queries. Skinner and Kallumadi report that "an existing product-taxonomy mapping can improve query classification, and reduce the need for labeled data": they pretrain on product titles, whose classes are known, then fine-tune on fewer labelled queries.
+Instead of changing a query's words, a system can predict what kind of product the query asks for. **Query classification** assigns a query to a class in the store's taxonomy, such as `Range Hoods`. In product search, "mapping a query to a pre-defined product taxonomy is an important step in e-commerce query understanding pipeline" ([Skinner and Kallumadi, 2019](https://ceur-ws.org/Vol-2410/paper37.pdf)): a predicted class can steer retrieval toward the right part of the catalog. Training a classifier usually takes labelled queries. Skinner and Kallumadi report that an existing product-taxonomy mapping can improve query classification and reduce the need for labelled data. They pretrain on product titles, whose classes are known, then fine-tune on fewer labelled queries.
 
 The store goes further and uses no labelled queries, because it has none. WANDS gives each query a `query_class`, "category to which the query falls under" ([WANDS](https://github.com/wayfair/WANDS)), but [chapter 2](#intent-in-product-search) shows that it is a prediction, and some values are wrong. And the book's sample of WANDS holds at most one query per class (`examples/data/wands/README.md`), so no class has two queries to learn from. So train on the products, which carry `product_class`, and apply the classifier to the queries.
 
@@ -414,11 +450,14 @@ predicted class = argmax over classes c of  log P(c) + sum over the query's word
 P(w | c)        = (count of w in class c's text + 1) / (number of words in class c's text + vocabulary size)
 ```
 
-In the store, build it by hand from word counts of the product text, check it against scikit-learn's `MultinomialNB` at 1.9.1, then compare its predictions with `query_class` and with the classes of each query's exact products:
+We build it by hand from word counts of the product text, check it against scikit-learn's `MultinomialNB` at 1.9.1, then compare its predictions with `query_class` and with the classes of each query's exact products:
 
-Example `query-classes-by-hand` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1 · scikit-learn 1.9.1 · scipy 1.18.1), passing in Edition 2026.11.7:
+Example `query-classes-by-hand` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1 · scikit-learn 1.9.1 · scipy 1.18.1), passing in Edition 2026.11.8:
 
 ```python
+"""A naive Bayes query classifier built by hand from product text, checked against scikit-learn's MultinomialNB and
+compared with each query's exact products. The prose's point rests on the two "queries where most exact products
+have" lines and on the agreement line with MultinomialNB."""
 import numpy as np
 
 from lib.queries import class_rows, train_classifier
@@ -432,6 +471,7 @@ classes = np.array(sorted(rows["label"].unique()))
 print("product classes:", len(classes))
 print("products without a class:", (products["product_class"] == "").sum())
 print("products with several classes:", products["product_class"].str.contains("|", regex=False).sum())
+# query classes whose name matches no product class
 missing = queries["query_class"].dropna()[lambda names: ~names.isin(classes)]
 print("query classes that no product has:", len(missing))
 print("query classes that no product has, names:", "; ".join(missing))
@@ -446,11 +486,13 @@ print("same predictions as MultinomialNB:", (predicted == model.predict(query_wo
 
 queries = queries.assign(predicted=predicted)
 print("predicted class equals query_class:", (queries["predicted"] == queries["query_class"]).sum())
+# judgment grade 2 is exact; a product's classes are joined by |, so they're split before matching
 exact = labels[labels["grade"] == 2].join(products["product_class"].str.split("|"), on="product_id")
 for column, name in [("predicted", "predicted class"), ("query_class", "query_class")]:
     share = [exact.loc[exact["query_id"] == query_id, "product_class"].apply(lambda names: label in names).mean()
              for query_id, label in queries[column].items()]
     print(f"queries where most exact products have the {name}:", (np.array(share) > 0.5).sum())
+# outdoor light fixtures, desk and chair set, and pool floats
 for query_id in [133, 255, 410]:
     query, split, label = queries.loc[query_id, ["query", "split", "predicted"]]
     print(f"{query_id} ({split}): {query} -> {label}"
@@ -476,7 +518,9 @@ queries where most exact products have the query_class: 63
 predicted class for 7qt slow cooker: Slow Cookers
 ```
 
-The products use 410 classes. 800 products have none and are left out, and 620 have several, so each of those is one training row per class. The hand-built classifier makes the same prediction as `MultinomialNB` for 80 of 80 queries. Its prediction equals `query_class` for 60, but `query_class` is a guess too. Against the judgments, the two guesses tie: for 63 queries most exact products carry the predicted class, and for 63 they carry `query_class`. Three of its predictions show how it reads a query by its words alone: `outdoor light fixtures` becomes `Light Bulbs`, `desk and chair set` becomes `Desks`, and `pool floats` becomes `Deck Boxes`.
+The products use 410 classes. 800 products have none and are left out, and 620 have several, so each of those is one training row per class.
+
+The hand-built classifier makes the same prediction as `MultinomialNB` for 80 of 80 queries. Its prediction equals `query_class` for 60 of them, but `query_class` is a guess too. Against the judgments, the two guesses tie: for 63 queries most exact products carry the predicted class, and for 63 they carry `query_class`. Three of its predictions show how it reads a query by its words alone: `outdoor light fixtures` becomes `Light Bulbs`, `desk and chair set` becomes `Desks`, and `pool floats` becomes `Deck Boxes`.
 
 The sample's design limits what this check can show. Each class is tested by at most one query, so no per-class accuracy can be measured, and 80 queries cover only part of the 410 classes, so the counts say nothing about the rest. A query classifier can't be trained on these queries at all, and two classifiers can only be compared on whether each gets these few queries right. And 1 query class, `Crock Pots & Slow Cookers`, names no product class at all, so no classifier trained on products can predict it.
 
@@ -484,13 +528,16 @@ The sample's design limits what this check can show. Each class is tested by at 
 
 ## Boost the predicted class instead of filtering {#boost-predicted-class}
 
-In the store, the predicted class comes from [the naive Bayes classifier](#classify-queries-from-products) trained on product text. A predicted class can act on retrieval in two ways. A **filter** keeps only products in the class. A **boost** adds a fixed amount to their scores, so that they move up without anything else being removed. A filter is only as good as the classifier: every relevant product outside the predicted class disappears.
+Here the predicted class comes from [the naive Bayes classifier](#classify-queries-from-products) trained on product text. A predicted class can act on retrieval in two ways. A **filter** keeps only products in the class. A **boost** adds a fixed amount to their scores, so that they move up without anything else being removed. A filter is only as good as the classifier: every relevant product outside the predicted class disappears.
 
-The store's train judgments show how much a filter would cost: for the train queries, 501 of 1937 exact products lie outside their query's predicted class. The example adds a boost to the similarities of semantic retrieval, the store's best ranker and so its [ranker to beat](#compare-runs-in-a-harness), and tries five boost weights and a filter on the train queries. It takes the best boost to the test queries for the second of the chapter's [five planned comparisons](#understanding-queries), which counts as established if p is below 0.01:
+The store's train judgments show how much a filter would cost: for the train queries, 501 of 1937 exact products lie outside their query's predicted class. We add a boost to the similarities of semantic retrieval, the store's best ranker and so its [ranker to beat](#compare-runs-in-a-harness), and try five boost weights and a filter on the train queries. We take the best boost to the test queries for the second of the chapter's [planned comparisons](#understanding-queries):
 
-Example `class-boost-train-and-test` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1 · scikit-learn 1.9.1 · scipy 1.18.1), passing in Edition 2026.11.7:
+Example `class-boost-train-and-test` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1 · scikit-learn 1.9.1 · scipy 1.18.1), passing in Edition 2026.11.8:
 
 ```python
+"""Counts the exact train products outside each query's predicted class, scores a class filter and several boosts on
+the train queries, and takes the best boost to the test queries as a planned comparison. The prose's point rests on
+the "exact train products outside the predicted class" line and on the planned comparison's lines."""
 from lib.metrics import evaluate
 from lib.queries import THRESHOLD, class_boost_run, in_class, report_planned, train_classifier
 from lib.semantic import SemanticSearch
@@ -517,6 +564,7 @@ for weight in [None, 0.01, 0.02, 0.05, 0.1, 0.2]:                          # Non
     train_scores[weight] = evaluate(class_boost_run(semantic, train.index, predicted, products, weight), train_judgments)
     name = "filter" if weight is None else f"boost {weight}"
     print(f"train ndcg@10 {name}: {train_scores[weight]['ndcg@10'].mean():.3f}")
+# every weight except None, the filter
 boosts = [weight for weight in train_scores if weight is not None]
 best = max(boosts, key=lambda weight: train_scores[weight]["ndcg@10"].mean())
 for name, weight in [("filter", None), ("best boost", best)]:
@@ -561,21 +609,25 @@ class boost, semantic, 99% interval: -0.002 to 0.017
 class boost, semantic, interval agrees: yes
 ```
 
-On the train queries, the filter takes [nDCG@10](#score-one-ranking) from 0.772 to 0.675, and [judged@10](#score-every-test-query) from 0.964 to 0.866, so its top 10s also fill with products nobody judged. The boosts score from 0.773 at 0.01 and 0.774 at 0.02 down to 0.692 at 0.2, and the output lists the rest. The best boost on train is 0.02, with judged@10 of 0.966.
+On the train queries, the filter does worse than the plain ranker: [nDCG@10](#score-one-ranking) falls from 0.772 to 0.675, and [judged@10](#score-every-test-query) from 0.964 to 0.866, so its top 10s also fill with products nobody judged.
+
+Small boosts barely move the train score, and large ones hurt it: nDCG@10 is 0.773 at 0.01 and 0.692 at 0.2. The best boost on train is 0.02, at 0.774, with judged@10 of 0.966.
 
 On the test queries, judged@10 is 0.990 without the boost and 0.993 with it, and the boost's gain isn't established ([planned comparisons](#understanding-queries-decisions)).
 
-**Working rule:** Don't filter on a predicted class. Boost it with a weight tuned on train queries, and keep the boost only if its planned test comparison is established. The store's isn't, so its semantic retrieval stays unboosted. We recommend a class filter only when the shopper chose the class, for example by clicking a category.
+**Working rule:** Don't filter on a predicted class. Boost it with a weight tuned on train queries, and keep the boost only if its planned comparison is established. The store's isn't, so its semantic retrieval stays unboosted. We recommend a class filter only when the shopper chose the class, for example by clicking a category.
 
 ## Rewrite queries with an LLM {#rewrite-queries-with-llm}
 
-**Query rewriting** replaces the query with a text written to retrieve better. Where the corrector, the unit rules and the synonym list each fix one kind of gap, an LLM can fix spelling, expand abbreviations and add synonyms in one step, with no list to maintain. In rewrite-retrieve-read, the rewritten query goes to the retriever in place of the original ([Ma et al., 2023](https://arxiv.org/abs/2305.14283)). Studies report gains. With query2doc, which appends an LLM-written passage, a **pseudo-document**, to the query, BM25 improved "by 3% to 15% on ad-hoc IR datasets", with text-davinci-003 writing the passages for MS MARCO and TREC DL queries ([Wang et al., 2023](https://arxiv.org/abs/2303.07678)). Other studies report failures. A comparison of 11 expansion methods, 12 datasets and 24 retrievers found that "expansion improves scores for weaker models, but generally harms stronger models" ([Weller et al., 2024](https://arxiv.org/abs/2309.08541)). Another study found that LLM-based expansion "can significantly degrade the retrieval effectiveness when knowledge in the LLM is insufficient or query ambiguity is high" ([Abe et al., 2025](https://arxiv.org/abs/2505.12694)).
+**Query rewriting** replaces the query with a text written to retrieve better. Where the corrector, the unit rules and the synonym list each fix one kind of gap, an LLM can fix spelling, expand abbreviations and add synonyms in one step, with no list to maintain. In rewrite-retrieve-read, the rewritten query goes to the retriever in place of the original ([Ma et al., 2023](https://arxiv.org/abs/2305.14283)). Studies report gains. With query2doc, which appends an LLM-written passage, a **pseudo-document**, to the query, BM25 improved by 3% to 15% on ad-hoc IR datasets, with text-davinci-003 writing the passages for MS MARCO and TREC DL queries ([Wang et al., 2023](https://arxiv.org/abs/2303.07678)). Other studies report failures. A comparison of 11 expansion methods, 12 datasets and 24 retrievers found that expansion helps weaker models and generally harms stronger ones ([Weller et al., 2024](https://arxiv.org/abs/2309.08541)). Another study found that LLM-based expansion can significantly degrade retrieval when the LLM lacks the knowledge or the query is highly ambiguous ([Abe et al., 2025](https://arxiv.org/abs/2505.12694)).
 
-The rewrites that the examples read were recorded with the store's LLM, the open model named in [the chapter's opening](#understanding-queries), run locally on each query alone. The prompt's instruction is: "Rewrite this search query from an online furniture and home-goods store so that a search engine finds what the shopper wants. Fix spelling, expand abbreviations and add common synonyms for the product type, but keep every requirement the shopper stated and add none of your own. Return a single line." The rest of the prompt gives the query and asks for JSON, and the recording's manifest holds it in full. The recording script embedded each rewrite as a query, with the same embedding model as the products. BM25 searches the rewrite's text, and semantic retrieval its embedding. Look at the train queries first:
+The rewrites that the examples read were recorded with the store's LLM, the open model named in [the chapter's opening](#understanding-queries), run locally on each query alone. The prompt's instruction is: "Rewrite this search query from an online furniture and home-goods store so that a search engine finds what the shopper wants. Fix spelling, expand abbreviations and add common synonyms for the product type, but keep every requirement the shopper stated and add none of your own. Return a single line." The rest of the prompt gives the query and asks for JSON, and the recording's manifest holds it in full. The recording script embedded each rewrite as a query, with the same embedding model as the products. BM25 searches the rewrite's text, and semantic retrieval its embedding. The train queries come first, to see what the rewrites change before any test:
 
-Example `llm-rewrites-on-train` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.4 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.7:
+Example `llm-rewrites-on-train` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.4 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.8:
 
 ```python
+"""Prints the store's recorded LLM rewrites for a few train queries, then scores BM25 and semantic retrieval on the
+train queries, typed and rewritten. The prose's point rests on the nDCG@10 lines for both retrievers."""
 from lib.lexical import LexicalSearch
 from lib.metrics import evaluate
 from lib.recorded import llm_rewrites, manifest
@@ -588,12 +640,15 @@ print("embedding model:", recording["embedding_model"])
 print("rewrite prompt, first line:", recording["prompts"]["rewrite"].split("\n")[0])
 table, rewrite_vectors, _ = llm_rewrites()
 rewrites = table.set_index("query_id")["rewrite"]
+# the embeddings come in the table's row order, not query order: row maps each query_id to its row
 row = {query_id: position for position, query_id in enumerate(table["query_id"])}
+# a spelling fix, a product code, and malachi sled
 for query_id in [20, 205, 313]:
     print(f"rewrite of {load_queries().at[query_id, 'query']}: {rewrites[query_id]}")
 
 queries, judgments = load_queries("train"), qrels("train")
 products = load_products()
+# judgment grade 2 is exact
 exact = [product_id for product_id, grade in judgments[313].items() if grade == 2]
 print("exact products for malachi sled:", "; ".join(products.loc[exact, "name"]))
 bm25, semantic = LexicalSearch(products), SemanticSearch()
@@ -639,13 +694,19 @@ largest train loss, semantic: wall design shelf
 largest train loss, semantic, change: -0.653
 ```
 
-The rewrites fix spelling, `fountains with brick look, brick style water features, masonry fountains, faux brick fountains`, and keep codes, `Ines shag rug w003096809 area rug carpet`. For `malachi sled`, a product line, the LLM guessed a sofa: it wrote `Malachi sled sofa couch settee loveseat`, while the exact products are `malachi sled end table; malachi 44 '' console table; malachi sled coffee table`. On the train queries, BM25's nDCG@10 goes from 0.695 to 0.646, and semantic retrieval's from 0.772 to 0.759. [Judged@10](#score-every-test-query) falls for both, from 0.930 to 0.868 and from 0.964 to 0.924, so the rewrites surface products nobody judged, and part of each fall in nDCG@10 may come from them. The numbers of queries that score better and worse are 23, 24 for BM25 and 18, 25 for semantic retrieval. BM25's largest loss is `malachi sled`, at -0.644, and semantic retrieval's is `wall design shelf`, at -0.653.
+Spelling comes out right (`fountains with brick look, brick style water features, masonry fountains, faux brick fountains`), and codes survive (`Ines shag rug w003096809 area rug carpet`). For `malachi sled`, a product line, the LLM guessed a sofa: it wrote `Malachi sled sofa couch settee loveseat`, while the exact products are `malachi sled end table; malachi 44 '' console table; malachi sled coffee table`.
 
-These train numbers shape expectations and prove nothing. The third and fourth of the chapter's [five planned comparisons](#understanding-queries) were fixed in advance, so they go to the test queries whatever the train queries show, and each counts as established if p is below 0.01. Before you run them, predict: on the test queries, will the rewrite help BM25, the weaker retriever, hurt semantic retrieval, the stronger one, or neither?
+On the train queries, the rewrite lowers nDCG@10 for both retrievers: BM25 from 0.695 to 0.646, and semantic retrieval from 0.772 to 0.759. [Judged@10](#score-every-test-query) falls for both, from 0.930 to 0.868 and from 0.964 to 0.924, so the rewrites surface products nobody judged, and part of each fall in nDCG@10 may come from them.
 
-Example `llm-rewrites-on-test` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.4 · pandas 3.1.1 · scikit-learn 1.9.1 · scipy 1.18.1), passing in Edition 2026.11.7:
+The losses aren't one bad query: the numbers of queries that score better and worse are 23, 24 for BM25 and 18, 25 for semantic retrieval. BM25's largest loss is `malachi sled`, the product line the LLM turned into a sofa, at -0.644, and semantic retrieval's is `wall design shelf`, at -0.653.
+
+These train numbers shape expectations and prove nothing. The third and fourth of the chapter's 5 [planned comparisons](#understanding-queries) were fixed in advance, so they go to the test queries whatever the train queries show, and each counts as established if p is below 0.01. Before the test numbers arrive, pick one: does the rewrite help BM25, the weaker retriever, hurt semantic retrieval, the stronger one, or do neither?
+
+Example `llm-rewrites-on-test` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.4 · pandas 3.1.1 · scikit-learn 1.9.1 · scipy 1.18.1), passing in Edition 2026.11.8:
 
 ```python
+"""Scores BM25 and semantic retrieval on the test queries, as typed and rewritten, as the chapter's planned comparisons,
+then repeats both on condensed runs as an exploratory check. The prose's point rests on the "established at 0.01" lines."""
 from lib.lexical import LexicalSearch
 from lib.metrics import evaluate
 from lib.queries import THRESHOLD, condensed, report_planned, rewrite_runs
@@ -654,6 +715,7 @@ from lib.significance import compare
 from lib.store import load_products, load_queries, qrels
 
 queries, judgments = load_queries("test"), qrels("test")             # scored on the human judgments
+# for each retriever, its run on the rewrite, then its run on the query as typed
 runs = rewrite_runs(queries, LexicalSearch(load_products()), SemanticSearch())
 
 print(f"the planned test comparisons, threshold {THRESHOLD:.2f}:")
@@ -666,7 +728,9 @@ for retriever, (rewritten, typed) in runs.items():
     report_planned(name, after["ndcg@10"], before["ndcg@10"])
 
     # Exploratory, never established: the same comparison on condensed runs, which drop unjudged products
+    # rewritten comes first in each pair, as rewrite_runs returns them; the rewrite is "after"
     after, before = (evaluate(condensed(run, judgments), judgments)["ndcg@10"] for run in (rewritten, typed))
+    # confidence = 1 - THRESHOLD: a 99% interval, at the level the planned comparisons use
     result = compare(after, before, confidence=1 - THRESHOLD)
     print(f"{name}, condensed ndcg@10 typed: {before.mean():.3f}")
     print(f"{name}, condensed ndcg@10 rewrite: {after.mean():.3f}")
@@ -716,19 +780,26 @@ llm rewrite, semantic, condensed, exploratory permutation p: 0.002
 llm rewrite, semantic, condensed, exploratory 99% interval: -0.079 to -0.014
 ```
 
-For BM25, judged@10 falls from 0.927 to 0.903, and [nDCG@10](#score-one-ranking) from 0.725 to 0.669, a difference that isn't established ([planned comparisons](#understanding-queries-decisions)).
+For BM25, [nDCG@10](#score-one-ranking) falls from 0.725 to 0.669, a difference that isn't established ([planned comparisons](#understanding-queries-decisions)). Judged@10 falls too, from 0.927 to 0.903.
 
-For semantic retrieval, judged@10 falls from 0.990 to 0.947, and nDCG@10 from 0.830 to 0.749, an established loss, with a permutation p-value that rounds to 0.000.
+Semantic retrieval shows an established loss: nDCG@10 falls from 0.830 to 0.749, with a permutation p-value that rounds to 0.000. Judged@10 falls as well, from 0.990 to 0.947.
 
-Because judged@10 fell, the example repeats both comparisons on [condensed](#unjudged-results) lists, which drop unjudged products before scoring. That check was chosen after seeing the drop, so it is exploratory and can't establish anything. For semantic retrieval, condensed nDCG@10 goes from 0.834 to 0.791, a difference of -0.043 with a permutation p of 0.002 and a 99% interval from -0.079 to -0.014. So the loss doesn't rest on unjudged products alone. For BM25, condensed nDCG@10 goes from 0.778 to 0.725, with a permutation p of 0.044, a question for new queries rather than a finding.
+Because judged@10 fell, we repeat both comparisons on [condensed](#unjudged-results) lists, which drop unjudged products before scoring. That check was chosen after seeing the drop, so it is exploratory and can't establish anything.
 
-If you predicted that the rewrite would help BM25, the test doesn't show it, on these queries with this LLM and prompt: BM25 moved the other way from what Weller et al. and query2doc report, though not by an established amount. If you predicted harm to semantic retrieval, you predicted what Weller et al. found for strong retrievers, here with this model, this prompt and these queries.
+For semantic retrieval, condensed nDCG@10 still falls, from 0.834 to 0.791, a difference of -0.043, a permutation p of 0.002, and a 99% interval from -0.079 to -0.014. So the loss doesn't rest on unjudged products alone.
+
+For BM25, condensed nDCG@10 goes from 0.778 to 0.725, with a permutation p of 0.044.
+
+The rewrite didn't help BM25: it moved the other way from what Weller et al. and query2doc report, though not by an established amount. The rewrite's harm to semantic retrieval is what Weller et al. found for strong retrievers. Both results hold for this model, this prompt and these queries.
 
 The queries that move most show what a rewrite does. Read them with the number of unjudged products in each rewritten top 10, which the metric counts as irrelevant:
 
-Example `rewrite-largest-changes` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.4 · pandas 3.1.1 · scikit-learn 1.9.1 · scipy 1.18.1), passing in Edition 2026.11.7:
+Example `rewrite-largest-changes` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.4 · pandas 3.1.1 · scikit-learn 1.9.1 · scipy 1.18.1), passing in Edition 2026.11.8:
 
 ```python
+"""For each retriever, finds the test queries whose nDCG@10 moves most under the rewrite, and counts the unjudged
+products in each rewritten top 10. The prose's point rests on the largest-loss and largest-gain lines, and on the
+spelling-only check for BM25's largest gain."""
 from bm25s.stopwords import STOPWORDS_EN
 
 from lib.lexical import LexicalSearch
@@ -754,11 +825,13 @@ for retriever, (rewritten, typed) in rewrite_runs(queries, bm25, SemanticSearch(
 
 # BM25's largest gain: score the query with only its spelling fixed (chapter 6's probe), apart from the added words
 query_id = largest[("bm25", "gain")]
+# the spelling probes, keyed by the test query each one corrects
 spelled = probes()[0].dropna(subset=["of_query_id"]).set_index("of_query_id")["query"]
 if query_id in spelled.index:
     for name, text in [("typed", queries.at[query_id, "query"]), ("spelling fixed only", spelled[query_id])]:
         ranking = list(bm25.search(text, k=10).index)
         print(f"bm25, largest gain, ndcg@10 {name}: {ndcg_at_k(ranking, judgments[query_id], 10):.3f}")
+    # bm25s's English stop words, which it drops before matching
     print("bm25 stop words among an and and:", ", ".join(word for word in ["an", "and"] if word in STOPWORDS_EN))
 ```
 
@@ -786,27 +859,32 @@ bm25, largest gain, ndcg@10 spelling fixed only: 0.501
 bm25 stop words among an and and: an, and
 ```
 
-BM25's largest loss, -0.471 for `fold in half table`, comes from `folding table, collapsible table, drop leaf table, gateleg table`, which drops `in half` and adds other kinds of table; 3 of its top 10 are unjudged. Semantic retrieval's largest loss, -0.304 for `pull out sleeper loveseat`, comes from `pull out sleeper loveseat sofa couch convertible sofa sofa bed`, which widens a loveseat to any sofa; 4 of its top 10 are unjudged. BM25's largest gain, +0.159 for `refrigerator with ice an water in door`, comes from `refrigerator with ice and water in door, fridge with door dispenser, refrigerator with external water and ice dispenser`. The rewrite fixes `an`, but with only that fix BM25 scores 0.501, the same as the query as typed, 0.501, because both spellings are stop words. The gain comes from the words the rewrite adds. Semantic retrieval's largest gain is +0.055, for `nautical platters`, rewritten as `nautical platters serving trays seafood platters maritime serving boards`.
+Both largest losses come from a rewrite that drops or broadens what the shopper asked for. BM25's largest loss, -0.471 for `fold in half table`, comes from `folding table, collapsible table, drop leaf table, gateleg table`, which drops `in half` and adds other kinds of table; 3 of its top 10 are unjudged. Semantic retrieval's largest loss, -0.304 for `pull out sleeper loveseat`, comes from `pull out sleeper loveseat sofa couch convertible sofa sofa bed`, which widens a loveseat to any sofa; 4 of its top 10 are unjudged.
 
-**Working rule:** Don't put an LLM rewrite in front of a strong retriever without a planned test on held-out queries. Read the per-query losses for dropped requirements and broadened products, which the prompt's "keep every requirement" doesn't prevent. For the store, semantic retrieval, the ranker to beat, keeps searching the query as typed.
+BM25's largest gain, +0.159 for `refrigerator with ice an water in door`, comes from `refrigerator with ice and water in door, fridge with door dispenser, refrigerator with external water and ice dispenser`. The rewrite fixes `an`, but with only that fix BM25 scores 0.501, the same as the query as typed, 0.501, because both spellings are stop words. The gain comes from the words the rewrite adds. Semantic retrieval's largest gain is +0.055, for `nautical platters`, rewritten as `nautical platters serving trays seafood platters maritime serving boards`.
+
+**Working rule:** Don't put an LLM rewrite in front of a strong retriever without a planned comparison on the test queries. Read the per-query losses for dropped requirements and broadened products, which the prompt's "keep every requirement" doesn't prevent. The store's semantic retrieval, the ranker to beat, keeps searching the query as typed.
 
 ## Search with a hypothetical product (HyDE) {#hyde-hypothetical-products}
 
-Where a [rewrite](#rewrite-queries-with-llm) asks the LLM for a better query, HyDE, short for hypothetical document embeddings, asks it for the document it imagines would answer the query. An encoder embeds that **hypothetical document**, and "This vector identifies a neighborhood in the corpus embedding space" where real documents lie ([Gao et al., 2023](https://aclanthology.org/2023.acl-long.99/)). The made-up details needn't be true: the authors argue that the encoder's "dense bottleneck" filters out "the hallucinations", which is their argument, not a measurement. Their main results use InstructGPT (text-davinci-003), sampling at temperature 0.7. On TREC DL19, a passage-ranking benchmark, HyDE raised the nDCG@10 of Contriever, an embedding model trained without relevance labels, from 44.5 to 61.3 on a 0 to 100 scale (Gao et al., Table 1). With a Contriever fine-tuned on labels, the result depended on the LLM. The smaller ones lowered nDCG@10 slightly, since "less powerful instruction LMs can negatively impact the overall performance of the fine-tuned retriever", while InstructGPT raised it, most on DL19, from 62.1 to 67.4 (Table 4).
+Where a [rewrite](#rewrite-queries-with-llm) asks the LLM for a better query, HyDE, short for hypothetical document embeddings, asks it for the document it imagines would answer the query. An encoder embeds that **hypothetical document**, and the vector lands in a neighborhood of the corpus embedding space where real documents lie ([Gao et al., 2023](https://aclanthology.org/2023.acl-long.99/)). The made-up details needn't be true: the authors argue that the encoder's dense bottleneck filters out hallucinated details, which is their argument, not a measurement. Their main results use InstructGPT (text-davinci-003), sampling at temperature 0.7. On TREC DL19, a passage-ranking benchmark, HyDE raised the nDCG@10 of Contriever, an embedding model trained without relevance labels, from 44.5 to 61.3 on a 0 to 100 scale (Gao et al., Table 1). With a Contriever fine-tuned on labels, the result depended on the LLM. The smaller ones lowered nDCG@10 slightly, since weaker instruction models can hurt the fine-tuned retriever's overall performance, while InstructGPT raised it, most on DL19, from 62.1 to 67.4 (Table 4).
 
 Several expansion methods keep the original query in the mix. HyDE averages the embeddings of the hypothetical documents together with the query's own (Gao et al., section 3.2). **Relevance feedback** improves a query from judgments of its first results, and Rocchio's version moves the query vector toward the results judged relevant while keeping the original vector in its sum ([Manning et al., 2008](https://nlp.stanford.edu/IR-book/html/htmledition/the-rocchio71-algorithm-1.html)). For BM25, query2doc repeats the query five times before the generated passage, so that the original terms keep their weight ([Wang et al., 2023](https://arxiv.org/abs/2303.07678)).
 
-For the store, the HyDE recording holds one hypothetical product per query, which the store's LLM wrote from the query alone: a name, a class and a description, embedded as a product. The example's `hyde` function averages it with the query's embedding and scales the result back to length 1, as [chapter 6 advises after any averaging](#compare-with-cosine-similarity). The two embeddings differ in one way: the query's carries the embedding model's query prompt, and the product's has none, as for every product.
+The HyDE recording holds one hypothetical product per query, which the store's LLM wrote from the query alone: a name, a class and a description, embedded as a product. The `hyde` function here averages it with the query's embedding and scales the result back to length 1, as [chapter 6 advises after any averaging](#compare-with-cosine-similarity). The two embeddings differ in one way: the query's carries the embedding model's query prompt, and the product's has none, as for every product.
 
 ```text
 hyde(query) = (embedding(hypothetical product) + embedding(query)) / 2,  then scaled to length 1
 ```
 
-On the train queries, the example also tries the hypothetical product's embedding alone, and, for BM25, the hypothetical product's text alone and with the query repeated five times before it, as query2doc weights it. Then it makes the last of the chapter's [five planned comparisons](#understanding-queries), which counts as established if p is below 0.01:
+On the train queries, we also try the hypothetical product's embedding alone, and, for BM25, the hypothetical product's text alone and with the query repeated five times before it, as query2doc weights it. Then we run the last of the chapter's [planned comparisons](#understanding-queries):
 
-Example `hyde-train-and-test` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.4 · pandas 3.1.1 · scikit-learn 1.9.1 · scipy 1.18.1), passing in Edition 2026.11.7:
+Example `hyde-train-and-test` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.4 · pandas 3.1.1 · scikit-learn 1.9.1 · scipy 1.18.1), passing in Edition 2026.11.8:
 
 ```python
+"""Scores HyDE, its parts and their combinations with BM25 and semantic retrieval on the train queries, then runs HyDE
+against semantic retrieval as the chapter's last planned comparison on the test queries. The prose's point rests on
+the train lines for the hypothetical product alone and on the planned comparison's lines."""
 import numpy as np
 
 from lib.lexical import LexicalSearch
@@ -816,6 +894,7 @@ from lib.recorded import llm_rewrites
 from lib.semantic import SemanticSearch
 from lib.store import load_products, load_queries, qrels
 
+# the hypothetical products' embeddings come in the table's row order; zip pairs each with its query_id
 table, _, hypothetical_vectors = llm_rewrites()
 hypothetical, vectors = table.set_index("query_id")["hypothetical"], dict(zip(table["query_id"], hypothetical_vectors))
 bm25, semantic = LexicalSearch(load_products()), SemanticSearch()
@@ -883,21 +962,28 @@ hyde, semantic, 99% interval: -0.115 to 0.001
 hyde, semantic, interval agrees: yes
 ```
 
-On the train queries, the hypothetical product alone takes semantic retrieval's nDCG@10 from 0.772 to 0.704, with [judged@10](#score-every-test-query) from 0.964 to 0.890, and the numbers of queries that score better and worse are 13, 29. Averaged with the query, it scores 0.769, with judged@10 of 0.946. BM25 behaves the same way: 0.695 on the query, 0.644 on the hypothetical text alone, and 0.694 with the query repeated five times before it, with judged@10 of 0.930, 0.854 and 0.912. Keeping the query recovers what the hypothetical product loses, and on the train queries, for either retriever, the combination adds nothing over the query alone. Train numbers guide the design; only the planned test comparison is evidence.
+On the train queries, the hypothetical product alone takes semantic retrieval's nDCG@10 from 0.772 to 0.704, and the numbers of queries that score better and worse are 13, 29. [Judged@10](#score-every-test-query) falls with it, from 0.964 to 0.890.
 
-On the test queries, judged@10 goes from 0.990 to 0.970, and HyDE shows no established difference from semantic retrieval ([planned comparisons](#understanding-queries-decisions)). This result belongs to one hypothetical product per query, from a 12-billion-parameter model run at temperature 0. Gao et al. sampled from a far larger LLM, and only that one raised their fine-tuned retriever.
+Averaged with the query, it scores 0.769, with judged@10 of 0.946. BM25 behaves the same way: 0.695 on the query, 0.644 on the hypothetical text alone, and 0.694 with the query repeated five times before it, with judged@10 of 0.930, 0.854 and 0.912.
+
+Keeping the query recovers what the hypothetical product loses, and on the train queries, for either retriever, the combination adds nothing over the query alone. Train numbers guide the design; only the planned test comparison is evidence.
+
+On the test queries, judged@10 goes from 0.990 to 0.970, and HyDE shows no established difference from semantic retrieval ([planned comparisons](#understanding-queries-decisions)). This result belongs to one hypothetical product per query, from the store's 12-billion-parameter model, `gemma4:12b-it-q4_K_M`, run at temperature 0. Gao et al. sampled from a far larger LLM, and only that one raised their fine-tuned retriever.
 
 **Working rule:** When you try HyDE, always average the query's own embedding in. Expect the largest gains with an encoder trained without labels; with a fine-tuned encoder, Gao et al. saw gains only from their largest LLM, and the store, with its model, prompt and encoder, saw none. On an encoder like the store's, which [already beats BM25](#compare-runs-in-a-harness) on these queries, test HyDE before you pay for an LLM call per query. The store doesn't use it.
 
 ## Turn a follow-up into a standalone query {#standalone-follow-ups}
 
-The last gap from [the chapter's opening](#understanding-queries) comes from conversation: a shopper's next message often depends on the last one, as `in white` refines a search for a desk. Retrieval sees one text, so the follow-up has to become a **standalone query**, one that keeps what the shopper still wants. Conversational query rewriting is the task of turning "a context-dependent into a self-contained question with the same answer", and the CANARD dataset holds 40,527 such rewrites ([Elgohary et al., 2019](https://aclanthology.org/D19-1605/)). In TREC CAsT 2019, a conversational search evaluation, people's rewrites beat the best automatic system, "a 35% relative improvement of manual rewrites over the best automatic system" ([Dalton et al., 2020](https://arxiv.org/abs/2003.13624)). Later work with prompted LLMs found that "informative query rewrites can yield substantially improved retrieval performance compared to human rewrites, especially with sparse retrievers" ([Ye et al., 2023](https://arxiv.org/abs/2310.09716)), and in TREC iKAT 2025, CAsT's successor, "Most of the runs leveraged LLMs in their pipelines, for single or multiple query rewriting" ([TREC iKAT 2025 overview](https://trec.nist.gov/pubs/trec34/papers/Overview_ikat.pdf)).
+The last gap from [the chapter's opening](#understanding-queries) comes from conversation: a shopper's next message often depends on the last one, as `in white` refines a search for a desk. Retrieval sees one text, so the follow-up has to become a **standalone query**, one that keeps what the shopper still wants. Conversational query rewriting turns a context-dependent question into a self-contained one with the same answer, and the CANARD dataset holds 40,527 such rewrites ([Elgohary et al., 2019](https://aclanthology.org/D19-1605/)). In TREC CAsT 2019, a conversational search evaluation, people's rewrites beat the best automatic system by 35% in relative terms ([Dalton et al., 2020](https://arxiv.org/abs/2003.13624)). Later work with prompted LLMs found that "informative query rewrites can yield substantially improved retrieval performance compared to human rewrites, especially with sparse retrievers" ([Ye et al., 2023](https://arxiv.org/abs/2310.09716)), and in TREC iKAT 2025, CAsT's successor, most runs used LLMs in their pipelines, for single or multiple query rewriting ([TREC iKAT 2025 overview](https://trec.nist.gov/pubs/trec34/papers/Overview_ikat.pdf)).
 
-WANDS has no conversations, so we wrote the store's conversations for the book: 12 follow-ups, each refining a test query by one attribute, a color, shape, size or finish. The store's LLM, which saw only the two turns, rewrote each to stand alone. For example, after `coat rack for bedroom` comes `something in black`, rewritten as `black coat rack for bedroom`. The judgments grade products for the first query, not for the refined one, so nDCG can't score the follow-up. Instead, count three kinds of product in each top 10: those that keep the refinement, because their `attributes` or text contain the value, such as `black` (the example also prints the count from `attributes` alone); those of the right kind, which the judges graded [exact or partial](#store-data) for the first query; and those that are both. The example compares the follow-up alone, the two turns joined and the standalone query, each embedded as a query, with the first query as a baseline. It adds a filter on the standalone query's top 100 that keeps products stating the value, taking the value from the recorded conversation; a live system would have to extract it from the follow-up.
+WANDS has no conversations, so we wrote the store's conversations for the book: 12 follow-ups, each refining a test query by one attribute, a color, shape, size or finish. The store's LLM, which saw only the two turns, rewrote each to stand alone. For example, after `coat rack for bedroom` comes `something in black`, rewritten as `black coat rack for bedroom`. The judgments grade products for the first query, not for the refined one, so nDCG can't score the follow-up. Instead, count three kinds of product in each top 10: those that keep the refinement, because their `attributes` or text contain the value, such as `black` (the example also prints the count from `attributes` alone); those of the right kind, which the judges graded [exact or partial](#store-data) for the first query; and those that are both. We set the follow-up alone against the two turns joined and against the standalone query, each embedded as a query, with the first query as a baseline. We add a filter on the standalone query's top 100 that keeps products stating the value, taking the value from the recorded conversation; a live system would have to extract it from the follow-up.
 
-Example `follow-up-refinements` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1 · scikit-learn 1.9.1 · scipy 1.18.1), passing in Edition 2026.11.7:
+Example `follow-up-refinements` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1 · scikit-learn 1.9.1 · scipy 1.18.1), passing in Edition 2026.11.8:
 
 ```python
+"""Counts, in each conversation's top 10, the products that keep the refinement and the products of the right kind, for
+the follow-up alone, the joined turns, the standalone query, and the standalone query filtered by the value. The prose's
+point rests on the "refinement in text or attributes" and "right kind with the refinement" lines."""
 import numpy as np
 
 from lib.queries import mentions
@@ -909,6 +995,7 @@ products, judgments, semantic = load_products(), qrels("test"), SemanticSearch()
 attributes, text = products["attributes"], product_text(products)        # the embeddings read only the text
 conversations, vectors = llm_conversations()                 # follow-ups we wrote for the book, not shoppers'
 print("conversations:", len(conversations))
+# row 4, the fifth conversation, which the example prints
 example = conversations.iloc[4]
 print(f"first query: {load_queries().at[example['query_id'], 'query']}")
 print(f"follow-up: {example['follow_up']}")
@@ -916,6 +1003,7 @@ print(f"standalone: {example['standalone']}")
 
 shares, filtered_lengths = {}, []                            # shares: (top 10, measure) -> one share per conversation
 for row, (first, value) in enumerate(zip(conversations["query_id"], conversations["value"])):
+    # the standalone query's top 100, the pool the filter draws from
     standalone = semantic.search_vector(vectors["standalone"][row], k=100).index
     stated = mentions(standalone, value, attributes) | mentions(standalone, value, text)
     tops = {"first query": semantic.search(first, k=10).index,
@@ -927,6 +1015,7 @@ for row, (first, value) in enumerate(zip(conversations["query_id"], conversation
     for name, top in tops.items():
         in_attributes = mentions(top, value, attributes)
         in_either = in_attributes | mentions(top, value, text)
+        # the first query's grade 1 (partial) or 2 (exact); a product with no judgment counts as 0
         right_kind = np.array([judgments[first].get(product_id, 0) >= 1 for product_id in top], dtype=bool)
         for measure, hits in [("refinement in attributes", in_attributes), ("refinement in text or attributes", in_either),
                               ("right kind", right_kind), ("right kind with the refinement", in_either & right_kind)]:
@@ -970,15 +1059,23 @@ standalone against turns joined, more, fewer, same: 5, 4, 3
 conversations the filter leaves with fewer than 10 products: 3
 ```
 
-The follow-up alone keeps the refinement in 0.950 of its top 10, but only 0.058 are the right kind of product. Any form that carries the first query finds the right kind of product: 0.933 for the joined turns and 0.958 for the standalone query. On these conversations, the joined turns and the standalone query both keep the refinement more often than the first query, which never asked for it: 0.383 and 0.392, against 0.200. Counted in `attributes` alone, the shares are lower, 0.208, 0.200 and 0.125, because many products state the value only in their text, which is all the embeddings read. The conclusions below rest on the text-or-attributes count, which can overcount, since a product that mentions `round legs` counts as round.
+The follow-up alone keeps the refinement in 0.950 of its top 10, but only 0.058 are the right kind of product. Any form that carries the first query finds the right kind of product, 0.933 for the joined turns and 0.958 for the standalone query.
 
-The LLM's rewrite does no better than joining the turns: against the joined turns, the standalone query keeps more, fewer or the same number of refined products in 5, 4, 3 conversations, and products of the right kind that also keep the refinement make up 0.350 of the standalone query's top 10s, against 0.325 for the joined turns. The filter raises that share to 0.675, but it leaves 3 conversations with fewer than 10 products. These 12 conversations are ours, not shoppers', so the counts are a diagnosis, not a test.
+On these conversations, the joined turns and the standalone query both keep the refinement more often than the first query, which never asked for it: 0.383 and 0.392, against 0.200.
+
+Counted in `attributes` alone, the shares are lower, 0.208, 0.200 and 0.125, because many products state the value only in their text, which is all the embeddings read. The conclusions below rest on the text-or-attributes count, which can overcount, since a product that mentions `round legs` counts as round.
+
+The LLM's rewrite does no better than joining the turns: against the joined turns, the standalone query keeps more, fewer or the same number of refined products in 5, 4, 3 conversations, and products of the right kind that also keep the refinement make up 0.350 of the standalone query's top 10s, against 0.325 for the joined turns.
+
+The filter raises that share to 0.675, but it leaves 3 conversations with fewer than 10 products.
+
+These 12 conversations are ours, not shoppers', so the counts are a diagnosis, not a test.
 
 **Working rule:** Never search a follow-up alone. Join it to the earlier turns at least, or rewrite it to stand alone. When the refinement names a value the catalog states, extract it and boost or filter on it, and fall back to the unfiltered list when too few products remain. Measure on conversations from your own logs before you trust any of it.
 
 ## What goes wrong in production {#understanding-queries-in-production}
 
-**Every LLM rewrite is a model call on the query's path.** The examples read rewrites recorded once, offline, but a live search box calls the model on every query while the shopper waits. query2doc's authors note that it "requires running inference with LLMs which can be considerably slower" ([Wang et al., 2023](https://arxiv.org/abs/2303.07678)), and the longer query also slows the BM25 search. A rule of thumb, not a measurement: rewrite frequent queries offline and cache the results, and call the model online only for queries where a test shows a gain.
+**Every LLM rewrite is a model call on the query's path.** The examples read rewrites recorded once, offline, but a live search box calls the model on every query while the shopper waits. query2doc's authors note that it needs LLM inference, which can be considerably slower ([Wang et al., 2023](https://arxiv.org/abs/2303.07678)), and the longer query also slows the BM25 search. A rule of thumb, not a measurement: rewrite frequent queries offline and cache the results, and call the model online only for queries where a test shows a gain.
 
 **A rewrite belongs to one model and one prompt.** Another model version or a reworded prompt can change any rewrite. The manifests of the store's recordings hold the model's digest and each prompt verbatim, and a change to either means measuring again.
 
@@ -992,7 +1089,7 @@ The LLM's rewrite does no better than joining the turns: against the joined turn
 
 ## Decisions this chapter made {#understanding-queries-decisions}
 
-Every setting below was chosen on the train queries. The table holds the chapter's 5 planned comparisons on the test queries, one per column: a retriever with one change, against the same retriever on the query as typed. A difference is established when its permutation p-value is below 0.01.
+Every setting below was chosen on the train queries. The table holds the chapter's 5 planned comparisons on the test queries, one per column: a retriever with one change, against the same retriever on the query as typed.
 
 | Measure | [BM25, synonyms](#expand-with-synonyms) | [Semantic, class boost](#boost-predicted-class) | [BM25, LLM rewrite](#rewrite-queries-with-llm) | [Semantic, LLM rewrite](#rewrite-queries-with-llm) | [Semantic, HyDE](#hyde-hypothetical-products) |
 | --- | --- | --- | --- | --- | --- |
@@ -1012,4 +1109,5 @@ Every setting below was chosen on the train queries. The table holds the chapter
 - **LLM rewrites: not used.** The loss for semantic retrieval is established, and BM25's change isn't.
 - **HyDE: not used.** Averaged with the query, it shows no established difference, and the hypothetical product alone loses on train.
 - **Follow-ups: never searched alone.** Joining the turns does about as well as the LLM's standalone query. A filter on the refined value is the next step, and it needs an extracted value and a fallback.
-- **The ranker to beat stays semantic retrieval on the query as typed,** with BM25, unstemmed, as the baseline.
+- **The retrievers take the query as typed:** semantic retrieval stays the ranker to beat, and BM25, unstemmed, stays the baseline.
+- **What the chapter showed:** a change that looks right on the train queries has to clear a planned comparison on the test queries, and none of the changes tested here cleared it as a gain. The LLM's rewrite was the one established difference, and it was a loss for semantic retrieval.

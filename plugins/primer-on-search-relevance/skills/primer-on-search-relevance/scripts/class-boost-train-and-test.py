@@ -1,3 +1,6 @@
+"""Counts the exact train products outside each query's predicted class, scores a class filter and several boosts on
+the train queries, and takes the best boost to the test queries as a planned comparison. The prose's point rests on
+the "exact train products outside the predicted class" line and on the planned comparison's lines."""
 from lib.metrics import evaluate
 from lib.queries import THRESHOLD, class_boost_run, in_class, report_planned, train_classifier
 from lib.semantic import SemanticSearch
@@ -24,6 +27,7 @@ for weight in [None, 0.01, 0.02, 0.05, 0.1, 0.2]:                          # Non
     train_scores[weight] = evaluate(class_boost_run(semantic, train.index, predicted, products, weight), train_judgments)
     name = "filter" if weight is None else f"boost {weight}"
     print(f"train ndcg@10 {name}: {train_scores[weight]['ndcg@10'].mean():.3f}")
+# every weight except None, the filter
 boosts = [weight for weight in train_scores if weight is not None]
 best = max(boosts, key=lambda weight: train_scores[weight]["ndcg@10"].mean())
 for name, weight in [("filter", None), ("best boost", best)]:

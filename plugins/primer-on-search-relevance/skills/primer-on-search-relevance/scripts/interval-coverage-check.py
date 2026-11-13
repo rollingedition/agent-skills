@@ -1,3 +1,4 @@
+"""Draws new samples from the test queries' differences and counts how often a BCa or a t interval covers the known gap, at two levels. The prose's point rests on the four coverage lines and the standard-error line."""
 import numpy as np
 from scipy.stats import bootstrap, ttest_1samp
 
@@ -13,13 +14,16 @@ hybrid = reciprocal_rank_fusion([LexicalSearch(load_products()).run(queries, k=1
 population = (evaluate(hybrid, judgments)["ndcg@10"] - evaluate(semantic, judgments)["ndcg@10"]).to_numpy()
 true_gap = population.mean()            # known, because these differences stand in for every query there is
 
+# a fixed seed, so the coverage counts repeat on every run
 rng, trials = np.random.default_rng(2026), 1000
 print("trials:", trials)
+# binomial standard error of a proportion near 0.95, over the trials
 print(f"standard error of a coverage near 0.95: {(0.95 * 0.05 / trials) ** 0.5:.3f}")
 for level in [0.95, round(1 - 0.05 / 3, 4)]:          # the usual level, and the level for three comparisons
     covered = {"bca": 0, "t": 0}
     for _ in range(trials):
         sample = rng.choice(population, size=len(population))      # another set of 30 queries like these
+        # 1,999 resamples per interval, fewer than SciPy's default, to keep 1,000 trials quick
         bca = bootstrap((sample,), np.mean, confidence_level=level, n_resamples=1999, rng=rng).confidence_interval
         t = ttest_1samp(sample, 0).confidence_interval(level)     # the interval that matches the t-test
         covered["bca"] += bca.low <= true_gap <= bca.high

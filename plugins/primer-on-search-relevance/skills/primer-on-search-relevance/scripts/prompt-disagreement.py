@@ -1,3 +1,4 @@
+"""Counts where the two prompts disagree, their kappa with each other, and how far their kappas with people differ across resampled train queries. The prose's point rests on the 95% interval line, which includes 0 for this recording."""
 import numpy as np
 import pandas as pd
 from sklearn.metrics import cohen_kappa_score
@@ -14,6 +15,7 @@ def kappa_gap(sample):
 
 order = list(LABELS.values())                     # exact, partial, irrelevant
 for pool in ["train", "test"]:
+    # the test pool includes pairs nobody judged, so these counts cover every pair
     pairs = graded_pairs(pool)
     print(f"\n{pool} pairs where the prompts disagree: {(pairs['short'] != pairs['guidelines']).sum()} of {len(pairs)}\n"
           f"kappa between the prompts, {pool} pool: {cohen_kappa_score(pairs['short'], pairs['guidelines']):.3f}")
@@ -25,11 +27,14 @@ for pool in ["train", "test"]:
 pairs, products, queries = graded_pairs("train"), load_products(), load_queries()
 moved = pairs[(pairs["short"] == 1) & (pairs["guidelines"] == 0)]          # partial under one prompt, irrelevant under the other
 print("\n".join(f"moved train pairs judged {label} by people: {(moved['human'] == grade).sum()}" for grade, label in LABELS.items()))
+# the first five queries in order, not a random sample
 for query_id, product_id in moved[["query_id", "product_id"]].drop_duplicates("query_id").head(5).itertuples(index=False):
     print(f"  {queries.at[query_id, 'query']:<28} {products.at[product_id, 'name'][:50]}")
 
+# a fixed seed, so the interval is the same on every run
 rng, train_queries = np.random.default_rng(2026), pairs["query_id"].unique()
 by_query = {query_id: group for query_id, group in pairs.groupby("query_id")}
+# each resample draws train queries with replacement, so some repeat and others are left out
 gaps = [kappa_gap(pd.concat([by_query[query_id] for query_id in rng.choice(train_queries, len(train_queries))]))
         for _ in range(2000)]                                               # resample whole train queries
 low, high = np.percentile(gaps, [2.5, 97.5])

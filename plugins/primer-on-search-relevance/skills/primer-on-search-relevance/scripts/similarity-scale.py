@@ -1,3 +1,4 @@
+"""Finds the test query with the lowest best similarity and the one with the highest 10th similarity, and counts the products above a 0.5 cutoff. The prose's point rests on the two similarity lines and the cutoff counts."""
 import numpy as np
 
 from lib.recorded import embeddings
@@ -20,7 +21,7 @@ print("exact products in its top 10:", sum(judgments.get(product_id) == 2 for pr
 print("second query, highest 10th similarity:", queries[strongest])
 print(f"its 10th similarity: {similarity[strongest, 9]:.3f}")
 
-cutoff = 0.5
+cutoff = 0.5  # an illustrative cutoff; nothing about the model sets it
 print()
 print(f"products above {cutoff} for the first query:", (similarity[weakest] > cutoff).sum())
 print(f"products above {cutoff} for the second query:", (similarity[strongest] > cutoff).sum())

@@ -1,3 +1,4 @@
+"""Writes BM25 by hand over the inverted index at bm25s's defaults, and checks every score and every ranking against bm25s. The prose's point rests on the IDF lines for the word your, the largest score difference, the same-top-100 line and the test nDCG@10 lines."""
 import math
 
 import pandas as pd
@@ -9,6 +10,7 @@ from lib.store import load_products, load_queries, product_text, qrels
 
 products, queries = load_products(), load_queries()
 index, library = InvertedIndex(product_text(products)), LexicalSearch(products)  # by hand, and bm25s as chapter 1 uses it
+# k1 and b at bm25s's defaults
 n, k1, b = len(index.lengths), 1.5, 0.75
 
 
@@ -16,8 +18,10 @@ def bm25(query):
     scores = {}
     for term in tokenize(query):
         df = len(index.postings.get(term, {}))
+        # Lucene's IDF: the 1 in the logarithm keeps it positive, even for a term in most products
         idf = math.log(1 + (n - df + 0.5) / (df + 0.5))
         for product_id, tf in index.postings.get(term, {}).items():
+            # length normalization: a product of average length gets a factor of 1
             length = 1 - b + b * index.lengths[product_id] / index.average_length
             scores[product_id] = scores.get(product_id, 0.0) + idf * tf / (tf + k1 * length)
     return pd.Series(scores, dtype=float)
@@ -25,10 +29,12 @@ def bm25(query):
 
 df = len(index.postings["your"])
 print(f"products with your: {df:,}")
+# Robertson's IDF has no 1 in the logarithm, so it goes negative for a term in over half the products
 print(f"robertson idf of your: {math.log((n - df + 0.5) / (df + 0.5)):.3f}")
 print(f"lucene idf of your: {math.log(1 + (n - df + 0.5) / (df + 0.5)):.3f}")
 for tf in [1, 2, 4, 9]:                                   # one term, in a product of average length
     print(f"term weight at tf {tf}: {tf / (tf + k1):.3f}")
+# products that share no term with a query score 0, as bm25s gives them
 gaps = [(bm25(query).reindex(products.index, fill_value=0) - library.retriever.get_scores(tokenize(query))).abs().max()
         for query in queries["query"]]
 print(f"\nlargest score difference from bm25s: {max(gaps):.0e}")

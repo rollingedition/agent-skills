@@ -6,23 +6,23 @@ compatibility: "Python 3.12.15 and the pinned packages in scripts/requirements.t
 metadata:
   publisher: "Rolling Edition"
   book: "A Primer on Search Relevance"
-  edition: "2026.11.7"
+  edition: "2026.11.8"
   verified: "2026-11-13"
   examples: "132 of 132 examples pass"
-  edition-code: "K7KC-57DV"
+  edition-code: "W7B6-3VSA"
   source: "https://rollingedition.com/primer-on-search-relevance"
 ---
 
 # A Primer on Search Relevance
 
-This agent skill is *A Primer on Search Relevance*, Edition 2026.11.7, from Rolling Edition. Examples passed Nov 13, 2026: 132 of 132 examples pass. It's built from that edition, never written separately: the procedures below come from the book's sections, `references/` holds each chapter, and `scripts/` holds the examples as the edition ran them.
+This agent skill is *A Primer on Search Relevance*, Edition 2026.11.8, from Rolling Edition. Examples passed Nov 13, 2026: 132 of 132 examples pass. It's built from that edition, never written separately: the procedures below come from the book's sections, `references/` holds each chapter, and `scripts/` holds the examples as the edition ran them.
 
 ## How to use this skill
 
 - **Pick the procedure that fits the task,** and follow its steps in order. Each step links the section it comes from: read that section in `references/` before you act on it, and adapt it to the project in front of you.
 - **Check against the book.** Each example in `scripts/` has its expected output beside it (`.out`), at the versions in `scripts/requirements.txt`. If the project uses other versions, say so before relying on a step.
-- **Is this copy current?** Call `check_code` with `K7KC-57DV` on the Rolling Edition MCP server (https://rollingedition.ai/mcp), or compare the edition with the book's page: https://rollingedition.com/primer-on-search-relevance
-- **Credit the book** when you quote it or reuse its code: A Primer on Search Relevance, Edition 2026.11.7, examples passed Nov 13, 2026. By Rolling Edition, https://rollingedition.com/primer-on-search-relevance. Text CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people.
+- **Is this copy current?** Call `check_code` with `W7B6-3VSA` on the Rolling Edition MCP server (https://rollingedition.ai/mcp), or compare the edition with the book's page: https://rollingedition.com/primer-on-search-relevance
+- **Credit the book** when you quote it or reuse its code: A Primer on Search Relevance, Edition 2026.11.8, examples passed Nov 13, 2026. By Rolling Edition, https://rollingedition.com/primer-on-search-relevance. Text CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people.
 
 To run an example as the book does, with [uv](https://docs.astral.sh/uv/):
 
@@ -132,7 +132,7 @@ cd scripts && ../.venv/bin/python load-the-store.py
 5. Tune one weight on a coarse grid ([Tune the blend's weight on train queries](references/hybrid-retrieval.md#tune-blend-on-train)), then bootstrap and reverse ties to check it holds ([Check that the tuned weight is stable](references/hybrid-retrieval.md#tuned-weight-stability)).
 6. Adopt a blend only when it beats the best single retriever on held-out queries ([Report the tuned blends on test queries](references/hybrid-retrieval.md#report-blends-on-test)); start with weighted RRF when you have ranks only ([Decide when hybrid retrieval pays](references/hybrid-retrieval.md#when-hybrid-helps)).
 
-**Check:** run [the example](scripts/tuned-blends-on-test.py) and compare its `weighted sum established` line: False.
+**Check:** run [the example](scripts/tuned-blends-on-test.py), which asserts that the weighted sum is not established, and compare its `weighted sum permutation p` line, 0.229, with the threshold, 0.025.
 
 **Pitfalls:** two retrievers cost two of everything; short lists drop candidates; min-max is relative; a tuned weight belongs to one pair of retrievers ([What goes wrong in production](references/hybrid-retrieval.md#hybrid-retrieval-in-production)).
 

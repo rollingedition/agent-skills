@@ -9,13 +9,11 @@ weighted sum minus semantic: -0.014
 weighted sum permutation p: 0.229
 weighted sum t-test p: 0.221
 weighted sum interval: -0.042 to 0.008
-weighted sum established: False
 weighted rrf alpha chosen on train: 0.6
 weighted rrf ndcg@10: 0.825
 weighted rrf minus semantic: -0.005
 weighted rrf permutation p: 0.650
 weighted rrf t-test p: 0.643
 weighted rrf interval: -0.029 to 0.016
-weighted rrf established: False
 lowest judged@10: 0.980
 highest judged@10: 0.990

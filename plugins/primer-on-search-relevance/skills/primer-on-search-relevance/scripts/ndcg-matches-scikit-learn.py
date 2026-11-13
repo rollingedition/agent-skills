@@ -1,3 +1,4 @@
+"""Compares scikit-learn's ndcg_score with lib.metrics for one query, first with only the top 10 passed and then with every judged product in the row, and then on every test query of three runs. The prose's point rests on the ndcg@10 lines for clear shower curtain and on the 5-product lines."""
 from sklearn.metrics import ndcg_score
 
 from lib.fusion import reciprocal_rank_fusion
@@ -9,9 +10,11 @@ from lib.store import load_products, load_queries, qrels
 
 def sklearn_ndcg(ranking, judgments, k=10):
     """One row for one query: every judged product, plus any retrieved product nobody judged."""
+    # every judged product once, then the retrieved products nobody judged
     products = list(dict.fromkeys([*judgments, *ranking]))
     position = {product_id: i for i, product_id in enumerate(ranking)}
     grades = [[judgments.get(product_id, 0) for product_id in products]]
+    # ndcg_score ranks by score, so the negated position puts rank 1 highest
     scores = [[-position.get(product_id, len(ranking)) for product_id in products]]  # not retrieved: below all
     return ndcg_score(grades, scores, k=k)
 
@@ -22,6 +25,7 @@ semantic = SemanticSearch().run(queries, k=100)
 runs = {"bm25": bm25, "semantic": semantic, "hybrid": reciprocal_rank_fusion([bm25, semantic])}
 
 top = bm25[246][:10]                                                # clear shower curtain
+# scores 10 down to 1 put the top 10 in BM25's order, so the first product scores highest
 naive = ndcg_score([[judgments[246].get(product_id, 0) for product_id in top]], [list(range(10, 0, -1))], k=10)
 print(f"ndcg@10, only the top 10 passed: {naive:.3f}")
 print(f"ndcg@10 from lib.metrics: {ndcg_at_k(top, judgments[246], 10):.3f}")

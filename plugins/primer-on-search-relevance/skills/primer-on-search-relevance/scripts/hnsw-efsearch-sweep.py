@@ -1,8 +1,10 @@
+"""Builds HNSW with M = 32 and sweeps efSearch on the train queries against exact search, printing recall, the worst query and the work per query. The prose's point rests on the efSearch 16 lines and the two smallest-efSearch lines printed after the table."""
 import faiss
 import numpy as np
 
 from lib.recorded import embeddings
 from lib.store import load_products, load_queries
+# EF_SEARCH_GRID runs 16 to 256 in steps of 16; WORST_RECALL is 0.9: at least 9 of the true top 10
 from lib.vectors import EF_SEARCH_GRID, WORST_RECALL, exact_search, hnsw_index, hnsw_search, recall_against_exact
 
 product_ids, product_vectors, query_ids, query_vectors = embeddings()
@@ -19,7 +21,9 @@ exact = exact_search(query_vectors[rows], product_vectors, 10)
 print("\nefSearch  mean recall@10  worst  queries at 0  similarities per query")
 sweep = {}
 for ef_search in EF_SEARCH_GRID:
+    # similarities is faiss's count of the distances each search computed, per query, not a score
     found, similarities = hnsw_search(index, query_vectors[rows], 10, ef_search)
+    # share of exact search's top 10 that the approximate search also found, order ignored
     recall = recall_against_exact(found, exact)
     sweep[ef_search] = (recall, similarities)
     print(f"{ef_search:>8}  {recall.mean():>14.3f}  {recall.min():>5.1f}  {(recall == 0).sum():>12}  {similarities:>22.0f}")
@@ -35,6 +39,7 @@ print(f"smallest efSearch with every query at {WORST_RECALL} or more:", chosen)
 print(f"chosen efSearch, recall@10 against exact: {sweep[chosen][0].mean():.3f}")
 print(f"chosen efSearch, similarities computed per query: {sweep[chosen][1]:.0f}\n")
 
+# the top 3 at the default efSearch, for the query that fails
 found, _ = hnsw_search(index, query_vectors[rows], 3, 16)
 row = list(queries).index("foutains with brick look")
 for rank, (approximate, nearest) in enumerate(zip(found[row], exact[row]), start=1):

@@ -1,3 +1,4 @@
+"""Computes nDCG@10 for one test query step by step, then checks it against `lib.metrics`. The prose's point rests on the `ndcg@10` line and on the library line that prints the same value."""
 import math
 
 from lib.lexical import LexicalSearch
@@ -10,6 +11,7 @@ judgments = qrels("test")[246]                                # {product_id: gra
 ranking = list(LexicalSearch(products).search(query, k=10).index)
 
 grades = [judgments.get(product_id, 0) for product_id in ranking]     # unjudged counts as 0
+# positions count from 1, so the first result is discounted by log2(2) = 1
 dcg = sum(grade / math.log2(position + 1) for position, grade in enumerate(grades, start=1))
 best = sorted(judgments.values(), reverse=True)[:10]                  # the best possible top 10
 ideal = sum(grade / math.log2(position + 1) for position, grade in enumerate(best, start=1))

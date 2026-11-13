@@ -1,3 +1,6 @@
+"""Compares five ways of cutting products into retrievable units under BM25 on the train queries, by precision@5,
+recall@5 and judged@5, and counts how often ties change the top 5. The point rests on the precision@5 and
+recall@5 lines for the whole product and for the sentences with the other fields."""
 import numpy as np
 
 from lib.generation import UnitSearch, sentences
@@ -5,15 +8,21 @@ from lib.metrics import judged_at_k, precision_at_k, recall_at_k
 from lib.store import load_products, load_queries, product_text, qrels
 
 products = load_products()
+# words per description, counted by whitespace
 lengths = products["description"].str.split().str.len()
 print(f"products with no description: {(lengths == 0).sum():,}")
+# the book's sample ends a description it cut with ' ...'
 print(f"descriptions the sample cut short: {products['description'].str.endswith(' ...').sum():,}")
+# empty descriptions are left out of the median
 print(f"description words, median of the others: {lengths[lengths > 0].median():.0f}")
 print(f"product text words per product, most: {product_text(products).str.split().str.len().max()}")
 
 header = products["name"] + ". " + products["product_class"] + ". " + products["category"] + ". "   # the other fields
+# a product with no description keeps one empty piece, so it still gets a unit
 pieces = [(p, piece) for p, text in products["description"].items() for piece in sentences(text) or [""]]
+# the empty placeholders for products with no description don't count
 print(f"description sentences: {sum(piece != '' for _, piece in pieces):,}")
+# 8171 is the chandelier from the support check
 print("last sentence of product 8171:", sentences(products.at[8171, "description"])[-1])
 units = {                                              # unit name: (texts to index, the product each belongs to)
     "whole product": (product_text(products), products.index),

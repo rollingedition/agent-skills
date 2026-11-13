@@ -1,3 +1,4 @@
+"""Runs chapter 3's three planned comparisons, and the exploratory one, under human grades and under each prompt's grades on the test pool. The prose's point rests on the 'verdicts that differ' lines and the count of disagreeing checks."""
 from lib.agreement import PLANNED, PROMPTS, chapter_one_runs, llm_qrels   # PLANNED: chapter 3's, each stage against the last
 from lib.metrics import evaluate
 from lib.significance import compare, verdict
@@ -13,8 +14,10 @@ established, disagreements = {}, {judges: 0 for judges in judgment_sets}
 for judges, judgments in judgment_sets.items():
     ndcg = {ranker: evaluate(run, judgments)["ndcg@10"] for ranker, run in runs.items()}
     for after, before in PLANNED + EXPLORATORY:
+        # the interval's level matches the threshold, so each interval and p-value follow one rule
         result, name = compare(ndcg[after], ndcg[before], confidence=1 - threshold), f"{after} minus {before}, {judges}"
         print(f"\n{name}: {result['mean difference']:.3f}\n{name}, permutation p: {result['permutation p']:.3f}")
+        # the exploratory comparison gets no t-test, interval or verdict
         if (after, before) in PLANNED:
             print(f"{name}, t-test p: {result['t-test p']:.3f}\n{name}, interval: {result['ci low']:.3f} to {result['ci high']:.3f}")
             checks = verdict(result, threshold)

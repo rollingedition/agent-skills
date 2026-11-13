@@ -1,3 +1,6 @@
+"""Scores BM25 and semantic retrieval on the test queries with standard and condensed nDCG@10, and runs exploratory
+tests on the change in the lead. The prose's point rests on the `semantic minus bm25` lines and the `share of bm25's
+gain` line."""
 from lib.lexical import LexicalSearch
 from lib.metrics import evaluate
 from lib.semantic import SemanticSearch
@@ -18,6 +21,7 @@ for name, run in runs.items():
     print(f"{name} condensed ndcg@10: {condensed[name].mean():.3f}")
 
 gain = condensed["bm25"] - standard["bm25"]                   # bm25's change, per test query
+# the scores are indexed by query_id: 133 is outdoor light fixtures, and 46 is beach blue headboard
 print(f"bm25 ndcg@10 for outdoor light fixtures: {standard['bm25'][133]:.3f}")
 print(f"bm25 condensed ndcg@10 for outdoor light fixtures: {condensed['bm25'][133]:.3f}")
 print(f"share of bm25's gain from outdoor light fixtures and beach blue headboard: {gain[[133, 46]].sum() / gain.sum():.3f}")

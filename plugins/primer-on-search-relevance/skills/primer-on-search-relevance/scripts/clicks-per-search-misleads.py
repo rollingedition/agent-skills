@@ -1,3 +1,4 @@
+"""Clicks per search and the share of searches with an exact click, for BM25 and semantic retrieval run as simulated A/B arms, for the navigational and the perfect shopper. The prose's point rests on the two 'reverses between shoppers' lines, read with the means and p-values printed before them."""
 import numpy as np
 from scipy import stats
 
@@ -13,12 +14,14 @@ metrics = {"clicks per search": "clicks", "share of searches with an exact click
 
 significant_leaders = {label: set() for label in metrics}      # rankers ahead at p below 0.05
 for shopper_name, shopper in SHOPPERS.items():                         # navigational, then perfect
+    # one seed per shopper: the two rankers draw from it in turn, bm25 first
     rng = np.random.default_rng(2026)
     searches = {name: simulate_searches(run, judgments, 5_000, rng, shopper) for name, run in arms.items()}
     for label, column in metrics.items():
         means = {name: table[column].mean() for name, table in searches.items()}
         for name, mean in means.items():
             print(f"{shopper_name} shopper, {name} {label}: {mean:.3f}")
+        # exact_click holds True and False; as floats they are 1 and 0 for the t-test
         p = stats.ttest_ind(searches["semantic"][column].astype(float), searches["bm25"][column].astype(float)).pvalue
         print(f"{shopper_name} shopper, {label} p: " + (f"{p:.3f}" if p >= 0.001 else "below 0.001"))
         if p < 0.05:

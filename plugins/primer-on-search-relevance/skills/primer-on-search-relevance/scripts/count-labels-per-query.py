@@ -1,3 +1,5 @@
+"""Counts each query's judgments by label, and groups the queries by their share of exact products. The prose's point
+rests on the `queries with an exact share of 0.1 or less` line and on the histogram below it."""
 import pandas as pd
 
 from lib.store import load_labels, load_queries
@@ -16,6 +18,7 @@ for label, which in [("exact", "lowest"), ("exact", "highest"), ("irrelevant", "
 print("queries with no irrelevant judgment:", (counts["irrelevant"] == 0).sum())
 print("fewest exact products for a query:", counts["exact"].min())
 print("most exact products for a query:", counts["exact"].max())
+# 10 is the size of a top 10: a query with fewer exact products can't fill a perfect top 10 with exact ones
 few = counts["exact"] < 10
 print("queries with fewer than 10 exact products:", few.sum())
 print("test queries with fewer than 10 exact products:", (few & (shares["split"] == "test")).sum())

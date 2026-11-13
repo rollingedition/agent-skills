@@ -1,3 +1,4 @@
+"""Scores BM25 on every test query, keeping each query's top 100, and prints the averages and the spread. The prose's point rests on the mean and judged@10 lines and on the three lowest queries printed after them."""
 from lib.lexical import LexicalSearch
 from lib.metrics import evaluate
 from lib.store import load_products, load_queries, qrels
@@ -22,6 +23,7 @@ print(lowest[["query", "ndcg@10", "judged@10"]].round(3).to_string())
 print("lowest query:", lowest["query"].iloc[0])
 print(f"judged@10 of the lowest query: {lowest['judged@10'].iloc[0]:.3f}")
 print()
+# query 133, outdoor light fixtures, is the second-lowest scorer in the table above
 print(f"judged@10 for {queries.at[133, 'query']}: {scores.at[133, 'judged@10']:.3f}")
 print("bm25 top 5 for", queries.at[133, "query"])
 for product_id in run[133][:5]:

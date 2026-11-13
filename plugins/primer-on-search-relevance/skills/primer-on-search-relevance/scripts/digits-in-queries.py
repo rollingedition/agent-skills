@@ -1,3 +1,4 @@
+"""Scores BM25 and semantic retrieval on each query with a digit, in both splits, and counts the products whose text writes 7qt or 7 qt. The prose's point rests on the three lines that count which ranker wins and the two product counts."""
 import pandas as pd
 
 from lib.lexical import LexicalSearch
@@ -8,6 +9,7 @@ from lib.store import load_products, load_queries, product_text, qrels
 products, queries = load_products(), load_queries()
 with_digit = queries[queries["query"].str.contains(r"\d")]       # both splits: a diagnosis, nothing is tuned
 judgments = {query_id: grades for query_id, grades in qrels().items() if query_id in with_digit.index}
+# each ranker returns its top 100; nDCG@10 scores the first 10 of them
 scores = pd.DataFrame({
     "split": with_digit["split"],
     "bm25": evaluate(LexicalSearch(products).run(with_digit, k=100), judgments)["ndcg@10"],
@@ -19,8 +21,10 @@ print("queries with a digit:", len(scores))
 print(scores.to_string())
 print("semantic better:", (scores["semantic"] > scores["bm25"]).sum())
 print("bm25 better:", (scores["bm25"] > scores["semantic"]).sum())
+# a gap under 0.03 counts as a near tie: the book's choice, not a measured limit
 print("gaps under 0.03:", ((scores["semantic"] - scores["bm25"]).abs() < 0.03).sum())
 
 text = product_text(products).str.lower()
 print("products whose text has the word 7qt:", text.str.contains(r"\b7qt\b").sum())
+# '7 qt', but not '17 qt' or '3.7 qt'
 print("products whose text has 7 qt:", text.str.contains(r"(?<![\d.])7 qt\b").sum())

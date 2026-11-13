@@ -1,3 +1,4 @@
+"""Scores the name and the other fields as separate BM25 indexes and adds the scores, then compares the result with one field on train queries. The prose's point rests on the two train nDCG@10 lines and the line that counts the queries that get better and worse."""
 from collections import Counter
 
 from lib.lexical_by_hand import InvertedIndex
@@ -12,6 +13,7 @@ name, rest = InvertedIndex(products["name"], stem=True), InvertedIndex(others, s
 summed = {}
 for query_id, query in train["query"].items():
     scores = Counter(name.bm25(query)) + Counter(rest.bm25(query))           # each field saturates on its own
+    # the top 100, as in every other run
     summed[query_id] = [product_id for product_id, _ in scores.most_common(100)]
 
 runs = {"one field": one_field.run(train), "fields scored apart": summed}

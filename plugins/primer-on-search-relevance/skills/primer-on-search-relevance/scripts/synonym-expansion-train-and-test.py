@@ -1,3 +1,5 @@
+"""Expands each query with the synonym list, scores BM25 on the train and test queries as typed and expanded, and
+runs the list's planned test comparison. The prose's point rests on the "synonyms, bm25" lines of that comparison."""
 from lib.lexical import LexicalSearch
 from lib.metrics import evaluate
 from lib.queries import PLANNED_TEST_COMPARISONS, SYNONYMS, THRESHOLD, expand, report_planned
@@ -18,6 +20,7 @@ for split in ["train", "test"]:
         print(f"{split} judged@10 {name}: {scores[split, name]['judged@10'].mean():.3f}")
 for query in queries.loc[changed, "query"]:                   # the test queries the list changes
     print(f"test query changed: {query}")
+    # expand returns the query, a space, then the added words, so this slice keeps only the added words
     print(f"words the list adds to it: {expand(query)[len(query) + 1:]}")
 
 change = (scores["train", "expanded"]["ndcg@10"] - scores["train", "typed"]["ndcg@10"]).round(3)
@@ -25,6 +28,7 @@ print(f"train queries better, worse: {(change > 0).sum()}, {(change < 0).sum()}"
 print(f"share of the net train gain from the largest gain: {change.max() / change.sum():.3f}")
 for kind, query_id in [("gain", change.idxmax()), ("loss", change.idxmin())]:
     query = load_queries().at[query_id, "query"]
+    # the same slice: everything after the query and the space that expand puts between them
     added = expand(query)[len(query) + 1:]
     print(f"largest train {kind}: {query}")
     print(f"largest train {kind}, words added: {added}")

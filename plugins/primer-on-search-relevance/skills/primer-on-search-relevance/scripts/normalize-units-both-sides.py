@@ -1,3 +1,5 @@
+"""Counts how the catalog writes inches, prints the terms the tokenizer makes of normalized texts, and scores BM25 on
+every query with a unit under three rules. The prose's point rests on the "bm25 ndcg@10" lines for queries 62 and 482."""
 from lib.lexical import LexicalSearch
 from lib.lexical_by_hand import tokenize
 from lib.metrics import ndcg_at_k
@@ -6,10 +8,13 @@ from lib.store import load_products, load_queries, product_text, qrels
 
 products, queries, judgments = load_products(), load_queries(), qrels()
 text = product_text(products).str.lower()
+# the catalog's spellings of inches after a number; -? also takes a hyphen, as in 48-inch
 for name, unit in [("''", r"''"), ('"', r"\""), ("inch", r"-?inch")]:
     print(f"products that write a number then {name}:", text.str.contains(rf"\d\s*{unit}").sum())
 
+# the first rule, written from the queries' units: lib's inch spellings (inches, inch, in, ") without the two apostrophes; quarts are always included
 first_try = unit_rules([spelling for spelling in INCH_SPELLINGS if spelling != "''"])   # written from queries
+# None leaves the text as written, with no normalization
 rules = {"as written": None, "first try": first_try, "normalized": unit_rules()}
 checks = [("3.7-quart slow cooker", "normalized"), ("3 in 1 sofa bed", "normalized"), ("1 in twin", "normalized"),
           ("48 '' range hood", "first try"), ("48 '' range hood", "normalized")]
@@ -24,6 +29,7 @@ for name, rule in rules.items():
             rewritten[column] = rewritten[column].map(lambda value: normalize_units(value, rule))
     searches[name] = LexicalSearch(rewritten)
 
+# queries with a number and a unit: qt, in, inch or a double quote
 with_units = queries[queries["query"].str.contains(r"\d\s*(?:qt|in\b|inch|\")")]
 print("queries with a unit:", len(with_units))
 print("of them, test queries:", (with_units["split"] == "test").sum())

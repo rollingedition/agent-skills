@@ -1,3 +1,5 @@
+"""Builds the feature table for the train queries, shows one query's candidates, and compares each feature's mean across
+the human grades. The prose's point rests on the mean cross_encoder line for each grade and the mean of each feature by grade."""
 import pandas as pd
 
 from lib.ranking import FEATURES, feature_table
@@ -19,6 +21,7 @@ print(one[["name", "bm25", "similarity", "cross_encoder", "name_match", "attribu
       .head(6).round(3).to_string(index=False))
 print(f"top 6 by cross-encoder, exact: {(one['grade'].head(6) == 2).sum()}")
 
+# grades 2, 1 and 0 are exact, partial and irrelevant; a missing grade means nobody judged the pair
 label = table["grade"].map({2: "exact", 1: "partial", 0: "irrelevant"}).fillna("unjudged")
 means = table[FEATURES].groupby(label).mean().loc[["exact", "partial", "irrelevant", "unjudged"]]
 print("\nmean of each feature by grade, train candidates:")

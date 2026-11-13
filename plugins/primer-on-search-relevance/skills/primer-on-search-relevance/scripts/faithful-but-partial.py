@@ -1,3 +1,6 @@
+"""Reads one recorded answer by hand, checking its claim against the cited product's text and the judges' label,
+then counts the grades of every product the two retrievers' answers cite. The point rests on the partial label,
+the exact count in this answer's context, and the breakdown of cited products."""
 from collections import Counter
 
 from lib.agreement import LABELS
@@ -9,15 +12,18 @@ answers = rag_answers().set_index(["query_id", "context"])
 
 chandelier, claim = 58, "medium-sized"                     # one answer, read by hand
 answer, judged = answers.loc[(chandelier, "semantic")], judgments[chandelier]
+# the answer cites one product, so index 0 is that product
 cited = answer["cited"][0]
 print("query:", queries.at[chandelier, "query"])
 print("answer:", answer["answer"])
 print("cited product:", products.at[cited, "name"])
 print(f"the cited product's text says {claim}:", "yes" if claim in products.at[cited, "description"] else "no")
 print("the judges' label:", LABELS[judged[cited]])
+# grade 2 is exact; a product nobody judged has no grade, so it counts as 0
 print("exact products in this answer's context:", sum(judged.get(p, 0) == 2 for p in answer["context_ids"]))
 
 retrieved = answers.drop("random", level="context")        # every citation from the two retrievers' contexts
+# LABELS names each grade; a product with no grade counts as unjudged
 labels = Counter(LABELS.get(judgments[query_id].get(p), "unjudged")
                  for (query_id, _), cited_ids in retrieved["cited"].items() for p in cited_ids)
 print("cited products, semantic and bm25 contexts:", sum(labels.values()))

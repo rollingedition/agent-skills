@@ -1,3 +1,4 @@
+"""Computes the cosine of one test query and its best product by hand and with scikit-learn, then ranks every query's products by dot product and by cosine after the vectors are shortened. The prose's point rests on the line that counts queries whose top 10 changes."""
 import numpy as np
 from sklearn.metrics.pairwise import cosine_similarity
 
@@ -22,8 +23,11 @@ print(f"cosine from scikit-learn: {cosine_similarity([query], [product])[0, 0]:.
 short_products, short_queries = product_vectors[:, :256], query_vectors[:, :256]
 lengths = np.linalg.norm(short_products, axis=1)
 print(f"shortened product lengths: {lengths.min():.3f} to {lengths.max():.3f}")
+# stable sort: tied scores keep their stored order
 by_dot = np.argsort(-(short_queries @ short_products.T), axis=1, kind="stable")[:, :10]
+# only the products are rescaled: a query's length scales all its scores alike, so it can't change their order
 by_cosine = np.argsort(-(short_queries @ (short_products / lengths[:, None]).T), axis=1, kind="stable")[:, :10]
+# compares the sets: a new order within the same 10 doesn't count
 changed = sum(set(dot_top) != set(cosine_top) for dot_top, cosine_top in zip(by_dot, by_cosine))
 print("queries:", len(query_ids))
 print("queries whose top 10 changes:", changed)

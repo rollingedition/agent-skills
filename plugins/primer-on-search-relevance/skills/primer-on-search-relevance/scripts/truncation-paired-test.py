@@ -1,3 +1,4 @@
+"""Tests the change in nDCG@10 from shortening to 256 and 128 dimensions against the full vectors, on the train queries, with a permutation test, a paired t-test and a bootstrap interval. The prose's point rests on the permutation, interval and effect-size lines for each length."""
 from lib.metrics import evaluate
 from lib.semantic import SemanticSearch
 from lib.significance import compare
@@ -17,6 +18,7 @@ def p_value(p):
 
 full = ndcg(768)
 for dims in [256, 128]:
+    # compare's default interval is 95%
     result = compare(ndcg(dims), full)                    # paired by train query: shortened minus full
     print(f"{dims} vs 768, mean difference in ndcg@10: {result['mean difference']:.3f}")
     print(f"{dims} vs 768, queries worse: {result['losses']}")

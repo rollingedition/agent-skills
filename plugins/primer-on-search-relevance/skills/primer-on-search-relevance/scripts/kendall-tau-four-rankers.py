@@ -1,3 +1,4 @@
+"""Scores the four rankers under human grades, under people's grades on the LLM's pairs as a control, and under each prompt, then counts the swapped pairs for each set. The prose's point rests on the 'swapped under' lines, read with the tau lines beside them."""
 from itertools import combinations
 
 from scipy.stats import kendalltau
@@ -26,11 +27,15 @@ print(f"rankers in the same place under every set of grades: {', '.join(steady) 
 control = means["people on the LLM's pairs"]                              # the same pool, human grades
 for name in ["the short prompt", "the guidelines prompt"]:
     print("\n".join(f"{ranker}, {name} minus people on the LLM's pairs: {means[name][ranker] - control[ranker]:+.3f}" for ranker in runs))
+# people's scores are the reference that every other set of grades is compared with
 pairs, reference = list(combinations(runs, 2)), means["people"]
+# one swap turns a concordant pair into a discordant one, which moves tau by 2 over the number of pairs
 print(f"\npairs of rankers: {len(pairs)}\nchange in tau from one swapped pair: {2 / len(pairs):.3f}")
 for name, scores in list(means.items())[1:]:
     swapped = [(first, second) for first, second in pairs                # discordant: opposite signs
                if (reference[first] - reference[second]) * (scores[first] - scores[second]) < 0]
     print(f"swapped under {name}: {'; '.join(f'{first} and {second}' for first, second in swapped) or 'none'}")
+    # concordant minus discordant, over all pairs; the discordant count is the number of swaps
     print(f"tau by hand, people against {name}: {(len(pairs) - 2 * len(swapped)) / len(pairs):.3f}")
+    # SciPy's tau_b, which handles ties; .statistic is the tau value
     print(f"tau from scipy, people against {name}: {kendalltau(list(reference.values()), list(scores.values())).statistic:.3f}")

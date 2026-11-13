@@ -1,3 +1,4 @@
+"""Scores each test query under BM25 and semantic retrieval, then runs the chapter's one planned comparison on the difference. The verdict rests on the 'permutation test p' and 'established' lines, read against 'threshold'."""
 import pandas as pd
 
 from lib.lexical import LexicalSearch
@@ -14,6 +15,7 @@ baseline = evaluate(LexicalSearch(products).run(queries, k=100), judgments)     
 candidate = evaluate(SemanticSearch().run(queries, k=100), judgments)            # the change
 
 diff = pd.DataFrame({"query": queries["query"], "bm25": baseline["ndcg@10"], "semantic": candidate["ndcg@10"]})
+# rounded to 3 decimals, as lib.significance rounds before it counts wins, losses and ties
 diff["change"] = (diff["semantic"] - diff["bm25"]).round(3)        # one row per test query
 
 print(f"bm25 ndcg@10: {diff['bm25'].mean():.3f}")

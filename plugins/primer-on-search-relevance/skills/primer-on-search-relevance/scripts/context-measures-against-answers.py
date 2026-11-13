@@ -1,3 +1,5 @@
+"""Correlates three context measures with the exact share of each recorded answer, computing Spearman's correlation
+by hand and checking it against SciPy. The point rests on the three Spearman lines and the weakest-measure line."""
 import pandas as pd
 from scipy import stats
 
@@ -18,6 +20,7 @@ ranks, spearman = rows.rank(), {}                                # Spearman: Pea
 for measure in ["recall@5", "precision@5", "context precision@5"]:
     spearman[measure] = ranks[measure].corr(ranks["exact share"])
     print(f"spearman with the exact share, {measure}: {spearman[measure]:.3f}")
+# rounded to nine places, so floating-point differences in the last digits don't count
 matches = all(round(value, 9) == round(stats.spearmanr(rows[measure], rows["exact share"]).statistic, 9)
               for measure, value in spearman.items())
 print("matches scipy's spearmanr:", "yes" if matches else "no")

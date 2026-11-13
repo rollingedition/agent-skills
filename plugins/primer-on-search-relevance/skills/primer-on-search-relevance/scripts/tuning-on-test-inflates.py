@@ -1,3 +1,4 @@
+"""Chooses the blend's semantic weight on train queries and on test queries, then measures how much choosing on the queries you report inflates their score. The prose's point rests on the 'average inflation' line, read against the two 'test ndcg@10' lines."""
 import numpy as np
 
 from lib.blend import best_alpha, scores_by_alpha, weighted_rrf
@@ -12,6 +13,7 @@ per_query = scores_by_alpha(lambda weight: weighted_rrf(bm25, semantic, weight),
 train = per_query.loc[load_queries("train").index]
 test = per_query.loc[load_queries("test").index]
 
+# best_alpha breaks ties toward the smaller weight
 chosen_on_train, chosen_on_test = best_alpha(train), best_alpha(test)
 print("settings tried:", per_query.shape[1])
 print(f"semantic alone, test ndcg@10: {test[1.0].mean():.3f}")
@@ -22,11 +24,14 @@ print(f"test ndcg@10, weight chosen on test: {test[chosen_on_test].mean():.3f}")
 
 # How much does choosing on the queries you report inflate the score? Split the train queries
 # at random, 30 to choose on and 20 to report on, and compare the two ways of choosing.
+# a fixed seed, so the random splits are the same on every run
 rng = np.random.default_rng(2026)
 scores = train.to_numpy()
 inflation = []
 for _ in range(1000):
     order = rng.permutation(len(scores))
+    # the first 30 of the shuffled queries choose the weight; the other 20 report it
     choose, report = scores[order[:30]].mean(axis=0), scores[order[30:]].mean(axis=0)
+    # argmax takes the first of equal means, the smaller weight, as best_alpha does
     inflation.append(report.max() - report[choose.argmax()])
 print(f"average inflation, 20 reported queries: {np.mean(inflation):.3f}")

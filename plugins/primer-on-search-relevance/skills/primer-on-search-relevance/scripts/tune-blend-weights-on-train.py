@@ -1,3 +1,6 @@
+"""Tunes α on the train queries for the weighted sum under three normalizations and for weighted RRF, then compares
+the two blends that go to test with semantic retrieval. The prose's point rests on each setting's best α and nDCG@10,
+on the p-values against tuned min-max, and on the two gains over semantic retrieval."""
 from lib.blend import ALPHAS, NORMALIZATIONS, best_alpha, candidates, scores_by_alpha, weighted_rrf, weighted_sum
 from lib.lexical import LexicalSearch
 from lib.semantic import SemanticSearch
@@ -17,6 +20,7 @@ semantic_alone = per_query["min-max"][1.0]                   # alpha = 1 is sema
 print("alphas tried:", len(ALPHAS))
 print("min-max ndcg@10 for alpha 0 to 1:", " ".join(f"{mean:.3f}" for mean in per_query["min-max"].mean()))
 print(f"semantic alone ndcg@10: {semantic_alone.mean():.3f}")
+# alpha 0.5 is unweighted RRF, chapter 1's fusion
 print(f"unweighted rrf (alpha 0.5) ndcg@10: {per_query['weighted rrf'][0.5].mean():.3f}")
 
 best = {name: frame[best_alpha(frame)] for name, frame in per_query.items()}

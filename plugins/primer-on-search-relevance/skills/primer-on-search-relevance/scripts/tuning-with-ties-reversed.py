@@ -1,3 +1,6 @@
+"""Tunes RRF's k and both blends' α again with BM25's equal scores listed in descending product_id order, to test
+whether the order of ties matters. The prose's point rests on each setting's pair of lines, ties by product_id and
+ties reversed."""
 import numpy as np
 
 from lib.blend import best_alpha, candidates, scores_by_alpha, weighted_rrf, weighted_sum
@@ -13,6 +16,7 @@ class TiesReversed(LexicalSearch):
 
     def search(self, query, k=100):
         scores = super().search(query, k=len(self.ids))           # every match, so the cut at k can move too
+        # highest score first, then descending product_id (np.lexsort sorts by its last key first)
         order = np.lexsort((-scores.index.to_numpy(), -scores.to_numpy()))
         return scores.iloc[order[:k]]
 
@@ -20,6 +24,7 @@ class TiesReversed(LexicalSearch):
 products, queries, judgments = load_products(), load_queries("train"), qrels("train")
 semantic = SemanticSearch()
 semantic_run = semantic.run(queries, k=100)
+# each order runs in turn, against the same semantic run
 for ties, lexical in [("ties by product_id", LexicalSearch(products)), ("ties reversed", TiesReversed(products))]:
     bm25 = lexical.run(queries, k=100)
     by_k = {k: evaluate(reciprocal_rank_fusion([bm25, semantic_run], k=k), judgments)["ndcg@10"].mean()

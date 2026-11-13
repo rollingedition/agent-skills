@@ -1,3 +1,4 @@
+"""Scores BM25 and semantic retrieval on every test query and counts the queries each one is better on. The prose's point that the test set is too small to show a pattern rests on the `better` and `size in inches` lines."""
 from lib.lexical import LexicalSearch
 from lib.metrics import evaluate
 from lib.semantic import SemanticSearch
@@ -11,7 +12,8 @@ for name, scores in [("bm25", bm25), ("semantic", semantic)]:
     print(f"{name} ndcg@10: {scores['ndcg@10'].mean():.3f}")
     print(f"{name} judged@10: {scores['judged@10'].mean():.3f}")
 
-difference = (semantic["ndcg@10"] - bm25["ndcg@10"]).round(3)    # per test query
+# per test query, rounded to three decimals: queries that differ only beyond the third place count as tied
+difference = (semantic["ndcg@10"] - bm25["ndcg@10"]).round(3)
 print("semantic better:", (difference > 0).sum())
 print("bm25 better:", (difference < 0).sum())
 print("tied:", (difference == 0).sum())
