@@ -3,12 +3,12 @@ title: "Language Models from the Ground Up"
 chapter: "Attention"
 chapter_id: attention
 book: language-models-from-the-ground-up
-edition: 2026.11.9
+edition: 2026.11.10
 verified: 2026-11-13
-edition_code: R2B6-RC8X
+edition_code: ZD73-7XB0
 canonical: https://rollingedition.com/language-models-from-the-ground-up/attention
 license: CC BY 4.0
-attribution: "“Attention,” chapter 6 of Language Models from the Ground Up, Edition 2026.11.9, examples passed Nov 13, 2026. By Rolling Edition, https://rollingedition.com/language-models-from-the-ground-up/attention. Text CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Attention,” chapter 6 of Language Models from the Ground Up, Edition 2026.11.10, examples passed Nov 13, 2026. By Rolling Edition, https://rollingedition.com/language-models-from-the-ground-up/attention. Text CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Attention
 
@@ -34,7 +34,7 @@ where Q, K and V hold every position's query, key and value as rows ([Vaswani et
 
 For the store, take four tokens, the start marker and `sled coffee table`, a table whose base is shaped like a sled's runners. Give each a random vector of 8 numbers, as an untrained embedding table would, and compute attention with random 8-by-4 query, key and value matrices:
 
-Example `attention-by-hand` (Python 3.12.15 · numpy 2.5.4), passing in Edition 2026.11.9:
+Example `attention-by-hand` (Python 3.12.15 · numpy 2.5.4), passing in Edition 2026.11.10:
 
 ```python
 import numpy as np
@@ -84,7 +84,7 @@ The mask also makes training efficient. With it, one pass over a text predicts e
 
 For the store, apply the mask to the same four tokens' scores. Then test what the mask is for: replace the last token, `table`, with a different vector, and check whether the output at `coffee` changes, without the mask and with it:
 
-Example `causal-mask` (Python 3.12.15 · numpy 2.5.4), passing in Edition 2026.11.9:
+Example `causal-mask` (Python 3.12.15 · numpy 2.5.4), passing in Edition 2026.11.10:
 
 ```python
 import numpy as np
@@ -145,7 +145,7 @@ Attention's formula divides every score by √d, and the reason is in the dot pr
 
 The store's model makes this concrete: its heads work with queries and keys of 32 numbers. For the store, draw random queries and keys of three sizes, 4, 32 and 256, score each query against 16 keys with and without the division, and report the largest weight in each row, averaged over 1,000 queries. Before you run it, predict the largest weight with 256 numbers and no division:
 
-Example `scaling-matters` (Python 3.12.15 · numpy 2.5.4), passing in Edition 2026.11.9:
+Example `scaling-matters` (Python 3.12.15 · numpy 2.5.4), passing in Edition 2026.11.10:
 
 ```python
 import numpy as np
@@ -186,7 +186,7 @@ Splitting the numbers keeps the cost about the same as one head over all of them
 
 For the store, run two heads over four positions of random vectors, with the causal mask, and compare what the last position attends to in each:
 
-Example `attention-heads` (Python 3.12.15 · numpy 2.5.4), passing in Edition 2026.11.9:
+Example `attention-heads` (Python 3.12.15 · numpy 2.5.4), passing in Edition 2026.11.10:
 
 ```python
 import numpy as np
@@ -235,7 +235,7 @@ Random matrices show the arithmetic; a trained model shows what attention is for
 
 For the store, take a validation product the model never trained on, `double chaise patio furniture cover`, whose description repeats the end of its name. Stop at the description's second `furniture`, where the next token is `cover`. Print the model's probability for `cover`, and each head's three largest weights in the first and last layers. `current:` marks the position being predicted from, `name:` a token in the name, and `description:` an earlier token in the description:
 
-Example `trained-attention` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.9:
+Example `trained-attention` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.10:
 
 ```python
 import numpy as np
@@ -318,7 +318,7 @@ If the model predicts `cover` by copying it from the name, then changing the nam
 
 For the store, keep the description and change the name: the name as sold, the name without `cover`, and the name ending in `set` instead. Print the probabilities of `cover` and `set` at the same position. Then count what follows `this outdoor patio furniture` in the training descriptions, the four tokens a window model would see:
 
-Example `copy-from-the-name` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.9:
+Example `copy-from-the-name` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.10:
 
 ```python
 from lib import transformer
@@ -371,7 +371,7 @@ One text can mislead; an average over many shows a head's habits. One habit wort
 
 For the store, average each head's weight on the previous token over the first 300 validation products, find the head that puts the most there, and compare with an even spread, which puts 1 / (i + 1) on each of the i + 1 tokens position i can see:
 
-Example `previous-token-heads` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.9:
+Example `previous-token-heads` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.10:
 
 ```python
 import numpy as np
@@ -421,7 +421,7 @@ No head is purely a previous-token head; each mixes it with other habits. A head
 
 Attention's promise was to see past [chapter 5](#a-neural-language-model)'s four-token window, which predicts from the current token and the three before it. Whether the store's model does is measurable. For every description token in the first 300 validation products, leaving out the end marker, add up the weight each head puts on tokens 4 or more positions back, the nearest a four-token window can't see, and separately the weight on the two markers, `<s>` and `<sep>`. Average over tokens, heads and layers, and compare with an even spread over the positions each token can see:
 
-Example `attention-reaches-back` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.9:
+Example `attention-reaches-back` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.10:
 
 ```python
 import numpy as np

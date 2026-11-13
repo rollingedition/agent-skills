@@ -3,12 +3,12 @@ title: "Language Models from the Ground Up"
 chapter: "Choosing the next token"
 chapter_id: choosing-the-next-token
 book: language-models-from-the-ground-up
-edition: 2026.11.9
+edition: 2026.11.10
 verified: 2026-11-13
-edition_code: R2B6-RC8X
+edition_code: ZD73-7XB0
 canonical: https://rollingedition.com/language-models-from-the-ground-up/choosing-the-next-token
 license: CC BY 4.0
-attribution: "“Choosing the next token,” chapter 9 of Language Models from the Ground Up, Edition 2026.11.9, examples passed Nov 13, 2026. By Rolling Edition, https://rollingedition.com/language-models-from-the-ground-up/choosing-the-next-token. Text CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Choosing the next token,” chapter 9 of Language Models from the Ground Up, Edition 2026.11.10, examples passed Nov 13, 2026. By Rolling Edition, https://rollingedition.com/language-models-from-the-ground-up/choosing-the-next-token. Text CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Choosing the next token
 
@@ -24,7 +24,7 @@ The simplest decoder is **greedy**: at every step, take the single likeliest tok
 
 For the store, take a product with no description, `front porch welcome sign wall décor`, and decode greedily for up to 60 tokens. Then, for a second product, `5 light light bulb`, print the probability that the description ends before it starts:
 
-Example `greedy-description` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.9:
+Example `greedy-description` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.10:
 
 ```python
 from collections import Counter
@@ -81,7 +81,7 @@ The description also says the sign is `made of natural wood`, which nothing in t
 
 For the store, use a beam of 4 twice. First, complete a search query, `outdoor bar`, by up to 4 tokens, the end of the name included, the way a search box might offer whole phrases. Then write the welcome sign's description, and print the likeliest text overall, and the likeliest per token, its total log-probability divided by its length. Before you run it, predict the welcome sign's likeliest description:
 
-Example `beam-search` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.9:
+Example `beam-search` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.10:
 
 ```python
 import numpy as np
@@ -133,7 +133,7 @@ A temperature below 1 sharpens the distribution, giving more of the probability 
 
 For the store, stop the greedy description after its first few words, and look at the next token's distribution at three temperatures: the three likeliest tokens with their probabilities, how many tokens it takes to cover 90% of the probability, and how much probability falls outside the tokens that cover 90% at temperature 1:
 
-Example `temperature-by-hand` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.9:
+Example `temperature-by-hand` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.10:
 
 ```python
 import numpy as np
@@ -194,7 +194,7 @@ Top-p adapts to the model's confidence, where top-k doesn't. At the point in the
 
 For the store, write 40 tokens of the welcome sign's description four ways, with the same random seed: sampling at temperature 1, sampling at 0.7, top-k with k = 20, and top-p with p = 0.9. Then replay the temperature-1 sample, and list the tokens it drew from outside each step's 90% nucleus, the tokens top-p 0.9 would have cut:
 
-Example `sample-descriptions` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.9:
+Example `sample-descriptions` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.10:
 
 ```python
 import numpy as np
@@ -256,7 +256,7 @@ Single samples show the flavour of each method; measurements show the trade-offs
 
 For the store, draw 20 validation products at random from those with a description, write a description for each with every method, and compare them with the products' real descriptions, cut at the same 60-token limit:
 
-Example `measure-decoding` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.9:
+Example `measure-decoding` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.10:
 
 ```python
 import numpy as np
@@ -349,7 +349,7 @@ What the measures can't say is whether a description is true. A description can 
 
 For the store, go back to the point where the [greedy description](#choose-the-likeliest-token) was about to write `distressed` a second time. Apply the penalty by hand to the next token's logits, check it against `lib.decoding.penalize`, and compare the probabilities before and after. Then write the whole description greedily with the penalty:
 
-Example `repetition-penalty-by-hand` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.9:
+Example `repetition-penalty-by-hand` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.10:
 
 ```python
 import numpy as np
@@ -403,7 +403,7 @@ The [greedy example](#choose-the-likeliest-token) found the model ready to write
 
 For the store, take the bulb, `5 light light bulb`, and decode greedily without a minimum and with one of 10 tokens:
 
-Example `minimum-length` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.9:
+Example `minimum-length` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.10:
 
 ```python
 from lib import decoding, transformer

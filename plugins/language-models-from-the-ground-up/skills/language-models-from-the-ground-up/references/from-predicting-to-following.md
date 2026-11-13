@@ -3,12 +3,12 @@ title: "Language Models from the Ground Up"
 chapter: "From predicting to following instructions"
 chapter_id: from-predicting-to-following
 book: language-models-from-the-ground-up
-edition: 2026.11.9
+edition: 2026.11.10
 verified: 2026-11-13
-edition_code: R2B6-RC8X
+edition_code: ZD73-7XB0
 canonical: https://rollingedition.com/language-models-from-the-ground-up/from-predicting-to-following
 license: CC BY 4.0
-attribution: "“From predicting to following instructions,” chapter 11 of Language Models from the Ground Up, Edition 2026.11.9, examples passed Nov 13, 2026. By Rolling Edition, https://rollingedition.com/language-models-from-the-ground-up/from-predicting-to-following. Text CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“From predicting to following instructions,” chapter 11 of Language Models from the Ground Up, Edition 2026.11.10, examples passed Nov 13, 2026. By Rolling Edition, https://rollingedition.com/language-models-from-the-ground-up/from-predicting-to-following. Text CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # From predicting to following instructions
 
@@ -26,7 +26,7 @@ Both steps of tuning are training, with the loop of [chapter 8](#update-with-ada
 
 For the store, lay a product out as a request and a response, its name as the request and its description as the response, as the store's model already reads it. Compute the store's model's loss over every token, and over the response's tokens only:
 
-Example `instruction-loss-by-hand` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.9:
+Example `instruction-loss-by-hand` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.10:
 
 ```python
 import numpy as np
@@ -68,7 +68,7 @@ loss = −log σ(margin)
 
 with σ the logistic function from [chapter 4](#learn-by-predicting-neighbours) ([Rafailov et al., 2023](https://arxiv.org/abs/2305.18290), equation 7). For the store, follow the arithmetic on made-up log-probabilities, with β = 0.1:
 
-Example `dpo-loss-by-hand` (Python 3.12.15 · numpy 2.5.4), passing in Edition 2026.11.9:
+Example `dpo-loss-by-hand` (Python 3.12.15 · numpy 2.5.4), passing in Edition 2026.11.10:
 
 ```python
 import numpy as np
@@ -106,7 +106,7 @@ The store needs descriptions for products that have none, the job [chapter 9](#c
 
 For the store, read what each model wrote for [chapter 9](#choosing-the-next-token)'s product, `front porch welcome sign wall décor`, and measure all 8 products the recording described, each without a description to draw on:
 
-Example `base-and-tuned` (Python 3.12.15), passing in Edition 2026.11.9:
+Example `base-and-tuned` (Python 3.12.15), passing in Edition 2026.11.10:
 
 ```python
 from collections import Counter
@@ -160,7 +160,7 @@ The tuned model answered in the [previous section](#ask-base-and-tuned) because 
 
 For the store, read exactly what the tuned model was given with its template, and compare its reply with the reply to the same request given as plain text:
 
-Example `chat-template` (Python 3.12.15), passing in Edition 2026.11.9:
+Example `chat-template` (Python 3.12.15), passing in Edition 2026.11.10:
 
 ```python
 from lib import recorded
@@ -202,7 +202,7 @@ Checking the answers takes a list of material words, from `wood` and `metal` to 
 
 For the store, class each model's answers for 40 products drawn at random, split by whether the product's data names a material. Before you run it, predict whether the tuned model makes up fewer materials than the base model where the data names none:
 
-Example `made-up-materials` (Python 3.12.15), passing in Edition 2026.11.9:
+Example `made-up-materials` (Python 3.12.15), passing in Edition 2026.11.10:
 
 ```python
 from collections import Counter
@@ -269,7 +269,7 @@ the exponential of the average log-probability, the same average that perplexity
 
 For the store, compare the tuned model's confidence in its supported and made-up answers, and count how many of each a threshold of 0.5 per token would keep:
 
-Example `answer-confidence` (Python 3.12.15 · numpy 2.5.4), passing in Edition 2026.11.9:
+Example `answer-confidence` (Python 3.12.15 · numpy 2.5.4), passing in Edition 2026.11.10:
 
 ```python
 import numpy as np
@@ -311,7 +311,7 @@ The [material question](#measure-made-up-details) gave the model one product at 
 
 For the store, give the tuned model, SmolLM2-360M-Instruct, 10 product listings, the asked product among them, first, in the middle or last, and ask what that product is made of. Count the answers that name only its own materials, as `lib.claims` checks them, for the 14 products whose data names one:
 
-Example `answer-position` (Python 3.12.15), passing in Edition 2026.11.9:
+Example `answer-position` (Python 3.12.15), passing in Edition 2026.11.10:
 
 ```python
 from collections import defaultdict
@@ -352,7 +352,7 @@ Full fine-tuning updates every weight, which for a model of hundreds of millions
 
 For the store, count what LoRA would train on SmolLM2-360M, adapting the query and value weights of every layer, at two ranks, against full fine-tuning. The query weights map 960 numbers to 960; the value weights, because keys and values are grouped, map 960 to 320:
 
-Example `lora-parameters` (Python 3.12.15), passing in Edition 2026.11.9:
+Example `lora-parameters` (Python 3.12.15), passing in Edition 2026.11.10:
 
 ```python
 from lib import open_model
@@ -389,7 +389,7 @@ This book doesn't run the fine-tuning: our judgement is that even LoRA, over the
 
 This book has scored every model the same way on names, from [chapter 3](#counting-further-back) on: perplexity per token of the store's tokenizer, on the store's validation names. The test names were kept aside for one final comparison, so that choices made by looking at the validation names, such as the kept epochs and the mixing shares, couldn't flatter the results. Now they're used. For the store, score the five models that were chosen between on the 4,281 test names, with the mixing shares chosen on validation:
 
-Example `test-names` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.9:
+Example `test-names` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.10:
 
 ```python
 import numpy as np

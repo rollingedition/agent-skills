@@ -6,23 +6,23 @@ compatibility: "The book's examples ran on Python 3.12.15 and the versions its p
 metadata:
   publisher: "Rolling Edition"
   book: "Language Models from the Ground Up"
-  edition: "2026.11.9"
+  edition: "2026.11.10"
   verified: "2026-11-13"
   examples: "86 of 86 examples pass"
-  edition-code: "R2B6-RC8X"
+  edition-code: "ZD73-7XB0"
   source: "https://rollingedition.com/language-models-from-the-ground-up"
 ---
 
 # Language Models from the Ground Up
 
-This agent skill is *Language Models from the Ground Up*, Edition 2026.11.9, from Rolling Edition. Examples passed Nov 13, 2026: 86 of 86 examples pass. It's built from that edition, never written separately: the procedures below come from the book's sections, and each step links to its section on rollingedition.com, whose page has the section's text and its examples, with their code and output.
+This agent skill is *Language Models from the Ground Up*, Edition 2026.11.10, from Rolling Edition. Examples passed Nov 13, 2026: 86 of 86 examples pass. It's built from that edition, never written separately: the procedures below come from the book's sections, and each step links to its section on rollingedition.com, whose page has the section's text and its examples, with their code and output.
 
 ## How to use this skill
 
 - **Pick the procedure that fits the task,** and follow its steps in order. Each step links the section it comes from: read that section before you act on it, with the Rolling Edition MCP server's `get_section` (book `language-models-from-the-ground-up` and the section's ID, the link's last part) or on its page, and adapt it to the project in front of you.
 - **Check against the book.** An example's section shows its code, the versions it ran on and its output. If the project uses other versions, say so before relying on a step.
-- **Is this copy current?** Call `check_code` with `R2B6-RC8X` on the Rolling Edition MCP server (https://rollingedition.ai/mcp), or compare the edition with the book's page: https://rollingedition.com/language-models-from-the-ground-up
-- **Credit the book** when you quote it or reuse its code: Language Models from the Ground Up, Edition 2026.11.9, examples passed Nov 13, 2026. By Rolling Edition, https://rollingedition.com/language-models-from-the-ground-up. Text CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people.
+- **Is this copy current?** Call `check_code` with `ZD73-7XB0` on the Rolling Edition MCP server (https://rollingedition.ai/mcp), or compare the edition with the book's page: https://rollingedition.com/language-models-from-the-ground-up
+- **Credit the book** when you quote it or reuse its code: Language Models from the Ground Up, Edition 2026.11.10, examples passed Nov 13, 2026. By Rolling Edition, https://rollingedition.com/language-models-from-the-ground-up. Text CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people.
 
 The full skill, with the chapters beside it and every example as a script to run at the book's pinned versions, is the `language-models-from-the-ground-up` plugin and the zip on the book's page at rollingedition.ai.
 

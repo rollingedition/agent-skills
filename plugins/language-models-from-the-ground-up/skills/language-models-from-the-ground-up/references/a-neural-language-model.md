@@ -3,12 +3,12 @@ title: "Language Models from the Ground Up"
 chapter: "A neural language model"
 chapter_id: a-neural-language-model
 book: language-models-from-the-ground-up
-edition: 2026.11.9
+edition: 2026.11.10
 verified: 2026-11-13
-edition_code: R2B6-RC8X
+edition_code: ZD73-7XB0
 canonical: https://rollingedition.com/language-models-from-the-ground-up/a-neural-language-model
 license: CC BY 4.0
-attribution: "“A neural language model,” chapter 5 of Language Models from the Ground Up, Edition 2026.11.9, examples passed Nov 13, 2026. By Rolling Edition, https://rollingedition.com/language-models-from-the-ground-up/a-neural-language-model. Text CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“A neural language model,” chapter 5 of Language Models from the Ground Up, Edition 2026.11.10, examples passed Nov 13, 2026. By Rolling Edition, https://rollingedition.com/language-models-from-the-ground-up/a-neural-language-model. Text CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # A neural language model
 
@@ -28,7 +28,7 @@ P(token i) = exp(zᵢ) / Σⱼ exp(zⱼ)
 
 For the store, take the model the book trains in this chapter, load its weights, and run one prediction by hand: the next token after a name that starts `patio bar`. Each line of the example is one of the formulas above:
 
-Example `window-model-by-hand` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.9:
+Example `window-model-by-hand` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.10:
 
 ```python
 import numpy as np
@@ -89,7 +89,7 @@ A model with random weights predicts badly; training adjusts the weights to pred
 
 Backpropagation code often goes subtly wrong, so check it against a slower method that can't: nudge one weight up and down by a tiny amount, measure how the loss moves, and compare. For the store's model that would mean more than a million nudges, so check every parameter of the tiny one:
 
-Example `gradients-by-hand` (Python 3.12.15 · numpy 2.5.4), passing in Edition 2026.11.9:
+Example `gradients-by-hand` (Python 3.12.15 · numpy 2.5.4), passing in Edition 2026.11.10:
 
 ```python
 import numpy as np
@@ -132,7 +132,7 @@ With gradients in hand, training is a loop. **Gradient descent** moves every wei
 
 For the store's tiny model from the [previous section](#compute-gradients), take three (window, next token) examples, compute the average loss, and take twenty steps of gradient descent with a step size of 0.5, using `lib.tinynet`'s gradients:
 
-Example `gradient-descent-by-hand` (Python 3.12.15 · numpy 2.5.4), passing in Edition 2026.11.9:
+Example `gradient-descent-by-hand` (Python 3.12.15 · numpy 2.5.4), passing in Edition 2026.11.10:
 
 ```python
 import numpy as np
@@ -187,7 +187,7 @@ The optimizer is **Adam**, a refinement of gradient descent ([Kingma and Ba, 201
 
 Training depends on the machine's floating-point arithmetic, which varies slightly between processors, so it runs once and the book's examples read the weights it saved, as they read every result that depends on the machine. The examples never import PyTorch: `lib.neural` recomputes the model's forward pass in NumPy, from those weights. That only works if the NumPy version computes what PyTorch computed, so the training script saved PyTorch's own logits for 64 validation contexts, and the next example compares:
 
-Example `same-as-pytorch` (Python 3.12.15 · numpy 2.5.4), passing in Edition 2026.11.9:
+Example `same-as-pytorch` (Python 3.12.15 · numpy 2.5.4), passing in Edition 2026.11.10:
 
 ```python
 import numpy as np
@@ -223,7 +223,7 @@ A model with 1.4 million parameters, trained on a few hundred thousand tokens, c
 
 For the store, read the training script's record of both perplexities after each of its twelve epochs:
 
-Example `training-curve` (Python 3.12.15), passing in Edition 2026.11.9:
+Example `training-curve` (Python 3.12.15), passing in Edition 2026.11.10:
 
 ```python
 import json
@@ -272,7 +272,7 @@ The gap between the two curves is the model memorizing. It grows every epoch, be
 
 The real test is the one every model in this book takes: perplexity per token on the validation names, against the [4-gram baseline](#the-baseline). Before you run the comparison, predict which model wins. The neural model can relate similar contexts, which the 4-gram can't; the 4-gram has exact counts for every context it has seen.
 
-Example `neural-vs-baseline` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.9:
+Example `neural-vs-baseline` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.10:
 
 ```python
 from lib import neural
@@ -295,7 +295,7 @@ The window model's validation perplexity is 36.4, against the baseline's 23.1. T
 
 To see where, split the validation tokens by whether their three-token context occurs in the training names, and score both models on each part:
 
-Example `seen-and-unseen-contexts` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.9:
+Example `seen-and-unseen-contexts` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.10:
 
 ```python
 import math
@@ -341,7 +341,7 @@ A model that's worse on average can still be useful, if its mistakes differ from
 
 For the store, score the validation names with the network's share of the mix at 0, 0.2, 0.3, 0.5 and 1, where 0 is the counted model alone and 1 is the network alone:
 
-Example `mix-neural-and-counts` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.9:
+Example `mix-neural-and-counts` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.10:
 
 ```python
 import math
@@ -384,7 +384,7 @@ If the network overfits because it learned from too little text, the obvious fix
 
 For the store, compare the two recorded models on the validation names:
 
-Example `more-text-of-another-kind` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.9:
+Example `more-text-of-another-kind` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.10:
 
 ```python
 import json
@@ -432,7 +432,7 @@ The network lost on average, including on contexts the training names lack, but 
 
 For the store, ask the network for its three likeliest next tokens after five prefixes, each treated as the start of a name, and compare a few of its embeddings:
 
-Example `neural-autocomplete` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.9:
+Example `neural-autocomplete` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.10:
 
 ```python
 import numpy as np

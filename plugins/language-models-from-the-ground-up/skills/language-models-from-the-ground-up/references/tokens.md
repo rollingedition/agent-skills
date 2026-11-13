@@ -3,12 +3,12 @@ title: "Language Models from the Ground Up"
 chapter: "Tokens"
 chapter_id: tokens
 book: language-models-from-the-ground-up
-edition: 2026.11.9
+edition: 2026.11.10
 verified: 2026-11-13
-edition_code: R2B6-RC8X
+edition_code: ZD73-7XB0
 canonical: https://rollingedition.com/language-models-from-the-ground-up/tokens
 license: CC BY 4.0
-attribution: "“Tokens,” chapter 2 of Language Models from the Ground Up, Edition 2026.11.9, examples passed Nov 13, 2026. By Rolling Edition, https://rollingedition.com/language-models-from-the-ground-up/tokens. Text CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Tokens,” chapter 2 of Language Models from the Ground Up, Edition 2026.11.10, examples passed Nov 13, 2026. By Rolling Edition, https://rollingedition.com/language-models-from-the-ground-up/tokens. Text CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Tokens
 
@@ -24,7 +24,7 @@ Cutting text into words gives a model tokens that carry meaning, which is why [c
 
 For the store, count how many words in the validation names never appear in the training names. The validation names are the 10% of the store's products that no model learns from, kept aside to show how a model handles text it hasn't seen:
 
-Example `unseen-words` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.9:
+Example `unseen-words` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.10:
 
 ```python
 from collections import Counter
@@ -69,7 +69,7 @@ Going to the other extreme fixes the gap. If every character is a token, the voc
 
 For the store, compare the training names' characters with the validation names', and count tokens both ways:
 
-Example `character-tokens` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.9:
+Example `character-tokens` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.10:
 
 ```python
 import unicodedata
@@ -123,7 +123,7 @@ The list of merges, in the order they were learned, is the tokenizer. To encode 
 
 For the store, run the algorithm by hand on the training names for eight merges, written out in full so every step is visible:
 
-Example `merge-pairs-by-hand` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.9:
+Example `merge-pairs-by-hand` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.10:
 
 ```python
 from collections import Counter
@@ -184,7 +184,7 @@ The algorithm in the [previous section](#merge-frequent-pairs) recounts every pa
 
 For the store, learn 4,000 merges from the training split's names and descriptions together, since the book's models will learn from both, and encode two names and three pairs of words:
 
-Example `store-tokenizer` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.9:
+Example `store-tokenizer` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.10:
 
 ```python
 from collections import Counter
@@ -228,7 +228,7 @@ The number of merges sets the vocabulary size, and it's the one real choice in a
 
 For the store, learn 16,000 merges once, and use the first 0, 1,000, 2,000, 4,000, 8,000 and 16,000 of them as six tokenizers; the first k merges of a longer run are exactly the merges a k-merge run would learn. For each, count how many different tokens the training text uses, how many tokens each validation word becomes, and what share of the tokens appear fewer than 20 times in the training text:
 
-Example `vocabulary-size` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.9:
+Example `vocabulary-size` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.10:
 
 ```python
 from collections import Counter
@@ -287,7 +287,7 @@ Open language models ship their tokenizer as a file beside their weights, and re
 
 For the store, encode three product names with SmolLM2's tokenizer and with the store's, and count tokens per validation name each way:
 
-Example `smollm2-tokens` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1 · tokenizers 0.23.3), passing in Edition 2026.11.9:
+Example `smollm2-tokens` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1 · tokenizers 0.23.3), passing in Edition 2026.11.10:
 
 ```python
 from tokenizers import Tokenizer
@@ -351,7 +351,7 @@ SmolLM2's tokenizer file looks like a black box until you see that it holds the 
 
 For the store, take the pre-tokenizer's pieces from the library, apply the merges by hand, earliest-learned first, as in the [store's tokenizer](#train-the-store-tokenizer), and compare the result with the library's:
 
-Example `merges-by-hand` (Python 3.12.15 · tokenizers 0.23.3), passing in Edition 2026.11.9:
+Example `merges-by-hand` (Python 3.12.15 · tokenizers 0.23.3), passing in Edition 2026.11.10:
 
 ```python
 import json

@@ -3,12 +3,12 @@ title: "Language Models from the Ground Up"
 chapter: "Words as vectors"
 chapter_id: words-as-vectors
 book: language-models-from-the-ground-up
-edition: 2026.11.9
+edition: 2026.11.10
 verified: 2026-11-13
-edition_code: R2B6-RC8X
+edition_code: ZD73-7XB0
 canonical: https://rollingedition.com/language-models-from-the-ground-up/words-as-vectors
 license: CC BY 4.0
-attribution: "“Words as vectors,” chapter 4 of Language Models from the Ground Up, Edition 2026.11.9, examples passed Nov 13, 2026. By Rolling Edition, https://rollingedition.com/language-models-from-the-ground-up/words-as-vectors. Text CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Words as vectors,” chapter 4 of Language Models from the Ground Up, Edition 2026.11.10, examples passed Nov 13, 2026. By Rolling Edition, https://rollingedition.com/language-models-from-the-ground-up/words-as-vectors. Text CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Words as vectors
 
@@ -24,7 +24,7 @@ Every model so far has treated tokens as names: `patio` is one entry in a table 
 
 For the store, give the 2,000 most frequent tokens of its training text one-hot vectors, and compare three pairs. Keeping only the most frequent tokens, about half of the store tokenizer's vocabulary, holds every matrix in this chapter small enough to compute in seconds:
 
-Example `one-hot-vectors` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.9:
+Example `one-hot-vectors` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.10:
 
 ```python
 import numpy as np
@@ -74,7 +74,7 @@ The way out is to describe a word by the company it keeps. Two words that appear
 
 For the store, count co-occurrences in the training split's names and descriptions, and list what appears most often near `patio`:
 
-Example `cooccurrence-counts` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.9:
+Example `cooccurrence-counts` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.10:
 
 ```python
 import numpy as np
@@ -128,7 +128,7 @@ return np.where(counts > 0, np.maximum(pmi, 0), 0.0)
 
 For the store, reweight the counts with PPMI and list `patio`'s strongest neighbours again:
 
-Example `ppmi-neighbours` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.9:
+Example `ppmi-neighbours` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.10:
 
 ```python
 import numpy as np
@@ -168,7 +168,7 @@ A [PPMI vector](#weigh-by-surprise) of 2,000 numbers, mostly zeros, has a lot of
 
 For the store, compute the 64-number embeddings and list each of six tokens' nearest neighbours:
 
-Example `svd-neighbours` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.9:
+Example `svd-neighbours` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.10:
 
 ```python
 from lib.vectors import DIMENSIONS, nearest, svd_vectors
@@ -220,7 +220,7 @@ np.add.at(outputs, noise, -rate * fake[:, :, None] * v[:, None, :])     # move e
 
 For the store, take one real pair, `patio` and `umbrella`, and two noise tokens, `sofa` and `48`. Start the centre vectors at small random values and the neighbour vectors at zero, as `lib.skipgram.train` does, and apply three updates:
 
-Example `skipgram-step` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.9:
+Example `skipgram-step` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.10:
 
 ```python
 import numpy as np
@@ -271,7 +271,7 @@ Training skip-gram on all the store's training text runs millions of updates, an
 
 For the store, read the recorded vectors and list the same six tokens' neighbours as the [SVD's](#compress-into-dense-vectors):
 
-Example `skipgram-neighbours` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.9:
+Example `skipgram-neighbours` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.10:
 
 ```python
 import json
@@ -318,7 +318,7 @@ Embeddings famously support analogies by arithmetic: if the difference between `
 
 For the store, try three analogies with the [skip-gram vectors](#compare-learned-and-counted), and list the nearest neighbours of three tokens they raise:
 
-Example `analogies` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.9:
+Example `analogies` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.10:
 
 ```python
 import json
@@ -367,7 +367,7 @@ Embeddings for tokens give, with one more step, embeddings for whole texts: aver
 
 For the store, average the skip-gram vectors of every training name, and find the names closest to two queries, one of them that problem prefix, `outdoor bar`:
 
-Example `name-vectors` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.9:
+Example `name-vectors` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.10:
 
 ```python
 import json

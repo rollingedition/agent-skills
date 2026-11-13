@@ -3,12 +3,12 @@ title: "Language Models from the Ground Up"
 chapter: "Training a small model"
 chapter_id: training-a-small-model
 book: language-models-from-the-ground-up
-edition: 2026.11.9
+edition: 2026.11.10
 verified: 2026-11-13
-edition_code: R2B6-RC8X
+edition_code: ZD73-7XB0
 canonical: https://rollingedition.com/language-models-from-the-ground-up/training-a-small-model
 license: CC BY 4.0
-attribution: "“Training a small model,” chapter 8 of Language Models from the Ground Up, Edition 2026.11.9, examples passed Nov 13, 2026. By Rolling Edition, https://rollingedition.com/language-models-from-the-ground-up/training-a-small-model. Text CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Training a small model,” chapter 8 of Language Models from the Ground Up, Edition 2026.11.10, examples passed Nov 13, 2026. By Rolling Edition, https://rollingedition.com/language-models-from-the-ground-up/training-a-small-model. Text CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Training a small model
 
@@ -26,7 +26,7 @@ Each text then gives the model one prediction per position. The **inputs** are i
 
 For the store, tokenize every training product, shuffle the texts, and build one epoch's batches the way the training script does, measuring how much of each batch is padding:
 
-Example `training-batches` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.9:
+Example `training-batches` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.10:
 
 ```python
 import math
@@ -120,7 +120,7 @@ where progress runs from 0 at the end of the warm-up to 1 at the last step. Larg
 
 For the store, compute the schedule by hand from the recorded settings, and compare it with the step sizes the training script saved as it ran, every tenth step:
 
-Example `learning-rate-schedule` (Python 3.12.15 · numpy 2.5.4), passing in Edition 2026.11.9:
+Example `learning-rate-schedule` (Python 3.12.15 · numpy 2.5.4), passing in Edition 2026.11.10:
 
 ```python
 import json
@@ -176,7 +176,7 @@ With its batches, updates and schedule set, the store's model trained for 16 epo
 
 For the store, read the recorded curves as [perplexity](#score-with-perplexity) per token:
 
-Example `transformer-training-curve` (Python 3.12.15 · numpy 2.5.4), passing in Edition 2026.11.9:
+Example `transformer-training-curve` (Python 3.12.15 · numpy 2.5.4), passing in Edition 2026.11.10:
 
 ```python
 import json
@@ -242,7 +242,7 @@ The comparison has to count the same predictions. The 4-gram predicts each name'
 
 Before you run it, predict whether the transformer, alone, beats the counted baseline that [chapter 5](#a-neural-language-model)'s window model couldn't. Then score both models, and mixtures of the two, as [chapter 5](#mix-with-the-counts) did:
 
-Example `transformer-on-names` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.9:
+Example `transformer-on-names` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.10:
 
 ```python
 import numpy as np
@@ -291,7 +291,7 @@ The [names comparison](#compare-on-names) favours counting, because names are sh
 
 For the store, fit that 4-gram on every training text, and score both models, and an even mix, on the descriptions of the first 500 validation products, leaving out the texts cut at the length limit and the products with no description. Then split the tokens, as [chapter 5](#compare-with-the-baseline) did, by whether their three-token context occurs in the training texts:
 
-Example `transformer-on-descriptions` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.9:
+Example `transformer-on-descriptions` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.10:
 
 ```python
 import numpy as np
@@ -370,7 +370,7 @@ So the training script recorded seven cheaper runs beside the main one, each cha
 
 The numbers are the validation perplexities the script recorded, at each run's best epoch and at its last. For the store, read all eight runs:
 
-Example `width-data-and-steps` (Python 3.12.15 · numpy 2.5.4), passing in Edition 2026.11.9:
+Example `width-data-and-steps` (Python 3.12.15 · numpy 2.5.4), passing in Edition 2026.11.10:
 
 ```python
 import json
@@ -477,7 +477,7 @@ Averages say how good a model is; the search box shows what that means to a shop
 
 For the store, ask the transformer, and the half-and-half mix the [names comparison](#compare-on-names) favoured, for their three likeliest next tokens after the same five prefixes, each treated as the start of a name. A suggestion of `<sep>` means the model expects the name to end there:
 
-Example `transformer-autocomplete` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.9:
+Example `transformer-autocomplete` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.10:
 
 ```python
 import numpy as np

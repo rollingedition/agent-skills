@@ -3,12 +3,12 @@ title: "Language Models from the Ground Up"
 chapter: "Predicting the next word"
 chapter_id: predicting-the-next-word
 book: language-models-from-the-ground-up
-edition: 2026.11.9
+edition: 2026.11.10
 verified: 2026-11-13
-edition_code: R2B6-RC8X
+edition_code: ZD73-7XB0
 canonical: https://rollingedition.com/language-models-from-the-ground-up/predicting-the-next-word
 license: CC BY 4.0
-attribution: "“Predicting the next word,” chapter 1 of Language Models from the Ground Up, Edition 2026.11.9, examples passed Nov 13, 2026. By Rolling Edition, https://rollingedition.com/language-models-from-the-ground-up/predicting-the-next-word. Text CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Predicting the next word,” chapter 1 of Language Models from the Ground Up, Edition 2026.11.10, examples passed Nov 13, 2026. By Rolling Edition, https://rollingedition.com/language-models-from-the-ground-up/predicting-the-next-word. Text CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Predicting the next word
 
@@ -24,7 +24,7 @@ Before a model can learn which words follow which, it needs text to learn from, 
 
 The store's text, which every example in this book learns from, is real. It comes from WANDS, a public product-search dataset that Wayfair published with a paper at ECIR 2022 ([Chen et al., 2022](https://easychair.org/publications/preprint/wm4R)), under the MIT licence ([licence](https://github.com/wayfair/WANDS/blob/main/LICENSE)). The script `prep/wands_text.py` prepares it, and its data card, `examples/data/wands-text/README.md`, says how: the text is already lowercased, with spaces around punctuation, descriptions are cut at a sentence end to keep the file small, and products whose text names the store itself are left out, so no model in this book learns to write the store's name. The examples read the text through `lib.store`, one of the book's shared modules: short files in `examples/lib/` that hold setup code many examples need, which you can open and read.
 
-Example `store-text` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.9:
+Example `store-text` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.10:
 
 ```python
 from lib.store import load_products, ordinary_words, words
@@ -71,7 +71,7 @@ Two details make the counts complete. A name's first word follows nothing, and i
 
 For the store, start with one word whose next word matters to the search box: `coffee`. The example counts every pair in the training names, then looks at what followed `coffee`:
 
-Example `count-next-words` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.9:
+Example `count-next-words` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.10:
 
 ```python
 from collections import Counter
@@ -121,7 +121,7 @@ Read it as "the probability of `v`, given `w`". Estimating probabilities this wa
 
 For the store, apply the formula to the word `coffee` and four candidates for the next word:
 
-Example `next-word-probabilities` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.9:
+Example `next-word-probabilities` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.10:
 
 ```python
 from lib.bigrams import Bigrams
@@ -157,7 +157,7 @@ A probability table answers the store's first question directly. Autocomplete of
 
 For the store, type five prefixes a shopper might enter, and ask for three suggestions each:
 
-Example `autocomplete` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.9:
+Example `autocomplete` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.10:
 
 ```python
 from lib.bigrams import Bigrams
@@ -199,7 +199,7 @@ The same probability table can write text as well as complete it. To **generate*
 
 For the store, generate six product names. The random generator uses a fixed seed, so the example prints the same names on every run, and the names in this book match what the code produces:
 
-Example `generate-names` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.9:
+Example `generate-names` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.10:
 
 ```python
 import numpy as np
@@ -258,7 +258,7 @@ cross-entropy = −(1/N) Σ log P(next word | previous word)
 
 For the store, score one training name, `sled coffee table`, pair by pair, and then every training name:
 
-Example `perplexity-by-hand` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.9:
+Example `perplexity-by-hand` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.10:
 
 ```python
 import math
@@ -303,7 +303,7 @@ That number flatters the model, because it's measured on the text the counts cam
 
 A model trained by counting knows only the pairs it has counted, and the validation names were kept apart from the training names for exactly this reason: they show what happens when the model meets text it never saw. Before running the next example, predict its first line. The model scored 16.9 on the training names, in [score a model with perplexity](#score-with-perplexity). What will its perplexity be on the 4,282 validation names?
 
-Example `perplexity-on-new-names` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.9:
+Example `perplexity-on-new-names` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.10:
 
 ```python
 from lib.bigrams import Bigrams, padded, perplexity
@@ -355,7 +355,7 @@ where V is the size of the **vocabulary**, every word the model can predict. A w
 
 For the store, compare the counted and add-one models on the probability of `table` after `coffee`, and on perplexity:
 
-Example `add-one-smoothing` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.9:
+Example `add-one-smoothing` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.10:
 
 ```python
 from lib.bigrams import Bigrams, perplexity

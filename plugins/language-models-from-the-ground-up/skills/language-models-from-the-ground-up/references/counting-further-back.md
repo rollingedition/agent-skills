@@ -3,12 +3,12 @@ title: "Language Models from the Ground Up"
 chapter: "Counting further back"
 chapter_id: counting-further-back
 book: language-models-from-the-ground-up
-edition: 2026.11.9
+edition: 2026.11.10
 verified: 2026-11-13
-edition_code: R2B6-RC8X
+edition_code: ZD73-7XB0
 canonical: https://rollingedition.com/language-models-from-the-ground-up/counting-further-back
 license: CC BY 4.0
-attribution: "“Counting further back,” chapter 3 of Language Models from the Ground Up, Edition 2026.11.9, examples passed Nov 13, 2026. By Rolling Edition, https://rollingedition.com/language-models-from-the-ground-up/counting-further-back. Text CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Counting further back,” chapter 3 of Language Models from the Ground Up, Edition 2026.11.10, examples passed Nov 13, 2026. By Rolling Edition, https://rollingedition.com/language-models-from-the-ground-up/counting-further-back. Text CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Counting further back
 
@@ -24,7 +24,7 @@ An **n-gram model** predicts each token from the n − 1 tokens before it: a **b
 
 For the store, count n-grams of every order from 1 to 5 in the training names, and score each model, without any smoothing, on the same training names it counted:
 
-Example `ngram-memorizes` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.9:
+Example `ngram-memorizes` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.10:
 
 ```python
 import math
@@ -71,7 +71,7 @@ Memorizing the training names says nothing about new ones. A model can only use 
 
 For the store, measure how much of the validation names the training names cover, order by order. Before you run it, predict: for 4-grams, what share of the validation names' 4-grams never occur in the training names?
 
-Example `unseen-ngrams` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.9:
+Example `unseen-ngrams` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.10:
 
 ```python
 from lib.names import name_tokens
@@ -117,7 +117,7 @@ where each P is a maximum-likelihood estimate from counts, as in [chapter 1's pr
 
 For the store, build an interpolated trigram model by hand, with weights of 0.6, 0.3 and 0.09 for the three orders, and the last 0.01 spread evenly over every token, so no token ever gets probability zero. When a context was never seen, its weight passes to the orders below, so the probabilities still sum to one:
 
-Example `interpolate-orders` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.9:
+Example `interpolate-orders` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.10:
 
 ```python
 import math
@@ -191,7 +191,7 @@ When a model backs off to a shorter context, it's asking a specific question: ho
 
 For the store, take the 300 most frequent tokens in the training names, and list those that follow the fewest different tokens for how often they occur, beside two ordinary product words:
 
-Example `continuation-counts` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.9:
+Example `continuation-counts` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.10:
 
 ```python
 from collections import Counter, defaultdict
@@ -238,7 +238,7 @@ The book's shared module `lib.ngrams` implements interpolated Kneser-Ney as Chen
 
 Before trusting it, compute one probability by hand. For the store, take a name that starts `patio bar`, and work out the probability of `stool` next, order by order, with the formula above, beside the module's answer and the sum of the module's probabilities over every token:
 
-Example `kneser-ney-by-hand` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.9:
+Example `kneser-ney-by-hand` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.10:
 
 ```python
 from lib import bpe
@@ -285,7 +285,7 @@ At the 4-gram order the model keeps a share for `stool` and passes the rest down
 
 For the store, build Kneser-Ney models of every order from 1 to 5 on the training names, and score each on the validation names:
 
-Example `kneser-ney-by-order` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.9:
+Example `kneser-ney-by-order` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.10:
 
 ```python
 from lib.names import name_tokens
@@ -327,7 +327,7 @@ A longer context should fix the search box's worst suggestion from [chapter 1](#
 
 For the store, ask the 4-gram model for its three likeliest next tokens after three prefixes. Each prefix is treated as the start of a name, as a shopper's typing is. Each suggestion shows the token without its end-of-word marker:
 
-Example `ngram-autocomplete` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.9:
+Example `ngram-autocomplete` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.10:
 
 ```python
 from lib import bpe

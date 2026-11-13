@@ -3,12 +3,12 @@ title: "Language Models from the Ground Up"
 chapter: "Inside an open model"
 chapter_id: inside-an-open-model
 book: language-models-from-the-ground-up
-edition: 2026.11.9
+edition: 2026.11.10
 verified: 2026-11-13
-edition_code: R2B6-RC8X
+edition_code: ZD73-7XB0
 canonical: https://rollingedition.com/language-models-from-the-ground-up/inside-an-open-model
 license: CC BY 4.0
-attribution: "“Inside an open model,” chapter 10 of Language Models from the Ground Up, Edition 2026.11.9, examples passed Nov 13, 2026. By Rolling Edition, https://rollingedition.com/language-models-from-the-ground-up/inside-an-open-model. Text CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Inside an open model,” chapter 10 of Language Models from the Ground Up, Edition 2026.11.10, examples passed Nov 13, 2026. By Rolling Edition, https://rollingedition.com/language-models-from-the-ground-up/inside-an-open-model. Text CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Inside an open model
 
@@ -24,7 +24,7 @@ The parts are familiar, so the first question is where the parameters sit. [Chap
 
 For the store, count SmolLM2's recorded weights by part, the same way:
 
-Example `open-model-parameters` (Python 3.12.15), passing in Edition 2026.11.9:
+Example `open-model-parameters` (Python 3.12.15), passing in Edition 2026.11.10:
 
 ```python
 import math
@@ -85,7 +85,7 @@ SmolLM2 comes in three sizes, each built from the same parts, and their configur
 
 For the store, count all three sizes from their recorded configurations, and check the count for the 360M model against the weights the first recording saved:
 
-Example `open-model-family` (Python 3.12.15), passing in Edition 2026.11.9:
+Example `open-model-family` (Python 3.12.15), passing in Edition 2026.11.10:
 
 ```python
 import math
@@ -153,7 +153,7 @@ counting a key and a value per layer, and two bytes per number.
 
 For the store, compute both for the three sizes: the weights, the cache per token, and the cache for the longest text the models are set up for, 8,192 tokens, with and without grouped keys and values:
 
-Example `open-model-memory` (Python 3.12.15), passing in Edition 2026.11.9:
+Example `open-model-memory` (Python 3.12.15), passing in Edition 2026.11.10:
 
 ```python
 from lib import open_model
@@ -206,7 +206,7 @@ Each model scores the same events. For a name, the store's model starts from `<s
 
 Before you run it, predict which model scores the store's names better per word, and by how much. Then compute the store's model's scores in NumPy, read SmolLM2's from the recording, and compare, per token and per word:
 
-Example `open-model-on-the-store` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.9:
+Example `open-model-on-the-store` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.10:
 
 ```python
 import math
@@ -271,7 +271,7 @@ The lesson isn't that small models are better. A model predicts best the kind of
 
 For the store, read the recorded averages over the first 50 of the 446 products scored above, each text a name, a newline and its description: each head's average weight on the previous token and on the first token, and an even spread's weight on each, averaged the same way:
 
-Example `open-model-heads` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1 · tokenizers 0.23.3), passing in Edition 2026.11.9:
+Example `open-model-heads` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1 · tokenizers 0.23.3), passing in Edition 2026.11.10:
 
 ```python
 import numpy as np
@@ -327,7 +327,7 @@ The first token's weight is the larger surprise. In the first four layers, heads
 
 For the store, read SmolLM2's recorded probabilities for `cover` and `set` after `this outdoor patio furniture`, in the description of `double chaise patio furniture cover`, with the name as sold, without `cover`, and ending in `set`:
 
-Example `open-model-copying` (Python 3.12.15), passing in Edition 2026.11.9:
+Example `open-model-copying` (Python 3.12.15), passing in Edition 2026.11.10:
 
 ```python
 from lib import open_model
@@ -361,7 +361,7 @@ The search box is where the store's text matters most. [Chapter 8](#autocomplete
 
 For the store, read SmolLM2's three likeliest next tokens after the same five prefixes, each given with nothing before it, as the store's model got them:
 
-Example `open-model-autocomplete` (Python 3.12.15), passing in Edition 2026.11.9:
+Example `open-model-autocomplete` (Python 3.12.15), passing in Edition 2026.11.10:
 
 ```python
 from lib import open_model
