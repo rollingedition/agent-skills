@@ -3,12 +3,12 @@ title: "Business Intelligence with Agents"
 chapter: "A data agent end to end"
 chapter_id: bi-agent-end-to-end
 book: business-intelligence-with-agents
-edition: 2026.11.9
+edition: 2026.11.10
 verified: 2026-11-13
-edition_code: A1YT-QABQ
+edition_code: 0Q0N-P15N
 canonical: https://rollingedition.com/business-intelligence-with-agents/bi-agent-end-to-end
 license: CC BY 4.0
-attribution: "“A data agent end to end,” chapter 1 of Business Intelligence with Agents, Edition 2026.11.9, examples passed Nov 13, 2026. By Rolling Edition, https://rollingedition.com/business-intelligence-with-agents/bi-agent-end-to-end. Text CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“A data agent end to end,” chapter 1 of Business Intelligence with Agents, Edition 2026.11.10, examples passed Nov 13, 2026. By Rolling Edition, https://rollingedition.com/business-intelligence-with-agents/bi-agent-end-to-end. Text CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # A data agent end to end
 
@@ -28,7 +28,7 @@ This book follows one case throughout: an online shop that sells outdoor and cam
 
 The shop's warehouse, which every example in this book queries, is a DuckDB database with two schemas, as an analytics engineer would build them. The `raw` schema holds what the source systems loaded: orders, order lines, refunds, customers, products, sessions, marketing spend and exchange rates. The `analytics` schema holds the marts built from them in SQL, such as `fct_orders`, one row per real order with its amounts in euros. `lib/warehouse.py` does the build. Its `connect()` generates the data, loads `raw`, runs the SQL that builds `analytics`, and returns a connection that can read but not write, with access to other files switched off.
 
-Example `load-the-warehouse` (Python 3.12.15 · duckdb 2.0.0), passing in Edition 2026.11.9:
+Example `load-the-warehouse` (Python 3.12.15 · duckdb 2.0.0), passing in Edition 2026.11.10:
 
 ```python
 """Build the shop's warehouse from its seed and list every table with its row count."""
@@ -96,7 +96,7 @@ On the examples' side, `lib/model.py` provides `RecordedModel("schema-only-sql")
 
 The question is one a finance team asks every month: "What was net revenue in each region in March 2026?" It is also one of the book's golden questions, the questions with checked answers that the book scores against: `gq-002`, which the next section uses to check the answer.
 
-Example `first-question-to-sql` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.30.0), passing in Edition 2026.11.9:
+Example `first-question-to-sql` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.30.0), passing in Edition 2026.11.10:
 
 ```python
 """Send the warehouse's schema and one question to the recorded model, and print the SQL it wrote."""
@@ -154,7 +154,7 @@ The model's query for March 2026 [looks right](#ask-for-sql), and it runs. A que
 
 A golden question is a question with its checked answer: the golden SQL, written against the owner's definition, the golden result that SQL returns, and the kind of answer expected. The golden SQL is checked by running it, which chapter 3 covers. The book keeps its golden questions in `examples/data/golden/questions.toml`, and `lib/golden.py` loads them. The golden SQL for `gq-002` follows the shop's definition of net revenue, which the finance team owns: revenue in euros after discounts and before tax, from real orders that weren't cancelled, on the order's local business day.
 
-Example `run-the-model-sql` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.30.0), passing in Edition 2026.11.9:
+Example `run-the-model-sql` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.30.0), passing in Edition 2026.11.10:
 
 ```python
 """Run the SQL the model wrote for net revenue by region in March 2026, and check it against the golden result."""
@@ -221,7 +221,7 @@ The model reaches the metric through tools. A tool is a function the model may a
 
 The recording `metric-tool-runs` holds the same model's replies to this prompt, made the same way as `schema-only-sql`. The example asks the agent `gq-002`, net revenue by region in March 2026.
 
-Example `one-metric-answer` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.30.0), passing in Edition 2026.11.9:
+Example `one-metric-answer` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.30.0), passing in Edition 2026.11.10:
 
 ```python
 """Answer the same question from one defined metric: the model picks the metric, the code writes and runs the SQL."""
@@ -297,7 +297,7 @@ The five golden questions cover the traps one at a time:
 | `gq-004` | Customers whose first order was in fiscal 2026 | answer |
 | `gq-005` | Net revenue next quarter | decline |
 
-Example `score-five-golden` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.30.0), passing in Edition 2026.11.9:
+Example `score-five-golden` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.30.0), passing in Edition 2026.11.10:
 
 ```python
 """Score both approaches on five golden questions: schema-only SQL, and the agent with one defined metric."""
@@ -366,7 +366,7 @@ Five questions can't support a claim about the model or about text-to-SQL in gen
 
 A score says how often the agent was right. A trace says why, for one run. The trace is every step of one agent run, kept by `run_agent()`: each model reply, and each tool result sent back. Reading traces is how you find out whether a correct outcome was correct for the right reason, and what a decline was based on. The example prints the trace of `gq-004`, the question the agent declined in the [five-question score](#score-five-questions).
 
-Example `print-one-trace` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.30.0), passing in Edition 2026.11.9:
+Example `print-one-trace` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.30.0), passing in Edition 2026.11.10:
 
 ```python
 """Print the trace of one recorded agent run: every model reply and tool result, then what the run returned."""
