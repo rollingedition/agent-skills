@@ -3,12 +3,12 @@ title: "Business Intelligence with Agents"
 chapter: "Say when the answer can't be given"
 chapter_id: say-when-it-cannot
 book: business-intelligence-with-agents
-edition: 2026.11.10
+edition: 2026.11.11
 verified: 2026-11-13
-edition_code: 0Q0N-P15N
+edition_code: CCKB-954X
 canonical: https://rollingedition.com/business-intelligence-with-agents/say-when-it-cannot
 license: CC BY 4.0
-attribution: "“Say when the answer can't be given,” chapter 8 of Business Intelligence with Agents, Edition 2026.11.10, examples passed Nov 13, 2026. By Rolling Edition, https://rollingedition.com/business-intelligence-with-agents/say-when-it-cannot. Text CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Say when the answer can't be given,” chapter 8 of Business Intelligence with Agents, Edition 2026.11.11, examples passed Nov 13, 2026. By Rolling Edition, https://rollingedition.com/business-intelligence-with-agents/say-when-it-cannot. Text CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Say when the answer can't be given
 
@@ -26,7 +26,7 @@ The research gives both kinds names you can use. PRACTIQ, a conversational text-
 
 The shop's golden questions, from [chapter 3](#cover-declines-and-roles), include eight whose right answer is a decline, four in each split, and each carries a `decline_type`: two ambiguous and two unanswerable per split. The example prints each one with its category in PRACTIQ's terms, or TrustSQL's for the forecast, and searches both schemas for a column whose name matches the words the question needs. Then it answers two ambiguous questions in each of their readings, from the semantic layer. One of the ambiguous questions has no reading to answer: "Who are our best customers?", `gq-019`, is ambiguous in PRACTIQ's terms, but no metric or dimension ranks customers, so its right reply is a decline, not a question back.
 
-Example `unanswerable-cases` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.30.0), passing in Edition 2026.11.10:
+Example `unanswerable-cases` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.11:
 
 ```python
 """The golden questions whose right answer is a decline: which are ambiguous, which are unanswerable, and why."""
@@ -112,7 +112,7 @@ The recording `decline-runs` holds the pinned model's replies to that prompt for
 
 The example prints the kinds and who decides each, sends `cannot_answer` a call without a kind, and replays the four dev decline questions and one answerable question the agent declined.
 
-Example `cannot-answer-tool` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.30.0), passing in Edition 2026.11.10:
+Example `cannot-answer-tool` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.11:
 
 ```python
 """Decline with a kind from a fixed list and a reason, so declines can be checked and counted like answers."""
@@ -206,7 +206,7 @@ Freshness has to come from the data, not from the warehouse's table metadata. Sn
 
 The shop's generator gives every raw table a `_loaded_at` column, when the nightly load brought the row in, at 02:00 UTC the day after the event, and the marts carry it through. Its refunds feed stopped after June 26, 2026, while orders run to June 30. Some metrics keep changing after their period ends. The refund rate, `refund_rate`, divides refunded euros by the gross revenue of the same orders, and counts each refund on its order's day. A refund comes weeks after its order, so a month's rate keeps rising until every refund on its orders has come. We call that time the metric's settling window. The freshness check in `lib/declining.py` compares each feed's newest load with the end of the period a request filters on, plus the settling window of the metrics that read the feed. `FEEDS` names, for each table a metric reads, the feed whose loads decide its freshness, and `SETTLING_DAYS` gives the window of each metric counted on an earlier date than its events; every other metric's is zero. Loads are in UTC and the shop's days are local, so the period ends when its last local day ends in the region furthest behind UTC. The example measures the window, estimates why May and June fall short, and runs the check.
 
-Example `stale-refunds` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.30.0), passing in Edition 2026.11.10:
+Example `stale-refunds` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.11:
 
 ```python
 """Check freshness: refunds stopped loading after June 26, 2026, and come weeks after the order."""
@@ -303,7 +303,7 @@ We decline a period that hasn't settled rather than answer with a warning, as a 
 
 `provenance_card()` in `lib/declining.py` prints an answer with its provenance: the result, each metric's name and the definition its owner wrote in the semantic layer, the filters, the role, the data as of, the freshness check for each feed and, optionally, the SQL. A decline's card is its kind, its reason and the role. The example replays three of the declining agent's runs: net revenue by region in March 2026, which it got right; total revenue by sales region in 2025, which it got wrong; and the cost of shipping, which it declined.
 
-Example `answer-with-provenance` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.30.0), passing in Edition 2026.11.10:
+Example `answer-with-provenance` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.11:
 
 ```python
 """Show the provenance with every answer: the metric's definition, filters, role, freshness and the SQL that ran."""
@@ -398,7 +398,7 @@ penalty score     = (right answers + correct declines − c × wrong numbers) / 
 
 A run that hit the step limit is neither a decline nor an answer: it adds nothing to the score and counts as unanswered for coverage. `Tally` in `lib/declining.py` computes all five. The example replays chapter 6's metrics-first agent and the declining agent on the same 21 dev questions, 17 answerable and 4 to decline, and prints each measure, with c at 3, the cost [the prompt](#decline-with-a-reason) states, and at 10, a value TrustSQL uses. Choosing c is a judgement about what a wrong number costs, not a measurement.
 
-Example `decline-precision-recall` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.30.0), passing in Edition 2026.11.10:
+Example `decline-precision-recall` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.11:
 
 ```python
 """Measure declines, not only accuracy: precision, recall, coverage, selective risk and a penalty score, on dev."""

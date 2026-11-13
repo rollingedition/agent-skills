@@ -3,12 +3,12 @@ title: "A Primer on Search Relevance"
 chapter: "Ranking"
 chapter_id: ranking
 book: primer-on-search-relevance
-edition: 2026.11.6
-verified: 2026-11-12
-edition_code: R33J-KWQ9
+edition: 2026.11.7
+verified: 2026-11-13
+edition_code: K7KC-57DV
 canonical: https://rollingedition.com/primer-on-search-relevance/ranking
 license: CC BY 4.0
-attribution: "“Ranking,” chapter 9 of A Primer on Search Relevance, Edition 2026.11.6, examples passed Nov 12, 2026. By Rolling Edition, https://rollingedition.com/primer-on-search-relevance/ranking. Text CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Ranking,” chapter 9 of A Primer on Search Relevance, Edition 2026.11.7, examples passed Nov 13, 2026. By Rolling Edition, https://rollingedition.com/primer-on-search-relevance/ranking. Text CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Ranking
 
@@ -42,7 +42,7 @@ In the store, a query's candidates are the products the cross-encoder's recordin
 
 2632 of the catalog's products have no rating, and their three rating features stay missing. The table also holds each candidate's human grade, or a gap when nobody judged it. Build the table for the [train queries](#store-data), look at one query, then compare each feature across the grades:
 
-Example `ranking-features-by-grade` (Python 3.12.15 · bm25s 0.3.16 · lightgbm 4.7.0 · numpy 2.5.4 · pandas 3.1.1 · pystemmer 3.1.0 · scikit-learn 1.9.1 · scipy 1.18.1), passing in Edition 2026.11.6:
+Example `ranking-features-by-grade` (Python 3.12.15 · bm25s 0.3.16 · lightgbm 4.7.0 · numpy 2.5.4 · pandas 3.1.1 · pystemmer 3.1.0 · scikit-learn 1.9.1 · scipy 1.18.1), passing in Edition 2026.11.7:
 
 ```python
 import pandas as pd
@@ -143,7 +143,7 @@ A product's total is its λ summed over the pairs where it should rank higher, m
 
 In the store, take the train query `outdoor waterproof chest`, and let semantic similarity be the model's scores so far. Compute every pair's λ in its top 10 by hand, check each |ΔnDCG| by swapping the pair and recomputing nDCG with `lib.metrics`, and add up the forces:
 
-Example `lambdas-for-one-query` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.6:
+Example `lambdas-for-one-query` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.7:
 
 ```python
 import math
@@ -211,7 +211,7 @@ The top 10's grades, from the top, are 1 2 2 0 1 2 0 2 0 0; an unjudged product 
 
 That example simplifies: it takes the ideal DCG from every judged product, as `lib.metrics` does, and looks at ten products. LightGBM takes the ideal from the query's training rows, and at 4.7.0 two defaults change the λ. `lambdarank_truncation_level` is 30, so it "controls the number of top-results to focus on during training": only pairs with a product in the current top 30 get a λ. `lambdarank_norm` is true, to "normalize the lambdas for different queries"; set it to false "to enforce the original lambdarank algorithm" ([Parameters](https://lightgbm.readthedocs.io/en/v4.7.0/Parameters.html)). In the source, normalizing divides each pair's |ΔnDCG| by the gap between its scores plus 0.01, then rescales each query's λ ([`rank_objective.hpp`](https://github.com/lightgbm-org/LightGBM/blob/v4.7.0/src/objective/rank_objective.hpp)). To check the formula against the library, write it as a custom LightGBM objective, grow five small trees on this query's candidates, and grow them again with LightGBM's lambdarank, with and without those defaults:
 
-Example `lambdas-match-lightgbm` (Python 3.12.15 · bm25s 0.3.16 · lightgbm 4.7.0 · numpy 2.5.4 · pandas 3.1.1 · pystemmer 3.1.0 · scikit-learn 1.9.1 · scipy 1.18.1), passing in Edition 2026.11.6:
+Example `lambdas-match-lightgbm` (Python 3.12.15 · bm25s 0.3.16 · lightgbm 4.7.0 · numpy 2.5.4 · pandas 3.1.1 · pystemmer 3.1.0 · scikit-learn 1.9.1 · scipy 1.18.1), passing in Edition 2026.11.7:
 
 ```python
 import numpy as np
@@ -282,7 +282,7 @@ Row order matters too. Before the first tree every score is 0, so LightGBM takes
 
 Choose the tree size by **cross-validation** on the train queries: split them into five folds, rank each fold with a model fitted on three others and stopped early on the fifth, and score every query once. Try eight settings, from 3 to 31 leaves at two learning rates, counting unjudged candidates as grade 0 as the metric does:
 
-Example `lambdamart-tree-size-on-train` (Python 3.12.15 · bm25s 0.3.16 · lightgbm 4.7.0 · numpy 2.5.4 · pandas 3.1.1 · pystemmer 3.1.0 · scikit-learn 1.9.1 · scipy 1.18.1), passing in Edition 2026.11.6:
+Example `lambdamart-tree-size-on-train` (Python 3.12.15 · bm25s 0.3.16 · lightgbm 4.7.0 · numpy 2.5.4 · pandas 3.1.1 · pystemmer 3.1.0 · scikit-learn 1.9.1 · scipy 1.18.1), passing in Edition 2026.11.7:
 
 ```python
 from lightgbm import LGBMRanker
@@ -341,7 +341,7 @@ Of 8 settings, the best is 3 leaves, learning rate 0.1, at 0.798; LightGBM's def
 
 One choice depends on the store's judgments. Nobody judged a share of 0.286 of the train candidates. A model can count them as grade 0, or learn from judged candidates only; [unjudged isn't irrelevant](#unjudged-results), but the model will rank them at query time either way. Compare both by cross-validation at the chosen tree size, with a pointwise regression on the grades beside them:
 
-Example `lambdamart-choices-on-train` (Python 3.12.15 · bm25s 0.3.16 · lightgbm 4.7.0 · numpy 2.5.4 · pandas 3.1.1 · pystemmer 3.1.0 · scikit-learn 1.9.1 · scipy 1.18.1), passing in Edition 2026.11.6:
+Example `lambdamart-choices-on-train` (Python 3.12.15 · bm25s 0.3.16 · lightgbm 4.7.0 · numpy 2.5.4 · pandas 3.1.1 · pystemmer 3.1.0 · scikit-learn 1.9.1 · scipy 1.18.1), passing in Edition 2026.11.7:
 
 ```python
 from lightgbm import LGBMRanker, LGBMRegressor
@@ -403,7 +403,7 @@ A model tuned on train queries is reported once on the test queries, by a compar
 
 In the store, fit the setup [chosen on train](#train-lambdamart): [LambdaMART](#learn-from-pairs) on all the [features](#ranking-features), with 3 leaves at a learning rate of 0.1, unjudged candidates as grade 0, and candidates in `product_id` order. Fit on 40 train queries, and stop early on 10 others. Rank each test query's candidates with it, and make the first of the chapter's [planned comparisons](#ranking), established below p = 0.01:
 
-Example `lambdamart-on-test` (Python 3.12.15 · bm25s 0.3.16 · lightgbm 4.7.0 · numpy 2.5.4 · pandas 3.1.1 · pystemmer 3.1.0 · scikit-learn 1.9.1 · scipy 1.18.1), passing in Edition 2026.11.6:
+Example `lambdamart-on-test` (Python 3.12.15 · bm25s 0.3.16 · lightgbm 4.7.0 · numpy 2.5.4 · pandas 3.1.1 · pystemmer 3.1.0 · scikit-learn 1.9.1 · scipy 1.18.1), passing in Edition 2026.11.7:
 
 ```python
 from lightgbm import LGBMRanker
@@ -490,7 +490,7 @@ On test, [judged@10](#score-every-test-query), the share of the top 10 that has 
 
 [Chapter 1](#rerank-with-cross-encoder) reranked the hybrid run. Here the cross-encoder reranks the ranker to beat, semantic retrieval's top 20: the same products the [LLM rerankers](#llm-pointwise-reranking) read, so the chapter's three rerankers start from identical lists. The chapter fixed that depth before reading any test result, and doesn't tune it. Reorder the top 20 by the recorded scores, keep the rest in place, and make the second of the chapter's [planned comparisons](#ranking), established below p = 0.01:
 
-Example `cross-encoder-on-semantic` (Python 3.12.15 · bm25s 0.3.16 · lightgbm 4.7.0 · numpy 2.5.4 · pandas 3.1.1 · pystemmer 3.1.0 · scikit-learn 1.9.1 · scipy 1.18.1), passing in Edition 2026.11.6:
+Example `cross-encoder-on-semantic` (Python 3.12.15 · bm25s 0.3.16 · lightgbm 4.7.0 · numpy 2.5.4 · pandas 3.1.1 · pystemmer 3.1.0 · scikit-learn 1.9.1 · scipy 1.18.1), passing in Edition 2026.11.7:
 
 ```python
 from lib.metrics import evaluate
@@ -558,7 +558,7 @@ An LLM can rerank too, in three ways. **Pointwise**, it judges each product alon
 
 The store's LLM, the open model named in [the chapter's opening](#ranking), saw the query and one product at a time: name, class, category, description and attributes ([what the LLM saw](#what-the-llm-saw)). The prompt asks for a label, `exact`, `partial` or `irrelevant`, and "a score from 0 to 100 for how well it matches". Reorder [semantic retrieval](#search-by-meaning)'s top 20 by that score; when two products tie, they keep semantic retrieval's order, a rule fixed with the recording. This is the third of the chapter's [planned comparisons](#ranking), established below p = 0.01:
 
-Example `llm-pointwise-rerank` (Python 3.12.15 · bm25s 0.3.16 · lightgbm 4.7.0 · numpy 2.5.4 · pandas 3.1.1 · pystemmer 3.1.0 · scikit-learn 1.9.1 · scipy 1.18.1), passing in Edition 2026.11.6:
+Example `llm-pointwise-rerank` (Python 3.12.15 · bm25s 0.3.16 · lightgbm 4.7.0 · numpy 2.5.4 · pandas 3.1.1 · pystemmer 3.1.0 · scikit-learn 1.9.1 · scipy 1.18.1), passing in Edition 2026.11.7:
 
 ```python
 from lib.metrics import evaluate
@@ -641,7 +641,7 @@ The third way, a [listwise](#llm-pointwise-reranking) prompt, numbers the candid
 
 The store's LLM, the open model named in [the chapter's opening](#ranking), saw 20 products per prompt, one window. The prompt shows each product as a short line: name, class, attributes and the first 160 characters of the description. Its last instruction reads: "Order all 20 products from the best match for the query to the worst. Return the product numbers, each exactly once, in JSON." The JSON schema requires exactly 20 numbers, but not 20 different ones, so the recording repairs any answer with a repeated or missing number and flags it. Reorder [semantic retrieval](#search-by-meaning)'s top 20 by the answer the LLM gave when shown them in semantic order, and make the fourth of the chapter's [planned comparisons](#ranking), established below p = 0.01:
 
-Example `llm-listwise-rerank` (Python 3.12.15 · bm25s 0.3.16 · lightgbm 4.7.0 · numpy 2.5.4 · pandas 3.1.1 · pystemmer 3.1.0 · scikit-learn 1.9.1 · scipy 1.18.1), passing in Edition 2026.11.6:
+Example `llm-listwise-rerank` (Python 3.12.15 · bm25s 0.3.16 · lightgbm 4.7.0 · numpy 2.5.4 · pandas 3.1.1 · pystemmer 3.1.0 · scikit-learn 1.9.1 · scipy 1.18.1), passing in Edition 2026.11.7:
 
 ```python
 from lib.metrics import evaluate
@@ -706,7 +706,7 @@ A [listwise answer](#llm-listwise-reranking) can suffer from **positional bias**
 
 The recording ran the store's LLM, the open model named in [the chapter's opening](#ranking), on each test query's listwise prompt twice: with [semantic retrieval](#search-by-meaning)'s top 20 in semantic order, as the [listwise rerank](#llm-listwise-reranking) used, and reversed. Before you run the comparison, predict: for how many of the 30 test queries will the LLM put the same product first both times?
 
-Example `listwise-position-bias` (Python 3.12.15 · bm25s 0.3.16 · lightgbm 4.7.0 · numpy 2.5.4 · pandas 3.1.1 · pystemmer 3.1.0 · scikit-learn 1.9.1 · scipy 1.18.1), passing in Edition 2026.11.6:
+Example `listwise-position-bias` (Python 3.12.15 · bm25s 0.3.16 · lightgbm 4.7.0 · numpy 2.5.4 · pandas 3.1.1 · pystemmer 3.1.0 · scikit-learn 1.9.1 · scipy 1.18.1), passing in Edition 2026.11.7:
 
 ```python
 import numpy as np
@@ -781,7 +781,7 @@ A search pipeline runs in stages, each slower and given fewer candidates than th
 
 In the store, count calls and characters per test query for each reranker at depth 20, from the products' text and the recorded prompts, plus the calls two designs the store didn't record would need:
 
-Example `reranker-prompt-sizes` (Python 3.12.15 · bm25s 0.3.16 · lightgbm 4.7.0 · numpy 2.5.4 · pandas 3.1.1 · pystemmer 3.1.0 · scikit-learn 1.9.1 · scipy 1.18.1), passing in Edition 2026.11.6:
+Example `reranker-prompt-sizes` (Python 3.12.15 · bm25s 0.3.16 · lightgbm 4.7.0 · numpy 2.5.4 · pandas 3.1.1 · pystemmer 3.1.0 · scikit-learn 1.9.1 · scipy 1.18.1), passing in Edition 2026.11.7:
 
 ```python
 import numpy as np
@@ -837,7 +837,7 @@ Pointwise repeats the instructions and shows each product in full, so it reads t
 
 For the cross-encoder, cost grows in step with depth, so the question is where quality stops growing. Sweep the depth on the train queries:
 
-Example `rerank-depth-on-train` (Python 3.12.15 · bm25s 0.3.16 · lightgbm 4.7.0 · numpy 2.5.4 · pandas 3.1.1 · pystemmer 3.1.0 · scikit-learn 1.9.1 · scipy 1.18.1), passing in Edition 2026.11.6:
+Example `rerank-depth-on-train` (Python 3.12.15 · bm25s 0.3.16 · lightgbm 4.7.0 · numpy 2.5.4 · pandas 3.1.1 · pystemmer 3.1.0 · scikit-learn 1.9.1 · scipy 1.18.1), passing in Edition 2026.11.7:
 
 ```python
 from lib.metrics import evaluate
@@ -891,7 +891,7 @@ A reranker too slow for [the budget](#rerank-depth-from-budget) can teach a fast
 
 In the store, the teacher is the cross-encoder. The student is a LightGBM regression on the 7 [features](#ranking-features) that need no model call beyond the one retrieval already makes: everything but `cross_encoder`. Its label is the teacher's raw score, which a tree regression can match on the teacher's own scale. It ranks the same [candidates](#ranking-features), in `product_id` order, with trees the size [chosen for LambdaMART](#train-lambdamart). First, compare the student with a LambdaMART model trained on human grades with the same features, by cross-validation on the train queries:
 
-Example `distillation-on-train` (Python 3.12.15 · bm25s 0.3.16 · lightgbm 4.7.0 · numpy 2.5.4 · pandas 3.1.1 · pystemmer 3.1.0 · scikit-learn 1.9.1 · scipy 1.18.1), passing in Edition 2026.11.6:
+Example `distillation-on-train` (Python 3.12.15 · bm25s 0.3.16 · lightgbm 4.7.0 · numpy 2.5.4 · pandas 3.1.1 · pystemmer 3.1.0 · scikit-learn 1.9.1 · scipy 1.18.1), passing in Edition 2026.11.7:
 
 ```python
 from lightgbm import LGBMRanker, LGBMRegressor
@@ -935,7 +935,7 @@ The student scores 0.791, and the teacher's own order of the candidates 0.785. T
 
 Then fit the student on the train queries, with early stopping on the same held-out train queries as [LambdaMART](#lambdamart-on-test-queries), and make the last of the chapter's [planned comparisons](#ranking), established below p = 0.01:
 
-Example `distilled-ranker-on-test` (Python 3.12.15 · bm25s 0.3.16 · lightgbm 4.7.0 · numpy 2.5.4 · pandas 3.1.1 · pystemmer 3.1.0 · scikit-learn 1.9.1 · scipy 1.18.1), passing in Edition 2026.11.6:
+Example `distilled-ranker-on-test` (Python 3.12.15 · bm25s 0.3.16 · lightgbm 4.7.0 · numpy 2.5.4 · pandas 3.1.1 · pystemmer 3.1.0 · scikit-learn 1.9.1 · scipy 1.18.1), passing in Edition 2026.11.7:
 
 ```python
 import numpy as np

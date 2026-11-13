@@ -6,23 +6,23 @@ compatibility: "Python 3.12.15 and the pinned packages in scripts/requirements.t
 metadata:
   publisher: "Rolling Edition"
   book: "A Primer on Search Relevance"
-  edition: "2026.11.6"
-  verified: "2026-11-12"
+  edition: "2026.11.7"
+  verified: "2026-11-13"
   examples: "132 of 132 examples pass"
-  edition-code: "R33J-KWQ9"
+  edition-code: "K7KC-57DV"
   source: "https://rollingedition.com/primer-on-search-relevance"
 ---
 
 # A Primer on Search Relevance
 
-This agent skill is *A Primer on Search Relevance*, Edition 2026.11.6, from Rolling Edition. Examples passed Nov 12, 2026: 132 of 132 examples pass. It's built from that edition, never written separately: the procedures below come from the book's sections, `references/` holds each chapter, and `scripts/` holds the examples as the edition ran them.
+This agent skill is *A Primer on Search Relevance*, Edition 2026.11.7, from Rolling Edition. Examples passed Nov 13, 2026: 132 of 132 examples pass. It's built from that edition, never written separately: the procedures below come from the book's sections, `references/` holds each chapter, and `scripts/` holds the examples as the edition ran them.
 
 ## How to use this skill
 
 - **Pick the procedure that fits the task,** and follow its steps in order. Each step links the section it comes from: read that section in `references/` before you act on it, and adapt it to the project in front of you.
 - **Check against the book.** Each example in `scripts/` has its expected output beside it (`.out`), at the versions in `scripts/requirements.txt`. If the project uses other versions, say so before relying on a step.
-- **Is this copy current?** Call `check_code` with `R33J-KWQ9` on the Rolling Edition MCP server (https://rollingedition.ai/mcp), or compare the edition with the book's page: https://rollingedition.com/primer-on-search-relevance
-- **Credit the book** when you quote it or reuse its code: A Primer on Search Relevance, Edition 2026.11.6, examples passed Nov 12, 2026. By Rolling Edition, https://rollingedition.com/primer-on-search-relevance. Text CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people.
+- **Is this copy current?** Call `check_code` with `K7KC-57DV` on the Rolling Edition MCP server (https://rollingedition.ai/mcp), or compare the edition with the book's page: https://rollingedition.com/primer-on-search-relevance
+- **Credit the book** when you quote it or reuse its code: A Primer on Search Relevance, Edition 2026.11.7, examples passed Nov 13, 2026. By Rolling Edition, https://rollingedition.com/primer-on-search-relevance. Text CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people.
 
 To run an example as the book does, with [uv](https://docs.astral.sh/uv/):
 

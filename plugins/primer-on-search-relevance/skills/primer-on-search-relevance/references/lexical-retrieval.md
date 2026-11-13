@@ -3,12 +3,12 @@ title: "A Primer on Search Relevance"
 chapter: "Lexical retrieval"
 chapter_id: lexical-retrieval
 book: primer-on-search-relevance
-edition: 2026.11.6
-verified: 2026-11-12
-edition_code: R33J-KWQ9
+edition: 2026.11.7
+verified: 2026-11-13
+edition_code: K7KC-57DV
 canonical: https://rollingedition.com/primer-on-search-relevance/lexical-retrieval
 license: CC BY 4.0
-attribution: "“Lexical retrieval,” chapter 5 of A Primer on Search Relevance, Edition 2026.11.6, examples passed Nov 12, 2026. By Rolling Edition, https://rollingedition.com/primer-on-search-relevance/lexical-retrieval. Text CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Lexical retrieval,” chapter 5 of A Primer on Search Relevance, Edition 2026.11.7, examples passed Nov 13, 2026. By Rolling Edition, https://rollingedition.com/primer-on-search-relevance/lexical-retrieval. Text CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Lexical retrieval
 
@@ -32,7 +32,7 @@ Search never compares raw strings. The query and every product's text first go t
 
 bm25s, which runs the store's BM25, makes three choices here. It lowercases. It keeps every run of two or more word characters, which are letters, digits or underscores, with the regular expression `(?u)\b\w\w+\b`, which its docstring describes as the method of scikit-learn's `CountVectorizer`. And it removes 33 English stop words, among them `no`, `not`, `with` and `for`. It doesn't stem words unless you pass it a stemmer ([bm25s tokenizer](https://raw.githubusercontent.com/xhluca/bm25s/0.3.15/bm25s/tokenization.py), [stop words](https://raw.githubusercontent.com/xhluca/bm25s/0.3.15/bm25s/stopwords.py)). The example writes the same steps by hand, checks them against `bm25s.tokenize` on every product, then looks at what the train query `7qt slow cooker` becomes:
 
-Example `tokenize-product-text` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.4 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.6:
+Example `tokenize-product-text` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.4 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.7:
 
 ```python
 import re
@@ -106,7 +106,7 @@ To score a query made of [those terms](#split-text-into-terms), search needs the
 
 The store's index maps each term to a dictionary of product IDs and term frequencies. It also keeps each product's length in terms, which [BM25](#bm25-from-scratch) needs. The example builds it from the text of every product, with the tokenizer from [the previous section](#split-text-into-terms), then looks up the terms of the train query `7qt slow cooker`:
 
-Example `inverted-index-by-hand` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.4 · pandas 3.1.1 · pystemmer 3.1.0 · scipy 1.18.1), passing in Edition 2026.11.6:
+Example `inverted-index-by-hand` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.4 · pandas 3.1.1 · pystemmer 3.1.0 · scipy 1.18.1), passing in Edition 2026.11.7:
 
 ```python
 from collections import Counter
@@ -167,7 +167,7 @@ tf-idf(q, d) = sum over query terms t of  tf(t, d) × idf(t)
 
 In the store, `furniture` is a common term. The example computes TF-IDF over the [inverted index](#build-an-inverted-index), shows the IDF of `furniture` and of each term of the train query `laundry basket with wheels`, then TF-IDF's top 3 for that query, with each product's score and term frequencies. Last, it scores TF-IDF on all 50 train queries against [BM25 as chapter 1 runs it](#rank-with-bm25):
 
-Example `tf-idf-by-hand` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.4 · pandas 3.1.1 · pystemmer 3.1.0 · scipy 1.18.1), passing in Edition 2026.11.6:
+Example `tf-idf-by-hand` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.4 · pandas 3.1.1 · pystemmer 3.1.0 · scipy 1.18.1), passing in Edition 2026.11.7:
 
 ```python
 import math
@@ -253,7 +253,7 @@ Two details differ between textbooks and libraries. A common variant multiplies 
 
 The example writes the formula over the store's [inverted index](#build-an-inverted-index) at bm25s's defaults, `k1=1.5` and `b=0.75`. It compares every product's score for each of the 80 queries with the score from bm25s 0.3.16, then compares the two rankings, by their top 100s and by [nDCG@10](#score-one-ranking):
 
-Example `bm25-by-hand` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.4 · pandas 3.1.1 · pystemmer 3.1.0 · scipy 1.18.1), passing in Edition 2026.11.6:
+Example `bm25-by-hand` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.4 · pandas 3.1.1 · pystemmer 3.1.0 · scipy 1.18.1), passing in Edition 2026.11.7:
 
 ```python
 import math
@@ -332,7 +332,7 @@ A shopper types `pool floats`, and a product says `float` or `floating`. To the 
 
 A crude stemmer takes a few lines. The example writes one by hand that cuts `-ing`, `-es`, `-ed` or `-s` when at least three letters remain, and compares it with the Snowball English stemmer from PyStemmer, which bm25s's tokenizer recommends ([bm25s tokenizer](https://raw.githubusercontent.com/xhluca/bm25s/0.3.15/bm25s/tokenization.py)) and the book pins at 3.1.0 ([PyStemmer](https://pypi.org/project/PyStemmer/)). Then it counts the products whose text contains a word, and those whose text contains its stem:
 
-Example `stemmer-merges-word-forms` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.4 · pandas 3.1.1 · pystemmer 3.1.0 · scipy 1.18.1), passing in Edition 2026.11.6:
+Example `stemmer-merges-word-forms` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.4 · pandas 3.1.1 · pystemmer 3.1.0 · scipy 1.18.1), passing in Edition 2026.11.7:
 
 ```python
 import Stemmer
@@ -400,7 +400,7 @@ The counts show both sides of the trade. `floats` occurs in 11 products and its 
 
 To serve stemmed BM25 from bm25s, pass the same stemmer to `bm25s.tokenize` for the products and for every query. The next example checks that bm25s then scores like the hand-built index with stemming, `InvertedIndex(text, stem=True)` from `lib.lexical_by_hand`:
 
-Example `bm25s-with-a-stemmer` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.4 · pandas 3.1.1 · pystemmer 3.1.0 · scipy 1.18.1), passing in Edition 2026.11.6:
+Example `bm25s-with-a-stemmer` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.4 · pandas 3.1.1 · pystemmer 3.1.0 · scipy 1.18.1), passing in Edition 2026.11.7:
 
 ```python
 import bm25s
@@ -443,7 +443,7 @@ largest score difference from bm25s with a stemmer: 2e-06
 
 [Stemming](#stem-word-forms) trades precision for recall, so only the judgments can say whether it pays for the store. The choice to stem comes from the 50 [train queries](#store-data). The check is the first of the chapter's [five planned comparisons](#lexical-retrieval) on the 30 test queries: the gain is established if the paired [permutation test](#permutation-test-on-queries) gives a p-value below 0.01, with the paired [t-test](#paired-t-test-on-queries) and a 99% [bootstrap interval](#report-the-size-of-a-gap) beside it. The example compares the [stemmed index](#stem-word-forms) with the unstemmed one from [the BM25 section](#bm25-from-scratch):
 
-Example `measure-stemming` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.4 · pandas 3.1.1 · pystemmer 3.1.0 · scipy 1.18.1), passing in Edition 2026.11.6:
+Example `measure-stemming` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.4 · pandas 3.1.1 · pystemmer 3.1.0 · scipy 1.18.1), passing in Edition 2026.11.7:
 
 ```python
 from lib.lexical_by_hand import THRESHOLD, InvertedIndex, report_test_comparison
@@ -521,7 +521,7 @@ The [inverted index](#build-an-inverted-index) stores term frequencies and lengt
 
 Before you run it, predict: at the defaults, stemmed BM25 scores 0.774 on the test queries. How much will the best setting on train add?
 
-Example `sweep-k1-and-b` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.4 · pandas 3.1.1 · pystemmer 3.1.0 · scipy 1.18.1), passing in Edition 2026.11.6:
+Example `sweep-k1-and-b` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.4 · pandas 3.1.1 · pystemmer 3.1.0 · scipy 1.18.1), passing in Edition 2026.11.7:
 
 ```python
 import pandas as pd
@@ -608,7 +608,7 @@ A product's text has parts, called **fields**: the store's text fields are name,
 
 The store's search indexes one field: name, class, category and description, joined. The first example tries the way that comes to mind first, on the 50 [train queries](#store-data) with [stemming](#stem-word-forms): the name and the other three fields indexed apart, scored apart and added. Indexed apart, each field also gets its own IDF and its own average length, so the example changes more than saturation. By Robertson and Zaragoza's argument, we expect it to do worse. On train queries, this informs a choice and proves nothing:
 
-Example `fields-scored-apart` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.4 · pandas 3.1.1 · pystemmer 3.1.0 · scipy 1.18.1), passing in Edition 2026.11.6:
+Example `fields-scored-apart` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.4 · pandas 3.1.1 · pystemmer 3.1.0 · scipy 1.18.1), passing in Edition 2026.11.7:
 
 ```python
 from collections import Counter
@@ -650,7 +650,7 @@ Scored apart, the fields give a train [nDCG@10](#score-one-ranking) of 0.686 aga
 
 The second example tries BM25F with whole-number weights: the name counted 1, 2, 3 or 5 times in the indexed text. It picks the weight with the best train score, then compares it with one field on the 30 test queries: the third of the chapter's [five planned comparisons](#lexical-retrieval).
 
-Example `repeat-the-name-field` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.4 · pandas 3.1.1 · pystemmer 3.1.0 · scipy 1.18.1), passing in Edition 2026.11.6:
+Example `repeat-the-name-field` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.4 · pandas 3.1.1 · pystemmer 3.1.0 · scipy 1.18.1), passing in Edition 2026.11.7:
 
 ```python
 from lib.lexical_by_hand import InvertedIndex, report_test_comparison
@@ -713,7 +713,7 @@ Shoppers often add a modifier, a word that narrows what they want: a color, a ma
 
 In [chapter 1](#rank-with-bm25), BM25's results for `clear shower curtain` couldn't show which curtains were clear. The example adds each product's attributes, names and values, to its indexed text, as a field with weight 1, combined before saturation as [the previous section](#weight-the-product-name) recommends. It counts the exact products for that test query that contain `clear`, with and without attributes. Then it measures this one candidate, fixed in advance, on the 50 [train queries](#store-data), and checks it on the 30 test queries: the fourth of the chapter's [five planned comparisons](#lexical-retrieval). Being planned, it goes to test whatever train shows.
 
-Example `add-attributes-field` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.4 · pandas 3.1.1 · pystemmer 3.1.0 · scipy 1.18.1), passing in Edition 2026.11.6:
+Example `add-attributes-field` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.4 · pandas 3.1.1 · pystemmer 3.1.0 · scipy 1.18.1), passing in Edition 2026.11.7:
 
 ```python
 from lib.lexical_by_hand import InvertedIndex, report_test_comparison, tokenize
@@ -796,7 +796,7 @@ BM25 scores a bag of words: it counts which terms a product contains and how oft
 
 The first example builds a positional index over the store's product names, with stemmed terms as in [the stemming section](#stem-word-forms). Positions count terms after stop words are removed, so `door for laundry` holds the adjacent terms `door` and `laundri`: a phrase can match across a removed stop word. The example checks that BM25 scores `barn door`, two words from one of the store's queries, the same in either order, and counts the names that contain both words against those that contain the phrase:
 
-Example `phrase-positions-by-hand` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.4 · pandas 3.1.1 · pystemmer 3.1.0 · scipy 1.18.1), passing in Edition 2026.11.6:
+Example `phrase-positions-by-hand` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.4 · pandas 3.1.1 · pystemmer 3.1.0 · scipy 1.18.1), passing in Edition 2026.11.7:
 
 ```python
 from lib.lexical_by_hand import InvertedIndex, tokenize
@@ -842,7 +842,7 @@ BM25 gives both word orders the same scores (`True`). Of the 71 names that conta
 
 A bonus is gentler than a filter: a fixed amount added to a product's BM25 score for each pair of adjacent query terms that appears, in order, in its name. The second example uses `PositionalIndex` from `lib.lexical_by_hand`, which holds the same positions. It picks the bonus on the 50 [train queries](#store-data), then checks it on the 30 test queries: the last of the chapter's [five planned comparisons](#lexical-retrieval).
 
-Example `phrase-bonus-train-and-test` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.4 · pandas 3.1.1 · pystemmer 3.1.0 · scipy 1.18.1), passing in Edition 2026.11.6:
+Example `phrase-bonus-train-and-test` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.4 · pandas 3.1.1 · pystemmer 3.1.0 · scipy 1.18.1), passing in Edition 2026.11.7:
 
 ```python
 from lib.lexical_by_hand import InvertedIndex, PositionalIndex, report_test_comparison, tokenize

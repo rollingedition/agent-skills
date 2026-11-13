@@ -3,12 +3,12 @@ title: "Data Governance as Code"
 chapter: "Access policies as code"
 chapter_id: access-policies-as-code
 book: data-governance-as-code
-edition: 2026.11.25
-verified: 2026-11-12
-edition_code: 766W-JH9C
+edition: 2026.11.26
+verified: 2026-11-13
+edition_code: Y6HK-BWT6
 canonical: https://rollingedition.com/data-governance-as-code/access-policies-as-code
 license: CC BY 4.0
-attribution: "“Access policies as code,” chapter 5 of Data Governance as Code, Edition 2026.11.25, examples passed Nov 12, 2026. By Rolling Edition, https://rollingedition.com/data-governance-as-code/access-policies-as-code. Text CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Access policies as code,” chapter 5 of Data Governance as Code, Edition 2026.11.26, examples passed Nov 13, 2026. By Rolling Edition, https://rollingedition.com/data-governance-as-code/access-policies-as-code. Text CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Access policies as code
 
@@ -26,7 +26,7 @@ A policy engine answers questions about requests, so the shape of a request deci
 
 The platform's policy reads the same fields, so it decides Trino's request to read columns, `SelectFromColumns`, as Trino sends it. Trino needs more than that one decision, though: it wants each row filter and column mask as SQL, a row filter as `{"expression": "clause"}`, whereas the policy returns a column and a value ([Trino 484, OPA access control](https://trino.io/docs/484/security/opa-access-control.html)), and it also asks about other checks, such as `ExecuteQuery` and `AccessCatalog`, that this policy's `allow` denies ([`OpaAccessControl.java` at Trino 484](https://github.com/trinodb/trino/blob/484/plugin/trino-opa/src/main/java/io/trino/plugin/opa/OpaAccessControl.java)). [Chapter 6](#engine-enforcement) shows what a module beside the policy has to return for them. `lib.policy.request` builds the platform's requests in Trino's shape. Here an `emea` support agent, `agent-a05`, reads three columns of `support.tickets`:
 
-Example `trino-shaped-request` (Python 3.12.15 · pyarrow 26.0.1 · pyiceberg 0.12.0 · regopy 1.5.2), passing in Edition 2026.11.25:
+Example `trino-shaped-request` (Python 3.12.15 · pyarrow 26.0.1 · pyiceberg 0.12.0 · regopy 1.5.2), passing in Edition 2026.11.26:
 
 ```python
 import json
@@ -75,7 +75,7 @@ The [request](#shape-the-request-like-trinos) says who asks for what. Everything
 
 `lib.policy.data_document` builds the document from those three sources each time a policy is loaded, and never from anything typed:
 
-Example `generated-policy-data` (Python 3.12.15 · pyarrow 26.0.1 · pyiceberg 0.12.0 · regopy 1.5.2), passing in Edition 2026.11.25:
+Example `generated-policy-data` (Python 3.12.15 · pyarrow 26.0.1 · pyiceberg 0.12.0 · regopy 1.5.2), passing in Edition 2026.11.26:
 
 ```python
 from lib import policy
@@ -134,7 +134,7 @@ allow if {
 
 The last line is a guard against a failure this chapter's [section on production](#policies-in-production) shows by removing it. The example prints the map and decides four requests:
 
-Example `allow-by-role` (Python 3.12.15 · pyarrow 26.0.1 · pyiceberg 0.12.0 · regopy 1.5.2), passing in Edition 2026.11.25:
+Example `allow-by-role` (Python 3.12.15 · pyarrow 26.0.1 · pyiceberg 0.12.0 · regopy 1.5.2), passing in Edition 2026.11.26:
 
 ```python
 from lib import policy
@@ -197,7 +197,7 @@ row_filters contains {"column": "support_region", "equals": user.region} if {
 
 The example asks for the filters of three support agents, an instructor, marketing, and a data scientist reading reviews twice, once with no purpose and once for `ai-training`:
 
-Example `attributes-as-row-filters` (Python 3.12.15 · pyarrow 26.0.1 · pyiceberg 0.12.0 · regopy 1.5.2), passing in Edition 2026.11.25:
+Example `attributes-as-row-filters` (Python 3.12.15 · pyarrow 26.0.1 · pyiceberg 0.12.0 · regopy 1.5.2), passing in Edition 2026.11.26:
 
 ```python
 import json
@@ -258,7 +258,7 @@ classification(column) := level if {
 
 For the platform, take marketing reading four columns of `crm.learners`. Three are in the metadata. The fourth, `linkedin_url`, stands for a column that a pipeline has added to the table and that nobody has classified yet:
 
-Example `one-decision-document` (Python 3.12.15 · pyarrow 26.0.1 · pyiceberg 0.12.0 · regopy 1.5.2), passing in Edition 2026.11.25:
+Example `one-decision-document` (Python 3.12.15 · pyarrow 26.0.1 · pyiceberg 0.12.0 · regopy 1.5.2), passing in Edition 2026.11.26:
 
 ```python
 import json
@@ -325,7 +325,7 @@ test_finance_sees_only_the_last_four_digits if {
 
 The tests cover each group's allow, its filters and its masks, and the ways a request is denied: a table the group isn't given, an operation other than a read, a user the policy doesn't know, and a support agent with no region.
 
-Example `policy-unit-tests` (Python 3.12.15 · pyarrow 26.0.1 · pyiceberg 0.12.0 · regopy 1.5.2), passing in Edition 2026.11.25:
+Example `policy-unit-tests` (Python 3.12.15 · pyarrow 26.0.1 · pyiceberg 0.12.0 · regopy 1.5.2), passing in Edition 2026.11.26:
 
 ```python
 from collections import Counter
@@ -367,7 +367,7 @@ The run passes 12 of 12 tests. A test that checks only `decision.allow` would mi
 
 The platform's table is `lib.policy.WHO_SEES_WHAT`, a list of rows in Python. Each gives a user, a table, the columns read and an optional purpose, then whether the read is allowed, which columns the row filters test and which columns are masked, and how. The example runs every row through `lib.policy.decide`, which returns the [decision document](#return-the-decision-as-one-document), and prints what the policy decided, one line per row: the form to show the data's owners.
 
-Example `who-sees-what` (Python 3.12.15 · pyarrow 26.0.1 · pyiceberg 0.12.0 · regopy 1.5.2), passing in Edition 2026.11.25:
+Example `who-sees-what` (Python 3.12.15 · pyarrow 26.0.1 · pyiceberg 0.12.0 · regopy 1.5.2), passing in Edition 2026.11.26:
 
 ```python
 from lib import policy
@@ -415,7 +415,7 @@ The platform's [tests](#unit-test-the-policy-in-rego) run in regopy because the 
 
 The first group runs without any error:
 
-Example `regopy-silent-differences` (Python 3.12.15 · regopy 1.5.2), passing in Edition 2026.11.25:
+Example `regopy-silent-differences` (Python 3.12.15 · regopy 1.5.2), passing in Edition 2026.11.26:
 
 ```python
 import json
@@ -469,7 +469,7 @@ region under a mock that refers to a rule: "apac"
 
 The second group fails, and one of the failures takes Python down with it. The first example adds a test to a copy of the platform's tests, and the second formats the same string from nine sources:
 
-Example `regopy-failed-outputs` (Python 3.12.15 · pyarrow 26.0.1 · pyiceberg 0.12.0 · regopy 1.5.2), passing in Edition 2026.11.25:
+Example `regopy-failed-outputs` (Python 3.12.15 · pyarrow 26.0.1 · pyiceberg 0.12.0 · regopy 1.5.2), passing in Edition 2026.11.26:
 
 ```python
 import signal
@@ -519,7 +519,7 @@ lib.policy.decide raises: regopy couldn't evaluate data.platform.access.decision
 printing the failed output ends Python with: SIGSEGV
 ```
 
-Example `regopy-sprintf-quotes` (Python 3.12.15 · regopy 1.5.2), passing in Edition 2026.11.25:
+Example `regopy-sprintf-quotes` (Python 3.12.15 · regopy 1.5.2), passing in Edition 2026.11.26:
 
 ```python
 import json
@@ -575,7 +575,7 @@ Rego isn't the only language for policies like the platform's. Cedar, which its 
 
 The platform's rules in Cedar are in `governance/policies/access.cedar`, with the schema in `access.cedarschema`. A `permit` per group repeats the Rego policy's [`readable` map](#deny-by-default-then-allow-by-role). A `forbid` keeps support agents to learners in their own region, and another hides sensitive columns from everyone except finance's view of card numbers. `lib.policy.cedar_entities` generates the users, groups, tables and columns from the same [data document](#generate-the-data-the-policy-reads) the Rego policy reads, and the example adds the first learner of `crm.learners` in each region:
 
-Example `cedar-same-rules` (Python 3.12.15 · cedarpy 4.12.2 · pyarrow 26.0.1 · pyiceberg 0.12.0 · regopy 1.5.2), passing in Edition 2026.11.25:
+Example `cedar-same-rules` (Python 3.12.15 · cedarpy 4.12.2 · pyarrow 26.0.1 · pyiceberg 0.12.0 · regopy 1.5.2), passing in Edition 2026.11.26:
 
 ```python
 import cedarpy
@@ -639,7 +639,7 @@ We consider the most damaging failure a rule that silently doesn't apply because
 
 To see it, take a copy of the platform's policy and tests, in a temporary folder, with the one line `not missing_attribute` taken out of [`allow`](#deny-by-default-then-allow-by-role). Then add a support agent to the data with their group and no region, as happens when someone is given a role before anyone sets their region, and ask both policies for the agent's tickets:
 
-Example `missing-region-guard` (Python 3.12.15 · pyarrow 26.0.1 · pyiceberg 0.12.0 · regopy 1.5.2), passing in Edition 2026.11.25:
+Example `missing-region-guard` (Python 3.12.15 · pyarrow 26.0.1 · pyiceberg 0.12.0 · regopy 1.5.2), passing in Edition 2026.11.26:
 
 ```python
 import tempfile
@@ -690,7 +690,7 @@ With the guard, the agent is denied, and the reason names what is missing: suppo
 
 Cedar fails the same way, through [skip on error](#the-same-rules-in-cedar). Take the support agents' `forbid` from the platform's Cedar policies without its `has region` check, so it reads `principal.region` on an agent who has none:
 
-Example `cedar-missing-region` (Python 3.12.15 · cedarpy 4.12.2 · pyarrow 26.0.1 · pyiceberg 0.12.0 · regopy 1.5.2), passing in Edition 2026.11.25:
+Example `cedar-missing-region` (Python 3.12.15 · cedarpy 4.12.2 · pyarrow 26.0.1 · pyiceberg 0.12.0 · regopy 1.5.2), passing in Edition 2026.11.26:
 
 ```python
 import cedarpy

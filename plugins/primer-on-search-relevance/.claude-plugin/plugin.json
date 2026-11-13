@@ -1,7 +1,7 @@
 {
   "name": "primer-on-search-relevance",
   "displayName": "A Primer on Search Relevance",
-  "version": "2026.11.6",
+  "version": "2026.11.7",
   "description": "How search engines find and rank results, and how to measure whether a change helps: lexical, semantic and hybrid retrieval, reranking with learned models and LLMs, and judgments from people and LLMs, on a real product catalog.",
   "author": {
     "name": "Rolling Edition",
