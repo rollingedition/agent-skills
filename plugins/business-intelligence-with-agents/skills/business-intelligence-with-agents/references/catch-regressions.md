@@ -3,12 +3,12 @@ title: "Business Intelligence with Agents"
 chapter: "Judge answers and catch regressions"
 chapter_id: catch-regressions
 book: business-intelligence-with-agents
-edition: 2026.11.8
-verified: 2026-11-12
-edition_code: 4VTV-2H9T
+edition: 2026.11.9
+verified: 2026-11-13
+edition_code: A1YT-QABQ
 canonical: https://rollingedition.com/business-intelligence-with-agents/catch-regressions
 license: CC BY 4.0
-attribution: "“Judge answers and catch regressions,” chapter 10 of Business Intelligence with Agents, Edition 2026.11.8, examples passed Nov 12, 2026. By Rolling Edition, https://rollingedition.com/business-intelligence-with-agents/catch-regressions. Text CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Judge answers and catch regressions,” chapter 10 of Business Intelligence with Agents, Edition 2026.11.9, examples passed Nov 13, 2026. By Rolling Edition, https://rollingedition.com/business-intelligence-with-agents/catch-regressions. Text CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Judge answers and catch regressions
 
@@ -34,7 +34,7 @@ interval = centre − half  to  centre + half
 
 The test split is held out, and the book scores it only for a number it reports. Chapters 3 and 6 recorded their agents on test once. This chapter recorded the declining agent on test once, in the recording `decline-runs-test`, with chapter 8's prompt unchanged, and changed nothing after it. These are the book's final test numbers for its agents.
 
-Example `scorecard` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.30.0), passing in Edition 2026.11.8:
+Example `scorecard` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.30.0), passing in Edition 2026.11.9:
 
 ```python
 """Score the book's agents on more than accuracy: dev to compare them, and the held-out test split once, at the end."""
@@ -141,7 +141,7 @@ On test, the declining agent gets 8 of 21, an accuracy of 0.38 (95% interval 0.2
 
 So use a judge only where a result can't be compared directly, and design each call so that a bias would show. The shop's judge is the book's own model, the same one the agent uses, called with a separate prompt, `JUDGE_PAIR` in `lib/prompts.py`. It sees a question and two reasons for declining it, labelled A and B, and names the better one, or a tie, as JSON. The rubric asks for a reason that says accurately why the shop's data can't answer and what the person could ask instead. The cases are every golden question, on either split, that both chapter 6's metrics-first agent and chapter 8's declining agent declined: 8 pairs. Only 3 of them, `gq-021`, `gq-042` and `gq-045`, are decline questions. The other 5, `gq-032`, `gq-033`, `gq-034`, `gq-037` and `gq-041`, are answer questions the warehouse can answer, the [gaps in the layer](#measure-metrics-first) chapter 6 found, and both agents declined them wrongly. On those, the right reply was a number, so the judge compares two wrong declines. Each pair is judged twice, once with each agent's reason first, so a verdict that follows the position rather than the text changes with the order. `parse_verdict()` in `lib/judge.py` reads each reply, and the recording `judge-verdicts` holds every call.
 
-Example `judge-an-explanation` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.30.0), passing in Edition 2026.11.8:
+Example `judge-an-explanation` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.30.0), passing in Edition 2026.11.9:
 
 ```python
 """Judge only what can't be compared: two reasons for declining the same question, shown in both orders."""
@@ -237,7 +237,7 @@ kappa, pi    = (p_o − chance) / (1 − chance)
 
 `agreement()` in `lib/judge.py` computes all three; scikit-learn's `cohen_kappa_score` uses the same definition of kappa ([scikit-learn](https://scikit-learn.org/stable/modules/generated/sklearn.metrics.cohen_kappa_score.html)). The prompt, `JUDGE_ANSWER`, gives the judge the shop's glossary, the question, the role, the metric and SQL behind the answer and its result. The cases are every distinct answer with a number that schema-only SQL, the metrics-first agent and the declining agent gave to an answer question, on both splits, from their recordings: 56 in all. The judge prompts were written once, and no verdict changed them. What the judge is shown changed once. Schema-only SQL's query for `gq-009` has no `ORDER BY`, so its rows came back in another order on replay, and the prompt built from them no longer matched its recording. `shown()` in `lib/judge.py` now sorts the rows of any query without `ORDER BY` before the judge sees them. The recording made before that fix was set aside, and every judge call was recorded again from scratch with the fix in place, as the manifest of `judge-verdicts` says. Every reply matched the set-aside recording's, so no number in this chapter moved.
 
-Example `judge-agreement` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.30.0), passing in Edition 2026.11.8:
+Example `judge-agreement` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.30.0), passing in Edition 2026.11.9:
 
 ```python
 """Calibrate the judge: its verdicts on the book's recorded answers against labels from results_match()."""
@@ -323,7 +323,7 @@ Every score so far came from one run per question, and a run is a sample. The bo
 
 The recording `repeat-runs` holds the same 12 dev questions run under four more seeds, 1 to 4, for both chapter 6's metrics-first agent and chapter 8's declining agent, with the same prompts, tools, sampling settings and four-call limit as their original recordings. With the original runs, made with seed 2718, each question has five runs per agent. `SeededRecording` in `lib/regressions.py` replays one agent's calls for one seed. The 12 questions are every dev answer or decline question that either agent missed in its original run, and the first five others in ID order, so they are harder than the split's average and their flip rates are an upper end. The recording also runs the declining agent once more with seed 2718 itself, to measure something the book has so far assumed: that a run with the same seed replays byte for byte on this runtime.
 
-Example `seed-variance` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.30.0), passing in Edition 2026.11.8:
+Example `seed-variance` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.30.0), passing in Edition 2026.11.9:
 
 ```python
 """Five runs of 12 dev questions per agent, one per seed: how much a score moves, and which questions flip."""
@@ -401,7 +401,7 @@ A CI job that scores every change on the golden questions turns the measurements
 
 `Comparison` in `lib/regressions.py` takes, for each question, the share of runs correct under the base and under the candidate, and their difference. It reports the mean paired difference with a t interval, the standard error times Student's t for one fewer degrees of freedom than questions, counts the questions fixed and broken, and runs an exact sign test on the questions that changed. Miller's errors assume many questions; on 12, mostly unchanged, the t interval is a rough guide, and only the sign test assumes nothing. `gate()` applies two rules of our choosing: it fails on a stable break, a question the base got right in at least four runs of five and the candidate in at most one, and when the whole interval of the mean difference lies below zero. The first catches one regression an average would hide; the second, many small ones. The example gates chapter 8's prompt against chapter 6's, with one run per question and then with five, on the 12 questions of [`repeat-runs`](#repeat-to-see-variance). They were chosen from the outcomes, so the gate's numbers describe them, not the dev split.
 
-Example `regression-gate` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.30.0), passing in Edition 2026.11.8:
+Example `regression-gate` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.30.0), passing in Edition 2026.11.9:
 
 ```python
 """Gate a prompt change on paired, per-question differences over five recorded runs of each question."""
@@ -490,7 +490,7 @@ The warehouse changes under the agent too: a column renamed upstream, a table re
 
 The example applies one migration an upstream team might ship, renaming `analytics.fct_orders.net_revenue_eur` to `net_revenue_ex_tax_eur`, to a new copy of the shop's warehouse, built by `migrated()` in `lib/regressions.py`. `schema_checks()` runs the three checks. Then the example makes the fix, one line in the metric's `expr`, in a copy of the semantic layer's YAML, and runs the checks again.
 
-Example `renamed-column-caught` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.30.0), passing in Edition 2026.11.8:
+Example `renamed-column-caught` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.30.0), passing in Edition 2026.11.9:
 
 ```python
 """An upstream rename of one column, caught by three checks that need no model, and the one-line fix."""

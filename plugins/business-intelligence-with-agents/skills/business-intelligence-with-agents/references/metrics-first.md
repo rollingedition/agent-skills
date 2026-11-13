@@ -3,12 +3,12 @@ title: "Business Intelligence with Agents"
 chapter: "Route questions to governed metrics first"
 chapter_id: metrics-first
 book: business-intelligence-with-agents
-edition: 2026.11.8
-verified: 2026-11-12
-edition_code: 4VTV-2H9T
+edition: 2026.11.9
+verified: 2026-11-13
+edition_code: A1YT-QABQ
 canonical: https://rollingedition.com/business-intelligence-with-agents/metrics-first
 license: CC BY 4.0
-attribution: "“Route questions to governed metrics first,” chapter 6 of Business Intelligence with Agents, Edition 2026.11.8, examples passed Nov 12, 2026. By Rolling Edition, https://rollingedition.com/business-intelligence-with-agents/metrics-first. Text CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Route questions to governed metrics first,” chapter 6 of Business Intelligence with Agents, Edition 2026.11.9, examples passed Nov 13, 2026. By Rolling Edition, https://rollingedition.com/business-intelligence-with-agents/metrics-first. Text CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Route questions to governed metrics first
 
@@ -26,7 +26,7 @@ The shop's agent gets its metric tools from `lib/metric_tools.py`, a module this
 
 The example builds the prompt, prints one line of the catalog and what `describe_metric` returns for the refund rate, and compares the size of two prompts for the same golden question, `gq-002`, net revenue in each region in March 2026: the schema-only prompt from [chapter 1](#ask-for-sql), and this one. Both sizes are the token counts the model's runtime reported when the calls were recorded.
 
-Example `metric-tools` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.30.0), passing in Edition 2026.11.8:
+Example `metric-tools` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.30.0), passing in Edition 2026.11.9:
 
 ```python
 """Give the agent the semantic layer's metrics instead of the warehouse's tables, and compare what each prompt holds."""
@@ -95,7 +95,7 @@ Qwen's chat template for the model this book records with asks for each tool cal
 
 The shop's case is golden question `gq-003`, net revenue by sales channel in calendar 2025. Schema-only SQL failed it in chapter 1 by filtering `fct_orders` on a `calendar_year` column that exists only in `dim_date`. The recording `metric-agent-runs` holds the same model's replies to the metrics-first prompt for all 48 golden questions. It was made by `recordings/record_metrics_first.py` with the pinned model file, Qwen's recommended sampling and a seed reset before every call, like every recording in this book. The example replays the run for `gq-003`.
 
-Example `model-returns-a-request` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.30.0), passing in Edition 2026.11.8:
+Example `model-returns-a-request` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.30.0), passing in Edition 2026.11.9:
 
 ```python
 """The model returns a metric request, not SQL: the layer compiles the request, and the answer is checked against gold."""
@@ -167,7 +167,7 @@ A [parsed request](#request-not-sql) is well-formed, which isn't the same as rig
 
 The example sends three requests a person might write: orders by customer email, which no semantic model defines; net revenue by product category, which would fan out; and net revenue for a region called `Europe`. Then it replays the model's own first request for `gq-002`, runs it without validation to show what would have happened, and follows the run to its answer.
 
-Example `reject-unknown-dimension` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.30.0), passing in Edition 2026.11.8:
+Example `reject-unknown-dimension` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.30.0), passing in Edition 2026.11.9:
 
 ```python
 """Validate a metric request against the layer and the warehouse before it runs, and show what would run without it."""
@@ -236,7 +236,7 @@ The `ask_back` tool ends the run with a question to the person and the options t
 
 The dev split has four questions of kind `decline`, whose right answer is a question back or a reason: two ambiguous, `gq-019` ("Who are our best customers?") and `gq-020` ("Which region is doing best?"), and two unanswerable, a forecast and the cost of shipping. The example replays all four and prints the tool each run ended with, then the questions the agent asked for `gq-019` and `gq-005` and the answer it gave for `gq-020`. Last, it tries a check the recorded runs didn't have, which the end of this section describes.
 
-Example `clarify-best-customers` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.30.0), passing in Edition 2026.11.8:
+Example `clarify-best-customers` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.30.0), passing in Edition 2026.11.9:
 
 ```python
 """Ask back when a question could mean several metrics: the layer supplies each option's definition to the person."""
@@ -326,7 +326,7 @@ The examples so far followed [single runs](#validate-the-request). The measureme
 
 Each run gets at most four model calls. A run that uses all four without an answer is a failure, and `grade()` scores it as `step limit`, apart from the declines the model chose. The example replays every run and counts outcomes per split, for metrics-first and for schema-only SQL. Then it counts what the tools did: model calls, refused requests, runs that reached a correct answer after a refusal, and clarifications by kind of question.
 
-Example `metrics-first-score` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.30.0), passing in Edition 2026.11.8:
+Example `metrics-first-score` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.30.0), passing in Edition 2026.11.9:
 
 ```python
 """Score metrics-first against the schema-only baseline on both splits: dev for tuning, test once for the final number."""
@@ -429,7 +429,7 @@ This is one model, one sampled reply per call and one synthetic warehouse, so th
 
 [The score](#measure-metrics-first) says how many runs failed, but not why. The why is in the traces, and it decides what to fix: a metric, a description, a check or an access rule. The example replays every run that wasn't correct and prints each call, the tool and arguments the model sent and the first line of what came back. It also prints the request for `gq-008`, a correct run that the dev wrong answers are set beside, and it asks the layer for the request `gq-039`'s run was reaching for.
 
-Example `metrics-first-misses` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.30.0), passing in Edition 2026.11.8:
+Example `metrics-first-misses` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.30.0), passing in Edition 2026.11.9:
 
 ```python
 """Read every metrics-first run that wasn't correct, call by call, and ask the layer what gq-039's run was reaching for."""
