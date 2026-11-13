@@ -1,3 +1,6 @@
+"""Measures how much attention a description token puts on tokens four or more positions back, and on the two markers,
+against an even spread, over 300 validation products. The prose's point rests on the all-layers share four or more back,
+and on the count of descriptions that repeat a token of the name."""
 import numpy as np
 
 from lib import transformer
@@ -5,22 +8,23 @@ from lib.products import product_texts
 
 _, vocabulary, manifest = transformer.load()
 end = vocabulary.index(transformer.END)
-texts = product_texts("validation", 300)
+texts = product_texts("validation", 300)                    # the first 300 validation products, which the model never trained on
 layers = manifest["settings"]["layers"]
 far, markers, even_far, even_markers, counted = np.zeros(layers), np.zeros(layers), 0.0, 0.0, 0
 for ids, sep in texts:
-    queries = np.array([i for i in range(sep + 1, len(ids)) if ids[i] != end])    # the description's tokens
+    # the description's tokens: after <sep>, so not the name, and without the end marker
+    queries = np.array([i for i in range(sep + 1, len(ids)) if ids[i] != end])
     if len(queries) == 0:
         continue                                          # a product with no description
     _, attention = transformer.forward(ids, keep=True)
     stacked = np.stack(attention)[:, :, queries]          # (layers, heads, description tokens, positions)
     positions = np.arange(len(ids))
     is_marker = np.isin(positions, [0, sep])              # <s> and <sep>
-    beyond = (queries[:, None] - positions[None, :] >= 4) & ~is_marker   # what a 4-token window can't see
+    beyond = (queries[:, None] - positions[None, :] >= 4) & ~is_marker   # 4 positions back is the nearest a four-token window can't see
     far += (stacked * beyond).sum(-1).mean(1).sum(-1)
     markers += (stacked * is_marker).sum(-1).mean(1).sum(-1)
     even_far += (beyond.sum(1) / (queries + 1)).sum()     # an even spread over the positions each token can see
-    even_markers += (2 / (queries + 1)).sum()
+    even_markers += (2 / (queries + 1)).sum()             # two markers among the query's i + 1 visible positions
     counted += len(queries)
 
 print("description tokens measured:", f"{counted:,}")
@@ -31,6 +35,7 @@ print("all layers, weight 4 or more tokens back:", f"{far.mean() / counted:.2f}"
 print("an even spread's weight 4 or more tokens back:", f"{even_far / counted:.2f}")
 print("all layers, weight on <s> and <sep>:", f"{markers.mean() / counted:.2f}")
 print("an even spread's weight on <s> and <sep>:", f"{even_markers / counted:.2f}")
+# the name without <s>, and what follows <sep>; a product counts as described if anything but the end marker follows
 described = [(ids[1:sep], ids[sep + 1:]) for ids, sep in texts if any(i != end for i in ids[sep + 1:])]
 print("products with a description:", len(described))
 print("descriptions that repeat a token of the name:", sum(bool(set(n) & set(d)) for n, d in described))

@@ -1,3 +1,6 @@
+"""The next token's distribution after the first nine tokens of the greedy description, at three temperatures, and how
+many tokens each needs to cover 90% of the probability. The prose quotes the three counts, and the share at 1.5 that
+falls outside temperature 1's 90% cover."""
 import numpy as np
 
 from lib import decoding, transformer
@@ -9,11 +12,11 @@ logits = decoding.next_logits(start + so_far)
 print("text so far:", decoding.text(so_far))
 print("tokens in the vocabulary:", f"{len(vocabulary):,}")
 cover = np.argsort(-transformer.softmax(logits), kind="stable")    # at temperature 1, the likeliest first
-cover = cover[:int(np.searchsorted(np.cumsum(transformer.softmax(logits)[cover]), 0.9)) + 1]
+cover = cover[:int(np.searchsorted(np.cumsum(transformer.softmax(logits)[cover]), 0.9)) + 1]   # temperature 1's 90% cover, its last token included
 for temperature in [0.5, 1.0, 1.5]:
     probabilities = transformer.softmax(logits / temperature)     # divide the logits, then softmax
     top = np.argsort(-probabilities, kind="stable")
-    covering = int(np.searchsorted(np.cumsum(probabilities[top]), 0.9)) + 1
+    covering = int(np.searchsorted(np.cumsum(probabilities[top]), 0.9)) + 1   # +1: the token that reaches 90% counts
     print(f"temperature {temperature}, top 3:", ", ".join(f'"{vocabulary[i].replace("</w>", "")}" {probabilities[i]:.2f}' for i in top[:3]))
     print(f"temperature {temperature}, tokens needed to cover 90% of the probability:", covering)
     print(f"temperature {temperature}, probability outside temperature 1.0's 90% cover:",

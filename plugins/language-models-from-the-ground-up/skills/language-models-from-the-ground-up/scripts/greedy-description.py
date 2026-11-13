@@ -1,3 +1,6 @@
+"""Greedy decoding writes one description of a product that has none, and shows how it repeats itself, and how likely
+the model is to leave a bulb's description empty. The prose quotes the greedy description, its repeated phrases, and
+the line with the bulb's probability of an empty description."""
 from collections import Counter
 
 from lib import decoding, transformer
@@ -13,11 +16,11 @@ print("training products named as bulbs with no description:", f"{empty(bulbs).m
 
 longest = 60
 print("longest description, in tokens:", longest)
-ids = decoding.generate(decoding.prompt("front porch welcome sign wall décor"), longest=longest)   # always the likeliest
+ids = decoding.generate(decoding.prompt("front porch welcome sign wall décor"), longest=longest)   # no rng: each step takes the likeliest token
 print("greedy description:", decoding.text(ids))
-fourgrams = Counter(tuple(ids[i:i + 4]) for i in range(len(ids) - 3))
+fourgrams = Counter(tuple(ids[i:i + 4]) for i in range(len(ids) - 3))   # the four tokens from i: a window that slides one token at a time
 print("4-token phrases it uses twice or more:", " | ".join(decoding.text(list(g)) for g, n in fourgrams.items() if n > 1))
 
-end = transformer.load()[1].index(transformer.END)
-probabilities = transformer.softmax(decoding.next_logits(decoding.prompt("5 light light bulb")))
+end = transformer.load()[1].index(transformer.END)                     # the index of </s> in the vocabulary
+probabilities = transformer.softmax(decoding.next_logits(decoding.prompt("5 light light bulb")))   # the first token after <sep>
 print("P(the description is empty), 5 light light bulb:", f"{probabilities[end]:.2f}")

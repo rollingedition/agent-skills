@@ -6,23 +6,23 @@ compatibility: "The book's examples ran on Python 3.12.15 and the versions its p
 metadata:
   publisher: "Rolling Edition"
   book: "Language Models from the Ground Up"
-  edition: "2026.11.10"
+  edition: "2026.11.11"
   verified: "2026-11-13"
   examples: "86 of 86 examples pass"
-  edition-code: "ZD73-7XB0"
+  edition-code: "3Y9C-0N1E"
   source: "https://rollingedition.com/language-models-from-the-ground-up"
 ---
 
 # Language Models from the Ground Up
 
-This agent skill is *Language Models from the Ground Up*, Edition 2026.11.10, from Rolling Edition. Examples passed Nov 13, 2026: 86 of 86 examples pass. It's built from that edition, never written separately: the procedures below come from the book's sections, and each step links to its section on rollingedition.com, whose page has the section's text and its examples, with their code and output.
+This agent skill is *Language Models from the Ground Up*, Edition 2026.11.11, from Rolling Edition. Examples passed Nov 13, 2026: 86 of 86 examples pass. It's built from that edition, never written separately: the procedures below come from the book's sections, and each step links to its section on rollingedition.com, whose page has the section's text and its examples, with their code and output.
 
 ## How to use this skill
 
 - **Pick the procedure that fits the task,** and follow its steps in order. Each step links the section it comes from: read that section before you act on it, with the Rolling Edition MCP server's `get_section` (book `language-models-from-the-ground-up` and the section's ID, the link's last part) or on its page, and adapt it to the project in front of you.
 - **Check against the book.** An example's section shows its code, the versions it ran on and its output. If the project uses other versions, say so before relying on a step.
-- **Is this copy current?** Call `check_code` with `ZD73-7XB0` on the Rolling Edition MCP server (https://rollingedition.ai/mcp), or compare the edition with the book's page: https://rollingedition.com/language-models-from-the-ground-up
-- **Credit the book** when you quote it or reuse its code: Language Models from the Ground Up, Edition 2026.11.10, examples passed Nov 13, 2026. By Rolling Edition, https://rollingedition.com/language-models-from-the-ground-up. Text CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people.
+- **Is this copy current?** Call `check_code` with `3Y9C-0N1E` on the Rolling Edition MCP server (https://rollingedition.ai/mcp), or compare the edition with the book's page: https://rollingedition.com/language-models-from-the-ground-up
+- **Credit the book** when you quote it or reuse its code: Language Models from the Ground Up, Edition 2026.11.11, examples passed Nov 13, 2026. By Rolling Edition, https://rollingedition.com/language-models-from-the-ground-up. Text CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people.
 
 The full skill, with the chapters beside it and every example as a script to run at the book's pinned versions, is the `language-models-from-the-ground-up` plugin and the zip on the book's page at rollingedition.ai.
 
@@ -106,7 +106,7 @@ The full skill, with the chapters beside it and every example as a script to run
 8. Add training text only if it resembles the target; measure on the target. [More text helps only if it's the same kind](https://rollingedition.com/language-models-from-the-ground-up/s/same-kind-of-text)
 9. Judge predictions by measurements over many contexts, not examples. [Suggest from similar contexts](https://rollingedition.com/language-models-from-the-ground-up/s/suggest-from-similar-contexts)
 
-**Check:** run [the example](https://rollingedition.com/language-models-from-the-ground-up/s/compute-gradients) (True), then [the comparison](https://rollingedition.com/language-models-from-the-ground-up/s/compare-with-the-baseline): 36.4 against the baseline's 23.1.
+**Check:** run [the example](https://rollingedition.com/language-models-from-the-ground-up/s/compute-gradients) (yes), then [the comparison](https://rollingedition.com/language-models-from-the-ground-up/s/compare-with-the-baseline): 36.4 against the baseline's 23.1.
 
 **Pitfalls:** [What goes wrong in production](https://rollingedition.com/language-models-from-the-ground-up/s/neural-in-production): overfitting is silent; mismatched training text hurts; averages hide rare contexts; a mix needs both models at serving time, so rebuild the counts whenever you retrain.
 
@@ -123,7 +123,7 @@ The full skill, with the chapters beside it and every example as a script to run
 7. Describe heads by averages over a few hundred texts, beside an even spread. [Some heads attend to the previous token](https://rollingedition.com/language-models-from-the-ground-up/s/attend-to-the-previous-token)
 8. Measure how far back it attends, report marker weight apart, and keep the first tokens when cutting context. [Reach past the window](https://rollingedition.com/language-models-from-the-ground-up/s/reach-past-the-window)
 
-**Check:** run [the example](https://rollingedition.com/language-models-from-the-ground-up/s/hide-the-future): weight on later tokens is 0.0, and with the mask, whether an earlier output changes with the last token reads False.
+**Check:** run [the example](https://rollingedition.com/language-models-from-the-ground-up/s/hide-the-future): weight on later tokens is 0.0, and with the mask, changing the last token moves the output at an earlier position by 0.00.
 
 **Pitfalls:** [What goes wrong in production](https://rollingedition.com/language-models-from-the-ground-up/s/attention-in-production): cost grows with the square of the length; a wrong mask fails silently; attention weights aren't explanations; a fully masked row becomes NaN.
 
@@ -141,7 +141,7 @@ The full skill, with the chapters beside it and every example as a script to run
 8. Before loading weights, compare the configuration line by line: normalization and ε, RoPE pairing and base, gating, tied outputs, shared keys and values. Then score known text against reference outputs. [Measure what a mismatched detail costs](https://rollingedition.com/language-models-from-the-ground-up/s/measure-mismatched-details)
 9. Count parameters by part. [Count where the parameters go](https://rollingedition.com/language-models-from-the-ground-up/s/count-the-parameters)
 
-**Check:** run [the example](https://rollingedition.com/language-models-from-the-ground-up/s/check-against-pytorch) (True), then [the mismatch example](https://rollingedition.com/language-models-from-the-ground-up/s/measure-mismatched-details): 24.3 as trained, 26.4 with the wrong RoPE base, and no error.
+**Check:** run [the example](https://rollingedition.com/language-models-from-the-ground-up/s/check-against-pytorch) (yes), then [the mismatch example](https://rollingedition.com/language-models-from-the-ground-up/s/measure-mismatched-details): 24.3 as trained, 26.4 with the wrong RoPE base, and no error.
 
 **Pitfalls:** [What goes wrong in production](https://rollingedition.com/language-models-from-the-ground-up/s/transformer-in-production): mismatched details fail quietly; lengths beyond training are untested; large values overflow at reduced precision.
 
@@ -158,7 +158,7 @@ The full skill, with the chapters beside it and every example as a script to run
 7. Prefer new text to more epochs, and change one thing per run. [What width, data and steps buy](https://rollingedition.com/language-models-from-the-ground-up/s/what-width-data-and-steps-buy)
 8. Test autocomplete on rare and common prefixes, with controls. [Suggest the next word in the search box](https://rollingedition.com/language-models-from-the-ground-up/s/autocomplete-in-the-search-box)
 
-**Check:** run [the example](https://rollingedition.com/language-models-from-the-ground-up/s/warm-up-then-decay) (True), then [the comparison](https://rollingedition.com/language-models-from-the-ground-up/s/compare-on-descriptions): 20.1 against the 4-gram's 22.5.
+**Check:** run [the example](https://rollingedition.com/language-models-from-the-ground-up/s/warm-up-then-decay) (yes), then [the comparison](https://rollingedition.com/language-models-from-the-ground-up/s/compare-on-descriptions): 20.1 against the 4-gram's 22.5.
 
 **Pitfalls:** [What goes wrong in production](https://rollingedition.com/language-models-from-the-ground-up/s/training-in-production): a schedule bug looks like a model problem; choices made on validation data flatter the result; repeated text gets memorized; padding wastes computation, so pack texts or group them by length.
 

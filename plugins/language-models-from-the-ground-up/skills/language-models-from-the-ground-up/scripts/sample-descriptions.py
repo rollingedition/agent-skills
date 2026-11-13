@@ -1,3 +1,6 @@
+"""Four samplers write the same description from one seed, and the temperature-1 draws are then replayed to mark the
+tokens outside each step's 90% nucleus. The last two lines are the ones the prose quotes: how many draws came from
+the tail, and which tokens they were."""
 import numpy as np
 
 from lib import decoding, transformer
@@ -14,10 +17,10 @@ for label, settings in [("sampling, temperature 1.0", {}), ("sampling, temperatu
 rng, written, tail = np.random.default_rng(seed), [], []    # replay temperature 1.0's draws, step by step
 for _ in range(longest):
     probabilities = transformer.softmax(decoding.next_logits(start + written))
-    token = int(rng.choice(len(probabilities), p=decoding.truncate(probabilities)))
+    token = int(rng.choice(len(probabilities), p=decoding.truncate(probabilities)))   # no cut: draw from all of it
     order = np.argsort(-probabilities, kind="stable")
     before = probabilities[order[:int(np.where(order == token)[0][0])]].sum()   # the probability ranked above it
-    if before >= 0.9:
+    if before >= 0.9:                                        # top-p 0.9 would have cut this token
         tail.append(vocabulary[token].replace("</w>", ""))
     written.append(token)
     if vocabulary[token] == transformer.END:

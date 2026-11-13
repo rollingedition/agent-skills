@@ -1,9 +1,13 @@
+"""Seven ways of choosing the next token, measured on the same 20 product descriptions: how often each repeats
+itself, how likely the model finds its own text, whether it ends, and whether it stays on the product. The real
+descriptions come first, as the bar the others are read against. The prose quotes these lines for each setting."""
 import numpy as np
 
-from lib import decoding
+from lib import decoding                    # the store's model, and the decoding methods this chapter builds
 from lib.products import product_texts
 
 longest, sample, seed = 60, 20, 2026
+# Validation products, which the model never trained on, that have at least one token of description after <sep>
 described = [(ids, sep) for ids, sep in product_texts("validation") if sep < len(ids) - 2]
 products = [described[i] for i in np.random.default_rng(seed).choice(len(described), sample, replace=False)]
 print("products, drawn at random from the validation products with a description:", sample)
@@ -16,17 +20,19 @@ settings = [("real descriptions", None), ("greedy", {}), ("greedy, repetition pe
 for label, chosen in settings:
     rows = []
     for number, (ids, sep) in enumerate(products):
-        start = ids[:sep + 1]
+        start = ids[:sep + 1]                                 # the start marker, the name and <sep>: the model writes on from here
         if chosen is None:
-            written = ids[sep + 1:][:longest]
+            written = ids[sep + 1:][:longest]                 # the description as sold, cut where generating would stop
         else:
             options = {option: value for option, value in chosen.items() if option != "sample"}
+            # generate samples when it's given a generator, and is greedy without one. Each product gets its own
+            # seed, the same for every sampling setting, so the settings differ only in how they choose.
             rng = np.random.default_rng(seed + number) if chosen.get("sample") else None
             written = decoding.generate(start, rng=rng, longest=longest, **options)
-        rows.append(decoding.measures(start, written))
+        rows.append(decoding.measures(start, written))        # repetition, each token's log-probability, ended, uses the name, length
     repeated, log_p, ended, uses_name, length = zip(*rows)
     print(f"{label}, repeated 4-token phrases:", f"{np.mean(repeated):.0%}")
-    print(f"{label}, the model's perplexity of the text:", f"{np.exp(-np.concatenate(log_p).mean()):.1f}")
+    print(f"{label}, the model's perplexity of the text:", f"{np.exp(-np.concatenate(log_p).mean()):.1f}")   # over all 20 texts' tokens at once
     print(f"{label}, ended within {longest} tokens:", f"{np.mean(ended):.0%}")
     print(f"{label}, uses a whole word of the name:", f"{np.mean(uses_name):.0%}")
     print(f"{label}, average length in tokens:", f"{np.mean(length):.0f}")

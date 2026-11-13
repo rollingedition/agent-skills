@@ -1,9 +1,12 @@
+"""Runs the store's trained model on one validation product, up to the description's second furniture, and prints where
+its heads attend there. The prose's point rests on the last layer's head with the most weight on the name's cover, and on
+the probability it gives cover."""
 import numpy as np
 
 from lib import transformer
 from lib.store import load_products
 
-_, vocabulary, manifest = transformer.load()
+_, vocabulary, manifest = transformer.load()   # forward reads the weights itself, so only the vocabulary and manifest are kept
 settings = manifest["settings"]
 index = {t: i for i, t in enumerate(vocabulary)}
 product = load_products("validation").query("name == 'double chaise patio furniture cover'").iloc[0]
@@ -27,7 +30,9 @@ print("layers:", settings["layers"])
 print("heads per layer:", settings["heads"])
 print("dimensions per head:", settings["dimensions"] // settings["heads"])
 print("name:", " ".join(vocabulary[i] for i in ids[1:sep]))
+# after <sep>, up to and including the current position
 print("description so far:", " ".join(vocabulary[i] for i in ids[sep + 1:position + 1]))
+# position + 1 is the token that really comes next in the text
 print(f"P(next token is {vocabulary[ids[position + 1]]}): {probabilities[ids[position + 1]]:.2f}")
 for layer in [0, len(attention) - 1]:
     for head, weights in enumerate(attention[layer]):
@@ -40,5 +45,5 @@ last = attention[-1][:, position]                        # the last layer's head
 head = int(last[:, name_cover].argmax())
 print("last-layer head with the most weight on the name's cover:", f"head {head + 1}")
 print("its weight on the name's cover:", f"{last[head, name_cover]:.2f}")
-print(f"its weight on {vocabulary[ids[earlier + 1]].removesuffix('</w>')}, after the description's earlier furniture:",
+print(f"its weight on {vocabulary[ids[earlier + 1]].removesuffix('</w>')}, after the description's earlier furniture:",  # earlier + 1: the token after the first furniture
       f"{last[head, earlier + 1]:.2f}")

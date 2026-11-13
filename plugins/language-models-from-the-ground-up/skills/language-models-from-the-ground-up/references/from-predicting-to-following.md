@@ -3,32 +3,35 @@ title: "Language Models from the Ground Up"
 chapter: "From predicting to following instructions"
 chapter_id: from-predicting-to-following
 book: language-models-from-the-ground-up
-edition: 2026.11.10
+edition: 2026.11.11
 verified: 2026-11-13
-edition_code: ZD73-7XB0
+edition_code: 3Y9C-0N1E
 canonical: https://rollingedition.com/language-models-from-the-ground-up/from-predicting-to-following
 license: CC BY 4.0
-attribution: "“From predicting to following instructions,” chapter 11 of Language Models from the Ground Up, Edition 2026.11.10, examples passed Nov 13, 2026. By Rolling Edition, https://rollingedition.com/language-models-from-the-ground-up/from-predicting-to-following. Text CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“From predicting to following instructions,” chapter 11 of Language Models from the Ground Up, Edition 2026.11.11, examples passed Nov 13, 2026. By Rolling Edition, https://rollingedition.com/language-models-from-the-ground-up/from-predicting-to-following. Text CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # From predicting to following instructions
 
 By the end of this chapter you can explain how a model that predicts the next token becomes one that follows requests, build the two training losses that do it, and measure what that change does and doesn't fix. You'll compare a base model with its instruction-tuned version on the same requests, measure how often each makes up a product detail, check whether its confidence warns you when it does, and find where in a longer context a model stops finding what it was given.
 
-This book follows one case throughout: an online furniture and home-goods store, which it calls the store, and the text of its product names and descriptions. Every model in the book so far has done one thing: predict the next token of text like its training text. [Chapter 10](#inside-an-open-model) read **SmolLM2-360M**, an open model trained that way on general text, and found it scored the store's names far worse, per word, than the store's own small model, and its descriptions worse. People don't want a continuation of their text; they want an answer to their request. Models are taught that in two further steps of training.
+The furniture and home-goods store's product names and descriptions are the text this book models, and every model in the book so far has done one thing: predict the next token of text like its training text. [Chapter 10](#inside-an-open-model) read **SmolLM2-360M**, an open model trained that way on general text, and found it scored the store's names far worse, per word, than the store's own small model, and its descriptions worse. People don't want a continuation of their text; they want an answer to their request. Models are taught that in two further steps of training.
 
 **Instruction tuning**, or supervised fine-tuning, continues training the model on examples of requests paired with good responses, so that predicting the next token of such a pair means answering the request. Wei and colleagues found that tuning on many tasks phrased as instructions made a model better at tasks it had never seen ([Wei et al., 2022](https://arxiv.org/abs/2109.01652)). **Preference tuning** then trains the model to prefer the better of two responses to the same request. Ouyang and colleagues had people rank the responses, and trained with reinforcement learning from a reward model learned from those rankings ([Ouyang et al., 2022](https://arxiv.org/abs/2203.02155)); **Direct Preference Optimization**, DPO, gets the same effect with a simple loss on the preference pairs themselves ([Rafailov et al., 2023](https://arxiv.org/abs/2305.18290)).
 
-**SmolLM2-360M-Instruct** is the base model of [chapter 10](#inside-an-open-model) after both steps: supervised fine-tuning on public and curated datasets, then DPO on UltraFeedback ([model card](https://huggingface.co/HuggingFaceTB/SmolLM2-360M-Instruct/blob/a10cc1512eabd3dde888204e902eca88bddb4951/README.md)). UltraFeedback's preference pairs were scored by a large language model, not by people ([Cui et al., 2023](https://arxiv.org/abs/2310.01377)). This chapter calls SmolLM2-360M the base model and SmolLM2-360M-Instruct the tuned model. The script `recordings/instruction_tuning.py` ran both once, at pinned revisions, decoding greedily, so each answer is the model's likeliest and the run can be repeated exactly, and saved what they wrote and how likely they found each token it wrote. The examples measure everything from those files.
+**SmolLM2-360M-Instruct** is the base model of [chapter 10](#inside-an-open-model) after both steps: supervised fine-tuning on public and curated datasets, then DPO on UltraFeedback ([model card](https://huggingface.co/HuggingFaceTB/SmolLM2-360M-Instruct/blob/a10cc1512eabd3dde888204e902eca88bddb4951/README.md)). UltraFeedback's preference pairs were scored by a large language model, not by people ([Cui et al., 2023](https://arxiv.org/abs/2310.01377)). This chapter calls SmolLM2-360M the base model and SmolLM2-360M-Instruct the tuned model. The script `recordings/instruction_tuning.py` ran both once, at pinned revisions, decoding greedily, so each answer is the model's likeliest and the run can be repeated exactly, and saved what they wrote and how likely they found each token it wrote. Every measure of the two models comes from those files.
 
 ## Build the two training losses by hand {#build-the-losses}
 
 Both steps of tuning are training, with the loop of [chapter 8](#update-with-adamw); what changes is the loss. Instruction tuning uses the ordinary next-token loss with one difference: only the response's tokens count. The request is read, as context, but the model isn't trained to predict it, since the point is to answer requests, not to write them.
 
-For the store, lay a product out as a request and a response, its name as the request and its description as the response, as the store's model already reads it. Compute the store's model's loss over every token, and over the response's tokens only:
+Lay one product out as a request and a response, its name as the request and its description as the response, the way the store's model already reads it. Then compute that model's loss over every token, and over the response's tokens only:
 
-Example `instruction-loss-by-hand` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.10:
+Example `instruction-loss-by-hand` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.11:
 
 ```python
+"""Computes the store's model's loss on one product laid out as a request and a response, over every token and over
+the response's tokens only. The prose's point rests on the last printed line, the average loss over the response only.
+"""
 import numpy as np
 
 from lib import transformer
@@ -36,12 +39,17 @@ from lib.store import load_products
 
 _, vocabulary, manifest = transformer.load()
 index = {token: i for i, token in enumerate(vocabulary)}
+# the name is unique in the validation split, so its one row is the product
 product = load_products("validation").query("name == 'double chaise patio furniture cover'").iloc[0]
+# the text is cut at the model's longest length, so a long description may end early
 ids = transformer.product_ids(product["name"], product["description"], index, manifest["settings"]["longest"])
 sep = ids.index(index[transformer.SEP])           # the name plays the request; the description, the response
 
+# the last position predicts nothing, since no token follows it, so its row is dropped
 probabilities = transformer.softmax(transformer.forward(ids)[:-1])
-loss = -np.log(probabilities[np.arange(len(ids) - 1), ids[1:]])     # each token's loss, given the tokens before it
+# position i predicts the token at i + 1, so ids[1:] holds each position's target
+# each token's loss, given the tokens before it
+loss = -np.log(probabilities[np.arange(len(ids) - 1), ids[1:]])
 response = np.arange(1, len(ids)) > sep                             # the description's tokens and its end
 print("tokens predicted in the text:", len(loss))
 print("tokens the instruction loss counts, the response's:", int(response.sum()))
@@ -58,7 +66,7 @@ average loss over every token: 2.267
 average loss over the response only: 2.132
 ```
 
-Of the 96 tokens the model predicts, the instruction loss counts 90: the description's tokens and its end. The average loss over every token is 2.267, and over the response only 2.132. Training on the second number, over many requests and responses, teaches a model to produce responses.
+Training on the loss over the response alone, across many requests and responses, teaches a model to produce responses. For this product that loss is 2.132, against 2.267 over every token. The instruction loss counts 90 of the 96 tokens the model predicts: the description's tokens and its end.
 
 DPO's loss works on a pair of responses to one request, one preferred and one rejected. It compares how much more likely the model being tuned makes each response than the **reference model** it started from, the model after instruction tuning, and rewards it for raising the preferred one more. With log-probabilities log π of each response under the tuned model and log π_ref under the reference, and a factor β that sets how far the model may move:
 
@@ -66,17 +74,20 @@ margin = β × [(log π(preferred) − log π_ref(preferred)) − (log π(reject
 
 loss = −log σ(margin)
 
-with σ the logistic function from [chapter 4](#learn-by-predicting-neighbours) ([Rafailov et al., 2023](https://arxiv.org/abs/2305.18290), equation 7). For the store, follow the arithmetic on made-up log-probabilities, with β = 0.1:
+with σ the logistic function from [chapter 4](#learn-by-predicting-neighbours) ([Rafailov et al., 2023](https://arxiv.org/abs/2305.18290), equation 7). Made-up log-probabilities keep the arithmetic in plain view, so this example uses them, with β = 0.1:
 
-Example `dpo-loss-by-hand` (Python 3.12.15 · numpy 2.5.4), passing in Edition 2026.11.10:
+Example `dpo-loss-by-hand` (Python 3.12.15 · numpy 2.5.4), passing in Edition 2026.11.11:
 
 ```python
+"""Computes the DPO margin and loss by hand for two made-up cases, with a fixed beta. The prose's point rests on the
+two loss lines, one for each case.
+"""
 import numpy as np
 
 beta = 0.1                                       # how far the tuned model may move from the reference
 print("beta:", beta)
-# Total log-probabilities of a preferred and a rejected answer to one request, under the model being tuned and under
-# the reference model it started from. Made-up numbers, to follow the arithmetic.
+# Each case: (preferred, rejected) under the tuned model, then (preferred, rejected) under the reference model it
+# started from. Made-up numbers, to follow the arithmetic.
 cases = {"tuned model favours the preferred answer more than the reference does": (-12.0, -20.0, -14.0, -18.0),
          "tuned model favours it less": (-15.0, -15.0, -14.0, -18.0)}
 for label, (preferred, rejected, preferred_reference, rejected_reference) in cases.items():
@@ -96,7 +107,7 @@ tuned model favours it less, margin: -0.40
 tuned model favours it less, loss: 0.913
 ```
 
-When the tuned model favours the preferred response more than the reference does, the margin is 0.40 and the loss 0.513; when it favours it less, the margin is -0.40 and the loss rises to 0.913. Lowering the loss pushes the preferred response's probability up and the rejected one's down, measured against where the model started.
+Lowering the loss pushes the preferred response's probability up and the rejected one's down, measured against where the model started. When the tuned model favours the preferred response more than the reference does, the margin is 0.40 and the loss 0.513; when it favours it less, the margin is -0.40 and the loss rises to 0.913.
 
 **Working rule:** Mask the request out of the loss when you tune a model on requests and responses, and keep the reference model's log-probabilities beside the tuned model's when you train on preferences. Both are small changes to a loop you already have.
 
@@ -104,15 +115,20 @@ When the tuned model favours the preferred response more than the reference does
 
 The store needs descriptions for products that have none, the job [chapter 9](#choosing-the-next-token) gave its own small model. The base model, SmolLM2-360M, can't be asked, only continued, so it gets the start of a product listing: `Product:`, the name, and `Description:`. The tuned model, SmolLM2-360M-Instruct, gets a request: `Write a short product description for:` and the name.
 
-For the store, read what each model wrote for [chapter 9](#choosing-the-next-token)'s product, `front porch welcome sign wall décor`, and measure all 8 products the recording described, each without a description to draw on:
+Both models start from [chapter 9](#choosing-the-next-token)'s product, `front porch welcome sign wall décor`. Read what each wrote, then measure all 8 products the recording described, each without a description to draw on:
 
-Example `base-and-tuned` (Python 3.12.15), passing in Edition 2026.11.10:
+Example `base-and-tuned` (Python 3.12.15), passing in Edition 2026.11.11:
 
 ```python
+"""Prints what the base and the tuned model wrote for one product with no description, then measures every such product's
+text for materials its name doesn't give and for repeated four-word phrases. The prose's points rest on the last four
+printed lines, the two models' invented-material counts and repeat shares.
+"""
 from collections import Counter
 
 from lib import claims, recorded
 
+# the recording's saved texts for every product, read back rather than generated again
 described = recorded.read("instruction-tuning", "descriptions")
 product = next(row for row in described if row["name"] == "front porch welcome sign wall décor")
 print("product:", product["name"])
@@ -123,13 +139,16 @@ print("tuned model:", " ".join(product["tuned"]["text"].split()))
 def repeats(text):
     """The share of four-word phrases that repeat an earlier one in the text."""
     words = text.lower().split()
+    # every window of four consecutive words, so a text of n words has n - 3 of them
     phrases = [tuple(words[i:i + 4]) for i in range(len(words) - 3)]
+    # a phrase counts as repeated each time after its first appearance; max keeps a text of fewer than four words from dividing by zero
     return sum(count - 1 for count in Counter(phrases).values()) / max(len(phrases), 1)
 
 
 print("products described, none of which has a description to draw on:", len(described))
 for role in ["base", "tuned"]:
     texts = [row[role]["text"] for row in described]
+    # materials the text names that the product's name doesn't give: a set difference, not the text's whole list
     invented = sum(bool(claims.materials(row[role]["text"]) - claims.materials(row["name"])) for row in described)
     print(f"{role} model, descriptions that name a material the name doesn't:", f"{invented} of {len(described)}")
     print(f"{role} model, repeated four-word phrases:", f"{sum(map(repeats, texts)) / len(texts):.0%}")
@@ -148,7 +167,7 @@ tuned model, descriptions that name a material the name doesn't: 1 of 8
 tuned model, repeated four-word phrases: 0%
 ```
 
-For the welcome sign, the base model writes about front porches: `The front porch is a common feature of many homes`, then about relaxing and meeting friends. It continues the text in a plausible direction, which isn't the one the store needs. The tuned model writes something shaped like a product description, `a statement piece that showcases your personality and style`, but calls the sign `a space` and `This wall`: fluent about a product it doesn't understand. Across the products, the base model's texts repeat 14% of their four-word phrases, and the tuned model's 0%. The recording can't say which step of tuning stopped the loops.
+The base model writes about front porches, `The front porch is a common feature of many homes`, then about relaxing and meeting friends. It continues the text in a plausible direction, which isn't the one the store needs. The tuned model writes something shaped like a product description, `a statement piece that showcases your personality and style`, but calls the sign `a space` and `This wall`: fluent about a product it doesn't understand. Across the products, the base model's texts repeat 14% of their four-word phrases, and the tuned model's 0%. The recording can't say which step of tuning stopped the loops.
 
 Neither model knows anything about the products beyond their names. The base model named a material the name doesn't give in 2 of 8 descriptions, and the tuned model in 1 of 8, and each of those came from the model, not from the store's data, as [chapter 9](#choosing-the-next-token)'s did.
 
@@ -158,14 +177,18 @@ Neither model knows anything about the products beyond their names. The base mod
 
 The tuned model answered in the [previous section](#ask-base-and-tuned) because its request came in the layout it was tuned on, its **chat template**: special tokens that mark where a **system message**, instructions placed before the user's request, the request itself and the model's reply begin and end. The model learned to answer requests only in that layout, so a request in any other form is only text to continue. Libraries that load the model apply the template from the model's tokenizer files ([tokenizer configuration](https://huggingface.co/HuggingFaceTB/SmolLM2-360M-Instruct/blob/a10cc1512eabd3dde888204e902eca88bddb4951/tokenizer_config.json)).
 
-For the store, read exactly what the tuned model was given with its template, and compare its reply with the reply to the same request given as plain text:
+The tuned model's full prompt, and its reply beside the one it gives to the same request as plain text, show what it actually read:
 
-Example `chat-template` (Python 3.12.15), passing in Edition 2026.11.10:
+Example `chat-template` (Python 3.12.15), passing in Edition 2026.11.11:
 
 ```python
+"""Prints the full prompt the tuned model read, with its chat template, and its reply with and without the template. The
+prose's point rests on the last two printed lines: the same words, with and without the template.
+"""
 from lib import recorded
 
 template = recorded.read("instruction-tuning", "template")
+# the request is the text between the user marker and its end marker
 print("request:", template["with"]["prompt"].split("<|im_start|>user\n")[1].split("<|im_end|>")[0])
 print("what the tuned model reads, with its chat template:")
 print(template["with"]["prompt"])
@@ -188,7 +211,7 @@ tuned model, with the template: "Welcome to our front porch welcome sign wall d�
 tuned model, without it: .
 ```
 
-With the template, the request sits between `<|im_start|>user` and `<|im_end|>`, after a system message the template adds by default, `You are a helpful AI assistant named SmolLM, trained by Hugging Face`, and before `<|im_start|>assistant`, where the model's reply begins. The model replies with the description of the previous section. Without the template, given the same words as plain text, the tuned model writes `.` and stops. Tuning didn't teach the model to follow requests in general; it taught it to follow requests in that layout.
+Tuning taught the model to follow requests in one layout, not requests in general. With the template, the request sits between `<|im_start|>user` and `<|im_end|>`, after a system message the template adds by default, `You are a helpful AI assistant named SmolLM, trained by Hugging Face`, and before `<|im_start|>assistant`, where the model's reply begins. The model replies with the description of the previous section. Without the template, given the same words as plain text, the tuned model writes `.` and stops.
 
 The system message matters too: it's part of every request the model reads, so a different one, such as a description of the store and its tone, can change any reply. That makes it a setting to choose and record, like a decoding setting in [chapter 9](#choosing-the-next-token).
 
@@ -200,23 +223,28 @@ A model that writes about a product with no facts has to make them up. The faire
 
 Checking the answers takes a list of material words, from `wood` and `metal` to `polyester` and `leather`, in the book's shared module `lib.claims`. An answer is **supported** if every material it names is in the product's name or description, **made up** if it names one that isn't, **declined** if it says the data doesn't say, and **none** if it names no material and doesn't decline. The check has limits, and makes judgement calls: it counts engineered wood such as `mdf` and `rubberwood` as wood, it counts `brushed nickel finish` as naming nickel, and it misses a material the list doesn't include. Every answer it classes is recorded for anyone to read. Making up a detail the input doesn't support is one kind of what's called **hallucination** ([Ji et al., 2023](https://arxiv.org/abs/2202.03629)), and this test measures exactly that kind.
 
-For the store, class each model's answers for 40 products drawn at random, split by whether the product's data names a material. Before you run it, predict whether the tuned model makes up fewer materials than the base model where the data names none:
+Class each model's answers for 40 products drawn at random, split by whether the product's data names a material. Where the data names none, will the tuned model make up fewer materials than the base model? Decide before you look.
 
-Example `made-up-materials` (Python 3.12.15), passing in Edition 2026.11.10:
+Example `made-up-materials` (Python 3.12.15), passing in Edition 2026.11.11:
 
 ```python
+"""Classes both models' answers to the material question, split by whether the product's name or description names a
+material. The prose's point rests on the rows for products whose data names none: made up and declined.
+"""
 from collections import Counter
 
 from lib import claims, recorded
 
 asked = recorded.read("instruction-tuning", "answers")
 print("products asked, each with its description given:", len(asked))
+# a product's data names a material if its description or its name does: the union of the two sets
 given = [bool(claims.materials(row["description"]) | claims.materials(row["name"])) for row in asked]
 print("products whose name or description names a material:", sum(given))
 print("products whose name and description name none:", len(given) - sum(given))
 for role in ["base", "tuned"]:
     for label, keep in [("data names a material", True), ("data names none", False)]:
         rows = [row for row, named in zip(asked, given) if named == keep]
+        # each answer is classed against the product's data, by the rules in lib.claims
         counts = Counter(claims.classify(row[role]["text"], row["description"], row["name"]) for row in rows)
         for kind in ["supported", "made up", "none", "declined"]:
             print(f"{role} model, {label}, {kind}:", counts[kind])
@@ -253,7 +281,7 @@ tuned model, data names none, declined: 0
 | None | 2 | 2 | 5 | 4 |
 | Declined | 0 | 0 | 0 | 0 |
 
-Of the products, 28 have data that names a material, and on those both models mostly answer from it. On the 12 that don't, the right answer is that the description doesn't say, and neither model gave it once. Both mostly made a material up instead, and the rest of their answers named none without saying why.
+On the 12 products whose name and description name none, the right answer is that the description doesn't say, and neither model gave it once. Both mostly made a material up instead, and the rest of their answers named none without saying why. Of the products, 28 have data that names a material, and on those both models mostly answer from it.
 
 Instruction tuning didn't fix this, and on these products the base model, given a listing to continue, did no worse. The request said to use only the description; when the description had no answer, the models answered anyway, with a material that products like this one often have. Following the form of an instruction isn't the same as knowing when you don't know.
 
@@ -267,24 +295,30 @@ confidence per token = exp((log p₁ + … + log pₙ) / n)
 
 the exponential of the average log-probability, the same average that perplexity inverts, so a short answer and a long one are measured on the same scale.
 
-For the store, compare the tuned model's confidence in its supported and made-up answers, and count how many of each a threshold of 0.5 per token would keep:
+Does confidence tell the two kinds apart? Compare the tuned model's confidence in its supported and made-up answers, and count how many of each a threshold of 0.5 per token would keep:
 
-Example `answer-confidence` (Python 3.12.15 · numpy 2.5.4), passing in Edition 2026.11.10:
+Example `answer-confidence` (Python 3.12.15 · numpy 2.5.4), passing in Edition 2026.11.11:
 
 ```python
+"""Compares the tuned model's confidence in its supported and made-up answers to the material question, and counts what a
+threshold of 0.5 per token keeps. The prose's point rests on the two average confidences and the two threshold counts.
+"""
 import numpy as np
 
 from lib import claims, recorded
 
 asked = recorded.read("instruction-tuning", "answers")
+# only supported and made-up answers are compared; declined and none answers are left out
 by_kind = {"supported": [], "made up": []}
 for row in asked:
     kind = claims.classify(row["tuned"]["text"], row["description"], row["name"])
     if kind in by_kind:
-        by_kind[kind].append(np.exp(np.mean(np.log(row["tuned"]["token_probabilities"]))))   # per token, on average
+        # the geometric mean of the token probabilities: exp of their average log-probability
+        by_kind[kind].append(np.exp(np.mean(np.log(row["tuned"]["token_probabilities"]))))
 for kind, confidence in by_kind.items():
     print(f"tuned model, {kind} answers:", len(confidence))
     print(f"tuned model, {kind} answers, average probability per token:", f"{np.mean(confidence):.2f}")
+# a fixed cut for the comparison, not one fitted to these answers
 threshold = 0.5
 for kind, confidence in by_kind.items():
     print(f"tuned model, {kind} answers above {threshold} per token:", f"{sum(c > threshold for c in confidence)} of {len(confidence)}")
@@ -301,29 +335,35 @@ tuned model, supported answers above 0.5 per token: 21 of 23
 tuned model, made up answers above 0.5 per token: 3 of 11
 ```
 
-The made-up answers are less confident on average, 0.45 per token against 0.65 for supported ones. But a threshold of 0.5 per token would keep 21 of 23 supported answers and still let through 3 of 11 made-up ones. Confidence is a signal, not a filter: it shifts the odds, and it lets confident errors through. With so few answers, these are directions, not rates to rely on.
+Confidence is a signal, not a filter: it shifts the odds, and it lets confident errors through. The made-up answers are less confident on average, 0.45 per token against 0.65 for supported ones. But a threshold of 0.5 per token would keep 21 of 23 supported answers and still let through 3 of 11 made-up ones. With so few answers, these are directions, not rates to rely on.
 
-**Working rule:** Don't use a model's confidence alone to decide whether to trust an answer. Measure how its confidence relates to being right on your own questions, as here, and if you use a threshold, choose it from those measurements and count what it lets through.
+**Working rule:** Don't use a model's confidence alone to decide whether to trust an answer. Measure how its confidence relates to being right on your own questions, and if you use a threshold, choose it from those measurements and count what it lets through.
 
 ## Find what a longer context loses {#find-what-context-loses}
 
 The [material question](#measure-made-up-details) gave the model one product at a time. A store's assistant often has several products' data in front of it at once, such as search results, a category page or a comparison, and has to find the right product's details among the others. Liu and colleagues found that models use information at the start and the end of a long context better than information in the middle ([Liu et al., 2024](https://arxiv.org/abs/2307.03172)).
 
-For the store, give the tuned model, SmolLM2-360M-Instruct, 10 product listings, the asked product among them, first, in the middle or last, and ask what that product is made of. Count the answers that name only its own materials, as `lib.claims` checks them, for the 14 products whose data names one:
+Place the asked product among 10 product listings: first, in the middle, or last. Then ask the tuned model, SmolLM2-360M-Instruct, what that product is made of. Count the answers that name only its own materials, as `lib.claims` checks them, for the 14 products whose data names one:
 
-Example `answer-position` (Python 3.12.15), passing in Edition 2026.11.10:
+Example `answer-position` (Python 3.12.15), passing in Edition 2026.11.11:
 
 ```python
+"""Counts the tuned model's answers that name only the asked product's own materials, with the product first, in the middle
+or last of a context of listings. The prose's point rests on the three placement lines.
+"""
 from collections import defaultdict
 
 from lib import claims, recorded
 
 context = recorded.read("instruction-tuning", "context")
+# the other listings in each context; the asked product is one more, as the first printed line shows
 others = recorded.read("instruction-tuning", "manifest")["settings"]["context_others"]
 print("product listings in each context:", others + 1)
 results = defaultdict(list)
 for row in context:
-    if claims.materials(row["description"]) | claims.materials(row["name"]):   # only products whose data names one
+    # only products whose data names a material: a product with none gives an answer nothing to name
+    if claims.materials(row["description"]) | claims.materials(row["name"]):
+        # supported: every material the answer names is in the asked product's own data
         results[row["place"]].append(claims.classify(row["tuned"]["text"], row["description"], row["name"]) == "supported")
 print("products asked about at each place:", len(results["first"]))
 for place in ["first", "middle", "last"]:
@@ -340,9 +380,9 @@ product placed middle, answers that name only its own materials: 6 of 14
 product placed last, answers that name only its own materials: 12 of 14
 ```
 
-With the product first, 12 of 14 answers name only its materials; last, 12 of 14; in the middle, 6 of 14. A product in the middle is found least often, the pattern Liu and colleagues found in much larger models. The counts are small, but the gap is wide. The context here is short, a few thousand characters, well within the model's limit: the middle loses details long before a context is full.
+A product in the middle is found least often, the pattern Liu and colleagues found in much larger models. With the product first, 12 of 14 answers name only its materials; last, 12 of 14; in the middle, 6 of 14. The counts are small, but the gap is wide. The context here is short, a few thousand characters, well within the model's limit: the middle loses details long before a context is full.
 
-**Working rule:** Put the details a model most needs at the start or the end of its context, not in the middle, and give it as little unrelated text as the task allows. Test retrieval from a longer context at each position, as here, before trusting a model to find details among many.
+**Working rule:** Put the details a model most needs at the start or the end of its context, not in the middle, and give it as little unrelated text as the task allows. Test retrieval from a longer context at each position before trusting a model to find details among many.
 
 ## Adapt a model to your text {#adapt-a-model}
 
@@ -350,16 +390,21 @@ With the product first, 12 of 14 answers name only its materials; last, 12 of 14
 
 Full fine-tuning updates every weight, which for a model of hundreds of millions of parameters takes time and memory. **LoRA**, low-rank adaptation, freezes the model's weights and trains a small correction beside some of them. For a weight matrix that maps k numbers to d numbers, it trains a matrix B of d by r and a matrix A of r by k, and adds their product to the weights: W + BA ([Hu et al., 2022](https://arxiv.org/abs/2106.09685)). With a small rank r, there's far less to train and store, and Hu and colleagues found it matched full fine-tuning on the tasks they tested.
 
-For the store, count what LoRA would train on SmolLM2-360M, adapting the query and value weights of every layer, at two ranks, against full fine-tuning. The query weights map 960 numbers to 960; the value weights, because keys and values are grouped, map 960 to 320:
+A LoRA correction would train far fewer weights; count them on SmolLM2-360M, adapting the query and value weights of every layer, at two ranks, against full fine-tuning. The query weights map 960 numbers to 960; the value weights, because keys and values are grouped, map 960 to 320:
 
-Example `lora-parameters` (Python 3.12.15), passing in Edition 2026.11.10:
+Example `lora-parameters` (Python 3.12.15), passing in Edition 2026.11.11:
 
 ```python
+"""Counts what LoRA would train on SmolLM2-360M, adapting the query and value weights of every layer at two ranks, and
+what full fine-tuning trains. The prose's point rests on the rank 8 lines and the full fine-tuning count.
+"""
 from lib import open_model
 
 config = open_model.config("SmolLM2-360M")
 width, layers = config["hidden_size"], config["num_hidden_layers"]
+# keys and values share heads, so their width is the query width scaled by the ratio of key-value heads to heads
 key_value_width = config["num_key_value_heads"] * width // config["num_attention_heads"]
+# every parameter of the model: the full fine-tuning count, and the denominator of each share
 total = open_model.parameters(config)["total"]
 for rank in [8, 64]:
     # LoRA adds two small matrices beside each adapted weight: width x rank, then rank x output width.
@@ -379,7 +424,7 @@ rank 64, share of the model's parameters: 1.81%
 parameters trained by full fine-tuning: 361,821,120
 ```
 
-At rank 8, LoRA trains 819,200 parameters, 0.23% of the model; at rank 64, 6,553,600, or 1.81%. Full fine-tuning trains all 361,821,120. A rank-8 correction is smaller than the store's own small model, and it can be stored and swapped per task while the base weights stay shared.
+At rank 8, LoRA trains 819,200 parameters, 0.23% of the model, where full fine-tuning trains all 361,821,120. A rank-8 correction is smaller than the store's own small model, and it can be stored and swapped per task while the base weights stay shared.
 
 This book doesn't run the fine-tuning: our judgement is that even LoRA, over the store's text, would take far longer on a laptop's processor than any recording here. It's the next step for a store that wants a general model to write in its own voice: fine-tune on the catalog, then measure the result against the store's own model, per word, as [chapter 10](#inside-an-open-model) did. Fine-tuning has risks of its own. A model trained on the catalog learns its gaps along with its text, as the store's small model learned to leave a bulb's description empty in [chapter 9](#forbid-an-empty-description). And training on one narrow text can weaken what the model knew before; Biderman and colleagues found LoRA forgets less of it than full fine-tuning ([Biderman et al., 2024](https://arxiv.org/abs/2405.09673)). Both are measured the same way as everything else in this book: on held-out text, before and after.
 
@@ -387,11 +432,14 @@ This book doesn't run the fine-tuning: our judgement is that even LoRA, over the
 
 ## Look back at the yardstick {#look-back-at-the-yardstick}
 
-This book has scored every model the same way on names, from [chapter 3](#counting-further-back) on: perplexity per token of the store's tokenizer, on the store's validation names. The test names were kept aside for one final comparison, so that choices made by looking at the validation names, such as the kept epochs and the mixing shares, couldn't flatter the results. Now they're used. For the store, score the five models that were chosen between on the 4,281 test names, with the mixing shares chosen on validation:
+This book has scored every model the same way on names, from [chapter 3](#counting-further-back) on: perplexity per token of the store's tokenizer, on the store's validation names. The test names were kept aside so that choices made by looking at the validation names, such as the kept epochs and the mixing shares, couldn't flatter the results. This final comparison scores the five models that were chosen between on the 4,281 test names, with the mixing shares chosen on validation:
 
-Example `test-names` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.10:
+Example `test-names` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.11:
 
 ```python
+"""Scores the five models the book chose between on the test names, each name's tokens and its end, and prints each
+model's test perplexity. The prose's point rests on the five test perplexity lines.
+"""
 import numpy as np
 
 from lib import neural, transformer
@@ -402,21 +450,26 @@ from lib.ngrams import KneserNey, ngrams, padded
 # ones chosen on the validation names, in chapters 5 and 8.
 test = name_tokens("test")
 counted = KneserNey(name_tokens("train"), 4)
+# padded adds the start marker three times and the end marker, so each name's first tokens have a context and its end is scored
 from_counts = np.array([counted.probability(c, t) for text in test for c, t in ngrams(padded(text, 4), 4)])
 from_window = neural.token_probabilities(test)
 _, vocabulary, _ = transformer.load()
 index = {token: i for i, token in enumerate(vocabulary)}
 from_transformer = []
 for name in test:
+    # the transformer reads the start marker, the name, then <sep>, which ends a name where the counts end with </s>
     ids = [index[transformer.START]] + [index[t] for t in name] + [index[transformer.SEP]]
     probabilities = transformer.softmax(transformer.forward(ids)[:-1])
+    # position i predicts token i + 1, so ids[1:] is each token's target, the end of the name included
     from_transformer += list(probabilities[np.arange(len(ids) - 1), ids[1:]])
 from_transformer = np.array(from_transformer)
 
+# pooled over every token of every name, not averaged per name
 perplexity = lambda p: f"{np.exp(-np.log(p).mean()):.1f}"
 print("test names:", f"{len(test):,}")
 print("test perplexity, the 4-gram baseline:", perplexity(from_counts))
 print("test perplexity, the window model:", perplexity(from_window))
+# the mix averages the probabilities, not their logs: a share of 0.2 is 20% of the window model
 print("test perplexity, the window model mixed with the counts, share 0.2:", perplexity(0.2 * from_window + 0.8 * from_counts))
 print("test perplexity, the store's transformer:", perplexity(from_transformer))
 print("test perplexity, the store's transformer mixed with the counts, share 0.5:", perplexity((from_transformer + from_counts) / 2))
@@ -433,7 +486,7 @@ test perplexity, the store's transformer: 23.7
 test perplexity, the store's transformer mixed with the counts, share 0.5: 18.3
 ```
 
-Set side by side, the scores tell the book's story in one table, and the test column agrees with the validation one to within a few tenths: the choices made on validation flattered the results very little.
+The choices made on validation flattered the results very little: the test column agrees with the validation one to within a few tenths. Set side by side, the scores tell the book's story in one table.
 
 | Model | Chapter | Validation names | Test names |
 | --- | --- | --- | --- |

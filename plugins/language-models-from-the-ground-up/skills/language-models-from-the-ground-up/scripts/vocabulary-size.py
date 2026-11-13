@@ -1,3 +1,5 @@
+"""Learns 16,000 merges once, then reads the first 0, 1,000, 2,000, 4,000, 8,000 and 16,000 of them as six tokenizers.
+Each row of the table measures one of them; the printed lines at the ends and at 4,000 merges are what the prose cites."""
 from collections import Counter
 
 from lib import bpe
@@ -11,11 +13,11 @@ validation_words = [w for text in validation["name"] + " " + validation["descrip
 results = {}
 print(f"{'merges':>6}  {'tokens used':>11}  {'tokens per word':>15}  {'rare types':>10}")
 for k in [0, 1000, 2000, 4000, 8000, 16000]:
-    tokenizer = bpe.Tokenizer(merges[:k], bpe.alphabet(counts)) if k else None
+    tokenizer = bpe.Tokenizer(merges[:k], bpe.alphabet(counts)) if k else None   # with no merges, a word is just its characters
     encode = tokenizer.encode_word if k else bpe.symbols
-    seen = Counter(t for w, n in counts.items() for t in encode(w) for _ in range(n))
+    seen = Counter(t for w, n in counts.items() for t in encode(w) for _ in range(n))   # each word's tokens, counted as often as the word occurs
     per_word = sum(len(encode(w)) for w in validation_words) / len(validation_words)
-    rare = sum(1 for n in seen.values() if n < 20) / len(seen)  # share of different tokens seen fewer than 20 times
+    rare = sum(1 for n in seen.values() if n < 20) / len(seen)   # rare: seen fewer than 20 times in the training text
     print(f"{k:>6,}  {len(seen):>11,}  {per_word:>15.2f}  {rare:>10.0%}")
     results[k] = per_word, rare
 print("tokens per word at 4,000 merges:", f"{results[4000][0]:.2f}")

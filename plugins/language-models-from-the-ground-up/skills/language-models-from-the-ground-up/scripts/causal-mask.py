@@ -1,3 +1,5 @@
+"""Applies the causal mask to the same four tokens, then changes the last token and measures how far the output at
+coffee moves, with and without the mask. The prose's point rests on the last printed line: with the mask, that change is zero."""
 import numpy as np
 
 tokens = ["<s>", "sled</w>", "coffee</w>", "table</w>"]
@@ -21,11 +23,12 @@ np.set_printoptions(precision=2, suppress=True)
 print("weights with the causal mask:")
 for token, row in zip(tokens, weights):
     print(f"  {token:<11}", row)
-print("weight on later tokens:", float(weights[~allowed].sum()))
+print("weight on later tokens:", float(weights[~allowed].sum()))   # ~allowed marks the positions above the diagonal
 
 changed = x.copy()
 changed[3] = rng.normal(0, 1, 8)                             # a different last token in place of `table`
 for mask in [False, True]:
-    before, after = attend(x, mask)[1][2], attend(changed, mask)[1][2]
-    print(f"output at coffee changes with the last token, {'with' if mask else 'without'} the mask:",
-          bool(not np.allclose(before, after)))
+    before, after = attend(x, mask)[1][2], attend(changed, mask)[1][2]   # attend returns (weights, output); 2 is coffee
+    change = float(np.abs(after - before).max())
+    print(f"largest change in coffee's output, {'with' if mask else 'without'} the mask: {change:.2f}")
+    assert (change == 0) == mask      # the mask's job: with it, nothing after coffee reaches coffee, so the change is zero

@@ -3,20 +3,20 @@ title: "Language Models from the Ground Up"
 chapter: "A neural language model"
 chapter_id: a-neural-language-model
 book: language-models-from-the-ground-up
-edition: 2026.11.10
+edition: 2026.11.11
 verified: 2026-11-13
-edition_code: ZD73-7XB0
+edition_code: 3Y9C-0N1E
 canonical: https://rollingedition.com/language-models-from-the-ground-up/a-neural-language-model
 license: CC BY 4.0
-attribution: "“A neural language model,” chapter 5 of Language Models from the Ground Up, Edition 2026.11.10, examples passed Nov 13, 2026. By Rolling Edition, https://rollingedition.com/language-models-from-the-ground-up/a-neural-language-model. Text CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“A neural language model,” chapter 5 of Language Models from the Ground Up, Edition 2026.11.11, examples passed Nov 13, 2026. By Rolling Edition, https://rollingedition.com/language-models-from-the-ground-up/a-neural-language-model. Text CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # A neural language model
 
 By the end of this chapter you can build a neural language model that predicts the next token from a window of earlier tokens, compute its gradients by hand and check them, train it with PyTorch, and measure it fairly against the counted baseline. You'll also see that a learned model doesn't win by being learned: this one loses to counting on its own, and helps when the two are mixed.
 
-[Chapter 3](#counting-further-back) built the book's baseline, a 4-gram Kneser-Ney model that predicts each token of the store's product names from the three tokens before it, by counting. Its limit was that it can't relate one context to another: it has counts for `patio bar` and none for `outdoor bar`, and nothing links the two. [Chapter 4](#words-as-vectors) showed that vectors can relate tokens, since `patio` and `outdoor` get close vectors when they're learned from the store's text. This chapter puts vectors inside a model. A **neural language model** reads the previous tokens as vectors, combines them with learned arithmetic, and produces a probability for every token in the vocabulary. It learns its vectors and its arithmetic together, by being trained to predict the next token. The design is the one Bengio and colleagues introduced ([Bengio et al., 2003](https://www.jmlr.org/papers/volume3/bengio03a/bengio03a.pdf)).
+[Chapter 3](#counting-further-back) built the book's baseline, a 4-gram Kneser-Ney model that predicts each token of the store's product names from the three tokens before it, by counting. Its limit was that it can't relate one context to another: among the names of a shop selling furniture and home goods, it has counts for `patio bar` and none for `outdoor bar`, and nothing links the two. [Chapter 4](#words-as-vectors) showed that vectors can relate tokens, since `patio` and `outdoor` get close vectors when they're learned from the store's text. This chapter puts vectors inside a model. A **neural language model** reads the previous tokens as vectors, combines them with learned arithmetic, and produces a probability for every token in the vocabulary. It learns its vectors and its arithmetic together, by being trained to predict the next token. The design is the one Bengio and colleagues introduced ([Bengio et al., 2003](https://www.jmlr.org/papers/volume3/bengio03a/bengio03a.pdf)).
 
-The store, the online furniture and home-goods store this book follows, supplies the text, and the test is the one every model since [chapter 3](#counting-further-back) faces: [perplexity](#score-with-perplexity) per token on the store's validation names, through the store's tokenizer. Lower is better, and the baseline scores 23.1.
+The store supplies the text, and the test is the one every model since [chapter 3](#counting-further-back) faces: [perplexity](#score-with-perplexity) per token on the validation names, through the store's tokenizer. Lower is better, and the baseline scores 23.1.
 
 ## Predict from a window of embeddings {#predict-from-a-window}
 
@@ -26,26 +26,29 @@ The last step turns scores into probabilities. **Softmax** exponentiates every l
 
 P(token i) = exp(zᵢ) / Σⱼ exp(zⱼ)
 
-For the store, take the model the book trains in this chapter, load its weights, and run one prediction by hand: the next token after a name that starts `patio bar`. Each line of the example is one of the formulas above:
+Worked through with the trained weights, one prediction shows how the model turns four tokens into probabilities: the next token after a name starting `patio bar`. Each line of the example is one of the formulas above, and its printed shapes show what each step does:
 
-Example `window-model-by-hand` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.10:
+Example `window-model-by-hand` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.11:
 
 ```python
+"""One prediction of the trained window model, computed by hand from its saved weights: the embeddings, the tanh layer,
+the output scores and the softmax. The prose's point rests on the shapes, the parameter counts and the three likeliest
+tokens after `patio bar`."""
 import numpy as np
 
 from lib import bpe, neural
 from lib.ngrams import START
 
 weights, vocabulary, manifest = neural.load()
-index, width = {t: i for i, t in enumerate(vocabulary)}, manifest["settings"]["context"]
-context = ([START] * width + bpe.store_tokenizer().encode("patio bar"))[-width:]   # the last 4 tokens a shopper typed
+index, width = {t: i for i, t in enumerate(vocabulary)}, manifest["settings"]["context"]   # token -> row; the window's width, from the saved settings
+context = ([START] * width + bpe.store_tokenizer().encode("patio bar"))[-width:]   # pad with start markers, keep the last width tokens
 ids = np.array([[index[t] for t in context]])
 
 vectors = weights["embedding"][ids]                                    # one 64-number vector per token
-joined = vectors.reshape(1, -1)                                        # the four vectors side by side
+joined = vectors.reshape(1, -1)                                        # -1 lets numpy work out the length: 4 vectors of 64 make 256
 hidden = np.tanh(joined @ weights["hidden_w"] + weights["hidden_b"])   # one layer, squashed into -1 to 1
 logits = hidden @ weights["output_w"] + weights["output_b"]            # one score for every token
-probabilities = np.exp(logits - logits.max())
+probabilities = np.exp(logits - logits.max())                          # subtract the largest score first: same probabilities, and exp can't overflow
 probabilities /= probabilities.sum()                                   # softmax: scores into probabilities
 
 print("context:", " ".join(context))
@@ -55,7 +58,7 @@ print("vocabulary size:", f"{len(vocabulary):,}")
 print("parameters:", f"{sum(w.size for w in weights.values()):,}")
 for part in ["embedding", "hidden_w", "output_w"]:
     print(f"parameters in {part}:", f"{weights[part].size:,}")
-for i in np.argsort(-probabilities[0], kind="stable")[:3]:
+for i in np.argsort(-probabilities[0], kind="stable")[:3]:             # the three likeliest; a stable sort keeps ties in vocabulary order
     print(f"P({vocabulary[i]} | patio bar): {probabilities[0, i]:.2f}")
 ```
 
@@ -87,31 +90,35 @@ A model with random weights predicts badly; training adjusts the weights to pred
 
 **Backpropagation** computes all the gradients at once, by applying the chain rule of calculus backwards through the forward pass: from the loss to the logits, from the logits through the output layer to the hidden layer, through tanh, and back to the embeddings that were used ([Rumelhart et al., 1986](https://doi.org/10.1038/323533a0)). Two of its steps are worth knowing by heart. The gradient of the loss with respect to the logits is the softmax probabilities minus 1 at the true token. And the gradient through tanh is multiplied by 1 − h², which is small where h is near ±1. The book's shared module `lib.tinynet` writes the whole of it out, line by line, for a tiny version of the store's model, with 5 tokens, embeddings of 2 numbers, a window of 2 and 3 hidden units.
 
-Backpropagation code often goes subtly wrong, so check it against a slower method that can't: nudge one weight up and down by a tiny amount, measure how the loss moves, and compare. For the store's model that would mean more than a million nudges, so check every parameter of the tiny one:
+Backpropagation code often goes subtly wrong, so check it against a slower method that can't: nudge one weight up and down by a tiny amount, measure how the loss moves, and compare. The store's model would take more than a million nudges, so check every parameter of the tiny one:
 
-Example `gradients-by-hand` (Python 3.12.15 · numpy 2.5.4), passing in Edition 2026.11.10:
+Example `gradients-by-hand` (Python 3.12.15 · numpy 2.5.4), passing in Edition 2026.11.11:
 
 ```python
+"""Backpropagation's gradients for the tiny model, checked against nudging every one of its parameters up and down.
+The assert is the check the prose relies on: the two agree to six decimal places, for every parameter."""
 import numpy as np
 
 from lib.tinynet import backprop, forward, parameters
 
-p = parameters()                                  # the tiny model: 5 tokens, a window of 2, 3 hidden units
-context, target = np.array([1, 3]), 4
+p = parameters()                                  # the tiny model: 5 tokens, a window of 2, 3 hidden units; seeded, so the same every run
+context, target = np.array([1, 3]), 4             # the window: token ids 1 and 3; the token that came next is id 4
 
-worst, step = 0.0, 1e-6
+worst, step = 0.0, 1e-6                           # the nudge: small enough that the loss is nearly a straight line over it
 gradients = backprop(p, context, target)
 for name, value in p.items():                     # nudge each parameter both ways, and see how the loss moves
     for i in np.ndindex(value.shape):
         value[i] += step
-        up = forward(p, context, target)[3]
-        value[i] -= 2 * step
+        up = forward(p, context, target)[3]       # forward returns (joined, hidden, logits, loss): index 3 is the loss
+        value[i] -= 2 * step                      # from up to down is two steps, so the estimate is centred on the value
         down = forward(p, context, target)[3]
-        value[i] += step
+        value[i] += step                          # back where it started
         worst = max(worst, abs((up - down) / (2 * step) - gradients[name][i]))
+agrees = worst < 1e-6                             # the largest disagreement over all parameters, against six decimal places
+assert agrees
 print("loss:", round(float(forward(p, context, target)[3]), 4))
 print("parameters checked:", sum(v.size for v in p.values()))
-print("backprop agrees with nudging to 6 decimal places:", worst < 1e-6)
+print("backprop agrees with nudging to 6 decimal places:", "yes" if agrees else "no")
 ```
 
 Output:
@@ -119,28 +126,30 @@ Output:
 ```text
 loss: 1.5293
 parameters checked: 45
-backprop agrees with nudging to 6 decimal places: True
+backprop agrees with nudging to 6 decimal places: yes
 ```
 
-All 45 gradients from backpropagation agree with the nudged estimates to six decimal places: the last line reads True. The nudging method costs two forward passes per parameter, which is why no one trains with it, but on a tiny model it's the reference that tells you backpropagation is right.
+All 45 gradients from backpropagation agree with the nudged estimates to six decimal places, which the example asserts. The nudging method costs two forward passes per parameter, which is why no one trains with it, but on a tiny model it's the reference that tells you backpropagation is right.
 
-**Working rule:** Check hand-written gradients against nudged estimates on a tiny model before trusting them, as here. When you use a library that computes gradients for you, as the [PyTorch section](#train-with-pytorch) does, check the library's forward pass against your own instead.
+**Working rule:** Check hand-written gradients against nudged estimates on a tiny model before trusting them. When you use a library that computes gradients for you, as the [PyTorch section](#train-with-pytorch) does, check the library's forward pass against your own instead.
 
 ## Take gradient descent steps {#take-gradient-descent-steps}
 
 With gradients in hand, training is a loop. **Gradient descent** moves every weight a small step against its gradient, w ← w − η · ∂L/∂w, where η, the **step size**, also called the **learning rate**, sets how far each step goes. Each step makes the loss a little smaller for the examples it was computed on, and repeated over many examples, the weights settle where the model predicts well.
 
-For the store's tiny model from the [previous section](#compute-gradients), take three (window, next token) examples, compute the average loss, and take twenty steps of gradient descent with a step size of 0.5, using `lib.tinynet`'s gradients:
+Twenty steps of gradient descent at a step size of 0.5, using `lib.tinynet`'s gradients, on three examples for the store's tiny model from the [previous section](#compute-gradients), show the loss falling:
 
-Example `gradient-descent-by-hand` (Python 3.12.15 · numpy 2.5.4), passing in Edition 2026.11.10:
+Example `gradient-descent-by-hand` (Python 3.12.15 · numpy 2.5.4), passing in Edition 2026.11.11:
 
 ```python
+"""Twenty steps of gradient descent on three examples of the tiny model, printing the average loss before training and
+after one, five and twenty steps. The prose's point rests on the average loss at those four points."""
 import numpy as np
 
 from lib.tinynet import backprop, forward, parameters
 
-p = parameters()
-examples = [(np.array([1, 3]), 4), (np.array([0, 1]), 3), (np.array([3, 4]), 2)]     # three (window, next token) pairs
+p = parameters()                                             # seeded, so every run starts from the same weights
+examples = [(np.array([1, 3]), 4), (np.array([0, 1]), 3), (np.array([3, 4]), 2)]     # three (window, next token) pairs: each window is two token ids, then the id of the token after it
 rate = 0.5                                                   # the step size
 
 
@@ -149,10 +158,10 @@ def average_loss():
 
 
 print("average loss before:", f"{average_loss():.3f}")
-for step in range(1, 21):
+for step in range(1, 21):                                    # twenty steps, each one a pass over all three examples
     for c, t in examples:
         for name, gradient in backprop(p, c, t).items():
-            p[name] -= rate * gradient / len(examples)       # w <- w - rate * dL/dw, averaged over the examples
+            p[name] -= rate * gradient / len(examples)       # w <- w - rate * dL/dw, with each gradient averaged over the examples
     if step in (1, 5, 20):
         print(f"average loss after {step} steps:", f"{average_loss():.3f}")
 ```
@@ -166,11 +175,11 @@ average loss after 5 steps: 0.646
 average loss after 20 steps: 0.109
 ```
 
-The average loss falls from 1.568 before training to 1.346 after one step, 0.646 after five, and 0.109 after twenty. With only three examples to learn, the tiny model can drive its loss close to zero, which is memorizing; the store's model learns from hundreds of thousands of examples, where the same loop has to find patterns that hold across them.
+The average loss falls at each step the example prints, from 1.568 before training to 0.109 after twenty. With only three examples to learn, the tiny model can drive its loss close to zero, which is memorizing; the store's model learns from hundreds of thousands of examples, where the same loop has to find patterns that hold across them.
 
 Real training changes two things about this loop. It computes each step on a **batch** of examples, a few hundred at a time, instead of all of them, so each step is cheap and the steps vary a little. And it uses a refined update instead of a fixed step size, as the next section describes.
 
-**Working rule:** Start any new model by running a few steps on a handful of examples and checking that the loss falls, as here: a loss that won't fall on three examples means a bug, not a hard problem. Choose the step size by trying a few: too small and the loss crawls, too large and it jumps around or grows.
+**Working rule:** Start any new model by running a few steps on a handful of examples and checking that the loss falls: a loss that won't fall on three examples means a bug, not a hard problem. Choose the step size by trying a few: too small and the loss crawls, too large and it jumps around or grows.
 
 ## Train with PyTorch {#train-with-pytorch}
 
@@ -185,23 +194,25 @@ optimizer.step()                                       # move every weight again
 
 The optimizer is **Adam**, a refinement of gradient descent ([Kingma and Ba, 2015](https://arxiv.org/abs/1412.6980)). It keeps, for every weight, a running average of its gradients and a running average of their squares, and steps by the first divided by the square root of the second. A weight whose gradients are consistently large gets steps of about the same size as one whose gradients are small, so one step size works for all of them.
 
-Training depends on the machine's floating-point arithmetic, which varies slightly between processors, so it runs once and the book's examples read the weights it saved, as they read every result that depends on the machine. The examples never import PyTorch: `lib.neural` recomputes the model's forward pass in NumPy, from those weights. That only works if the NumPy version computes what PyTorch computed, so the training script saved PyTorch's own logits for 64 validation contexts, and the next example compares:
+Training depends on the machine's floating-point arithmetic, which [chapter 4](#compare-learned-and-counted) explains, so it runs once and the book's examples read the weights it saved, as they read every such result. The examples never import PyTorch: `lib.neural` recomputes the model's forward pass in NumPy, from those weights. That only works if the NumPy version computes what PyTorch computed, so the training script saved PyTorch's own logits for 64 validation contexts, and the next example compares:
 
-Example `same-as-pytorch` (Python 3.12.15 · numpy 2.5.4), passing in Edition 2026.11.10:
+Example `same-as-pytorch` (Python 3.12.15 · numpy 2.5.4), passing in Edition 2026.11.11:
 
 ```python
+"""The trained model's logits, recomputed in NumPy from its saved weights and compared with the logits PyTorch computed
+for the same saved validation contexts. The prose's point rests on the agreement, which the last line prints."""
 import numpy as np
 
 from lib import neural
 
 weights, _, manifest = neural.load()
-check = np.load("data/recorded/neural-lm/check.npz")                 # contexts, and PyTorch's logits for them
+check = np.load("data/recorded/neural-lm/check.npz")                 # saved by the training script, so this runs without PyTorch: contexts, and PyTorch's logits for them
 
 ours = neural.forward(weights, check["contexts"])
 print("PyTorch version:", manifest["torch"])
 print("contexts compared:", len(check["contexts"]))
-print("logits compared:", f"{ours.size:,}")
-print("same as PyTorch to 4 decimal places:", bool(np.abs(ours - check["logits"]).max() < 1e-4))
+print("logits compared:", f"{ours.size:,}")                          # every logit: one per context and per token in the vocabulary
+print("same as PyTorch to 4 decimal places:", bool(np.abs(ours - check["logits"]).max() < 1e-4))   # 1e-4: four decimal places
 ```
 
 Output:
@@ -221,11 +232,13 @@ The NumPy forward pass reproduces all 264,960 of PyTorch's logits to four decima
 
 A model with 1.4 million parameters, trained on a few hundred thousand tokens, can memorize its training text, as [chapter 3's 5-gram](#longer-contexts-fit-training) did. Training perplexity keeps falling as it does. Validation perplexity falls at first, while the model learns patterns that hold for new names, then rises, once it starts fitting quirks of the training names. That turn is **overfitting**, and the simplest defence is **early stopping**: measure validation loss after every **epoch**, one full pass over the training text, and keep the weights from the best epoch.
 
-For the store, read the training script's record of both perplexities after each of its twelve epochs:
+The training script recorded both perplexities after each of its twelve epochs. Read them for where validation stops improving:
 
-Example `training-curve` (Python 3.12.15), passing in Edition 2026.11.10:
+Example `training-curve` (Python 3.12.15), passing in Edition 2026.11.11:
 
 ```python
+"""The training script's record of training and validation perplexity after each epoch, and the epoch whose weights were
+kept. The prose's point rests on the validation column, and on the two validation figures printed after the table."""
 import json
 import math
 
@@ -233,12 +246,12 @@ curves = json.load(open("data/recorded/neural-lm/curves.json", encoding="utf-8")
 manifest = json.load(open("data/recorded/neural-lm/manifest.json", encoding="utf-8"))
 
 print(f"{'epoch':>5}  {'training perplexity':>19}  {'validation perplexity':>21}")
-for c in curves:
+for c in curves:                                             # losses are averages of log probabilities: exp turns them into perplexities
     print(f"{c['epoch']:>5}  {math.exp(c['train_loss']):>19.1f}  {math.exp(c['validation_loss']):>21.1f}")
-best = min(curves, key=lambda c: c["validation_loss"])
+best = min(curves, key=lambda c: c["validation_loss"])       # the epoch with the lowest validation loss, which the kept epoch should match
 print("epoch kept:", manifest["kept_epoch"])
 print("validation perplexity at the kept epoch:", f"{math.exp(best['validation_loss']):.1f}")
-print("validation perplexity at the last epoch:", f"{math.exp(curves[-1]['validation_loss']):.1f}")
+print("validation perplexity at the last epoch:", f"{math.exp(curves[-1]['validation_loss']):.1f}")   # curves[-1]: the final epoch's record, whatever was kept
 ```
 
 Output:
@@ -262,7 +275,7 @@ validation perplexity at the kept epoch: 36.4
 validation perplexity at the last epoch: 43.7
 ```
 
-In epoch 1, training perplexity is higher than validation, because the training figure averages over the whole epoch, including its first batches, when the model was still untrained, while validation is measured at the epoch's end. After that, training perplexity falls at every epoch, while validation perplexity bottoms out at 36.4 in epoch 5 and climbs from there, to 43.7 by the last epoch. The training script kept the weights from the best epoch, and every result in the rest of this chapter uses them.
+In epoch 1, training perplexity is higher than validation, because the training figure averages over the whole epoch, including its first batches, when the model was still untrained, while validation is measured at the epoch's end. Validation perplexity bottoms out at 36.4 in epoch 5 and climbs from there, to 43.7 by the last epoch, while training perplexity falls at every epoch after the first. The training script kept the weights from the best epoch, and every result in the rest of this chapter uses them.
 
 The gap between the two curves is the model memorizing. It grows every epoch, because the training names repeat their product lines and phrasing, and this model has no **regularization**, nothing in its training that discourages memorizing, so early stopping is its only defence.
 
@@ -270,18 +283,20 @@ The gap between the two curves is the model memorizing. It grows every epoch, be
 
 ## Compare with the baseline {#compare-with-the-baseline}
 
-The real test is the one every model in this book takes: perplexity per token on the validation names, against the [4-gram baseline](#the-baseline). Before you run the comparison, predict which model wins. The neural model can relate similar contexts, which the 4-gram can't; the 4-gram has exact counts for every context it has seen.
+The real test is the one every model in this book takes: perplexity per token on the validation names, against the [4-gram baseline](#the-baseline). Which matters more on these names: relating similar contexts, or exact counts? The neural model can relate similar contexts, which the 4-gram can't; the 4-gram has exact counts for every context it has seen.
 
-Example `neural-vs-baseline` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.10:
+Example `neural-vs-baseline` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.11:
 
 ```python
+"""The window model and the 4-gram baseline, each scored by perplexity per token on the same validation names. The
+prose's point rests on the two printed perplexities."""
 from lib import neural
 from lib.names import name_tokens
 from lib.ngrams import KneserNey, perplexity
 
-train, validation = name_tokens("train"), name_tokens("validation")
-print("window model validation perplexity:", f"{neural.perplexity(validation):.1f}")
-print("4-gram baseline validation perplexity:", f"{perplexity(KneserNey(train, 4), validation):.1f}")
+train, validation = name_tokens("train"), name_tokens("validation")     # both models are scored on the same tokens of the same names
+print("window model validation perplexity:", f"{neural.perplexity(validation):.1f}")      # the window model, from its saved weights
+print("4-gram baseline validation perplexity:", f"{perplexity(KneserNey(train, 4), validation):.1f}")   # a 4-gram: each token is predicted from the three before it
 ```
 
 Output:
@@ -291,13 +306,15 @@ window model validation perplexity: 36.4
 4-gram baseline validation perplexity: 23.1
 ```
 
-The window model's validation perplexity is 36.4, against the baseline's 23.1. The counted model wins, by a wide margin.
+The counted model wins, by a wide margin: the window model's validation perplexity is 36.4, against the baseline's 23.1.
 
 To see where, split the validation tokens by whether their three-token context occurs in the training names, and score both models on each part:
 
-Example `seen-and-unseen-contexts` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.10:
+Example `seen-and-unseen-contexts` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.11:
 
 ```python
+"""Splits the validation tokens by whether their three-token context occurs in the training names, and scores both models
+on each part. The prose's point rests on the four perplexities printed for the two parts."""
 import math
 
 import numpy as np
@@ -308,15 +325,15 @@ from lib.ngrams import KneserNey, ngrams, padded
 
 train, validation = name_tokens("train"), name_tokens("validation")
 counted = KneserNey(train, 4)
-pairs = [(c, t) for text in validation for c, t in ngrams(padded(text, 4), 4)]
+pairs = [(c, t) for text in validation for c, t in ngrams(padded(text, 4), 4)]   # padding gives each name's first tokens a context
 seen = np.array([c in counted.totals[4] for c, _ in pairs])     # was this 3-token context in the training names?
 from_counts = np.array([counted.probability(c, t) for c, t in pairs])
-from_network = neural.token_probabilities(validation)
+from_network = neural.token_probabilities(validation)           # in the same order as pairs, so each entry is for the same token
 
 print("validation tokens with a context seen in training:", f"{seen.mean():.0%}")
-for part, where in [("seen", seen), ("unseen", ~seen)]:
+for part, where in [("seen", seen), ("unseen", ~seen)]:                  # ~seen: the complement, the contexts the training names lack
     for model, p in [("4-gram", from_counts), ("network", from_network)]:
-        print(f"{model} perplexity, {part} contexts: {math.exp(-np.log(p[where]).mean()):.1f}")
+        print(f"{model} perplexity, {part} contexts: {math.exp(-np.log(p[where]).mean()):.1f}")   # exp of the average surprise, over this part
 ```
 
 Output:
@@ -329,7 +346,7 @@ network perplexity, seen contexts: 26.1
 network perplexity, unseen contexts: 78.5
 ```
 
-70% of the validation tokens have a context the training names contain, and on those the 4-gram scores 17.9 and the network 26.1. On the unseen contexts, where the network's ability to relate contexts should help most, the 4-gram scores 41.2 and the network 78.5. The network is worse on both, and by more on the unseen ones.
+The network is worse on both parts, and by more on unseen contexts, where its ability to relate contexts should help most. There the 4-gram scores 41.2 and the network 78.5. On seen contexts, which make up 70% of the validation tokens, the 4-gram scores 17.9 and the network 26.1.
 
 So this network doesn't lose only where counts are exact; it hasn't learned to generalize well either. Two features of this model and this text are the likeliest reasons. The network has no regularization and overfits after a few epochs, as the [training curve](#stop-at-the-best-epoch) showed. And the store's names are short and formulaic: three tokens of context cover most of what a name holds, which is the setting where Kneser-Ney's counts are strongest. Bengio and colleagues found the opposite on larger, more varied text: on the Brown corpus, about 800,000 training words, their best network alone had a test perplexity of 268, and mixed with a trigram model 252, against the best n-gram model's 312 ([Bengio et al., 2003](https://www.jmlr.org/papers/volume3/bengio03a/bengio03a.pdf), section 4.2 and table 1). A learned model isn't better because it's learned; it has to be measured.
 
@@ -339,11 +356,13 @@ So this network doesn't lose only where counts are exact; it hasn't learned to g
 
 A model that's worse on average can still be useful, if its mistakes differ from the better model's. When two models make different mistakes, mixing their probabilities can beat both, which is what Bengio and colleagues did with their network and a smoothed trigram model ([Bengio et al., 2003](https://www.jmlr.org/papers/volume3/bengio03a/bengio03a.pdf), section 4). The mix is a weighted average of the two models' probabilities for each token, as in [chapter 3's interpolation](#mix-short-and-long-contexts).
 
-For the store, score the validation names with the network's share of the mix at 0, 0.2, 0.3, 0.5 and 1, where 0 is the counted model alone and 1 is the network alone:
+Does a mix beat both ends? Score the validation names with the network's share of the mix at 0, 0.2, 0.3, 0.5 and 1, where 0 is the counted model alone and 1 is the network alone:
 
-Example `mix-neural-and-counts` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.10:
+Example `mix-neural-and-counts` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.11:
 
 ```python
+"""Mixes the network's and the 4-gram's probability of every validation token, at five shares for the network, and prints
+the validation perplexity of each mix. The prose's point rests on the printed perplexity at share 0.2, and at the two ends."""
 import math
 
 import numpy as np
@@ -353,8 +372,9 @@ from lib.names import name_tokens
 from lib.ngrams import KneserNey, ngrams, padded
 
 train, validation = name_tokens("train"), name_tokens("validation")
-from_network = neural.token_probabilities(validation)
+from_network = neural.token_probabilities(validation)           # the network's probability of each actual next token, in order
 counted = KneserNey(train, 4)
+# the 4-gram's probability for the same tokens, in the same order: each name padded with three start markers first
 from_counts = np.array([counted.probability(c, t) for text in validation for c, t in ngrams(padded(text, 4), 4)])
 
 for share in [0.0, 0.2, 0.3, 0.5, 1.0]:                # the network's share of the mix; the counts get the rest
@@ -376,17 +396,20 @@ The mix beats both models. With a network share of 0.2, the validation perplexit
 
 The kept epoch and the share were both chosen by looking at the validation names, so the gain is slightly optimistic; the book's final comparison, on the test names, will check it. And the mix only helps because the two models' errors differ: if they made the same mistakes, averaging them would gain nothing.
 
-**Working rule:** When a learned model and a counted one are close, try mixing their probabilities before choosing one, and choose the share on held-out text. Keep the share small when one model is much stronger, as here, and confirm the gain on a separate test set before relying on it.
+**Working rule:** When a learned model and a counted one are close, try mixing their probabilities before choosing one, and choose the share on held-out text. Keep the share small when one model is much stronger, and confirm the gain on a separate test set before relying on it.
 
 ## More text helps only if it's the same kind {#same-kind-of-text}
 
 If the network overfits because it learned from too little text, the obvious fix is more text. The store has plenty: its product descriptions. The training script can train the same model on names and descriptions together, and the book recorded that version too, scored on the same validation names.
 
-For the store, compare the two recorded models on the validation names:
+Compare the two recorded models on the validation names, one trained on names and one on names and descriptions:
 
-Example `more-text-of-another-kind` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.10:
+Example `more-text-of-another-kind` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.11:
 
 ```python
+"""Scores the window model trained on names alone against the one trained on names and descriptions, counts the training
+tokens of each kind of text, and prints the second model's validation perplexity after each of its epochs. The prose's
+point rests on the two validation perplexities, and on the training token counts printed beside them."""
 import json
 import math
 
@@ -394,7 +417,7 @@ from lib import neural
 from lib.names import name_tokens
 
 validation = name_tokens("validation")
-for name in ["neural-lm", "neural-lm-all-text"]:
+for name in ["neural-lm", "neural-lm-all-text"]:               # the recorded runs: names alone, then names and descriptions
     manifest = json.load(open(f"data/recorded/{name}/manifest.json", encoding="utf-8"))
     print(f"learned from {manifest['settings']['text']}:", f"{neural.perplexity(validation, name):.1f}")
 
@@ -402,12 +425,12 @@ from lib import bpe
 from lib.store import load_products
 
 tokenizer = bpe.store_tokenizer()
-names_tokens = sum(len(t) for t in name_tokens("train"))
-description_tokens = sum(len(tokenizer.encode(d)) for d in load_products("train")["description"])
+names_tokens = sum(len(t) for t in name_tokens("train"))      # counted in the store's tokens, the ones the model reads
+description_tokens = sum(len(tokenizer.encode(d)) for d in load_products("train")["description"])   # the training split only, as for names
 print("training tokens, names:", f"{names_tokens:,}")
 print("training tokens, names and descriptions:", f"{names_tokens + description_tokens:,}")
 curve = json.load(open("data/recorded/neural-lm-all-text/curves.json", encoding="utf-8"))
-print("all-text model, validation perplexity by epoch:", ", ".join(f"{math.exp(c['validation_loss']):.1f}" for c in curve))
+print("all-text model, validation perplexity by epoch:", ", ".join(f"{math.exp(c['validation_loss']):.1f}" for c in curve))   # one per epoch, in order
 ```
 
 Output:
@@ -420,21 +443,24 @@ training tokens, names and descriptions: 2,744,320
 all-text model, validation perplexity by epoch: 73.6, 64.0, 60.8, 59.0
 ```
 
-The training names hold 337,071 tokens, and names and descriptions together 2,744,320, about eight times as many. The model that learned from names alone scores 36.4, and the one that learned from names and descriptions scores 59.0: worse, with eight times the text. That second model trained for four epochs, and its validation perplexity was still falling when it stopped, by smaller steps each epoch: 73.6, 64.0, 60.8, 59.0. Our judgement is that more epochs wouldn't bring it near the names model.
+Adding the descriptions makes the model worse at names. The training names hold 337,071 tokens, and names and descriptions together 2,744,320, about eight times as many. The model that learned from names alone scores 36.4, and the one that learned from names and descriptions scores 59.0. That second model trained for four epochs, and its validation perplexity was still falling when it stopped, by smaller steps each epoch: 73.6, 64.0, 60.8, 59.0. Our judgement is that more epochs wouldn't bring it near the names model.
 
 Descriptions are a different kind of text. They're written in full sentences, with words such as `your`, `this` and `perfect` that names rarely contain, and a model that learns mostly from them predicts names as if they were descriptions. The added text taught the model the wrong distribution for the task. A model learns the text it's given, and its perplexity measures how well it predicts text like that: data of another kind can make it worse, and needs to be weighted or kept apart.
 
-**Working rule:** Before adding training text, check that it resembles the text you'll predict; train on both and measure on the target text, as here, rather than assuming more is better. When the extra text differs a lot, train on the target text alone, or lay out each text so the model can tell its kinds apart, as [chapter 8](#turn-products-into-batches) does with a separator between a product's name and its description.
+**Working rule:** Before adding training text, check that it resembles the text you'll predict; train on both and measure on the target text, rather than assuming more is better. When the extra text differs a lot, train on the target text alone, or lay out each text so the model can tell its kinds apart, as [chapter 8](#turn-products-into-batches) does with a separator between a product's name and its description.
 
 ## Suggest from similar contexts {#suggest-from-similar-contexts}
 
 The network lost on average, including on contexts the training names lack, but averages hide single cases. [Chapter 3's autocomplete](#autocomplete-with-more-context) showed the 4-gram's worst case, `outdoor bar`, a context no training name contains, where it fell back to generic continuations.
 
-For the store, ask the network for its three likeliest next tokens after five prefixes, each treated as the start of a name, and compare a few of its embeddings:
+Next, the network's three likeliest tokens after five name prefixes, and a few embeddings, tell whether `outdoor bar` gets the `stool` suggestion that `patio bar` does:
 
-Example `neural-autocomplete` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.10:
+Example `neural-autocomplete` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.11:
 
 ```python
+"""The network's three likeliest next tokens after five typed prefixes, its probability of `stool` after `outdoor bar`,
+and the cosine similarity of `patio` with three other tokens in its embedding table. The prose's point rests on the
+suggestions after each prefix, and on the three cosines printed last."""
 import numpy as np
 
 from lib import bpe, neural
@@ -444,17 +470,18 @@ weights, vocabulary, manifest = neural.load()
 index, width = {t: i for i, t in enumerate(vocabulary)}, manifest["settings"]["context"]
 tokenizer = bpe.store_tokenizer()
 
-for typed in ["bar", "patio bar", "outdoor bar", "kitchen bar", "wine bar"]:
-    context = ([START] * width + tokenizer.encode(typed))[-width:]
-    logits = neural.forward(weights, np.array([[index[t] for t in context]]))[0]
-    probabilities = np.exp(neural.log_softmax(logits[None])[0])
-    best = np.argsort(-probabilities, kind="stable")[:3]
+for typed in ["bar", "patio bar", "outdoor bar", "kitchen bar", "wine bar"]:    # each typed prefix is read as the start of a name
+    context = ([START] * width + tokenizer.encode(typed))[-width:]               # pad with start markers, keep the last width tokens
+    logits = neural.forward(weights, np.array([[index[t] for t in context]]))[0]   # forward takes a batch: one row, so take row 0
+    probabilities = np.exp(neural.log_softmax(logits[None])[0])                 # log_softmax wants a batch too: add an axis, then take it off
+    best = np.argsort(-probabilities, kind="stable")[:3]                        # the three likeliest; a stable sort keeps ties in vocabulary order
+    # the end-of-word marker </w> is shown as nothing, so the tokens read as the words they came from
     print(f"{typed:<12} -> " + ", ".join(f"{vocabulary[i].replace('</w>', '')} {probabilities[i]:.2f}" for i in best))
 
-outdoor_bar = ([START] * width + tokenizer.encode("outdoor bar"))[-width:]
+outdoor_bar = ([START] * width + tokenizer.encode("outdoor bar"))[-width:]      # the same padding as above
 p_stool = np.exp(neural.log_softmax(neural.forward(weights, np.array([[index[t] for t in outdoor_bar]])))[0, index["stool</w>"]])
 print("P(stool | outdoor bar):", f"{p_stool:.2f}")
-table = weights["embedding"] / np.linalg.norm(weights["embedding"], axis=1, keepdims=True)
+table = weights["embedding"] / np.linalg.norm(weights["embedding"], axis=1, keepdims=True)   # unit-length rows, so a dot product is a cosine
 for a, b in [("patio</w>", "outdoor</w>"), ("patio</w>", "kitchen</w>"), ("patio</w>", "wine</w>")]:
     print(f"cosine({a.replace('</w>', '')}, {b.replace('</w>', '')}) in the model's embeddings:", f"{float(table[index[a]] @ table[index[b]]):.2f}")
 ```
@@ -484,7 +511,7 @@ This is one case, not an average: the [seen and unseen split](#compare-with-the-
 A neural language model brings new failure modes with its new strengths:
 
 - **Overfitting is silent.** Training loss always looks good. Without a validation curve, a model trained too long ships worse than one trained less. Keep the best epoch, and watch the gap.
-- **Results depend on the machine.** Retraining on another processor gives slightly different weights. Save the weights you ship, the code and settings that made them, and the library's outputs for a few inputs, as the training script here does.
+- **Save the weights you ship.** Retraining on another processor gives slightly different weights, so keep the code and settings that made them, and the library's outputs for a few inputs, as the training script here does.
 - **The output layer dominates.** Scoring every token in the vocabulary at every step is most of the computation and most of the parameters. A larger vocabulary costs here first.
 - **Mismatched training text hurts.** Adding text unlike the target, as descriptions were for names, makes predictions worse while the training loss looks fine. Measure on the target text after every change to the training data.
 - **Averages hide rare contexts.** A model can score well overall and still fail on the unusual prefixes that shoppers type when they look for something new. Score seen and unseen contexts separately, as this chapter did, and watch the unseen ones.

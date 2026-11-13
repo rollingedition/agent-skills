@@ -1,3 +1,6 @@
+"""The repetition penalty applied by hand to the next token's logits, checked against lib.decoding.penalize, and then
+used for a whole greedy description. The two P(distressed) lines are the ones the prose quotes, and the
+assert against lib.decoding.penalize is the match it states as fact."""
 import numpy as np
 
 from lib import decoding, transformer
@@ -15,7 +18,7 @@ logits = decoding.next_logits(start + before)
 seen = np.unique(before)                                              # every token the description has used
 penalized = logits.copy()
 penalized[seen] = np.where(logits[seen] > 0, logits[seen] / factor, logits[seen] * factor)   # less likely either way
-print("same as lib.decoding.penalize:", bool(np.allclose(penalized, decoding.penalize(logits, before, factor))))
+assert np.allclose(penalized, decoding.penalize(logits, before, factor))   # the hand calculation is the library's
 for label, adjusted in [("without a penalty", logits), ("with the penalty", penalized)]:
     probabilities = transformer.softmax(adjusted)
     top = np.argsort(-probabilities, kind="stable")[:3]

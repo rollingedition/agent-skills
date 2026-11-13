@@ -3,20 +3,20 @@ title: "Language Models from the Ground Up"
 chapter: "Attention"
 chapter_id: attention
 book: language-models-from-the-ground-up
-edition: 2026.11.10
+edition: 2026.11.11
 verified: 2026-11-13
-edition_code: ZD73-7XB0
+edition_code: 3Y9C-0N1E
 canonical: https://rollingedition.com/language-models-from-the-ground-up/attention
 license: CC BY 4.0
-attribution: "“Attention,” chapter 6 of Language Models from the Ground Up, Edition 2026.11.10, examples passed Nov 13, 2026. By Rolling Edition, https://rollingedition.com/language-models-from-the-ground-up/attention. Text CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Attention,” chapter 6 of Language Models from the Ground Up, Edition 2026.11.11, examples passed Nov 13, 2026. By Rolling Edition, https://rollingedition.com/language-models-from-the-ground-up/attention. Text CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Attention
 
 By the end of this chapter you can compute attention by hand: score how well each token's query matches every earlier token's key, turn the scores into weights, and average the values those weights select. You'll add the causal mask that keeps a language model from seeing the future, the scaling that keeps the weights from collapsing onto one token, and several heads that look for different things at once. Then you'll read what a trained model attends to, test what it copies, and measure how far back it looks.
 
-This book follows one case throughout: an online furniture and home-goods store, which it calls the store, and the text of its product names and descriptions. [Chapter 5](#a-neural-language-model)'s window model predicted the next token of that text from exactly four earlier tokens, joined side by side, each slot with its own weights. That design has two limits. It can't see a fifth token back, however much it matters, and it learns about a token in the first slot separately from the same token in the third. The store's descriptions show why the first limit hurts: a description often repeats words from the product's name, tens of tokens later, as in `protect your outdoor patio furniture from harsh elements with this outdoor patio furniture cover`. A model that can look back at the name can see which word comes next. One that sees only the last four tokens, `this outdoor patio furniture`, has to guess among everything that follows those words in other products.
+[Chapter 5](#a-neural-language-model)'s window model predicted the next token of the store's names and descriptions from exactly four earlier tokens, joined side by side, each slot with its own weights. That design has two limits. It can't see a fifth token back, however much it matters, and it learns about a token in the first slot separately from the same token in the third. The store sells furniture and home goods online, and its descriptions show why the first limit hurts: a description often repeats words from the product's name, tens of tokens later, as in `protect your outdoor patio furniture from harsh elements with this outdoor patio furniture cover`. A model that can look back at the name sees which word comes next. One that sees only the last four tokens, `this outdoor patio furniture`, has to guess among everything that follows those words in other products.
 
-**Attention** lets every position look at every earlier one, and decide from their contents how much each matters. It was introduced to let a translation model look back at the words of the sentence it was translating ([Bahdanau et al., 2015](https://arxiv.org/abs/1409.0473)), and it is the core of the transformer ([Vaswani et al., 2017](https://arxiv.org/abs/1706.03762)), the design of the open models this book reads in [chapter 10](#inside-an-open-model). This chapter builds attention on its own, then reads it inside the book's small transformer, which this book calls the store's model: a transformer trained once on the store's text, which [chapter 7](#the-transformer-block) assembles part by part.
+**Attention** lets every position look at every earlier one, and decide from their contents how much each matters. It was introduced to let a translation model look back at the words of the sentence it was translating ([Bahdanau et al., 2015](https://arxiv.org/abs/1409.0473)). It is the core of the transformer ([Vaswani et al., 2017](https://arxiv.org/abs/1706.03762)), the design of the open models this book reads in [chapter 10](#inside-an-open-model). This chapter builds attention on its own, then reads it inside the book's small transformer, which this book calls the store's model: a transformer trained once on the store's text, which [chapter 7](#the-transformer-block) assembles part by part.
 
 ## Look back with a weighted average {#look-back-with-a-weighted-average}
 
@@ -32,21 +32,23 @@ Attention(Q, K, V) = softmax(QKᵀ / √d) V
 
 where Q, K and V hold every position's query, key and value as rows ([Vaswani et al., 2017](https://arxiv.org/abs/1706.03762), section 3.2.1). The division by √d is the subject of a [later section](#scale-the-scores).
 
-For the store, take four tokens, the start marker and `sled coffee table`, a table whose base is shaped like a sled's runners. Give each a random vector of 8 numbers, as an untrained embedding table would, and compute attention with random 8-by-4 query, key and value matrices:
+To watch the arithmetic on something small, take four tokens of the store's text, the start marker and `sled coffee table`, a table whose base is shaped like a sled's runners. Give each a random vector of 8 numbers, as an untrained embedding table would, and compute attention with random 8-by-4 query, key and value matrices:
 
-Example `attention-by-hand` (Python 3.12.15 · numpy 2.5.4), passing in Edition 2026.11.10:
+Example `attention-by-hand` (Python 3.12.15 · numpy 2.5.4), passing in Edition 2026.11.11:
 
 ```python
+"""Computes one attention layer by hand for four tokens, with random matrices. The prose's point rests on the
+printed weight matrix: each row says which positions one position draws from, and how much."""
 import numpy as np
 
 tokens = ["<s>", "sled</w>", "coffee</w>", "table</w>"]
-rng = np.random.default_rng(2026)
+rng = np.random.default_rng(2026)                            # a fixed seed, so the same numbers come out on every run
 x = rng.normal(0, 1, (4, 8))                        # one 8-number vector per token, as an embedding table gives
 w_query, w_key, w_value = (rng.normal(0, 0.5, (8, 4)) for _ in range(3))
 
 queries, keys, values = x @ w_query, x @ w_key, x @ w_value   # what each token looks for, offers, and passes on
 scores = queries @ keys.T / np.sqrt(4)                       # how well each query matches each key, scaled
-weights = np.exp(scores - scores.max(1, keepdims=True))
+weights = np.exp(scores - scores.max(1, keepdims=True))      # subtracting each row's largest score keeps exp from overflowing
 weights /= weights.sum(1, keepdims=True)                     # softmax along each row: each row sums to 1
 output = weights @ values                                     # each token: a weighted average of all the values
 
@@ -54,7 +56,7 @@ np.set_printoptions(precision=2, suppress=True)
 print("attention weights (rows attend to columns):")
 for token, row in zip(tokens, weights):
     print(f"  {token:<11}", row)
-print("each row sums to 1:", bool(np.allclose(weights.sum(1), 1)))
+assert np.allclose(weights.sum(1), 1)                        # each row sums to 1, which the prose relies on
 print("output shape:", output.shape)
 ```
 
@@ -66,11 +68,10 @@ attention weights (rows attend to columns):
   sled</w>    [0.21 0.52 0.16 0.11]
   coffee</w>  [0.04 0.   0.03 0.94]
   table</w>   [0.16 0.   0.03 0.81]
-each row sums to 1: True
 output shape: (4, 4)
 ```
 
-Each row of the printed weights is one position's average: which positions it draws from, and how much. Every row sums to one, as the line `each row sums to 1: True` confirms, and the output has one 4-number vector per position. The weights are random, because the matrices are, but they already show attention's freedom: `coffee` puts most of its weight on `table`, and the start marker on `sled`, because nothing restricts which positions a row can draw from. For predicting the next token, that freedom is a bug, as the [next section](#hide-the-future) shows.
+Each row of the printed weights is one position's average: which positions it draws from, and how much. Every row sums to one, which the example asserts, and the output has one 4-number vector per position. The weights are random, because the matrices are, but they already show attention's freedom: `coffee` puts most of its weight on `table`, a token after it, and the start marker puts most of its weight on `sled`. Nothing in the arithmetic stops a position from looking ahead. For predicting the next token, that freedom is a bug, as the [next section](#hide-the-future) shows.
 
 Three properties of this arithmetic matter for everything that follows. The weights depend on content, through queries and keys, so the same token can attend to different places in different texts. The number of positions doesn't matter: the same three matrices work for a name of 4 tokens or a description of 150, so the model learns one way of looking back, not one per slot. And a weighted average ignores the order of what it averages. Without a mask, attention gives `bar` the same output in `bar stool` as in `stool bar`. The causal mask of the next section lets a little order back in, because each token then sees a different number of earlier tokens, and Haviv and colleagues found that language models can infer positions from that alone ([Haviv et al., 2022](https://arxiv.org/abs/2203.16634)). Models still add explicit position information, as [chapter 7](#the-transformer-block) does.
 
@@ -82,11 +83,13 @@ In the [first section](#look-back-with-a-weighted-average), `coffee` drew most o
 
 The mask also makes training efficient. With it, one pass over a text predicts every position at once, each from its own past, where [chapter 5](#a-neural-language-model)'s window model needed a separate window for every prediction.
 
-For the store, apply the mask to the same four tokens' scores. Then test what the mask is for: replace the last token, `table`, with a different vector, and check whether the output at `coffee` changes, without the mask and with it:
+A change to the last token can reach `coffee` only if `coffee` is allowed to look ahead. Apply the mask to the same four tokens' scores, replace `table` with a different vector, and measure how far the output at `coffee` moves, without the mask and with it:
 
-Example `causal-mask` (Python 3.12.15 · numpy 2.5.4), passing in Edition 2026.11.10:
+Example `causal-mask` (Python 3.12.15 · numpy 2.5.4), passing in Edition 2026.11.11:
 
 ```python
+"""Applies the causal mask to the same four tokens, then changes the last token and measures how far the output at
+coffee moves, with and without the mask. The prose's point rests on the last printed line: with the mask, that change is zero."""
 import numpy as np
 
 tokens = ["<s>", "sled</w>", "coffee</w>", "table</w>"]
@@ -110,14 +113,15 @@ np.set_printoptions(precision=2, suppress=True)
 print("weights with the causal mask:")
 for token, row in zip(tokens, weights):
     print(f"  {token:<11}", row)
-print("weight on later tokens:", float(weights[~allowed].sum()))
+print("weight on later tokens:", float(weights[~allowed].sum()))   # ~allowed marks the positions above the diagonal
 
 changed = x.copy()
 changed[3] = rng.normal(0, 1, 8)                             # a different last token in place of `table`
 for mask in [False, True]:
-    before, after = attend(x, mask)[1][2], attend(changed, mask)[1][2]
-    print(f"output at coffee changes with the last token, {'with' if mask else 'without'} the mask:",
-          bool(not np.allclose(before, after)))
+    before, after = attend(x, mask)[1][2], attend(changed, mask)[1][2]   # attend returns (weights, output); 2 is coffee
+    change = float(np.abs(after - before).max())
+    print(f"largest change in coffee's output, {'with' if mask else 'without'} the mask: {change:.2f}")
+    assert (change == 0) == mask      # the mask's job: with it, nothing after coffee reaches coffee, so the change is zero
 ```
 
 Output:
@@ -129,13 +133,13 @@ weights with the causal mask:
   coffee</w>  [0.58 0.01 0.41 0.  ]
   table</w>   [0.16 0.   0.03 0.81]
 weight on later tokens: 0.0
-output at coffee changes with the last token, without the mask: True
-output at coffee changes with the last token, with the mask: False
+largest change in coffee's output, without the mask: 4.69
+largest change in coffee's output, with the mask: 0.00
 ```
 
 The weight matrix is now lower-triangular, with zeros above the diagonal, so the total weight on later tokens is 0.0. The start marker can attend only to itself, so its row is a single 1. `sled` splits its weight between the start marker and itself. `coffee`, which put almost all its weight on the later `table` before the mask, now spreads it over the positions it's allowed, because softmax divides only among the positions left. The last row, `table`, is unchanged, since it had no later positions to lose.
 
-The last two lines show the leak the mask closes. Without the mask, changing the last token changes the output at `coffee`: True. With it, `coffee`'s output can't depend on what comes later: False. A model trained without the mask can learn to copy each answer from the next position, so its training loss can fall close to zero while it learns nothing it can use to generate text. Nothing crashes along the way, which is what makes a wrong mask hard to notice.
+The last two lines show the leak the mask closes. Without the mask, changing the last token moves the output at `coffee` by as much as 4.69. With the mask, `coffee`'s output can't depend on what comes later, and the example asserts that the change is zero. A model trained without the mask can learn to copy each answer from the next position, so its training loss can fall close to zero while it learns nothing it can use to generate text. Nothing crashes along the way, which is what makes a wrong mask hard to notice.
 
 **Working rule:** Apply the mask to scores before softmax, never to weights after it, so each row still sums to one. Test it the way this example does: check that the weight on later positions is exactly zero, and that changing a later token leaves earlier outputs unchanged. If a model's training loss falls far faster than expected, check the mask first.
 
@@ -143,15 +147,18 @@ The last two lines show the leak the mask closes. Without the mask, changing the
 
 Attention's formula divides every score by √d, and the reason is in the dot product. A dot product of two vectors adds up one product per number. If the numbers in queries and keys are independent and random, with mean 0 and variance 1, a score has variance d, so queries and keys of a larger size give larger scores ([Vaswani et al., 2017](https://arxiv.org/abs/1706.03762), section 3.2.1, footnote 4). Softmax turns large differences between scores into extreme weights: one position gets nearly all the weight, and the rest nearly none. Vaswani and colleagues suspected that a model in that state learns slowly, because softmax's gradients are tiny when one weight is close to 1. Dividing by √d brings the scores back to variance 1, whatever the size.
 
-The store's model makes this concrete: its heads work with queries and keys of 32 numbers. For the store, draw random queries and keys of three sizes, 4, 32 and 256, score each query against 16 keys with and without the division, and report the largest weight in each row, averaged over 1,000 queries. Before you run it, predict the largest weight with 256 numbers and no division:
+The store's model makes this concrete: its heads work with queries and keys of 32 numbers. Draw random queries and keys of three sizes, 4, 32 and 256, score each query against 16 keys with and without the division, and report the largest weight in each row, averaged over 1,000 queries. Guess first: with 256 numbers and no division, how large is a row's biggest weight on average?
 
-Example `scaling-matters` (Python 3.12.15 · numpy 2.5.4), passing in Edition 2026.11.10:
+Example `scaling-matters` (Python 3.12.15 · numpy 2.5.4), passing in Edition 2026.11.11:
 
 ```python
+"""Measures the largest softmax weight in each row, at three sizes of query and key, with and without dividing by the
+square root of the size. The prose's point rests on the unscaled averages growing with the size, and the scaled ones staying level."""
 import numpy as np
 
-rng = np.random.default_rng(2026)
+rng = np.random.default_rng(2026)                            # a fixed seed, so the printed averages are the same on every run
 for size in [4, 32, 256]:
+    # numbers with mean 0 and variance 1, the case the scaling argument assumes; 1,000 queries against 16 keys
     queries, keys = rng.normal(0, 1, (1000, size)), rng.normal(0, 1, (16, size))
     for divide in [False, True]:
         scores = queries @ keys.T / (np.sqrt(size) if divide else 1)
@@ -176,7 +183,7 @@ Without the division, the largest weight grows with the size: 0.45 with 4 number
 
 That's the state training should start from. Every position looks at several others, so the gradients reach all of them, and training sharpens the weights where sharp weights help. A trained head can still put most of its weight on one position, as some of the [store's model's heads](#read-trained-heads) do; the scaling only keeps heads from starting there.
 
-**Working rule:** Divide attention scores by the square root of the query's size, as the transformer paper does. A few models, such as T5, leave the division out and fold the factor into how the query weights start instead ([source](https://github.com/huggingface/transformers/blob/v4.46.0/src/transformers/models/t5/modeling_t5.py)), so check which a model does before you load its weights. If you change how queries and keys are computed or initialized, print the average largest weight of an untrained model, as here, and expect it to be well below 1.
+**Working rule:** Divide attention scores by the square root of the query's size, as the transformer paper does. A few models, such as T5, leave the division out and fold the factor into how the query weights start instead ([source](https://github.com/huggingface/transformers/blob/v4.46.0/src/transformers/models/t5/modeling_t5.py)), so check which a model does before you load its weights. If you change how queries and keys are computed or initialized, print the average largest weight of an untrained model and expect it to be well below 1.
 
 ## Several heads look for different things {#several-heads}
 
@@ -184,14 +191,17 @@ Each attention computation so far gives one set of weights per position, which c
 
 Splitting the numbers keeps the cost about the same as one head over all of them, and gives each head its own pattern of weights. The store's model has 4 heads in each layer, each working in 32 numbers.
 
-For the store, run two heads over four positions of random vectors, with the causal mask, and compare what the last position attends to in each:
+Run two heads over four positions of random vectors, with the causal mask, and see whether the last position looks at the same places in each:
 
-Example `attention-heads` (Python 3.12.15 · numpy 2.5.4), passing in Edition 2026.11.10:
+Example `attention-heads` (Python 3.12.15 · numpy 2.5.4), passing in Edition 2026.11.11:
 
 ```python
+"""Runs two heads of causal attention over four positions, each head working in four of the eight numbers, then mixes
+the heads with an output projection. The prose's point rests on the last position's weights differing between the heads,
+and on the output keeping the input's shape."""
 import numpy as np
 
-rng = np.random.default_rng(2026)
+rng = np.random.default_rng(2026)                            # a fixed seed, so the printed weights are the same on every run
 positions, dims, heads = 4, 8, 2
 size = dims // heads                                          # each head works in 4 of the 8 dimensions
 x = rng.normal(0, 1, (positions, dims))
@@ -199,19 +209,19 @@ w_query, w_key, w_value, output_projection = (rng.normal(0, 0.5, (dims, dims)) f
 
 
 def split(m):                                                 # (positions, dims) -> (heads, positions, size)
-    return m.reshape(positions, heads, size).transpose(1, 0, 2)
+    return m.reshape(positions, heads, size).transpose(1, 0, 2)   # head 1 takes the first four numbers of each vector
 
 
 queries, keys, values = split(x @ w_query), split(x @ w_key), split(x @ w_value)
 scores = queries @ keys.transpose(0, 2, 1) / np.sqrt(size)             # one score matrix per head
-scores = np.where(np.tril(np.ones((positions, positions), dtype=bool)), scores, -np.inf)
+scores = np.where(np.tril(np.ones((positions, positions), dtype=bool)), scores, -np.inf)   # the causal mask, for both heads
 weights = np.exp(scores - scores.max(-1, keepdims=True))
 weights /= weights.sum(-1, keepdims=True)
 joined = (weights @ values).transpose(1, 0, 2).reshape(positions, dims)   # the heads' outputs side by side
 output = joined @ output_projection                                       # mixed back together by one more matrix
 
 print("weights shape (heads, positions, positions):", weights.shape)
-print("what the last token attends to, head 1:", np.round(weights[0, -1], 2))
+print("what the last token attends to, head 1:", np.round(weights[0, -1], 2))   # -1 is the last position, which sees all four
 print("what the last token attends to, head 2:", np.round(weights[1, -1], 2))
 print("output shape:", output.shape)
 ```
@@ -233,17 +243,20 @@ The weights now have one matrix per head, of shape (2, 4, 4). The last position'
 
 Random matrices show the arithmetic; a trained model shows what attention is for. The store's model has 4 layers, each with 4 heads of attention. It was trained once, in `recordings/transformer.py`, on the store's training names and descriptions, each product as one text: the start marker, the name, a separator token `<sep>`, the description and the end marker. Each layer's attention reads the output of the layer before, so later layers can attend on the basis of what earlier ones found. As in [chapter 5](#a-neural-language-model), the examples read the saved weights and recompute the model in NumPy, with `lib.transformer`, which also returns every head's weights.
 
-For the store, take a validation product the model never trained on, `double chaise patio furniture cover`, whose description repeats the end of its name. Stop at the description's second `furniture`, where the next token is `cover`. Print the model's probability for `cover`, and each head's three largest weights in the first and last layers. `current:` marks the position being predicted from, `name:` a token in the name, and `description:` an earlier token in the description:
+The question is where the model looks for `cover` in a validation product it never trained on, `double chaise patio furniture cover`, whose description repeats the end of its name. Stop at the description's second `furniture`, where the next token is `cover`, and print the model's probability for `cover`, and each head's three largest weights in the first and last layers. `current:` marks the position being predicted from, `name:` a token in the name, and `description:` an earlier token in the description:
 
-Example `trained-attention` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.10:
+Example `trained-attention` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.11:
 
 ```python
+"""Runs the store's trained model on one validation product, up to the description's second furniture, and prints where
+its heads attend there. The prose's point rests on the last layer's head with the most weight on the name's cover, and on
+the probability it gives cover."""
 import numpy as np
 
 from lib import transformer
 from lib.store import load_products
 
-_, vocabulary, manifest = transformer.load()
+_, vocabulary, manifest = transformer.load()   # forward reads the weights itself, so only the vocabulary and manifest are kept
 settings = manifest["settings"]
 index = {t: i for i, t in enumerate(vocabulary)}
 product = load_products("validation").query("name == 'double chaise patio furniture cover'").iloc[0]
@@ -267,7 +280,9 @@ print("layers:", settings["layers"])
 print("heads per layer:", settings["heads"])
 print("dimensions per head:", settings["dimensions"] // settings["heads"])
 print("name:", " ".join(vocabulary[i] for i in ids[1:sep]))
+# after <sep>, up to and including the current position
 print("description so far:", " ".join(vocabulary[i] for i in ids[sep + 1:position + 1]))
+# position + 1 is the token that really comes next in the text
 print(f"P(next token is {vocabulary[ids[position + 1]]}): {probabilities[ids[position + 1]]:.2f}")
 for layer in [0, len(attention) - 1]:
     for head, weights in enumerate(attention[layer]):
@@ -280,7 +295,7 @@ last = attention[-1][:, position]                        # the last layer's head
 head = int(last[:, name_cover].argmax())
 print("last-layer head with the most weight on the name's cover:", f"head {head + 1}")
 print("its weight on the name's cover:", f"{last[head, name_cover]:.2f}")
-print(f"its weight on {vocabulary[ids[earlier + 1]].removesuffix('</w>')}, after the description's earlier furniture:",
+print(f"its weight on {vocabulary[ids[earlier + 1]].removesuffix('</w>')}, after the description's earlier furniture:",  # earlier + 1: the token after the first furniture
       f"{last[head, earlier + 1]:.2f}")
 ```
 
@@ -310,21 +325,25 @@ The model gives `cover` a probability of 0.97, and the heads show where it may h
 
 That pattern has a name. Olsson and colleagues found pairs of heads that work this way in small models made only of attention layers, and heads with the same behaviour in large models. They call the later head of each pair an **induction head**: a head in an earlier layer copies each token's predecessor into its position, and the induction head uses that to find earlier positions that followed the current token, and attends to them ([Olsson et al., 2022](https://arxiv.org/abs/2209.11895)). The weights above are consistent with that behaviour, but weights show where a head drew its average from, not what the model used, so the [next section](#test-what-the-model-copies) tests it.
 
-**Working rule:** When you inspect a trained model, start with specific tokens in texts you understand, where you know what the model should look at, as here. Treat what the weights suggest as a hypothesis, and test it by changing the input, as the next section does.
+**Working rule:** Inspect a trained model by starting with specific tokens in texts you understand, where you know what the model should look at. Treat what the weights suggest as a hypothesis, and test it by changing the input, as the next section does.
 
 ## Test what the model copies {#test-what-the-model-copies}
 
 If the model predicts `cover` by copying it from the name, then changing the name should change the prediction. If it predicts `cover` because descriptions of this kind often continue that way, the name shouldn't matter much. A test that changes the input and watches the output answers that, where attention weights can't.
 
-For the store, keep the description and change the name: the name as sold, the name without `cover`, and the name ending in `set` instead. Print the probabilities of `cover` and `set` at the same position. Then count what follows `this outdoor patio furniture` in the training descriptions, the four tokens a window model would see:
+Keep the description and change the name: as sold, without `cover`, or ending in `set`. The probabilities of `cover` and `set` at one position show whether the prediction follows the name. Then count what follows `this outdoor patio furniture` in the training descriptions, the four tokens a window model would see:
 
-Example `copy-from-the-name` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.10:
+Example `copy-from-the-name` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.11:
 
 ```python
+"""Changes the name of one validation product and reads the model's probabilities for cover and set at the same position,
+then counts what follows this outdoor patio furniture in the training descriptions. The prose's point rests on P(cover)
+falling when cover leaves the name, and on how rarely this outdoor patio furniture is followed by cover in the training
+descriptions, which is all the four tokens alone give."""
 from lib import transformer
 from lib.store import load_products
 
-_, vocabulary, manifest = transformer.load()
+_, vocabulary, manifest = transformer.load()   # forward reads the weights itself, so only the vocabulary and manifest are kept
 index = {t: i for i, t in enumerate(vocabulary)}
 product = load_products("validation").query("name == 'double chaise patio furniture cover'").iloc[0]
 cover, other = index["cover</w>"], index["set</w>"]
@@ -339,7 +358,8 @@ for name, label in [("double chaise patio furniture cover", "name as sold"),
     print(f"{label}, P(cover): {p[cover]:.2f}")
     print(f"{label}, P(set): {p[other]:.2f}")
 
-phrase = "this outdoor patio furniture "
+phrase = "this outdoor patio furniture "                    # the trailing space makes the phrase end at a word boundary
+# the word after the phrase, in each description that has one; a phrase at the very end has no next word and is skipped
 after = [d.split(phrase, 1)[1].split()[0] for d in load_products("train")["description"]
          if isinstance(d, str) and phrase in d and d.split(phrase, 1)[1].split()]
 print("training descriptions with 'this outdoor patio furniture':", len(after))
@@ -359,35 +379,40 @@ training descriptions with 'this outdoor patio furniture': 6
 followed by cover: 2
 ```
 
-With the name as sold, the model gives `cover` 0.97. Take `cover` out of the name and its probability falls to 0.00. End the name in `set` instead, and the model gives `set` 0.70 and `cover` 0.00. The prediction follows the name. In the training descriptions, 6 contain `this outdoor patio furniture`, and 2 of them continue with `cover`. So the four tokens alone point only weakly at `cover`; the name decides it.
+The name decides the prediction. With the name as sold, the model gives `cover` 0.97, and without `cover` in the name it falls to 0.00. End the name in `set` instead, and the model gives `set` 0.70 and `cover` 0.00.
+
+The four tokens alone point only weakly at `cover`: of the 6 training descriptions containing `this outdoor patio furniture`, 2 go on to `cover`.
 
 That's the behaviour the previous section's weights suggested, now shown by its effect: the model copies a word from the product's name, many tokens back, which a model limited to a window of four tokens can't do. One product isn't a measure of how often the model does it; the [next two sections](#attend-to-the-previous-token) measure its heads over many products.
 
-**Working rule:** Test a claim about what a model uses by changing that input and measuring the output, as here, and include a change that should leave the output alone. Read attention weights for hypotheses, and use tests like this one for conclusions.
+**Working rule:** Test a claim about what a model uses by changing that input and measuring the output, and include a change that should leave the output alone. Read attention weights for hypotheses, and use tests like this one for conclusions.
 
 ## Some heads attend to the previous token {#attend-to-the-previous-token}
 
 One text can mislead; an average over many shows a head's habits. One habit worth measuring is attending to the previous token. A head that does it carries each token's predecessor forward into its position, so later layers see pairs of tokens, as [chapter 1](#predicting-the-next-word)'s bigram counts did, and the copying of the [previous sections](#read-trained-heads) depends on it: to find what followed `furniture` before, a head needs each earlier position to know its predecessor.
 
-For the store, average each head's weight on the previous token over the first 300 validation products, find the head that puts the most there, and compare with an even spread, which puts 1 / (i + 1) on each of the i + 1 tokens position i can see:
+Average each head's weight on the previous token over the first 300 validation products, and compare the head with most weight on the previous token with an even spread, which puts 1 / (i + 1) on each of the i + 1 tokens position i can see:
 
-Example `previous-token-heads` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.10:
+Example `previous-token-heads` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.11:
 
 ```python
+"""Averages each head's weight on the previous token over 300 validation products, and sets the largest average beside
+an even spread. The prose's point rests on the head with the most weight on the previous token, and on the even spread beside it."""
 import numpy as np
 
 from lib import transformer
 from lib.products import product_texts
 
-texts = product_texts("validation", 300)
+texts = product_texts("validation", 300)                    # the first 300 validation products, which the model never trained on
+# with keep=True, forward's second value is every layer's weights; the head count is in the manifest's settings
 layers, heads = len(transformer.forward(texts[0][0], keep=True)[1]), transformer.load()[2]["settings"]["heads"]
 on_previous = np.zeros((layers, heads))
 for ids, _ in texts:
     _, attention = transformer.forward(ids, keep=True)
     for layer, weights in enumerate(attention):        # weights: (heads, positions, positions)
-        on_previous[layer] += weights[:, np.arange(1, len(ids)), np.arange(len(ids) - 1)].mean(1)
+        on_previous[layer] += weights[:, np.arange(1, len(ids)), np.arange(len(ids) - 1)].mean(1)   # position i's weight on i - 1, for i after the start
 on_previous /= len(texts)
-even = np.mean([np.mean(1 / np.arange(2, len(ids) + 1)) for ids, _ in texts])   # spread evenly over the visible tokens
+even = np.mean([np.mean(1 / np.arange(2, len(ids) + 1)) for ids, _ in texts])   # position i sees i + 1 tokens, so 1 / (i + 1) each
 
 print("average weight on the previous token (rows: layers, columns: heads):")
 for layer, row in enumerate(on_previous, start=1):
@@ -419,11 +444,14 @@ No head is purely a previous-token head; each mixes it with other habits. A head
 
 ## Reach past the window {#reach-past-the-window}
 
-Attention's promise was to see past [chapter 5](#a-neural-language-model)'s four-token window, which predicts from the current token and the three before it. Whether the store's model does is measurable. For every description token in the first 300 validation products, leaving out the end marker, add up the weight each head puts on tokens 4 or more positions back, the nearest a four-token window can't see, and separately the weight on the two markers, `<s>` and `<sep>`. Average over tokens, heads and layers, and compare with an even spread over the positions each token can see:
+Attention's promise was to see past [chapter 5](#a-neural-language-model)'s four-token window, which predicts from the current token and the three before it. Whether the store's model does is measurable. How much lands beyond the window? For every description token in the first 300 validation products, leaving out the end marker, add up the weight each head puts on tokens 4 or more positions back, the nearest a four-token window can't see, and separately the weight on the two markers, `<s>` and `<sep>`. Average over tokens, heads and layers, and compare with an even spread over the positions each token can see:
 
-Example `attention-reaches-back` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.10:
+Example `attention-reaches-back` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.11:
 
 ```python
+"""Measures how much attention a description token puts on tokens four or more positions back, and on the two markers,
+against an even spread, over 300 validation products. The prose's point rests on the all-layers share four or more back,
+and on the count of descriptions that repeat a token of the name."""
 import numpy as np
 
 from lib import transformer
@@ -431,22 +459,23 @@ from lib.products import product_texts
 
 _, vocabulary, manifest = transformer.load()
 end = vocabulary.index(transformer.END)
-texts = product_texts("validation", 300)
+texts = product_texts("validation", 300)                    # the first 300 validation products, which the model never trained on
 layers = manifest["settings"]["layers"]
 far, markers, even_far, even_markers, counted = np.zeros(layers), np.zeros(layers), 0.0, 0.0, 0
 for ids, sep in texts:
-    queries = np.array([i for i in range(sep + 1, len(ids)) if ids[i] != end])    # the description's tokens
+    # the description's tokens: after <sep>, so not the name, and without the end marker
+    queries = np.array([i for i in range(sep + 1, len(ids)) if ids[i] != end])
     if len(queries) == 0:
         continue                                          # a product with no description
     _, attention = transformer.forward(ids, keep=True)
     stacked = np.stack(attention)[:, :, queries]          # (layers, heads, description tokens, positions)
     positions = np.arange(len(ids))
     is_marker = np.isin(positions, [0, sep])              # <s> and <sep>
-    beyond = (queries[:, None] - positions[None, :] >= 4) & ~is_marker   # what a 4-token window can't see
+    beyond = (queries[:, None] - positions[None, :] >= 4) & ~is_marker   # 4 positions back is the nearest a four-token window can't see
     far += (stacked * beyond).sum(-1).mean(1).sum(-1)
     markers += (stacked * is_marker).sum(-1).mean(1).sum(-1)
     even_far += (beyond.sum(1) / (queries + 1)).sum()     # an even spread over the positions each token can see
-    even_markers += (2 / (queries + 1)).sum()
+    even_markers += (2 / (queries + 1)).sum()             # two markers among the query's i + 1 visible positions
     counted += len(queries)
 
 print("description tokens measured:", f"{counted:,}")
@@ -457,6 +486,7 @@ print("all layers, weight 4 or more tokens back:", f"{far.mean() / counted:.2f}"
 print("an even spread's weight 4 or more tokens back:", f"{even_far / counted:.2f}")
 print("all layers, weight on <s> and <sep>:", f"{markers.mean() / counted:.2f}")
 print("an even spread's weight on <s> and <sep>:", f"{even_markers / counted:.2f}")
+# the name without <s>, and what follows <sep>; a product counts as described if anything but the end marker follows
 described = [(ids[1:sep], ids[sep + 1:]) for ids, sep in texts if any(i != end for i in ids[sep + 1:])]
 print("products with a description:", len(described))
 print("descriptions that repeat a token of the name:", sum(bool(set(n) & set(d)) for n, d in described))
@@ -479,11 +509,13 @@ products with a description: 262
 descriptions that repeat a token of the name: 244
 ```
 
-Across all layers, description tokens put 0.46 of their attention on tokens 4 or more back. An even spread would put 0.85 there, because most of what a description token can see is far back. So the heads favour nearby tokens, as you'd expect for predicting the next word, and still send a large share of their attention past the window, which no earlier model in this book could use. That matters for this text: of the 262 products with a description, 244 have a description that repeats at least one token of the name.
+The heads favour nearby tokens, as you'd expect for predicting the next word, and still send a large share of their attention past the window, which no earlier model in this book could use. Across all layers, description tokens put 0.46 of their attention on tokens 4 or more back, where an even spread would put 0.85, because most of what a description token can see is far back.
+
+That matters for this text: of the 262 products with a description, 244 have one that repeats at least one token of the name.
 
 The markers get 0.11 of the attention, against 0.05 for an even spread: about twice as much as chance, though they predict no word themselves. One likely reason is a pattern found in larger models. Softmax makes every row of weights sum to one, so a head that finds nothing useful at a position still has to put its weight somewhere, and Xiao and colleagues found that language models put large weights on the first tokens of a text whatever they are, calling them **attention sinks** ([Xiao et al., 2024](https://arxiv.org/abs/2309.17453)). In the store's model, `<s>` always comes first and `<sep>` is in every text, so both could serve; `<sep>` also marks where the description starts, which is useful in itself. This example can't tell the two apart.
 
-**Working rule:** Measure how far back a trained model attends, as here, before deciding how long its context needs to be, and compare with an even spread so the number means something. Report the weight on markers separately, so marker weight doesn't look like long-range attention, and keep the first tokens when you cut a model's context to save space.
+**Working rule:** Measure how far back a trained model attends before deciding how long its context needs to be, and compare with an even spread so the number means something. Report the weight on markers separately, so marker weight doesn't look like long-range attention, and keep the first tokens when you cut a model's context to save space.
 
 ## What goes wrong in production {#attention-in-production}
 
