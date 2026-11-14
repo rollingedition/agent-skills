@@ -3,30 +3,32 @@ title: "Data Governance as Code"
 chapter: "Enforcing policies on queries"
 chapter_id: enforcing-policies-on-queries
 book: data-governance-as-code
-edition: 2026.11.26
-verified: 2026-11-13
-edition_code: Y6HK-BWT6
+edition: 2026.11.27
+verified: 2026-11-14
+edition_code: 2QX0-VKZT
 canonical: https://rollingedition.com/data-governance-as-code/enforcing-policies-on-queries
 license: CC BY 4.0
-attribution: "“Enforcing policies on queries,” chapter 6 of Data Governance as Code, Edition 2026.11.26, examples passed Nov 13, 2026. By Rolling Edition, https://rollingedition.com/data-governance-as-code/enforcing-policies-on-queries. Text CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Enforcing policies on queries,” chapter 6 of Data Governance as Code, Edition 2026.11.27, examples passed Nov 14, 2026. By Rolling Edition, https://rollingedition.com/data-governance-as-code/enforcing-policies-on-queries. Text CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Enforcing policies on queries
 
 By the end of this chapter you can enforce access decisions on every query the platform runs. You'll rewrite each query so that every table it reads is replaced by a subquery that keeps only the rows the user may see and masks the columns they may not, deny every query that reads anything else, test who gets what by running real queries, and say where a rewrite in front of DuckDB stops protecting anything.
 
-The platform, the online learning platform this book follows, sells professional courses to adult learners, and its warehouse holds their contact details, their payments and the text they write. [Chapter 5](#access-policies-as-code) wrote the platform's access policy in Rego. Given a user, a table, the columns they want and, optionally, why they want them, the policy returns a **decision**: a document that says whether to `allow` the read, which **row filters** keep the rows the user may see, which **column masks** change how a column is shown (`redact`, `last4`, `pseudonymize` or `redact_contacts`), and the `reasons`. A decision does nothing on its own. A support agent's SQL reaches DuckDB as text, and something between the two has to apply the decision to every table that text reads, however the query is written.
+A policy protects the online learning platform's warehouse only if it holds for every query that reaches it, and that warehouse keeps learners' contact details, their payments and the text they write. [Chapter 5](#access-policies-as-code) wrote the platform's access policy in Rego. Given a user, a table and the columns they want, and optionally why they want them, the policy returns a **decision**: whether to `allow` the read, which **row filters** keep the rows the user may see, which **column masks** change how a column is shown (`redact`, `last4`, `pseudonymize` or `redact_contacts`), and the `reasons`. A decision does nothing on its own. A support agent's SQL reaches DuckDB as text, so something between the two must apply the decision to every table that text reads, however the query is written.
 
-That layer is this chapter's subject: the book's shared module `lib.enforce`, which we call the **enforcement layer**. Its `Enforcer` holds four things: a DuckDB connection with a view for each catalog table (`lib.warehouse.connect`), the tables' schema, the policy and a key for pseudonyms. Users never get the connection. `Enforcer.sql(query, user)` rewrites a user's query and runs the rewrite. A service exposes only `lib.enforce.answer`, which calls it and returns the rows: never the relation, a handle on the connection, or `Enforcer.run`, which executes SQL the layer wrote with the key attached. The examples run sqlglot 30.31.0 and DuckDB 2.0.0.
+The book's shared module `lib.enforce` does that job; we call it the **enforcement layer**. Its `Enforcer` holds a DuckDB connection with a view for each catalog table (`lib.warehouse.connect`), the tables' schema, the policy and a key for pseudonyms. Users never get the connection. `Enforcer.sql(query, user)` rewrites a user's query and runs the rewrite. A service exposes only `lib.enforce.answer`, which calls it and returns the rows: never the relation, a handle on the connection, or `Enforcer.run`, which executes SQL the layer wrote with the key attached. The code runs sqlglot 30.31.0 and DuckDB 2.0.0.
 
 ## Find every table and column a query reads {#find-what-a-query-reads}
 
-A policy can only decide about what it's asked, so before the enforcement layer asks, it has to know every table a query reads and which columns it reads from each. Reading that off SQL text is a parsing problem with traps: `*`, aliases, joins with `USING`, common table expressions (CTEs) and identifiers in any case. sqlglot parses a query into a tree, and its `qualify` step resolves every column against a schema, qualifies it with its table, and expands `*` into the columns it stands for when it has a schema to expand against ([`qualify` at v30.24.0](https://github.com/tobymao/sqlglot/blob/v30.24.0/sqlglot/optimizer/qualify.py)). The enforcement layer builds that schema when it starts: it lists the catalog's tables, and reads each one's columns and types from the view `lib.warehouse.connect` created for it, so a view DuckDB holds for anything else never enters the schema.
+A policy can only decide about what it's asked, so the layer has to know every table a query reads and the columns it reads from each. Reading that off SQL text is a parsing problem with traps: `*`, aliases, joins with `USING`, common table expressions (CTEs) and identifiers in any case. sqlglot parses a query into a tree, and its `qualify` step resolves every column against a schema, qualifies it with its table, and expands `*` into the columns it stands for when it has a schema to expand against ([`qualify` at v30.24.0](https://github.com/tobymao/sqlglot/blob/v30.24.0/sqlglot/optimizer/qualify.py)). The layer builds that schema when it starts, listing the catalog's tables and reading each one's columns and types from the view `lib.warehouse.connect` created for it, so a view DuckDB holds for anything else never enters the schema.
 
-For the platform, `Enforcer.reads` returns the columns each query reads from each table:
+Four queries, each with a trap, show what `Enforcer.reads` returns: the columns the policy is asked about, which must match what each query names.
 
-Example `tables-a-query-reads` (Python 3.12.15 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0 · regopy 1.5.2 · sqlglot 30.31.0), passing in Edition 2026.11.26:
+Example `tables-a-query-reads` (Python 3.12.15 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0 · regopy 1.5.2 · sqlglot 30.31.0), passing in Edition 2026.11.27:
 
 ```python
+"""The columns four queries read from each table, and how each dialect normalizes the quoted name "LEARNERS". The
+prose's point rests on the query with a CTE and on the normalization lines at the end."""
 import sqlglot
 from sqlglot import exp
 from sqlglot.optimizer.normalize_identifiers import normalize_identifiers
@@ -34,6 +36,7 @@ from sqlglot.optimizer.normalize_identifiers import normalize_identifiers
 from lib.catalog import open_catalog
 from lib.enforce import Enforcer
 
+# only these two tables are loaded, so the layer's schema holds nothing else
 platform = Enforcer(open_catalog(["crm.learners", "support.tickets"]))
 
 # What each query reads, found by sqlglot's qualify against the catalog's schema, with `*` expanded.
@@ -41,6 +44,7 @@ queries = {
     "every column": "select * from crm.learners",
     "a join": """select l.country, count(*) as tickets
                  from crm.learners as l join support.tickets as t using (learner_id) group by all""",
+    # exclude drops notes from the CTE, so the reads name every other column of crm.learners
     "a CTE": """with emea as (select * exclude (notes) from crm.learners where support_region = 'emea')
                 select email from emea""",
     "names in capitals": 'select EMAIL from "CRM"."LEARNERS"',
@@ -53,6 +57,7 @@ for name, sql in queries.items():
 capitals = 'select count(*) from "CRM"."LEARNERS"'
 print('DuckDB, "CRM"."LEARNERS":', f"{platform.connection.sql(capitals).fetchall()[0][0]:,} rows")
 for dialect in ["duckdb", "trino", "postgres"]:
+    # the name the dialect's parser resolves the quoted identifier to
     table = normalize_identifiers(sqlglot.parse_one('select * from "LEARNERS"', read=dialect), dialect=dialect).find(exp.Table)
     print(f'{dialect} normalizes "LEARNERS" to:', table.name)
 ```
@@ -71,13 +76,15 @@ trino normalizes "LEARNERS" to: learners
 postgres normalizes "LEARNERS" to: LEARNERS
 ```
 
-`SELECT *` becomes every column of `crm.learners`, and the join reads `learner_id` from both tables, because the `USING` clause compares them, though neither appears in the output. In the query with a CTE, the outer query returns only `email`, but the CTE names every column of `crm.learners` except `notes`, so the layer asks about all of those: it asks about every column a query names anywhere, which can be more than the query returns, and never fewer. `"CRM"."LEARNERS"` resolves to `crm.learners`, because the layer normalizes identifiers the way DuckDB resolves them before it matches anything: DuckDB returns 5,000 rows of `crm.learners` for that name. The dialect matters: sqlglot lowercases `"LEARNERS"` for DuckDB and Trino, and keeps it as `LEARNERS` for PostgreSQL, so the layer normalizes with the dialect of the engine that runs the query.
+The reads follow what a query names, not what it returns. `SELECT *` reads every column of `crm.learners`, and the join reads `learner_id` from both tables, because `USING` compares them, though neither appears in the output. The CTE returns only `email`, but it names every column of `crm.learners` except `notes`, so the layer asks about all of those. A query's reads can be more than the query returns, and never fewer. `"CRM"."LEARNERS"` resolves to `crm.learners` as well, because the layer normalizes identifiers the way DuckDB resolves them: DuckDB returns 5,000 rows of `crm.learners` for that name. The dialect matters. sqlglot lowercases `"LEARNERS"` for DuckDB and Trino, and keeps it as LEARNERS for PostgreSQL, so the layer normalizes with the dialect of the engine that runs the query.
 
-`qualify` has one gap that decides the layer's design: it fails on an unknown column of a known table, but it passes over a table that isn't in the schema at all, and leaves that table's `*` unexpanded. Run it on a join with `marketing.audience`, which stands for a table a pipeline wrote after the schema was read, then send the same query and five other reads through the layer:
+`qualify` has one gap that decides the layer's design: it fails on an unknown column of a known table, but it passes over a table that isn't in the schema at all, and leaves that table's `*` unexpanded. Run it on a join with `marketing.audience`, which stands for a table a pipeline wrote after the schema was read, then send that query and five other reads through the layer:
 
-Example `unknown-tables-denied` (Python 3.12.15 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0 · regopy 1.5.2 · sqlglot 30.31.0), passing in Edition 2026.11.26:
+Example `unknown-tables-denied` (Python 3.12.15 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0 · regopy 1.5.2 · sqlglot 30.31.0), passing in Edition 2026.11.27:
 
 ```python
+"""Runs sqlglot's qualify on a join with a table the schema lacks, then sends that join and five other reads through
+the enforcement layer. The prose's point rests on the qualify line, where the star stays, and on the denial lines."""
 import sqlglot
 from sqlglot.optimizer.qualify import qualify
 
@@ -94,6 +101,7 @@ print("qualify on its own:", qualify(sqlglot.parse_one(query, read="duckdb"), sc
 attempts = {
     "a table missing from the catalog": query,
     "a column the table doesn't have": "select shoe_size from crm.learners",
+    # scan_crm_learners is the scan lib.warehouse registers for crm.learners, and DuckDB resolves it like a table
     "the scan behind a view": "select count(*) from scan_crm_learners",
     "a Parquet file": "select count(*) from read_parquet('data/platform/learners.parquet')",
     "a table function": "select count(*) from query_table('crm.learners')",
@@ -114,6 +122,7 @@ try:
     rows("select count(*) from read_parquet('data/platform/learners.parquet')")
 except Exception as error:
     print("the file, run directly:", str(error).split(":")[0])
+# the layer turned external access off, and DuckDB refuses to turn it back on while the database runs
 try:
     platform.connection.execute("set enable_external_access = true")
 except Exception as error:
@@ -136,23 +145,25 @@ the file, run directly: Permission Error
 turning external access back on: Cannot enable external access while database is running
 ```
 
-`qualify` on its own returns the query with `SELECT *` intact and no error, so a layer that trusted it would ask the policy about `crm.learners` and pass `marketing.audience` through unchecked. The enforcement layer denies every table that isn't in the catalog before it asks the policy anything. A column the table doesn't have is denied by `qualify` itself. The other four reads show why that rule is broad. `lib.warehouse` registers each table's scan with DuckDB under a name of its own, such as `scan_crm_learners`. Run directly on the layer's connection, that scan returns 5,000 rows of raw learners. `read_parquet` reads a file, and `query_table` reads whatever table its string names, 5,000 rows when run directly. `SUMMARIZE` isn't a query the rewrite can analyse. The first three aren't catalog tables and the last isn't a query, so all four are denied. The layer's connection also has DuckDB's `enable_external_access` turned off, so a file read that got past the rewrite would still fail, with a `Permission Error` ([Securing DuckDB](https://duckdb.org/docs/2.0/operations_manual/securing_duckdb/overview)).
+`qualify` on its own returns the query with `SELECT *` intact and no error, so a layer that trusted it would ask the policy about `crm.learners` and pass `marketing.audience` through unchecked. The layer denies every table outside the catalog before it asks the policy anything, and `qualify` itself denies a column the table doesn't have. The other four reads show why that rule is broad. `lib.warehouse` registers each table's scan under a name of its own, such as `scan_crm_learners`. Run directly on the layer's connection, that scan returns 5,000 rows of raw learners. `query_table` reads whatever table its string names, and returns 5,000 rows when run directly. `read_parquet` reads a file, and `SUMMARIZE` isn't a query the rewrite can analyse. The first three aren't catalog tables and the last isn't a query, so all four are denied. The layer's connection also has DuckDB's `enable_external_access` turned off, so a file read that got past the rewrite would still fail, with a `Permission Error` ([Securing DuckDB](https://duckdb.org/docs/2.0/operations_manual/securing_duckdb/overview)).
 
-**Working rule:** Ask the policy about every table and column a query names, with `*` expanded against the catalog's own schema, and deny anything that schema doesn't hold: unknown tables, files, table functions and statements other than a single query. A denial costs a user one question to the platform team; a pass-through costs whatever the unchecked table holds.
+**Working rule:** Ask the policy about every table and column a query names, with `*` expanded against the catalog's schema, and deny whatever that schema doesn't hold: unknown tables, files, table functions and statements other than a single query. A denial costs one question to the platform team; a pass-through costs whatever the table holds.
 
 ## Allow only catalog tables, CTEs and subqueries {#allow-only-catalog-sources}
 
 [Denying names the catalog doesn't hold](#find-what-a-query-reads) isn't enough on its own, because a query can read data through sources that aren't table names. A table function can sit under `LATERAL`, or in a subquery in the select list. Outside a CTE's scope, or before the CTE is defined, DuckDB resolves its name to whatever else the connection holds under that name. A check that inspects only table names, and accepts any name a CTE uses, passes both.
 
-So the enforcement layer checks sources against an allowlist. `Enforcer.check_sources` walks the whole query and requires every `FROM` and `JOIN` source, at every level, to be a catalog table, a CTE in scope or a subquery, and a `LATERAL` to be over a subquery. Everything else is denied, including table functions wherever they appear, `VALUES`, `UNNEST` and joins in parentheses. A CTE is in scope in its own query, below it and in later CTEs, and a recursive one also in its `UNION`'s recursive branch. An allowlist fails closed on a kind of source nobody thought of.
+So the layer checks sources against an allowlist. `Enforcer.check_sources` walks the whole query and requires every `FROM` and `JOIN` source, at every level, to be a catalog table, a CTE in scope or a subquery, and a `LATERAL` to be over a subquery. Everything else is denied, including table functions wherever they appear, `VALUES`, `UNNEST` and joins in parentheses. A CTE is in scope in its own query, below it and in later CTEs, and a recursive one also in its `UNION`'s recursive branch. An allowlist fails closed on a kind of source nobody thought of.
 
-A query through the layer must also change nothing. DuckDB's scalar `write_log` writes into the engine's query log. `duckdb_functions()` marks such functions: `has_side_effects` is "`true` if this function changes the database state" ([DuckDB, `duckdb_functions`](https://duckdb.org/docs/2.0/sql/meta/duckdb_table_functions)). At 2.0.0 it also marks functions that only vary, such as `random` and `uuid`. The layer denies every flagged function, and every macro that calls one, such as `pg_sleep`, reading the list from `duckdb_functions()` when it starts: a list sorted by hand into harmful and harmless is one an upgrade can outdate unnoticed, and a governed read seldom needs a random number.
+A query through the layer must change nothing. DuckDB's scalar `write_log` writes into the engine's query log. `duckdb_functions()` marks such functions: `has_side_effects` is "`true` if this function changes the database state" ([DuckDB, `duckdb_functions`](https://duckdb.org/docs/2.0/sql/meta/duckdb_table_functions)). At 2.0.0 it also marks functions that only vary, such as `random` and `uuid`. The layer denies every flagged function, and every macro that calls one, such as `pg_sleep`, reading the list from `duckdb_functions()` when it starts. A list sorted by hand into harmful and harmless can go stale on an upgrade without anyone noticing, and a governed read seldom needs a random number.
 
-`lib.enforce` keeps the cases as a regression test, `source_cases`, which [chapter 10's CI](#run-every-rule-as-one-job) runs, as it does [the order test](#gate-columns-on-row-filters) below:
+`lib.enforce` keeps the cases as a regression test, `source_cases`, which [chapter 10's CI](#run-every-rule-as-one-job) runs along with [the order test](#gate-columns-on-row-filters) below. Running them shows each denial and whether anything was logged:
 
-Example `catalog-sources-only` (Python 3.12.15 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0 · regopy 1.5.2 · sqlglot 30.31.0), passing in Edition 2026.11.26:
+Example `catalog-sources-only` (Python 3.12.15 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0 · regopy 1.5.2 · sqlglot 30.31.0), passing in Edition 2026.11.27:
 
 ```python
+"""Runs the allowlist's regression cases through the layer and prints each denial with its reason; a case passes when it's
+denied exactly when it must be and its parse logs nothing. The prose's points rest on the count of cases that pass, the functions-denied line and the allowed-query line at the end."""
 from lib.catalog import open_catalog
 from lib.enforce import MUST_ALLOW, MUST_DENY, Enforcer, source_cases
 
@@ -173,14 +184,16 @@ passing = [case for case in cases if case["denied"] == (case["must"] == "deny") 
 print("cases that pass:", f"{len(passing)} of {len(cases)}")
 
 # What two of the cases do on the layer's own connection, without the layer in front of it.
+# the name is used before its CTE is defined, so DuckDB resolves it to the scan of the same name
 before_the_cte = platform.connection.sql(MUST_DENY["a CTE's name before the CTE"]).fetchall()[0][0]
 print("a CTE's name before the CTE, run directly:", f"{before_the_cte:,} rows")
+# turns on DuckDB's query log, the one write_log writes into, so the entries below are what the call left
 platform.connection.execute("CALL enable_logging('QueryLog')")
 platform.connection.sql(MUST_DENY["a function that writes DuckDB's log"]).fetchall()
 logged = [message for (message,) in platform.connection.sql("select message from duckdb_logs where type = 'QueryLog'").fetchall()]
 print("the log function, run directly, query-log entries it leaves:", logged)
 
-# The query the allowlist must let through, run through the layer.
+# the query the allowlist must admit: a CTE, a join and a scalar subquery over catalog tables
 for name, query in MUST_ALLOW.items():
     print(f"{name}, allowed:", f"{platform.sql(query, 'agent-a05').fetchall()[0][0]:,} rows")
 ```
@@ -206,19 +219,26 @@ the log function, run directly, query-log entries it leaves: ["select write_log(
 a CTE, a join and a scalar subquery, allowed: 61 rows
 ```
 
-Each case is denied before any policy is asked, with a reason that names the source. The layer parses with sqlglot's warnings silenced, since sqlglot logs any statement it keeps as text, such as a `CALL`, values included ([sqlglot source, v30.24.0](https://github.com/tobymao/sqlglot/blob/v30.24.0/sqlglot/parser.py)), and every case checks that nothing was logged: 29 of 29 cases pass. Two of them, run on the layer's own connection, show what the denials prevent: the name used before its CTE reads the scan of the same name, 5,000 rows of raw learners, and `write_log` leaves `["select write_log('an entry', log_type := 'QueryLog')", 'an entry']`: its own statement, and an entry no query made. Every function with side effects is denied, 19 of 19. The last line checks that the allowlist doesn't deny too much: run as `agent-a05`, the EMEA support agent, a CTE, a join and a scalar subquery over catalog tables return 61 rows.
+Each case the layer must deny is refused before any policy is asked, with a reason that names the source. The parse has to leave no trace of its own. sqlglot logs any statement it keeps as text, such as a `CALL`, values included ([sqlglot source, v30.24.0](https://github.com/tobymao/sqlglot/blob/v30.24.0/sqlglot/parser.py)), so the layer silences the parser's warnings, and every case checks that nothing was logged. 29 of 29 cases pass.
 
-**Working rule:** Check every source a query reads against an allowlist of catalog tables, CTEs in scope and subqueries, and deny the rest, along with every function the engine marks as having side effects, read from its own list. Keep the cases as a regression test for every change to the layer and every engine upgrade, and add one whenever a new kind of source or function turns up.
+On the layer's own connection, two cases show what their denials prevent. The name used before its CTE reads the scan of the same name, 5,000 rows of raw learners, and `write_log` leaves `["select write_log('an entry', log_type := 'QueryLog')", 'an entry']` in the query log: its own statement, and an entry no query made. Every function with side effects is denied, 19 of 19.
+
+The allowlist also has to let ordinary queries through. Run as `agent-a05`, the EMEA support agent, a CTE, a join and a scalar subquery over catalog tables return 61 rows.
+
+**Working rule:** Check every source against an allowlist of catalog tables, CTEs in scope and subqueries, deny the rest, and deny every function the engine marks as having side effects, read from its own list. Keep the cases as a regression test for every layer change and engine upgrade, and add one for each new kind of source or function.
 
 ## Masking column references leaks {#column-masks-leak}
 
-With the columns known, the obvious enforcement rewrites them: wherever the query selects `email` and the decision masks it, select the mask instead. It needs nothing but the column list from [the first section](#find-what-a-query-reads), and it looks right on the queries people test with. It fails because a query can read a column without selecting it, and DuckDB can return a column without naming it.
+With the columns known, the obvious enforcement rewrites them: wherever the query selects `email` and the decision masks it, select the mask instead. It needs only the column list from [the first section](#find-what-a-query-reads), and it looks right on the queries people test with. It fails because a query can read a column without selecting it, and DuckDB can return a column without naming it.
 
-On the platform, `analyst-1`, a data scientist, may read `crm.learners` with `email` and the other personal columns pseudonymized, and free text such as `notes` redacted. `Enforcer.mask_select_list` does the column rewrite, kept only to show this failure. The example prints its rewrite of a plain read, then runs five reads aimed at learner 2's email, with any stored email replaced by a placeholder, since the book's examples never print one. Before you run it, predict how many of the five the column rewrite stops:
+`Enforcer.mask_select_list` does the column rewrite, kept only to show its failure. We test it with five reads aimed at learner 2's email, run as `analyst-1`, a data scientist who may read `crm.learners` with `email` and the other personal columns pseudonymized and free text such as `notes` redacted. The first print is the rewrite of a plain read, with any stored email replaced by a placeholder, since the examples never print one. Predict how many of the five the rewrite stops:
 
-Example `select-list-masks-leak` (Python 3.12.15 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0 · regopy 1.5.2 · sqlglot 30.31.0), passing in Edition 2026.11.26:
+Example `select-list-masks-leak` (Python 3.12.15 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0 · regopy 1.5.2 · sqlglot 30.31.0), passing in Edition 2026.11.27:
 
 ```python
+"""Masks the email in the select list only, then runs five reads aimed at one learner's email through that rewrite and
+prints what each returns. The prose's point rests on the five attack lines, each of which returns learner 2's ID, the
+stored email, or an error that holds it."""
 import re
 
 import duckdb
@@ -240,6 +260,7 @@ attacks = {
 }
 for name, sql in attacks.items():
     try:
+        # the column rewrite changes only the select list, so every other clause reads the stored email
         answer = str(platform.run(platform.mask_select_list(sql, "analyst-1")).fetchall())
     except duckdb.Error as error:
         answer = str(error).splitlines()[0]
@@ -257,7 +278,7 @@ to_json: [('<a stored email>',)]
 a cast error: Conversion Error: Could not convert string '<a stored email>' to INT32 when casting from source column email
 ```
 
-None. The rewrite of the plain read is correct: `email` comes back as a hash. The five reads get past it in three ways:
+The column rewrite stops none of the five. Its rewrite of the plain read is correct: `email` comes back as a hash. The five reads get past it in three ways:
 
 - **A `WHERE` on the raw column** never passes through the select list, so it compares the stored email. The analyst guesses an email and gets back learner 2's ID, `[(2,)]`, which links that person to every row they can join on `learner_id`.
 - **The whole row as a struct, `COLUMNS(...)` and `to_json`** return the stored email, `[('<a stored email>',)]`, without any column reference named `email` for the rewrite to find: DuckDB expands the row, or matches column names against a pattern, itself.
@@ -265,7 +286,7 @@ None. The rewrite of the plain read is correct: `email` comes back as a hash. Th
 
 Masking the column wherever the query names it, in the `WHERE` clause too, would stop the first and the last read. It can't stop the middle three, because they never name the column.
 
-**Working rule:** Don't enforce masks by rewriting the column references in a query. However many reference shapes you cover, the engine has more ways to read a column than the rewrite has to recognize one. Mask where the data comes from instead, so every read sees the masked value, which is what the [next section](#replace-each-table) does.
+**Working rule:** Don't enforce masks by rewriting column references. However many reference shapes you cover, the engine has more ways to read a column than the rewrite can recognize. Mask where the data comes from instead, so every read sees the masked value, as the [next section](#replace-each-table) does.
 
 ## Replace each table with a filtered, masked subquery {#replace-each-table}
 
@@ -276,13 +297,15 @@ Masking the column wherever the query names it, in the `WHERE` clause too, would
 - each column it doesn't read, as a typed `NULL`, since the policy wasn't asked about it;
 - a `WHERE` clause with every row filter in the decision.
 
-Everything the user's query does, from its `WHERE` to its struct reads, then happens on that subquery. It's the model Trino's OPA plugin follows, where a row filter "essentially behaves like an additional `WHERE` clause", as the [section on engines](#engine-enforcement) shows.
+Everything the user's query does, from its `WHERE` to its struct reads, then happens on that subquery. It's the model Trino's OPA plugin follows, where a row filter essentially behaves like an additional `WHERE` clause, as the [section on engines](#engine-enforcement) shows.
 
-For the platform, take `instructor-17`, who reads the low ratings among their courses' reviews. The policy filters reviews to the instructor's own courses and shows `body` with contact details removed:
+Take `instructor-17`, who reads the low ratings among their courses' reviews. The policy keeps the reviews of their own courses and removes contact details from `body`. The printed rewrite shows how:
 
-Example `table-rewrite` (Python 3.12.15 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0 · regopy 1.5.2 · sqlglot 30.31.0), passing in Edition 2026.11.26:
+Example `table-rewrite` (Python 3.12.15 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0 · regopy 1.5.2 · sqlglot 30.31.0), passing in Edition 2026.11.27:
 
 ```python
+"""Rewrites instructor-17's query over the reviews, prints the rewrite and runs it. The prose's point rests on the two
+result lines: how many reviews come back, and how many of them still hold an email."""
 import sqlglot
 
 from lib.catalog import open_catalog
@@ -293,6 +316,7 @@ platform = Enforcer(open_catalog(["learning.reviews"]))
 # instructor-17 reads the low ratings of their courses' reviews. The policy filters reviews to their six courses and
 # shows `body` with contact details removed.
 query = "select course_id, rating, body from learning.reviews where rating <= 2"
+# the query as text, with the reviews table replaced by a subquery built from the decision
 rewritten = platform.rewrite(query, "instructor-17")
 print(sqlglot.transpile(rewritten, read="duckdb", write="duckdb", pretty=True)[0])
 print("reviews returned:", len(platform.run(rewritten).fetchall()))
@@ -332,13 +356,16 @@ reviews returned: 9
 of them holding an email: 0
 ```
 
-The instructor's query stays on the outside, qualified but otherwise unchanged. Inside, `course_id` and `rating` come through as stored and `body` as the `redact_contacts` mask, each in a `CASE` on the row filter, a literal list of the instructor's courses, and the columns the query doesn't read are typed `NULL`s. The query returns 9 reviews, and 0 of them hold an email.
+The query returns 9 reviews, and 0 of them hold an email. The instructor's query stays on the outside, qualified but otherwise unchanged. Inside, `course_id` and `rating` come through as stored, and `body` as the `redact_contacts` mask, each in a `CASE` on the row filter, a literal list of the instructor's courses, and the columns the query doesn't read come through as typed `NULL`s.
 
 The five reads that defeated the column rewrite, run by `analyst-1` through the table rewrite, and through `lib.enforce.answer`, the function a service calls at its boundary:
 
-Example `table-rewrite-holds` (Python 3.12.15 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0 · regopy 1.5.2 · sqlglot 30.31.0), passing in Edition 2026.11.26:
+Example `table-rewrite-holds` (Python 3.12.15 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0 · regopy 1.5.2 · sqlglot 30.31.0), passing in Edition 2026.11.27:
 
 ```python
+"""Sends the five reads from the column rewrite through the table rewrite, and through `answer`, the service's boundary.
+It then shows what the analyst receives and what the platform team's log holds. The prose's point rests on the five attack
+lines, the operator's log line and the relation line."""
 import logging
 import re
 
@@ -360,9 +387,11 @@ attacks = {
     "to_json": "select to_json(l) ->> 'email' from crm.learners as l where learner_id = 2",
     "a cast error": "select learner_id from crm.learners where cast(email as integer) = 0",
 }
+# a pseudonym is 64 hex digits, shortened here; the example never prints a stored email
 shorten = lambda text: re.sub(r"\b([0-9a-f]{8})[0-9a-f]{56}\b", r"\1…", re.sub(EMAIL, "<a stored email>", text))
 for name, sql in attacks.items():
     try:
+        # answer returns the rows, or raises QueryFailed with a generic message, as a service sees it
         got = str(answer(platform, sql, "analyst-1"))
     except QueryFailed as error:
         got = f"{type(error).__name__}, {error}"
@@ -371,6 +400,7 @@ for line in operator_log:
     print("in the operator's log:", shorten(line))      # a pseudonym, 64 hex digits, shortened
 
 # Why `answer` returns rows: the relation Enforcer.sql returns is a handle on the layer's connection, and runs any SQL.
+# the relation is a handle on the layer's connection, so its .query runs SQL of its own there
 relation = platform.sql("select learner_id from crm.learners", "analyst-1")
 print("the relation, running SQL of its own:", shorten(str(relation.query("r", "select email from crm.learners where learner_id = 2").fetchall())))
 print("what answer returns:", type(answer(platform, "select learner_id from crm.learners", "analyst-1")).__name__)
@@ -389,30 +419,37 @@ the relation, running SQL of its own: [('<a stored email>',)]
 what answer returns: list
 ```
 
-The `WHERE` finds no one, `[]`, because inside the subquery `email` is already the pseudonym. The struct, `COLUMNS(...)` and `to_json` reads return `NULL`, not the pseudonym, and that is the typed-`NULL` rule working: those queries name no column of `crm.learners` but `learner_id`, so the policy was asked about no other column, and the subquery gives the rest no value. A read the rewrite can't see fails closed. DuckDB's cast error now holds a pseudonym instead of an email, and the analyst doesn't see even that: `answer` fetches the rows inside a `try`, turns any engine error into `QueryFailed`, and writes DuckDB's message to the platform team's log, the example's last line. The analyst gets `QueryFailed, the query failed: the platform team can see why`. And `answer` returns rows because a DuckDB relation runs any SQL on its connection: the analyst's relation, asked for an email, returns `[('<a stored email>',)]`.
+The rewrite stops all five. The `WHERE` returns `[]`, because inside the subquery `email` is already the pseudonym. The struct, `COLUMNS(...)` and `to_json` reads return `NULL`, not the pseudonym, because those queries name no column but `learner_id`. The policy was asked about no other column, and the typed `NULL` gives the rest no value. A read the rewrite can't see fails closed. The cast error now holds a pseudonym instead of an email, and `answer` hides even that: it fetches the rows inside a `try`, turns any engine error into `QueryFailed`, and writes DuckDB's message to the platform team's log, which the example prints after the five reads. The analyst gets `QueryFailed, the query failed: the platform team can see why`.
 
-Generating the subquery per query, rather than writing a view per role, is what keeps it in step with the policy. The platform's decisions depend on region, courses, consent and purpose, and a hand-made view for every combination is the "role explosion" NIST describes, where conditions become "numerous roles that are ad hoc and limited in membership" ([NIST SP 800-162](https://doi.org/10.6028/NIST.SP.800-162)). The views would also drift from the policy the first time someone edited one and not the other.
+`answer` returns rows, not a relation, because a DuckDB relation runs any SQL on its connection. The analyst's relation, asked for an email, returns `[('<a stored email>',)]`.
 
-**Working rule:** Replace every protected table with a subquery generated from the decision, under the query's own alias, and leave the user's query otherwise untouched. Give columns the query doesn't read a typed `NULL`. If your users need whole-row reads to show values, ask the policy about every column of each table instead: the masks then cover all of them, at the cost of requests, and audit records, that name columns the query never used.
+Generating the subquery per query, rather than writing a view per role, is what keeps it in step with the policy. The platform's decisions depend on region, courses, consent and purpose, and a hand-made view for every combination is the "role explosion" NIST describes, where conditions become "numerous roles that are ad hoc and limited in membership" ([NIST SP 800-162](https://doi.org/10.6028/NIST.SP.800-162)). Such views would drift from the policy the first time someone edited only one.
+
+**Working rule:** Replace every protected table with a subquery generated from the decision, under the query's own alias, and leave the user's query otherwise untouched. Give unread columns a typed `NULL`. If users need whole-row reads to show values, ask the policy about every column of each table instead, so the masks cover all of them, at the cost of requests and audit records that name columns the query never used.
 
 ## Write each mask as SQL in one place {#write-masks-as-sql}
 
-The policy names a mask; the enforcement layer decides what SQL it becomes. Keeping that mapping in one place, the `MASKS` table in `lib.enforce` and the typed `NULL` beside it, means a fix to a mask reaches every table that uses it, and the policy never carries SQL, which would be code arriving as data. The [table rewrite](#replace-each-table) calls `lib.enforce.masked` for every masked column:
+The policy names a mask; the layer decides what SQL it becomes. Keeping that mapping in one place, the `MASKS` table in `lib.enforce` and the typed `NULL` beside it, means a fix to a mask reaches every table that uses it, and the policy never carries SQL, which would be code arriving as data. The [table rewrite](#replace-each-table) calls `lib.enforce.masked` for every masked column, and prints the SQL for the four masks the policy names:
 
-Example `masks-as-sql` (Python 3.12.15 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0 · regopy 1.5.2 · sqlglot 30.31.0), passing in Edition 2026.11.26:
+Example `masks-as-sql` (Python 3.12.15 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0 · regopy 1.5.2 · sqlglot 30.31.0), passing in Edition 2026.11.27:
 
 ```python
+"""Prints the SQL the enforcement layer writes for each of the four masks the policy names, and counts DuckDB's functions
+named like HMAC. The prose's points rest on the pseudonymize line and on the HMAC count."""
 import duckdb
 from sqlglot import exp
 
 from lib.enforce import masked
 
 # The four masks the policy names, as the SQL the enforcement layer writes for them.
+# the column's type, which the redact mask casts its NULL to
 for kind, column, type_ in [("redact", "date_of_birth", "DATE"), ("last4", "card_number", "VARCHAR"),
                             ("pseudonymize", "email", "VARCHAR"), ("redact_contacts", "body", "VARCHAR")]:
+    # redact is a typed NULL; the other masks' SQL comes from lib.enforce's MASKS table
     print(f"{kind}:", masked(kind, exp.column(column), type_).sql("duckdb"))
 
 # The pseudonymize mask hashes the key followed by the value, because DuckDB has no HMAC function to call.
+# DuckDB's function catalog, searched for any name containing hmac, whatever its case
 hmac = duckdb.sql("select count(*) from duckdb_functions() where function_name ilike '%hmac%'").fetchall()[0][0]
 print("DuckDB functions named like HMAC:", hmac)
 ```
@@ -434,20 +471,24 @@ Each mask does one job:
 - **`pseudonymize`** is a keyed hash, SHA-256 over the key followed by the value, because DuckDB 2.0.0 has no HMAC function: `duckdb_functions()` lists 0 named like it. Where your engine has one, prefer HMAC ([RFC 2104](https://www.rfc-editor.org/rfc/rfc2104)).
 - **`redact_contacts`** replaces emails and phone numbers in free text with `[email]` and `[phone]`.
 
-The key is what makes a pseudonym a pseudonym. The next example plays someone who holds a list of the platform's emails and hashes each one to look for it among the pseudonyms that `analyst-1`, the platform's data scientist, sees in `crm.learners`:
+Picture someone holding a list of the platform's emails, who hashes each one and looks for it among the pseudonyms `analyst-1` sees in `crm.learners`:
 
-Example `pseudonym-key` (Python 3.12.15 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0 · regopy 1.5.2 · sqlglot 30.31.0), passing in Edition 2026.11.26:
+Example `pseudonym-key` (Python 3.12.15 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0 · regopy 1.5.2 · sqlglot 30.31.0), passing in Edition 2026.11.27:
 
 ```python
+"""Hashes a list of emails the way the layer hashes pseudonyms, with and without its key, then rotates the key and counts
+the pseudonyms that change. The prose's points rest on the three count lines: the matches without the key and with it, and
+the pseudonyms that change on rotation."""
 from lib.catalog import open_catalog
 from lib.enforce import Enforcer
 
 # The pseudonyms analyst-1, the platform's data scientist, sees in crm.learners. Someone holding a list of the
-# platform's emails hashes each one and looks for it among them: without the key the hashes match nothing, and with
-# the key they match every learner.
+# platform's emails hashes each one and looks for it among them, first without the key and then with it.
+# an example key, not a secret: production keeps the real one where only the layer can read it
 platform = Enforcer(open_catalog(["crm.learners"]), key="example-key-not-a-secret")
 seen = platform.sql("select learner_id, email from crm.learners", "analyst-1").to_arrow_table()
 platform.connection.register("seen", seen)
+# a guess is an email's hash; the second also puts the key first, as the layer hashes a pseudonym
 for name, guess in [("without the key", "sha256(email)"), ("with the key", "sha256($pseudonym_key || email)")]:
     matched = platform.run(f"select count(*) from crm.learners where {guess} in (select email from seen)").fetchall()[0][0]
     print(f"pseudonyms matched from a list of emails, {name}: {matched:,} of {seen.num_rows:,}")
@@ -455,6 +496,7 @@ for name, guess in [("without the key", "sha256(email)"), ("with the key", "sha2
 # A new key gives every learner a new pseudonym, so data pseudonymized under the old key no longer joins.
 platform.key = "example-key-rotated"
 rotated = platform.sql("select learner_id, email from crm.learners", "analyst-1").to_arrow_table()
+# pairs each learner's old and new pseudonym, row by row
 changed = sum(a != b for a, b in zip(seen["email"].to_pylist(), rotated["email"].to_pylist()))
 print("pseudonyms that change when the key is rotated:", f"{changed:,} of {seen.num_rows:,}")
 ```
@@ -467,13 +509,16 @@ pseudonyms matched from a list of emails, with the key: 5,000 of 5,000
 pseudonyms that change when the key is rotated: 5,000 of 5,000
 ```
 
-Without the key, the hashes match 0 of 5,000. With the key, they match 5,000 of 5,000, so whoever holds the key and a list of emails can name every pseudonym on it. That's why the key belongs to the enforcement layer alone. It isn't in the policy, which is code read in pull requests, or in the query, where a user who chose the key could compute pseudonyms of guessed emails. The layer passes it to DuckDB as a query parameter, so it never appears in the query's text, which DuckDB's query log records, as [chapter 8](#keep-values-out-of-the-record) shows. That's also why the layer denies any user query that carries a parameter: one named `$pseudonym_key` would receive the key. In production, keep the key in a secret manager that only the enforcement layer can read. Rotate it when it may have leaked, and plan for what rotation does: 5,000 of 5,000 pseudonyms change, so data pseudonymized under the old key no longer joins with data under the new one.
+The key is what makes a pseudonym a pseudonym. Without it, the hashes match 0 of 5,000 pseudonyms; with it, they match 5,000 of 5,000, so whoever holds the key and a list of emails can name every pseudonym on it. The key belongs to the layer alone. It stays out of the policy, which is code read in pull requests, and out of the query, where a user who chose the key could compute pseudonyms of guessed emails. The layer passes the key to DuckDB as a query parameter, so it stays out of the query text that DuckDB's log records, as [chapter 8](#keep-values-out-of-the-record) shows, and the layer denies any user query that carries a parameter, since one named `$pseudonym_key` would receive the key. In production, keep the key in a secret manager that only the layer can read. Rotate it when it may have leaked, and plan for what rotation does: 5,000 of 5,000 pseudonyms change, so data pseudonymized under the old key no longer joins with data under the new one.
 
-`redact_contacts` is two regular expressions, and it's worth measuring what they remove. The platform's tickets and reviews come with every piece of personal data the generator placed in them, labelled by construction, which [chapter 3](#finding-personal-data) uses as its ground truth:
+`redact_contacts` is two regular expressions, and it's worth measuring what they remove. The platform's tickets and reviews come with every piece of personal data the generator placed in them, labelled by construction, which [chapter 3](#finding-personal-data) calls [the truth](#measure-against-labelled-spans). Each text goes through the mask here, and the labels count what survives:
 
-Example `redact-contacts-recall` (Python 3.12.15 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0 · regopy 1.5.2 · sqlglot 30.31.0), passing in Edition 2026.11.26:
+Example `redact-contacts-recall` (Python 3.12.15 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0 · regopy 1.5.2 · sqlglot 30.31.0), passing in Edition 2026.11.27:
 
 ```python
+"""Applies the redact_contacts mask to every ticket and review, then counts the labelled personal data still left in the
+masked text, and the phone replacements made in the tickets. The prose's points rest on the 'left in the text' lines, the
+replacement count, and the assert on the tickets' card, IBAN and date lines."""
 import duckdb
 from sqlglot import exp
 
@@ -483,14 +528,19 @@ from lib.platform import load
 # The redact_contacts mask, run over every ticket and review, against the personal data the generator placed in them
 # (pii_spans, labelled by construction).
 con = duckdb.connect()
+# each table registers under its short name, which the queries below use
 for name in ["support.tickets", "learning.reviews", "pii_spans"]:
     con.register(name.split(".")[-1], load(name))
 mask = masked("redact_contacts", exp.column("body"), "VARCHAR").sql("duckdb")
+# a span counts as left when its exact text is still in the masked body, which the row_id join finds
 counts = con.sql(f"""
     with masked as (select 'tickets' as source, ticket_id as row_id, {mask} as body from tickets
                     union all select 'reviews', review_id, {mask} from reviews)
     select source, entity, count(*), count(*) filter (where contains(masked.body, pii_spans.text))
     from pii_spans join masked using (source, row_id) group by all order by all""").fetchall()
+# the phone pattern takes every card number, IBAN and date in the tickets, so none is left in the masked text
+left_in_tickets = {entity: left for source, entity, _, left in counts if source == "tickets"}
+assert all(left_in_tickets[entity] == 0 for entity in ("CREDIT_CARD", "IBAN_CODE", "DATE_TIME"))
 for source, entity, placed, left in counts:
     print(f"{source}, {entity}, left in the text: {left:,} of {placed:,}")
 # The phone pattern also takes card numbers, IBANs and dates, which are digits too.
@@ -513,7 +563,9 @@ tickets, PHONE_NUMBER, left in the text: 0 of 439
 [phone] replacements in tickets: 1,520
 ```
 
-In the reviews, which instructors and the assistant read through this mask, no email is left, 0 of 120, and every name is, 798 of 798. In the tickets, no phone number is left, 0 of 439, but the phone pattern made 1,520 replacements, because card numbers, IBANs and dates are digits too: 0 of 213 card numbers are left, 0 of 236 IBANs and 0 of 196 dates. Names and street addresses stay: the mask removes contact details, and it doesn't make text anonymous.
+The mask removes contact details and leaves names alone. In the reviews, which instructors and the assistant read through this mask, 0 of 120 emails are left, and 798 of 798 names are.
+
+In the tickets, 0 of 439 phone numbers are left, but the phone pattern makes 1,520 replacements. Card numbers, IBANs and dates are digits too, so the pattern takes them as well, and none of them is left. Names and street addresses stay, so the mask doesn't make text anonymous.
 
 **Working rule:** Keep every mask's SQL in one table in the enforcement layer, and let the policy name masks, never write them. Key every pseudonym with a secret only the layer holds, passed as a parameter. Measure each text mask against labelled data before a policy relies on it, and name masks for what they remove, so nobody reads `redact_contacts` as "anonymized".
 
@@ -523,9 +575,12 @@ Masks change how a value is shown; row filters decide which rows a user gets. Th
 
 The consent shape is the one that needs care. The course assistant, `assistant-1`, may read reviews only by learners who agreed to their text training the platform's AI, and that consent lives in `crm.learners`, which the assistant may not read. The layer turns it into a semi-join, a test that the review's `learner_id` is among the learners who consented, and runs it with the layer's own access to `crm.learners`:
 
-Example `row-filters-from-data` (Python 3.12.15 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0 · regopy 1.5.2 · sqlglot 30.31.0), passing in Edition 2026.11.26:
+Example `row-filters-from-data` (Python 3.12.15 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0 · regopy 1.5.2 · sqlglot 30.31.0), passing in Edition 2026.11.27:
 
 ```python
+"""Prints the condition the layer writes for each row filter in three decisions, then the reviews the assistant reads
+through its consent filter, and the denial of its read of the learners table. The prose's points rest on the read counts
+and the consent counts, and on the denied read at the end."""
 from lib.catalog import open_catalog
 from lib.enforce import Enforcer, row_filter
 
@@ -533,6 +588,7 @@ platform = Enforcer(open_catalog(["crm.learners", "learning.reviews", "support.t
 
 # Each row filter in a decision, as the condition the enforcement layer writes for it.
 for user, table in [("agent-a05", "support.tickets"), ("instructor-17", "learning.reviews"), ("assistant-1", "learning.reviews")]:
+    # the decision for this read; its row filters are data, written as SQL in the loop below
     decision = platform.decide(user, {table: set()})[table]
     for rule in decision["row_filters"]:
         print(f"{user}, {table}: {row_filter(rule, platform.columns(table)).sql('duckdb')}")
@@ -545,6 +601,7 @@ print("a region that looks like SQL:", row_filter(odd, platform.columns("support
 total = platform.connection.sql("select count(*) from learning.reviews").fetchall()[0][0]
 read = platform.sql("select count(*) from learning.reviews", "assistant-1").fetchall()[0][0]
 print("reviews the assistant reads:", f"{read:,} of {total:,}")
+# a null consent means no answer was recorded, so the label reads 'never asked'
 by_consent = platform.connection.sql("""select coalesce(l.ai_training_consent::varchar, 'never asked'), count(*)
     from learning.reviews r join crm.learners l using (learner_id) group by all order by all""").fetchall()
 for consent, reviews in by_consent:
@@ -569,21 +626,27 @@ reviews whose author's AI-training consent is true: 436
 the assistant reading crm.learners: assistant-1 may not read crm.learners: no group of this user may read this table
 ```
 
-The agent's region and the instructor's courses become an equality and an `IN` list. A region value written to look like SQL stays a string, its quotes doubled. The assistant reads 436 of 3,000 reviews. The consent filter tests `IS TRUE`, so the authors of 1,609 reviews, who signed up before the platform asked the question and have no answer recorded, count as not consenting, along with those who said no. And the assistant asking for `crm.learners` itself is denied, with the policy's reason: the semi-join's read of that table belongs to the enforcement layer, not to the user.
+Each filter's values become SQL literals, so a value stays a value, and an unanswered consent counts as no. The agent's region and the instructor's courses become an equality and an `IN` list, and a region written to look like SQL stays one string, its quotes doubled. The consent filter tests `IS TRUE`, so the authors of 1,609 reviews, who signed up before the platform asked the question and have no answer recorded, count as not consenting, along with those who said no.
+
+The assistant reads 436 of 3,000 reviews, which are the ones whose authors said yes. The assistant's own request for `crm.learners` is denied, with the policy's reason: the semi-join's read of that table belongs to the layer, not to the user.
 
 **Working rule:** Build every row filter from the decision's values with a SQL builder, and deny any filter shape or column the layer doesn't recognize. Treat an unknown consent as no consent. When a filter needs a table the user may not read, read it with the layer's own access inside the subquery, and never by widening the user's access.
 
 ## Gate every column on the row filters {#gate-columns-on-row-filters}
 
-[The row filters](#build-row-filters-from-data) sit in the subquery's `WHERE`, and the user's query wraps the subquery, so it's tempting to assume DuckDB applies the filters first. SQL promises no order, and an optimizer moves conditions wherever they're cheapest. A user's condition that can fail, such as a cast, can then run on rows the filters drop, and a generic error doesn't help: that the query fails says something about a row the user may not see. PostgreSQL's documentation names the leak: a function "that might throw an error depending on the values received as arguments ... could provide significant information about the unseen rows if applied before the security view's row filters". In PostgreSQL, a view marked `security_barrier` keeps "maliciously-chosen functions and operators from being passed values from rows until after the view has done its work", and only functions marked `LEAKPROOF` may still run first ([PostgreSQL 18, Rules and Privileges](https://www.postgresql.org/docs/18/rules-privileges.html)). DuckDB has neither.
+[The row filters](#build-row-filters-from-data) sit in the subquery's `WHERE`, and the user's query wraps the subquery, so it's tempting to assume DuckDB applies the filters first. SQL promises no order, and an optimizer moves conditions wherever they're cheapest. A user's condition that can fail, such as a cast, can then run on rows the filters drop, and a generic error doesn't help: that the query fails says something about a row the user may not see.
 
-So the enforcement layer makes the order irrelevant. Every column the query reads leaves the subquery as `CASE WHEN <row filters> THEN <value> END`, as in [the instructor's rewrite](#replace-each-table). The user's conditions then depend on the filters' result: whatever DuckDB evaluates first, on a row the filters drop they see `NULL` in every column.
+PostgreSQL's documentation names this leak: a function that might fail depending on its arguments can reveal significant information about unseen rows if it runs before the view's row filters. In PostgreSQL, a view marked `security_barrier` keeps "maliciously-chosen functions and operators from being passed values from rows until after the view has done its work", and only functions marked `LEAKPROOF` may still run first ([PostgreSQL 18, Rules and Privileges](https://www.postgresql.org/docs/18/rules-privileges.html)). DuckDB has neither.
 
-The book's test, `lib.enforce.order_cases`, checks that for each filter shape the layer writes: the support agent's equality, the instructor's `IN` list and the course assistant's consent semi-join. For each, it copies the filtered table with a `body` that holds digits in the rows the filter keeps and text in the rows it drops. A query that casts `body` to a number then fails only if the cast sees a dropped row's value:
+So the layer makes the order irrelevant. Every column the query reads leaves the subquery as `CASE WHEN <row filters> THEN <value> END`, as in [the instructor's rewrite](#replace-each-table). The user's conditions then depend on the filters' result: whatever DuckDB evaluates first, on a row the filters drop they see `NULL` in every column.
 
-Example `row-filter-order` (Python 3.12.15 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0 · regopy 1.5.2 · sqlglot 30.31.0), passing in Edition 2026.11.26:
+`lib.enforce.order_cases` tests each filter shape the layer writes: the support agent's equality, the instructor's `IN` list and the course assistant's consent semi-join. Each case copies the filtered table, with a `body` that holds digits in the rows the filter keeps and text in the rows it drops, then runs a query that casts `body` to a number. That cast fails only if it sees a dropped row's value:
+
+Example `row-filter-order` (Python 3.12.15 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0 · regopy 1.5.2 · sqlglot 30.31.0), passing in Edition 2026.11.27:
 
 ```python
+"""Runs the evaluation-order test for each filter shape the layer writes, with the filter in a WHERE alone and as the layer
+writes it. The prose's point rests on the consent semi-join's two lines, and on the count at the end."""
 from lib.enforce import order_cases
 
 # The evaluation-order regression test, lib.enforce.order_cases, which chapter 10's CI runs on every DuckDB upgrade.
@@ -611,17 +674,19 @@ consent semi-join, as the layer writes it: the cast never saw a dropped row's va
 filter shapes the layer's subquery keeps safe: 3 of 3
 ```
 
-With the filter in the `WHERE` alone, the equality and the `IN` list were safe, and the consent semi-join wasn't: DuckDB ran the cast on reviews whose authors didn't consent. With every column gated, all three are safe, 3 of 3. The first two were safe by the optimizer's choice at 2.0.0, not by any promise, so the test runs on every upgrade. The gate costs evaluating the filters again in each column the query reads.
+Gating each column is what keeps the consent semi-join safe. With the filter in the `WHERE` alone, the equality and the `IN` list were safe, and the consent semi-join wasn't: DuckDB ran the cast on reviews whose authors didn't consent. As the layer writes it, 3 of 3 filter shapes keep the cast away from dropped rows. The first two were safe by the optimizer's choice at 2.0.0, not by any promise, so the test runs on every upgrade. The gate costs evaluating the filters again in each column the query reads.
 
 **Working rule:** Never rely on the engine's evaluation order to keep a user's conditions off rows a filter drops. Make every value a user's query can read depend on the row filters, and test each filter shape on every engine upgrade. Where an engine has a barrier of its own, such as PostgreSQL's `security_barrier` views, use it as well.
 
 ## Test who sees what by running queries {#test-who-sees-what}
 
-[Chapter 5](#check-who-sees-what) checks the policy with a who-sees-what table, `lib.policy.WHO_SEES_WHAT`: a list of requests, each with the decision a reviewer expects for it. That tests the decisions, not what users get, which also depends on the layer's rewrite, its masks' SQL and the data. `lib.enforce.observe` runs each case's columns through the layer as the case's user, and compares what comes back with what's stored: how many rows, and which columns differ. A case agrees with its decision when the user is denied exactly when the case says so, gets fewer rows than stored exactly when the case expects a row filter, and gets changed values in exactly the columns the case expects masked:
+[Chapter 5](#check-who-sees-what) checks the policy with a who-sees-what table, `lib.policy.WHO_SEES_WHAT`: a list of requests, each with the decision a reviewer expects for it. That tests the decisions, not what users get, which also depends on the rewrite, the masks' SQL and the data. `lib.enforce.observe` runs each case through the layer as the case's user, and compares what comes back with what's stored: how many rows, and which columns differ. A case agrees with its decision when the user is denied exactly when the case says so, gets fewer rows than stored exactly when the case expects a row filter, and gets changed values in exactly the columns the case expects masked:
 
-Example `who-sees-what-in-queries` (Python 3.12.15 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0 · regopy 1.5.2 · sqlglot 30.31.0), passing in Edition 2026.11.26:
+Example `who-sees-what-in-queries` (Python 3.12.15 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0 · regopy 1.5.2 · sqlglot 30.31.0), passing in Edition 2026.11.27:
 
 ```python
+"""Runs chapter 5's who-sees-what cases as queries and compares what each user gets with what is stored, then reads
+marketing.audience, which has no metadata. The prose's points rest on the agreement count and on the two marketing lines."""
 from lib import pipelines, policy
 from lib.catalog import open_catalog
 from lib.enforce import Enforcer, agrees, observe
@@ -646,6 +711,7 @@ print("cases where what the user gets agrees with the decision:", f"{agreeing} o
 # marketing.audience is a table marketing may read, but nobody has classified its columns, so the policy treats each
 # one as sensitive: marketing gets every row, and no value in any column.
 rows = platform.sql("select * from marketing.audience", "marketing-1").fetchall()
+# a column counts as shown when one of its values isn't None, which is what a redact mask returns
 shown = sum(any(value is not None for value in column) for column in zip(*rows))
 print("marketing-1, marketing.audience, which has no metadata, rows:", f"{len(rows):,}")
 print("marketing-1, marketing.audience, which has no metadata, columns with a value:", f"{shown} of {len(rows[0])}")
@@ -671,19 +737,22 @@ marketing-1, marketing.audience, which has no metadata, rows: 1,829
 marketing-1, marketing.audience, which has no metadata, columns with a value: 0 of 5
 ```
 
-What users get agrees with the decision in 12 of 12 cases. In the output, the EMEA support agent gets their region's learners as stored, marketing the consenting, active learners with `phone` changed, and the analyst every learner with `email` and `notes` changed. The last two lines cover `marketing.audience`, which a pipeline writes and nobody has classified yet. Marketing may read it, and gets 1,829 rows with 0 of 5 columns holding a value, because the policy treats an unclassified column as sensitive.
+What users get agrees with the decision in 12 of 12 cases. The EMEA support agent gets their region's learners as stored, marketing the consenting, active learners with `phone` changed, and the analyst every learner with `email` and `notes` changed. The last two lines cover `marketing.audience`, which a pipeline writes and nobody has classified yet. Marketing may read it, and gets 1,829 rows with 0 of 5 columns holding a value, because the policy treats an unclassified column as sensitive.
 
-The test earns its place on a change. Suppose a pull request adds `analyst-1` to the support group for EMEA, so they can help with tickets. It's a two-line change to `governance/users.toml`, a group and the region support's row filter needs, and the example below makes it in memory, then runs the same cases:
+The test earns its place on a change. Suppose a pull request adds `analyst-1` to the support group for EMEA, so they can help with tickets. It's a two-line change to `governance/users.toml`, a group and the region support's row filter needs. The code below makes that change in memory and runs the same cases against it:
 
-Example `group-change-caught` (Python 3.12.15 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0 · regopy 1.5.2 · sqlglot 30.31.0), passing in Edition 2026.11.26:
+Example `group-change-caught` (Python 3.12.15 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0 · regopy 1.5.2 · sqlglot 30.31.0), passing in Edition 2026.11.27:
 
 ```python
+"""Makes one change to the users file in memory, runs the who-sees-what cases again, and runs chapter 5's decision check
+on the same change. The prose's points rest on the lines that say which cases fail, and on the decision count."""
 from lib import policy
 from lib.catalog import open_catalog
 from lib.enforce import Enforcer, agrees, observe
 
 # A pull request changes one user in governance/users.toml, in two lines: analyst-1 joins support, with the region
 # support's row filter needs, EMEA, to help with tickets.
+# the users file as a document, changed here in memory and not on disk
 data = policy.data_document()
 data["platform"]["users"]["analyst-1"] = {"groups": ["data-science", "support"], "region": "emea"}
 platform = Enforcer(open_catalog(["crm.learners", "learning.reviews", "billing.payments"]),
@@ -694,6 +763,7 @@ platform = Enforcer(open_catalog(["crm.learners", "learning.reviews", "billing.p
 failing = 0
 for case in policy.WHO_SEES_WHAT:
     got = observe(platform, case.user, case.table, case.columns, case.purpose)
+    # got is None when the user is denied, which agrees only with a case that expects a denial
     if not agrees(case, got):
         failing += 1
         who = case.user + (f" for {case.purpose}" if case.purpose else "")
@@ -720,19 +790,22 @@ cases that fail: 3 of 12
 cases that fail as decisions: 3 of 12
 ```
 
-The change fails 3 of 12 cases, and none of them is about tickets. On `crm.learners`, the analyst now gets 1,581 of 5,000 rows with no column changed: support's region filter applies to them, and the policy's personal-column masks apply only to users outside support, so every email and note comes through as stored. Review text, which a data scientist otherwise can't read at all, or reads with contacts removed when the purpose is AI training, comes through whole. [Chapter 5's decision-level table](#check-who-sees-what) fails on the same cases, 3 of 12; this one shows what the analyst would actually get.
+The change fails 3 of 12 cases, and none of them is about tickets. All three are the analyst's reads of learners and reviews. On `crm.learners`, the analyst now gets 1,581 of 5,000 rows with no column changed: support's region filter applies to them, and the policy's personal-column masks apply only to users outside support, so every email and note comes through as stored. Review text, which a data scientist otherwise can't read at all, or reads with contacts removed for AI training, comes through whole. [Chapter 5's decision-level table](#check-who-sees-what) fails on the same cases, 3 of 12; this one shows what the analyst gets.
 
-**Working rule:** Run the who-sees-what cases as queries through the enforcement layer on every change to the policies, the users file, the metadata or the layer itself, and fail the build when any case disagrees. Fix a failing case by changing the policy or the users file, and change a case only when the people who own the data agree that what the user should get has changed.
+**Working rule:** Run the who-sees-what cases as queries through the layer on every change to the policies, the users file, the metadata or the layer, and fail the build when any case disagrees. Fix a failing case by changing the policy or the users file. Change a case only when the data's owners agree that what the user should get has changed.
 
 ## Hold back small groups in reports {#hold-back-small-groups}
 
 Row filters and masks decide which rows and values a user sees. Aggregates are a second channel: a count or an average over a few people describes those people. The usual defence is a **minimum group size**, below which a reported group is held back. The number is a rule of thumb, not a measurement. One public data-use agreement from the US Centers for Medicare & Medicaid Services sets 11, and adds that "no use of percentages or other mathematical formulas may be used if they result in the display of a cell less than 11" ([CMS-R-0235L](https://www.cms.gov/medicare/cms-forms/cms-forms/downloads/cms-r-0235l.pdf)). The platform uses the same minimum, 11, and keeps it in `governance/enforcement.toml`, where a change is reviewed like a policy change, and `lib.enforce.minimum_group_size` reads it.
 
-The platform sends each instructor a daily course report: learners and average progress per course and learner country. The report job reads learners' countries, which instructors may not read, and instructors may read their own courses' enrollments with each one's progress. Put those together:
+Instructors get a daily course report of learners and average progress per course and learner country, built by a job that reads countries instructors may not read. Instructors may read their own courses' enrollments with each one's progress. Combining those two gives `instructor-17`'s report:
 
-Example `small-groups-difference` (Python 3.12.15 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0 · regopy 1.5.2 · sqlglot 30.31.0), passing in Edition 2026.11.26:
+Example `small-groups-difference` (Python 3.12.15 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0 · regopy 1.5.2 · sqlglot 30.31.0), passing in Edition 2026.11.27:
 
 ```python
+"""Builds instructor-17's daily course report, counts its cells under the minimum and its cells of one learner, and matches
+each cell of one against the enrollments the instructor may read. The prose's points rest on the cell and lookup counts, and
+on the last line, which shows the differencing."""
 from lib.catalog import open_catalog
 from lib.enforce import Enforcer, minimum_group_size
 
@@ -750,10 +823,12 @@ platform.connection.execute("""create view mine as
 platform.connection.execute("""create view report as
     select course_id, country, count(*) as learners, avg(progress_pct) as progress from mine group by all""")
 print("cells in the report:", count("from report"))
+# the minimum is the threshold: a cell with fewer learners than it is held back
 print("cells under the minimum:", count(f"from report where learners < {minimum}"))
 
 # instructor-17 may read their courses' enrollments, with each one's progress. A cell of one learner, matched on its
 # progress, names that learner's country.
+# what instructor-17 may read: enrollments with each one's progress, and no country
 seen = platform.sql("select course_id, progress_pct from learning.enrollments", "instructor-17").to_arrow_table()
 platform.connection.register("seen", seen)
 print("cells of one learner:", count("from report where learners = 1"))
@@ -763,6 +838,7 @@ print("cells shown with the minimum:", count(f"from report where learners >= {mi
 
 # The minimum doesn't stop differencing. An enrollment that arrives alone in its course on its day, in a cell already
 # shown, raises that cell by one in the next day's report, and the instructor sees which enrollment arrived.
+# an enrollment alone in its course that day, whose country already has the minimum on earlier days
 revealed = count(f"""from mine as m
     where (select count(*) from mine as o where o.course_id = m.course_id and o.day = m.day) = 1
       and (select count(*) from mine as o where o.course_id = m.course_id and o.country = m.country and o.day < m.day) >= {minimum}""")
@@ -781,9 +857,13 @@ cells shown with the minimum: 12
 learners whose country the daily report reveals anyway: 92 of 482
 ```
 
-Of the 63 cells of `instructor-17`'s report, 51 are under the minimum, and 6 hold one learner each. A cell of one names its learner's country to anyone who can find that learner, and the instructor can: matching the cell's average progress against their own enrollments names 3 learners exactly. With the minimum, 12 cells are shown and none of those lookups works.
+A cell of one names its learner's country to anyone who can find that learner, and the instructor can: matching the cell's average progress against their own enrollments names 3 learners exactly. The report has 63 cells, of which 51 are under the minimum and 6 hold one learner each.
 
-The minimum doesn't stop differencing. An enrollment that arrives alone in its course on its day, into a cell that's already shown, raises that cell by one in the next day's report, and the instructor sees which enrollment arrived. That reveals the country of 92 of 482 learners. This is the attack Denning, Denning and Schwartz called a tracker: they showed that "the compromise of small query sets can in fact almost always be accomplished with the help of characteristic formulas called trackers" ([Denning et al., 1979](https://doi.org/10.1145/320064.320069)). Snowflake, which enforces a minimum group size in its engine, says its policies "do not guarantee a malicious actor could not use deliberate queries to obtain potentially sensitive data" ([Snowflake aggregation policies](https://docs.snowflake.com/en/user-guide/aggregation-policies)). Against differencing, we recommend noise, as in differential privacy ([Dwork and Roth, 2014](https://doi.org/10.1561/0400000042)), rather than higher thresholds, and *Privacy Engineering for Data Teams* covers it.
+With the minimum, 12 cells are shown, and none of those lookups works. The minimum doesn't stop differencing. An enrollment that arrives alone in its course on its day, into a cell that's already shown, raises that cell by one in the next day's report, and the instructor sees which enrollment arrived. That reveals the country of 92 of 482 learners.
+
+This is the attack Denning, Denning and Schwartz called a tracker. They showed that "the compromise of small query sets can in fact almost always be accomplished with the help of characteristic formulas called trackers" ([Denning et al., 1979](https://doi.org/10.1145/320064.320069)).
+
+Snowflake, which enforces a minimum group size in its engine, says its policies "do not guarantee a malicious actor could not use deliberate queries to obtain potentially sensitive data" ([Snowflake aggregation policies](https://docs.snowflake.com/en/user-guide/aggregation-policies)). Against differencing, we recommend noise, as in differential privacy ([Dwork and Roth, 2014](https://doi.org/10.1561/0400000042)), rather than higher thresholds, and *Privacy Engineering for Data Teams* covers it.
 
 **Working rule:** Hold back every reported group below the minimum in `governance/enforcement.toml`, and treat the minimum as protection against looking one person up, never against differencing. Don't break a report down by an attribute its reader may not read, sent to a reader who can see the rows behind it: the instructor's report by country is a lookup table for countries. Drop the breakdown, or report it only after it has been made noisy.
 
@@ -794,14 +874,16 @@ In production, enforcement belongs in the engine every tool queries through, bec
 The plugin asks OPA separate questions at separate URIs ([Trino 484, OPA access control](https://trino.io/docs/484/security/opa-access-control.html)):
 
 - **Whether to allow** an operation, such as `SelectFromColumns`, answered with a boolean `allow`.
-- **Row filters**, `GetRowFilters`, for a table. OPA answers with a list of `{"expression": ...}`, and "each expression essentially behaves like an additional WHERE clause". The URI is optional: "if not set no row filtering is applied".
+- **Row filters**, `GetRowFilters`, for a table. OPA answers with a list of `{"expression": ...}`, and each expression "essentially behaves like an additional WHERE clause". The URI is optional, and Trino applies no row filtering when it isn't set.
 - **Column masks**, `GetColumnMask`, for one column, or a batch of columns at `opa.policy.batch-column-masking-uri`. "Only a single column mask may be returned for a given column."
 
-The operation names and where each request puts its table or column are in the plugin's source at tag 484 ([`OpaAccessControl.java`](https://github.com/trinodb/trino/blob/484/plugin/trino-opa/src/main/java/io/trino/plugin/opa/OpaAccessControl.java), [`OpaHighLevelClient.java`](https://github.com/trinodb/trino/blob/484/plugin/trino-opa/src/main/java/io/trino/plugin/opa/OpaHighLevelClient.java)). The documentation's batch-mask policy reads `filterResources[i].catalogName` where its own request example nests those fields under `.column`, so as printed it wouldn't match. Build the platform's requests in those shapes and give them to its policy:
+The operation names and where each request puts its table or column are in the plugin's source at tag 484 ([`OpaAccessControl.java`](https://github.com/trinodb/trino/blob/484/plugin/trino-opa/src/main/java/io/trino/plugin/opa/OpaAccessControl.java), [`OpaHighLevelClient.java`](https://github.com/trinodb/trino/blob/484/plugin/trino-opa/src/main/java/io/trino/plugin/opa/OpaHighLevelClient.java)). The documentation's batch-mask policy reads `filterResources[i].catalogName` where its own request example nests those fields under `.column`, so as printed it wouldn't match. Requests built in those shapes go to its policy:
 
-Example `trino-requests` (Python 3.12.15 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0 · regopy 1.5.2 · sqlglot 30.31.0), passing in Edition 2026.11.26:
+Example `trino-requests` (Python 3.12.15 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0 · regopy 1.5.2 · sqlglot 30.31.0), passing in Edition 2026.11.27:
 
 ```python
+"""Builds requests in the shape Trino 484's OPA plugin sends, and runs them through the platform's policy. The prose's
+points rest on the allow lines, which the example asserts are False, and on the GetRowFilters and GetColumnMask lines."""
 import json
 
 from lib import metadata, policy
@@ -822,7 +904,10 @@ def trino_request(user: str, operation: str, resource: dict | None = None) -> di
 
 # Trino asks `allow` about every operation: ExecuteQuery before any query runs, AccessCatalog for each catalog it names.
 for operation, resource in [("ExecuteQuery", None), ("AccessCatalog", {"catalog": {"name": "platform"}})]:
-    print(f"allow, {operation}, agent-a05:", policy.decide(trino_request("agent-a05", operation, resource), rego)["allow"])
+    allowed = policy.decide(trino_request("agent-a05", operation, resource), rego)["allow"]
+    # allow admits only SelectFromColumns, so Trino's checks before any query are denied
+    assert allowed is False
+    print(f"allow, {operation}, agent-a05:", allowed)
 
 # GetRowFilters names a table. The policy's row_filters rule on its own skips `allow` and its missing-attribute guard,
 # so for agent-new it returns no filter, which Trino reads as no filtering. The answer comes from the decision instead,
@@ -834,7 +919,9 @@ for user, schema, table in [("agent-a05", "support", "tickets"), ("instructor-17
           json.dumps(policy.evaluate(rego, "data.platform.access.row_filters", request)))
     decision = policy.decide(policy.request(user, f"{schema}.{table}", []), rego)
     columns = {c.name: "" for c in described[f"{schema}.{table}"].columns.values()}
+    # no table alias: Trino applies the filter to the table itself, as a WHERE clause on it
     filters = [{"expression": row_filter(rule, columns, table=None).sql("trino")} for rule in decision["row_filters"]]
+    # a denied read gets a filter that keeps no rows
     print(f"GetRowFilters, {user}, {schema}.{table}, answered:", json.dumps(filters if decision["allow"] else [{"expression": "false"}]))
 
 # GetColumnMask names one column, under action.resource.column. The policy reads the columns of a SelectFromColumns
@@ -861,23 +948,27 @@ GetColumnMask as sent, analyst-1, crm.learners.email: {} GetColumnMask is not an
 GetColumnMask translated, analyst-1, crm.learners.email: {"email": "pseudonymize"}
 ```
 
-The policy's `allow` admits only `SelectFromColumns`, so pointed at Trino unchanged it would deny the checks Trino makes first: `allow` is `False` for `ExecuteQuery`, asked before any query runs, and for `AccessCatalog`. The `row_filters` rule doesn't test the operation, so it answers `GetRowFilters`, but on its own it skips `allow` and [chapter 5](#deny-by-default-then-allow-by-role)'s missing-attribute guard: for `agent-new`, a support agent with no region yet, it returns `[]`, which Trino reads as no filtering. So the answer has to come from the decision for the same read, asked as `SelectFromColumns`: its filters, written in Trino's SQL by the same [`row_filter`](#build-row-filters-from-data) the rewrite uses, or, when it denies the read, `[{"expression": "false"}]`, which keeps no rows.
+Pointed at Trino unchanged, the policy would deny the checks Trino makes first, because its `allow` admits only `SelectFromColumns`. `allow` is false for `ExecuteQuery`, which Trino asks before any query runs, and for `AccessCatalog`.
 
-`GetColumnMask` names the column under `action.resource.column`, while the policy reads a `SelectFromColumns` request's columns, so as sent it masks nothing and the policy rejects the operation; translated, it gets `pseudonymize`. In production, the translations, the check of `allow` and the Trino SQL belong in a Rego module beside the policy, so OPA can answer Trino itself; the book's examples run no OPA server, so the example shows what that module must return. One more piece maps onto Trino directly: the consent filter reads `crm.learners`, which the assistant may not, and Trino lets a filter carry an `identity` to run as, "such that a filter can target a column the requesting user cannot see".
+The `row_filters` rule doesn't test the operation, so it answers `GetRowFilters`, but on its own it skips `allow` and [chapter 5](#deny-by-default-then-allow-by-role)'s missing-attribute guard. For `agent-new`, a support agent with no region yet, it returns `[]`, which Trino reads as no filtering. So the answer has to come from the decision for the same read, asked as `SelectFromColumns`: its filters, written in Trino's SQL by the same [`row_filter`](#build-row-filters-from-data) the rewrite uses, or, when it denies the read, `[{"expression": "false"}]`, which keeps no rows.
+
+`GetColumnMask` names the column under `action.resource.column`, while the policy reads a `SelectFromColumns` request's columns, so as sent it masks nothing and the policy rejects the operation; translated, it gets `pseudonymize`. In production, those translations, the `allow` check and the Trino SQL belong in a Rego module beside the policy, so OPA can answer Trino itself. No OPA server runs here, so the code shows only what that module must return. One more piece maps onto Trino directly: the consent filter reads `crm.learners`, which the assistant may not, and Trino lets a filter carry an `identity` to run as, "such that a filter can target a column the requesting user cannot see".
 
 Since 1.9.0, OPA's Compile API can also write SQL `WHERE` clauses from a policy by partial evaluation ([OPA v1.9.0](https://github.com/open-policy-agent/opa/releases/tag/v1.9.0), [Data filtering with OPA](https://www.openpolicyagent.org/docs/filtering)), but it needs an OPA server, which the examples don't run.
 
-**Working rule:** Put enforcement in the engine every tool queries through, and keep one policy for it and for any rewrite like this chapter's. With Trino, answer every operation the plugin asks about, set both the row-filter and the column-mask URIs, since without them it applies no filters or masks, and return row filters only from a decision that allows the read. Build your tests from the request shapes in the plugin's source rather than from its documentation's example policies.
+**Working rule:** Put enforcement in the engine every tool queries through, with one policy for it and for any rewrite like this chapter's. With Trino, answer every operation the plugin asks about, set both the row-filter and column-mask URIs (without them it applies no filters or masks), and return row filters only from a decision that allows the read. Build tests from the request shapes in the plugin's source, not from its documentation's example policies.
 
 ## Query on someone's behalf {#query-on-someones-behalf}
 
-An assistant that answers questions from the warehouse is one more user of the enforcement layer, with a choice to make: whose identity does its query carry? The platform's course assistant, `assistant-1`, has its own access, for reviews by consenting learners. When it answers a person, it must query as that person, so the answer contains exactly what they could have read themselves. OWASP's guidance for language-model applications says the same: "Implement authorization in downstream systems rather than relying on an LLM to decide if an action is allowed or not" ([OWASP LLM06:2025](https://genai.owasp.org/llmrisk/llm062025-excessive-agency/)). The assistant itself belongs to *Data Assistants in Practice*; this section is about its queries.
+An assistant that answers questions from the warehouse is one more user of the layer, with a choice to make: whose identity does its query carry? The course assistant, `assistant-1`, has its own access, for reviews by consenting learners. When it answers a person, it must query as that person, so the answer holds exactly what they could read themselves. OWASP's guidance for language-model applications says the same: "Implement authorization in downstream systems rather than relying on an LLM to decide if an action is allowed or not" ([OWASP LLM06:2025](https://genai.owasp.org/llmrisk/llm062025-excessive-agency/)). The assistant itself belongs to *Data Assistants in Practice*; this section is about its queries.
 
-`instructor-17` asks the assistant how their courses' reviews look, and the assistant writes a query. The tool it calls takes the user from the signed-in session, never from the model or the conversation, so no prompt can change who the query runs as:
+`instructor-17` asks the assistant how their courses' reviews look, and the assistant writes a query. The tool takes the user from the signed-in session, never from the model or the conversation, so no prompt can change who the query runs as:
 
-Example `assistant-on-behalf` (Python 3.12.15 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0 · regopy 1.5.2 · sqlglot 30.31.0), passing in Edition 2026.11.26:
+Example `assistant-on-behalf` (Python 3.12.15 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0 · regopy 1.5.2 · sqlglot 30.31.0), passing in Edition 2026.11.27:
 
 ```python
+"""Runs the course assistant's review query as instructor-17 and as assistant-1, through a tool that takes the user from
+the signed-in session. The prose's point rests on the reviews-behind-it lines for each user."""
 from lib import policy
 from lib.catalog import open_catalog
 from lib.enforce import Enforcer
@@ -889,6 +980,7 @@ courses = set(policy.data_document()["platform"]["instructor_courses"]["17"])   
 def query_tool(session_user: str):
     """The tool the course assistant calls to query the warehouse. The model writes the SQL; the user it runs as comes
     from the signed-in session, never from the model or the conversation."""
+    # the user is the session's; the SQL is all the model contributes
     return lambda sql: platform.sql(sql, user=session_user).fetchall()
 
 
@@ -898,6 +990,7 @@ for runs_as in ["instructor-17", "assistant-1"]:
     answer = query_tool(runs_as)(question)
     print(f"run as {runs_as}, courses in the answer:", len(answer))
     print(f"run as {runs_as}, reviews behind it:", sum(reviews for _, reviews, _ in answer))
+    # each answer row is (course, reviews, rating), so row[0] is the course
     mine = [row for row in answer if row[0] in courses]
     print(f"run as {runs_as}, instructor-17's reviews behind it:", sum(reviews for _, reviews, _ in mine))
 ```
@@ -913,25 +1006,25 @@ run as assistant-1, reviews behind it: 436
 run as assistant-1, instructor-17's reviews behind it: 7
 ```
 
-Run as `instructor-17`, the answer covers their 6 courses and 69 reviews. Run as the assistant, it covers 130 courses, most of them other instructors', and only 7 of the instructor's own reviews, the ones whose authors consented to AI training. The assistant's identity is wrong both ways: it shows the instructor what they may not see, and hides what they may. The same holds for retrieval: an assistant grounded on governed text needs "permission-aware vector and embedding stores" ([OWASP LLM08:2025](https://genai.owasp.org/llmrisk/llm082025-vector-and-embedding-weaknesses/)).
+Whose identity the query carries decides what the answer covers. The assistant's own identity is wrong both ways: it shows the instructor what they may not see, and hides what they may. Run as `instructor-17`, the answer covers their 6 courses and 69 reviews. Run as the assistant, it covers 130 courses, most of them other instructors', and only 7 of the instructor's own reviews, the ones whose authors consented to AI training. The same holds for retrieval: an assistant grounded on governed text needs "permission-aware vector and embedding stores" ([OWASP LLM08:2025](https://genai.owasp.org/llmrisk/llm082025-vector-and-embedding-weaknesses/)).
 
-**Working rule:** Run an assistant's queries with the identity of the person it answers, taken from their authenticated session, and let the enforcement layer apply that person's decision. Use the assistant's own identity only for work it does for no one in particular, such as a nightly summary of consented reviews for the course pages, and record both identities in the audit log. Whoever builds the assistant's training set queries as themselves, with the purpose `ai-training`, as [chapter 9](#admit-consented-reviews) does.
+**Working rule:** Run an assistant's queries as the person it answers, with that identity taken from their authenticated session, and let the layer apply that person's decision. Use the assistant's own identity only for work it does for no one in particular, such as a nightly summary of consented reviews for the course pages, and record both identities in the audit log. Whoever builds the assistant's training set queries as themselves, with the purpose `ai-training`, as [chapter 9](#admit-consented-reviews) does.
 
 ## What goes wrong in production {#enforcement-in-production}
 
-An enforcement layer fails by letting a read through that nobody tested, and most of these failures look like correct answers:
+An enforcement layer fails by letting through a read nobody tested, and most of these failures look like correct answers:
 
 - **`SELECT *` slips past on a table missing from the schema.** `qualify` leaves the star unexpanded and raises nothing. Deny every table the catalog doesn't hold, and rebuild the schema whenever the catalog changes.
 - **Aggregates leak small groups.** A cell of one names its member, and differences between reports name members of cells that pass any minimum, as [the report example](#hold-back-small-groups) showed. Set the minimum, and remove breakdowns by attributes the reader may not read.
-- **Joins and copies bring masked columns back.** A pipeline that runs with full access, such as the one that writes `marketing.audience`, copies `email` into a table of its own, protected only by its own classification: unclassified, it's hidden from everyone, as [the who-sees-what test](#test-who-sees-what) showed, and classified `internal` by mistake, it's shown to anyone who may read the table. [Chapter 4](#classifications-from-lineage) propagates classifications along lineage to catch that. Unmasked columns re-identify through joins too: Sweeney found 87% of the US population likely unique on ZIP code, gender and date of birth in 1990 census data ([Sweeney, 2002](https://dataprivacylab.org/dataprivacy/projects/kanonymity/kanonymity.pdf)), and Golle, counting again, found 61% on the same 1990 data and 63% on 2000's ([Golle, 2006](https://doi.org/10.1145/1179601.1179615)). Rocher and colleagues estimate, from a model fitted to census data, that 15 demographic attributes would make 99.98% of people in Massachusetts unique ([Rocher et al., 2019](https://doi.org/10.1038/s41467-019-10933-3)).
-- **Direct file reads bypass the rewrite.** `read_parquet`, a path in `FROM` and table functions read data without naming a table. Deny them in the rewrite, and turn off `enable_external_access`, which DuckDB then won't turn back on: "Cannot enable external access while database is running". `lock_configuration` keeps every other setting as the layer left it; set it once the layer's connection is fully configured ([Securing DuckDB](https://duckdb.org/docs/2.0/operations_manual/securing_duckdb/overview)), not when it's created, since [chapter 8](#cross-check-the-query-log) starts DuckDB's query log after that. Anyone who can read the warehouse's files in storage needs no SQL at all, so storage permissions are part of enforcement.
+- **Joins and copies bring masked columns back.** A pipeline with full access, such as the one that writes `marketing.audience`, copies `email` into a table protected only by its own classification. Unclassified, the copy is hidden from everyone, as [the who-sees-what test](#test-who-sees-what) showed; classified `internal` by mistake, it's shown to anyone who may read the table. [Chapter 4](#classifications-from-lineage) propagates classifications along lineage to catch that. Unmasked columns re-identify through joins too: Sweeney found 87% of the US population likely unique on ZIP code, gender and date of birth in 1990 census data ([Sweeney, 2002](https://dataprivacylab.org/dataprivacy/projects/kanonymity/kanonymity.pdf)), and Golle, counting again, found 61% on the same 1990 data and 63% on 2000's ([Golle, 2006](https://doi.org/10.1145/1179601.1179615)). Rocher and colleagues estimate, from a model fitted to census data, that 15 demographic attributes would make 99.98% of people in Massachusetts unique ([Rocher et al., 2019](https://doi.org/10.1038/s41467-019-10933-3)).
+- **Direct file reads bypass the rewrite.** `read_parquet`, a path in `FROM` and table functions read data without naming a table. Deny them in the rewrite, and turn off `enable_external_access`, which DuckDB then won't turn back on: "Cannot enable external access while database is running". `lock_configuration` keeps every other setting as the layer left it; set it once the layer's connection is fully configured ([Securing DuckDB](https://duckdb.org/docs/2.0/operations_manual/securing_duckdb/overview)), not when it's created, since [chapter 8](#cross-check-the-query-log) starts DuckDB's query log after that. Anyone who can read the warehouse's files in storage needs no SQL, so storage permissions are part of enforcement.
 - **Identifier case decides what a name matches.** A layer that matched names without normalizing them would let `"LEARNERS"`, which DuckDB resolves to `learners`, reach the raw table, as [the first section](#find-what-a-query-reads) showed. Normalize with the dialect of the engine that runs the query before matching any name.
 - **Error messages print values.** DuckDB's cast errors include the value. The table rewrite makes it a masked one, and [the gate on each column](#gate-columns-on-row-filters) keeps dropped rows out of reach, but the message still reaches the user unless something stops it. Return a generic error at the service boundary, as `lib.enforce.answer` does, and log the engine's message where only the platform team reads it, apart from the audit log, which [chapter 8](#keep-values-out-of-the-record) keeps free of values. PostgreSQL warns that plans and timings remain covert channels even behind a security barrier ([PostgreSQL 18, Rules and Privileges](https://www.postgresql.org/docs/18/rules-privileges.html)).
 - **DuckDB is not a security boundary.** "DuckDB executes SQL with the full privileges of the user running it, much like a shell or scripting interpreter" ([Securing DuckDB](https://duckdb.org/docs/2.0/operations_manual/securing_duckdb/overview)). A rewrite inside the same process protects data only while users can't reach DuckDB by any other route. Treat this chapter's layer as a tested model of what an engine such as Trino enforces, and enforce there in production.
 
 ## What this chapter decided {#enforcement-decisions}
 
-- **Enforcement replaces tables, not columns.** Each catalog table in a query becomes a subquery generated from the user's decision. Rewriting column references is kept only to show that it leaks.
+- **Enforcement replaces tables, not columns.** Each catalog table becomes a subquery generated from the decision; rewriting column references is kept only to show that it leaks.
 - **The layer fails closed.** Its sources are an allowlist of catalog tables, CTEs in scope and subqueries. It denies functions with side effects, parameters and anything but a single query. Columns a query doesn't read are typed `NULL`s, and the ones it reads are gated on the row filters.
 - **Users get one generic error** from `answer`, and DuckDB's message goes to the platform team.
 - **Masks are SQL in one place.** The policy names masks; `lib.enforce` writes their SQL. Pseudonyms are keyed with a secret only the layer holds, passed as a parameter.
@@ -939,4 +1032,4 @@ An enforcement layer fails by letting a read through that nobody tested, and mos
 - **Who sees what is tested as queries:** chapter 5's cases run through the layer on every change.
 - **Reports hold back groups under the minimum group size,** 11 in `governance/enforcement.toml`, and don't break down by attributes their readers may not read.
 - **Assistants query as the person they answer,** with the identity taken from the session.
-- **In production, the engine enforces:** Trino with OPA, from the same policy, with both URIs set and row filters answered only from an allowed decision.
+- **In production, the engine enforces:** Trino with OPA, from the same policy, with both URIs set and row filters answered only from an allowed decision. A layer is only as safe as its tests.

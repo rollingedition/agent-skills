@@ -3,39 +3,42 @@ title: "Data Governance as Code"
 chapter: "Finding personal data"
 chapter_id: finding-personal-data
 book: data-governance-as-code
-edition: 2026.11.26
-verified: 2026-11-13
-edition_code: Y6HK-BWT6
+edition: 2026.11.27
+verified: 2026-11-14
+edition_code: 2QX0-VKZT
 canonical: https://rollingedition.com/data-governance-as-code/finding-personal-data
 license: CC BY 4.0
-attribution: "“Finding personal data,” chapter 3 of Data Governance as Code, Edition 2026.11.26, examples passed Nov 13, 2026. By Rolling Edition, https://rollingedition.com/data-governance-as-code/finding-personal-data. Text CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Finding personal data,” chapter 3 of Data Governance as Code, Edition 2026.11.27, examples passed Nov 14, 2026. By Rolling Edition, https://rollingedition.com/data-governance-as-code/finding-personal-data. Text CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Finding personal data
 
-By the end of this chapter you can find personal data on a data platform automatically. You'll propose a classification for every column from its name, its type and a reproducible sample of its values, find personal data inside free text span by span, and measure each detector against labelled data, so you know what it misses before anyone relies on it. You'll run Presidio's pattern recognizers offline with thresholds chosen by measurement, compare them with the recorded detections of a model trained to find personal data, and classify again only the columns a schema change adds.
+By the end of this chapter you can find personal data on a data platform automatically, and say how much of it you miss. You'll propose a classification for every column from its name, its type and a reproducible sample of its values; find personal data inside free text, span by span; and measure each detector against labelled data before anyone relies on it. Along the way you'll run Presidio's pattern recognizers offline, with thresholds chosen by measurement, compare them with the recorded detections of a model trained to find personal data, and classify again only the columns a schema change adds.
 
-The platform, the online learning platform this book follows, sells professional courses to adult learners, and keeps its warehouse in an Iceberg catalog of eight source tables, each under the namespace of the team that runs it. [Chapter 2](#a-catalog-you-can-test) gave every column a classification in `governance/metadata.toml`, a file people review. A reviewed file records what its reviewers believe a column holds, and on the platform three beliefs need checking. `billing.payments.card_number` is a legacy column whose description says it holds full card numbers, and nobody has checked. `crm.learners.notes` is free text that support agents type, so its name says nothing about what's in it. And learners write whatever they like in support tickets and course reviews, so a classification of the whole column can't protect that text: the platform has to find each name, email and phone number inside it before the text can be masked span by span, which [chapter 9](#replace-personal-data) does to reviews before the platform's course assistant learns from them.
+Every column on the platform already has a classification. [Chapter 2](#a-catalog-you-can-test) put one in `governance/metadata.toml`, a file people review, and a reviewed file records what its reviewers believe a column holds. On the platform, the online learning platform whose warehouse this book governs, three of those beliefs have never been checked. `billing.payments.card_number` is a legacy column whose description says it holds full card numbers, and nobody has looked. `crm.learners.notes` is free text that support agents type, so its name says nothing about what's in it. Learners write whatever they like in support tickets and course reviews. No classification of a whole column can protect that text. Before it can be masked, the platform has to find each name, email and phone number in it, span by span, as [chapter 9](#replace-personal-data) does for reviews before the course assistant learns from them.
 
-This chapter builds the book's shared module for this, `lib.pii`: rules on column names, seeded samples of a column's values, a Presidio detector configured to run offline, and code that scores any detector against labelled data. Every detector in this chapter is measured against one file, which we call the truth: `data/platform/pii_spans.parquet`. The script that generated the platform's data writes it beside the tickets and reviews: every piece of personal data it placed in their text, with its exact start and end. Invoice numbers, order numbers and the date a problem happened stay unlabelled, because the platform doesn't treat them as personal data.
+This chapter builds the book's shared module for the job, `lib.pii`: rules on column names, seeded samples of a column's values, a Presidio detector configured to run offline, and code that scores any detector against labelled data. Every detector in this chapter is measured against one file, which we call the truth: `data/platform/pii_spans.parquet`. The platform's data generator writes it beside the tickets and reviews, with every piece of personal data it placed in their text and its exact start and end. Invoice numbers, order numbers and the date a problem happened stay unlabelled, because the platform doesn't treat them as personal data.
 
-The platform's phone numbers, card numbers and IBANs are random in a valid format, so any one may be in service, and no example prints one whole: it masks all but the last four digits.
+Phone numbers, card numbers and IBANs in this book are random, as [the data card](#governance-end-to-end) says, and no example prints one whole: it masks all but the last four digits.
 
 ## Classify columns from the schema {#classify-columns-from-the-schema}
 
-The cheapest evidence about a column is its schema: its name and its type. A rule on names reads no data, so it can run over a whole catalog in a pull request, and it catches the columns whose names say what they hold, such as `email` or `date_of_birth`. Catalog tools start the same way: OpenMetadata's auto-classification begins with a "Column Name Scanner", which validates "the column names of the table against a set of regex rules" ([OpenMetadata docs](https://docs.open-metadata.org/v2.0.x/how-to-guides/data-governance/classification/auto-classification/auto-pii-tagging)). The type decides what comes next. A text column's values can be sampled and scanned. A timestamp can't hold an email, and scanning one with a date pattern would flag every row, so numbers, dates, timestamps and booleans are classified by name alone.
+The cheapest evidence about a column is its schema: its name and its type. A rule on names reads no data, so it runs over a whole catalog in a pull request, and it catches the columns whose names say what they hold, such as `email` or `date_of_birth`. Catalog tools start the same way: OpenMetadata's auto-classification begins with a column name scanner that checks names against regular expressions ([OpenMetadata docs](https://docs.open-metadata.org/v2.0.x/how-to-guides/data-governance/classification/auto-classification/auto-pii-tagging)). The type decides what comes next. A text column's values can be sampled and scanned, but a timestamp can't hold an email, and scanning one with a date pattern would flag every row. So numbers, dates, timestamps and booleans are classified by name alone.
 
-The platform keeps its rules in `governance/pii.toml`, the file that holds every setting of its detector and is reviewed like the metadata. The rules are 8 regular expressions on lowercased column names, each naming the entity it suggests, and the first match wins. The same file maps each entity to a classification: a phone number to `personal`, a card number or an IBAN to `sensitive`. `lib.pii.by_name` applies the rules. Run them over every column of the catalog, and compare them with the reviewed metadata:
+The platform keeps its rules in `governance/pii.toml`, which holds every setting of its detector and is reviewed like the metadata. The rules are 8 regular expressions on lowercased column names, each naming the entity it suggests, and the first match wins. The same file maps each entity to a classification: a phone number to `personal`, a card number or an IBAN to `sensitive`. `lib.pii.by_name` applies the rules. The rules go over every column of the catalog, and the results sit beside the reviewed metadata:
 
-Example `column-name-rules` (Python 3.12.15 · duckdb 2.0.0 · phonenumbers 9.0.43 · presidio-analyzer 2.2.366 · pyarrow 26.0.1 · pyiceberg 0.12.0 · pyyaml 6.0.3 · tldextract 5.4.0), passing in Edition 2026.11.26:
+Example `column-name-rules` (Python 3.12.15 · duckdb 2.0.0 · phonenumbers 9.0.43 · presidio-analyzer 2.2.366 · pyarrow 26.0.1 · pyiceberg 0.12.0 · pyyaml 6.0.3 · tldextract 5.4.0), passing in Edition 2026.11.27:
 
 ```python
+"""Runs the name rules over every column of the catalog and compares each column they mark with the reviewed metadata.
+The prose rests on the count of marked columns that agree, and on the personal columns no rule marks."""
 from pyiceberg.types import StringType
 
 from lib import metadata, pii
 from lib.catalog import open_catalog
 
 catalog = open_catalog()
-described = metadata.load()
+described = metadata.load()                   # the reviewed metadata, keyed by table and then by field ID
+# every column as (table, field): the field carries the ID the metadata is keyed by, so a renamed column still matches
 columns = [(table, f) for (namespace,) in sorted(catalog.list_namespaces())
            for _, name in sorted(catalog.list_tables(namespace))
            for table in [f"{namespace}.{name}"] for f in catalog.load_table(table).schema().fields]
@@ -50,6 +53,7 @@ agree = sum(pii.CLASSIFICATION[entity] == described[table].columns[f.field_id].c
             for table, f, entity in named)
 print("of them, agreeing with the metadata:", agree)
 
+# Only text is sampled: numbers, dates, timestamps and booleans are classified by name alone.
 text = [(table, f) for table, f in columns if isinstance(f.field_type, StringType)]
 print("columns of text, whose values can be sampled:", len(text))
 
@@ -81,30 +85,35 @@ columns of text, whose values can be sampled: 29
 personal columns no name rule marks: crm.learners.notes, learning.reviews.body, support.tickets.body
 ```
 
-Of the catalog's 64 columns, the rules mark 11, and all 11 agree with the classification people gave them. The rules miss three columns the reviewers classified `personal`: `crm.learners.notes`, `learning.reviews.body` and `support.tickets.body`. All three are free text, where a name describes the container, not its contents. And the one marked column the platform worries about most, `billing.payments.card_number`, gets `sensitive` from its name without anyone learning what it holds: whole card numbers, the last four digits, or a payment provider's token would all match `card_?(number|num|no)`.
+The rules agree with the metadata wherever they fire, and they miss the free text. Of the catalog's 64 columns, the rules mark 11, and all 11 agree with the classification people gave them. They miss three columns the reviewers classified `personal`: `crm.learners.notes`, `learning.reviews.body` and `support.tickets.body`. All three are free text, where a name describes the container, not its contents. The marked column the platform worries about most, `billing.payments.card_number`, gets `sensitive` from its name without anyone learning what it holds. Whole card numbers, the last four digits, or a payment provider's token would all match `card_?(number|num|no)`.
 
-Name rules are brittle in a known way. The authors of Sherlock, a model for detecting column types, observed that "these matching-based approaches often are not robust to dirty data and only detect a limited number of types" ([Hulsebos et al., 2019](https://arxiv.org/abs/1905.10688)). So the platform reads values too, in the 29 text columns its catalog holds.
+Name rules are brittle in a known way. The authors of Sherlock, a model for detecting column types, report that name matching isn't robust to dirty data and detects only a few types ([Hulsebos et al., 2019](https://arxiv.org/abs/1905.10688)). So the platform reads values too, in the 29 text columns its catalog holds.
 
 **Working rule:** Run name rules over every column first, because they're free, and let them raise a classification, never lower one. Keep the rules short, in code, and reviewed like any other rule. Treat any free-text column, whatever it's called, as one that needs its values sampled, and classify columns of other types by name alone.
 
 ## Run Presidio offline {#run-presidio-offline}
 
-To read values, the platform uses Presidio, an open-source library for finding and masking personal data. Its analyzer runs a set of **recognizers**: regular expressions with checksums, phone-number parsing, and a named-entity model reached through an NLP engine. The engine has two jobs, as Presidio's docs put it: "NER based PII identification, and feature extraction for downstream rule based logic (such as leveraging context words for improved detection)", and its default model is spaCy's `en_core_web_lg` ([Presidio docs](https://github.com/data-privacy-stack/presidio/blob/2.2.364/docs/analyzer/customizing_nlp_models.md)). At 2.2.366, `AnalyzerEngine()` with no arguments downloads that model when it isn't installed ([source](https://github.com/data-privacy-stack/presidio/blob/2.2.364/presidio-analyzer/presidio_analyzer/nlp_engine/spacy_nlp_engine.py)), so a pipeline without network access fails on its first line, and one with access installs a model of about 400 MB as a side effect ([en_core_web_lg 3.8.0](https://github.com/explosion/spacy-models/releases/tag/en_core_web_lg-3.8.0)).
+To read values, the platform uses Presidio, an open-source library for finding and masking personal data. Its analyzer runs **recognizers**: regular expressions with checksums, phone-number parsing, and a named-entity model reached through an NLP engine. That engine does two jobs, named-entity recognition and feature extraction for rules, such as the context words that raise a score. Its default model is spaCy's `en_core_web_lg` ([Presidio docs](https://github.com/data-privacy-stack/presidio/blob/2.2.364/docs/analyzer/customizing_nlp_models.md)). At 2.2.366, `AnalyzerEngine()` with no arguments downloads that model when it isn't installed ([source](https://github.com/data-privacy-stack/presidio/blob/2.2.364/presidio-analyzer/presidio_analyzer/nlp_engine/spacy_nlp_engine.py)). So a pipeline without network access fails on its first line, and one with access installs a model of about 400 MB as a side effect ([en_core_web_lg 3.8.0](https://github.com/explosion/spacy-models/releases/tag/en_core_web_lg-3.8.0)).
 
-`lib.pii.detector` configures the engine explicitly instead, with `NoOpNlpEngine`, which "loads no external model" ([source](https://github.com/data-privacy-stack/presidio/blob/2.2.364/presidio-analyzer/presidio_analyzer/nlp_engine/no_op_nlp_engine.py)). The cost is context words. Presidio raises a pattern's score when a word such as "phone" appears near the match, by comparing "each recognizer's context terms with the lemma of each token in the sentence" ([Presidio docs](https://github.com/data-privacy-stack/presidio/blob/2.2.364/docs/tutorial/06_context.md)), and with no model there are no lemmas, so the engine "cannot use context words from the analyzed text". One more call reaches the network: the email recognizer checks domains with tldextract ([source](https://github.com/data-privacy-stack/presidio/blob/2.2.364/presidio-analyzer/presidio_analyzer/predefined_recognizers/generic/email_recognizer.py)), which "fetches the latest Public Suffix List on first use" ([tldextract 5.4.0 README](https://github.com/john-kurkowski/tldextract/blob/5.4.0/README.md)). An empty `TLDEXTRACT_PUBLIC_SUFFIX_LIST_URLS` turns that off if it's set "before importing `tldextract`", as the README says, and importing Presidio imports tldextract. So `lib/__init__.py`, which Python runs before any module of the book's `lib`, sets it. When an example imported Presidio first, the same file replaces tldextract's shared extractor ([source](https://github.com/john-kurkowski/tldextract/blob/5.4.0/tldextract/tldextract.py)) with one that has no URLs. `lib.pii` refuses to load if any remain, and tldextract uses the copy it ships with, so the same text gives the same answer on every machine.
+`lib.pii.detector` configures the engine itself, with `NoOpNlpEngine`, which loads no language model ([source](https://github.com/data-privacy-stack/presidio/blob/2.2.364/presidio-analyzer/presidio_analyzer/nlp_engine/no_op_nlp_engine.py)). What that costs is context. With a model, Presidio raises a pattern's score when a word such as "phone" appears near the match, by comparing the lemma of each nearby word with each recognizer's context terms ([Presidio's tutorial on context](https://github.com/data-privacy-stack/presidio/blob/2.2.364/docs/tutorial/06_context.md)). With no model there are no lemmas, so the engine can't use the text's context words at all. The engine has one more way onto the network. Its [email recognizer](https://github.com/data-privacy-stack/presidio/blob/2.2.364/presidio-analyzer/presidio_analyzer/predefined_recognizers/generic/email_recognizer.py) checks domains with tldextract, which fetches the Public Suffix List the first time it's used ([tldextract 5.4.0's README](https://github.com/john-kurkowski/tldextract/blob/5.4.0/README.md)). Importing Presidio imports tldextract, whose README says an empty `TLDEXTRACT_PUBLIC_SUFFIX_LIST_URLS` turns the fetch off if it's set before the import. So `lib/__init__.py`, which Python runs before any module of the book's `lib`, empties the variable. If an example imported Presidio first, the same file replaces tldextract's [shared extractor](https://github.com/john-kurkowski/tldextract/blob/5.4.0/tldextract/tldextract.py) with one that has no URLs. `lib.pii` refuses to load if any remain, and tldextract uses the copy of the list it ships with, so the same text gives the same answer on every machine.
 
-Load every predefined recognizer on that engine, and run it on one of the platform's support tickets:
+The defaults are tested on real text: load every predefined recognizer on one of the platform's support tickets, which holds a name, an email, a phone number and a date:
 
-Example `presidio-offline-engine` (Python 3.12.15 · duckdb 2.0.0 · phonenumbers 9.0.43 · presidio-analyzer 2.2.366 · pyarrow 26.0.1 · pyiceberg 0.12.0 · pyyaml 6.0.3 · spacy 3.8.18 · tldextract 5.4.0), passing in Edition 2026.11.26:
+Example `presidio-offline-engine` (Python 3.12.15 · duckdb 2.0.0 · phonenumbers 9.0.43 · presidio-analyzer 2.2.366 · pyarrow 26.0.1 · pyiceberg 0.12.0 · pyyaml 6.0.3 · spacy 3.8.18 · tldextract 5.4.0), passing in Edition 2026.11.27:
 
 ```python
+"""Loads Presidio's predefined recognizers on an engine that loads no language model, and runs them on one support
+ticket. The prose's point rests on the detections printed under the ticket, and on the assert that the model isn't
+installed."""
 import spacy
 
 from lib import pii
 from lib.platform import load
 
 # AnalyzerEngine() with no arguments loads spaCy's en_core_web_lg, and downloads it when it isn't installed.
-print("en_core_web_lg installed:", spacy.util.is_package("en_core_web_lg"))
+installed = spacy.util.is_package("en_core_web_lg")
+assert installed is False       # the pipeline assumes no model: a machine that has one fails here, not silently
+print("en_core_web_lg installed:", installed)
 print("URLs tldextract would fetch the Public Suffix List from:", len(pii.suffix_list_urls()))
 
 detector = pii.detector()              # every predefined recognizer, on an NLP engine that loads no model
@@ -114,7 +123,7 @@ print("recognizers:", ", ".join(names))
 print("default score threshold:", detector.default_score_threshold)
 
 # The ticket holds a phone number, which may be in service: masked() prints it with only its last four digits.
-ticket = pii.texts("tickets")[1421]
+ticket = pii.texts("tickets")[1421]         # one ticket with a name, an email, a phone number and a date of the problem
 found = sorted(pii.detect(detector, ticket))
 print("ticket 1421:", pii.masked(ticket))
 for start, end, entity, score in found:
@@ -125,6 +134,7 @@ phone = next(ticket[start:end] for start, end, entity, _ in found if entity == "
 [learner] = [row["learner_id"] for row in load("support.tickets").to_pylist() if row["ticket_id"] == 1421]
 [country] = [row["country"] for row in load("crm.learners").to_pylist() if row["learner_id"] == learner]
 print("the learner's country:", country)
+# The recognizer's built-in regions, not the learner's country.
 print("default regions where it's valid:",
       ", ".join(r for r in pii.PhoneRecognizer.DEFAULT_SUPPORTED_REGIONS if pii.valid_phone(phone, r)))
 ```
@@ -148,21 +158,31 @@ the learner's country: US
 default regions where it's valid: BR
 ```
 
-Asked whether `en_core_web_lg` is installed, spaCy answers False, so a bare `AnalyzerEngine()` would try to download it, and tldextract has 0 URLs to fetch its list from. The no-model engine loads 17 recognizers instead, and none of them looks for names: the colleague in the ticket, Jennifer Abbott, goes unnoticed. Her email is found with a score of 1.00, and its domain is found again as a URL, at 0.50. The learner's phone number, an 11-digit number typed without separators, is found three times: as a phone number at 0.40, a US bank number at 0.05 and a US driver's licence at 0.01. Even the phone number is found by chance: the learner's country is US, and of Presidio's default regions, the US among them, the digits are valid only in BR, Brazil. The date of the problem, `12/03`, which says nothing about anyone, is a date at 0.10.
+Presidio's defaults on this engine see the email and the phone number, and miss the colleague's name. `en_core_web_lg` isn't installed, so a bare `AnalyzerEngine()` would try to download it, and tldextract has 0 URLs to fetch its list from. The no-model engine loads 17 recognizers, and none of them looks for names, so Jennifer Abbott, the colleague in the ticket, goes unnoticed. Her email is found with a score of 1.00, and its domain is found again as a URL, at 0.50. The learner's phone number, an 11-digit number typed without separators, is found three times: as a phone number at 0.40, a US bank number at 0.05 and a US driver's licence at 0.01. Even the phone number is found by chance. The learner's country is US, but of Presidio's default regions, the US among them, the digits are valid only in BR. The date of the problem, `12/03`, is read as a date too, which says nothing about anyone.
 
-Those scores aren't probabilities. Each pattern carries a constant score, low for weak patterns, as Presidio's tutorial explains: "Zip regex patterns (essentially 5 digits) are very weak, so we would want the initial confidence to be low" ([Presidio docs](https://github.com/data-privacy-stack/presidio/blob/2.2.364/docs/tutorial/06_context.md)). A US bank number is any run of 8 to 17 digits ([supported entities](https://github.com/data-privacy-stack/presidio/blob/2.2.364/docs/supported_entities.md)), and the FAQ admits that "A driver's license number, for example, could be any 9-digit number" ([FAQ](https://github.com/data-privacy-stack/presidio/blob/2.2.364/docs/faq.md)). And the analyzer's default threshold is 0, so every weak match comes back.
+Those scores aren't probabilities. Each pattern carries a constant score, and weak patterns get low ones, as Presidio's tutorial explains for a five-digit zip code ([Presidio docs](https://github.com/data-privacy-stack/presidio/blob/2.2.364/docs/tutorial/06_context.md)). A US bank number is any run of 8 to 17 digits ([supported entities](https://github.com/data-privacy-stack/presidio/blob/2.2.364/docs/supported_entities.md)), and the FAQ admits that a driver's licence "could be any 9-digit number" ([FAQ](https://github.com/data-privacy-stack/presidio/blob/2.2.364/docs/faq.md)). The analyzer's default threshold is 0, so every weak match comes back.
 
 **Working rule:** Configure Presidio's engine explicitly: `NoOpNlpEngine` when you run patterns only, or a pinned model you install yourself when you need its names. Never call `AnalyzerEngine()` bare in a pipeline, and pin anything a recognizer would download, such as the Public Suffix List. Read each score as a constant set for its pattern, never as a probability.
 
 ## Sample a column's values the same way every run {#sample-column-values}
 
-Scanning every value of every text column is too slow for a warehouse of any size, so tools sample: OpenMetadata's workflow "samples rows directly from the source and validates them against an Entity Recognition engine" ([OpenMetadata docs](https://docs.open-metadata.org/v2.0.x/how-to-guides/data-governance/classification/auto-classification/auto-pii-tagging)). A sample needs three decisions. **Which rows:** a random sample, not the first rows or a block from a random start. Google's Sensitive Data Protection, for one, offers `RANDOM_START`, where "Scanning starts from a randomly selected row" ([Google Cloud docs](https://cloud.google.com/sensitive-data-protection/docs/inspecting-storage)) and reads on from there, and on a table ordered by sign-up date, that's one cohort. **The same rows every run**, so a classification can be reproduced and a change in it means the data changed. And **how many**, from how rare the data you must catch is.
+Scanning every value of every text column is too slow for any warehouse, so tools sample. OpenMetadata's workflow samples rows and checks them with an entity recognition engine ([OpenMetadata docs](https://docs.open-metadata.org/v2.0.x/how-to-guides/data-governance/classification/auto-classification/auto-pii-tagging)). A sample needs three decisions. **Which rows:** a random sample, not the first rows or a block from a random start. Google's Sensitive Data Protection offers a random-start mode, `RANDOM_START`, which begins at a random row and reads on ([Google Cloud docs](https://cloud.google.com/sensitive-data-protection/docs/inspecting-storage)). On a table ordered by sign-up date, that block is one cohort of learners. **The same rows every run**, so a classification can be reproduced and a change in it means the data changed. And **how many**, from how rare the data you must catch is.
 
-DuckDB's reservoir sample takes a seed, but its docs warn that "fixing the seed only guarantees a reproducible sample when DuckDB runs single-threaded (`SET threads = 1`)" ([DuckDB 2.0.0 docs](https://duckdb.org/docs/2.0/sql/samples)). `lib.pii.sample` sets one thread, filters out NULLs and then draws a seeded reservoir sample. Draw 20 notes from `crm.learners` twice, then work out how many you'd need:
+DuckDB's reservoir sample takes a seed, but a seed gives a reproducible sample only when DuckDB runs on one thread, as the [DuckDB 2.0.0 docs](https://duckdb.org/docs/2.0/sql/samples) warn. `lib.pii.sample` sets one thread, filters out NULLs and then draws a seeded reservoir sample.
 
-Example `seeded-column-sample` (Python 3.12.15 · duckdb 2.0.0 · phonenumbers 9.0.43 · presidio-analyzer 2.2.366 · pyarrow 26.0.1 · pyiceberg 0.12.0 · pyyaml 6.0.3 · tldextract 5.4.0), passing in Edition 2026.11.26:
+A rare value needs a bigger sample, and the arithmetic says how much bigger. Call the share of values that hold personal data p. The chance that n sampled values include at least one is
+
+chance = 1 − (1 − p)ⁿ
+
+and the n that gives a 99% chance is ln(0.01) / ln(1 − p). This is a rule of thumb: it treats the draws as independent, which a sample without replacement from thousands of rows nearly is.
+
+Put the formula to work: draw 20 notes from `crm.learners` twice, then compare the chances over every row with those over the notes alone.
+
+Example `seeded-column-sample` (Python 3.12.15 · duckdb 2.0.0 · phonenumbers 9.0.43 · presidio-analyzer 2.2.366 · pyarrow 26.0.1 · pyiceberg 0.12.0 · pyyaml 6.0.3 · tldextract 5.4.0), passing in Edition 2026.11.27:
 
 ```python
+"""Draws the same twenty notes twice from a seeded reservoir sample, then counts the notes that hold personal data, to see
+how many sampled values a rare value needs. The prose rests on the assert that the draws match, the two chances and the sample sizes."""
 import math
 
 from lib import pii
@@ -171,14 +191,15 @@ from lib.warehouse import connect
 
 con = connect(open_catalog(["crm.learners"]))
 first = pii.sample(con, "crm.learners", "notes", rows=20)
-second = pii.sample(con, "crm.learners", "notes", rows=20)
+second = pii.sample(con, "crm.learners", "notes", rows=20)     # the same call: the seed and one thread (set in lib.pii.sample) make the draws match
+assert second == first
 print("second draw, same notes as the first:", "yes" if second == first else "no")
 # Notes can hold a phone number, which may be in service: masked() prints it with only its last four digits.
 print("first sampled notes:", " | ".join(pii.masked(note) for note in first[:3]))
 
 # How rare is personal data in the column? Run the detector over every note, once, to know.
 detector = pii.platform_detector()
-[(rows, notes)] = con.sql("select count(*), count(notes) from crm.learners").fetchall()
+[(rows, notes)] = con.sql("select count(*), count(notes) from crm.learners").fetchall()   # count(notes) skips NULLs
 every_note = [note for (note,) in con.sql("select notes from crm.learners where notes is not null").fetchall()]
 holding = sum(bool(pii.detect(detector, note)) for note in every_note)
 print("learners:", f"{rows:,}")
@@ -186,10 +207,11 @@ print("learners with notes:", notes)
 print("notes holding personal data the detector finds:", holding)
 
 # The chance that n sampled values hold at least one of them is 1 - (1 - p)^n, for a share p of the values.
-for unit, p in (("rows", holding / rows), ("notes", holding / notes)):
+for unit, p in (("rows", holding / rows), ("notes", holding / notes)):   # p counted over all learners, then over the notes
     print(f"chance 20 sampled {unit} catch one:", f"{1 - (1 - p) ** 20:.1%}")
-    print(f"sampled {unit} needed for a 99% chance:", math.ceil(math.log(0.01) / math.log(1 - p)))
+    print(f"sampled {unit} needed for a 99% chance:", math.ceil(math.log(0.01) / math.log(1 - p)))   # solves for n
 print("values the platform samples per text column:", pii.ROWS)
+# The rarest share p that a sample of ROWS values still catches 99% of the time, printed as 1 in a whole number.
 print("rarest share that sample catches 99% of the time:", f"1 in {math.floor(1 / (1 - 0.01 ** (1 / pii.ROWS)))}")
 ```
 
@@ -209,41 +231,47 @@ values the platform samples per text column: 200
 rarest share that sample catches 99% of the time: 1 in 43
 ```
 
-Asked whether a second draw returns the same 20 notes, the example answers yes, and the third note already holds a phone number, which the output masks. Of 5,000 learners, 527 have notes, and 138 of those hold personal data that the platform's detector, [tuned later in this chapter](#tune-the-recognizers), finds. If p is the share of values holding personal data, the chance that n sampled values include at least one is
+The draws repeat, so a sample can be audited. With the same seed, the second draw returns the same 20 notes, and the third note already holds a phone number, which the output masks.
 
-chance = 1 − (1 − p)ⁿ
-
-and the n that gives a 99% chance is ln(0.01) / ln(1 − p). This is a rule of thumb: it treats the draws as independent, which a sample without replacement from thousands of rows nearly is. Counted over all rows, NULLs included, personal data is rare, and 20 sampled rows catch it only 42.9% of the time; a 99% chance takes 165 rows. Counted over the notes that exist, 20 catch it 99.8% of the time, and 16 are enough for 99%. The NULLs were diluting the sample.
+Of the 5,000 learners, 527 have notes, and 138 of those hold personal data that the platform's detector, [tuned later in this chapter](#tune-the-recognizers), finds. The NULLs dilute the sample, since a NULL can't hold personal data. Twenty sampled rows catch personal data 42.9% of the time, and a 99% chance takes 165 rows. Counted over the notes that exist, twenty catch it 99.8% of the time, and 16 are enough for 99%.
 
 **Working rule:** Sample non-null values, with a fixed seed, on one thread, and keep the seed with the result. Size the sample from the rarest personal data you must catch, with n = ln(0.01) / ln(1 − p) for 99%. The platform samples 200 values per text column, set in `governance/pii.toml`, which catches personal data held by 1 in 43 values or more 99% of the time. For anything rarer, scan the whole column, or classify it by rule.
 
 ## Classify columns from their values {#classify-columns-from-their-values}
 
-[The name rules](#classify-columns-from-the-schema) and [a reproducible sample](#sample-column-values) combine into one proposal per column. `lib.pii.classify` takes the strictest classification that either supports: the entity the name suggests, and every entity found in at least one sampled value. A column with no evidence gets `internal`, because a detector that found nothing has shown nothing, and only a person decides that a column is `public`. Strictest is a choice. Presidio's own tool for tables, Presidio structured, gives each column one entity, and its default is "Most Common", which "Identifies the most frequently occurring PII entity in a data column or field" ([Presidio docs](https://github.com/data-privacy-stack/presidio/blob/2.2.364/docs/structured/index.md)). That suits choosing how to mask a column. For classifying it, a column that holds one card number in 200 values still holds card numbers.
+[The name rules](#classify-columns-from-the-schema) and [a reproducible sample](#sample-column-values) combine into one proposal per column. `lib.pii.classify` takes the strictest classification that either supports: the entity the name suggests, and every entity found in any sampled value. A column with no evidence gets `internal`, because a detector that found nothing has shown nothing, and only a person decides that a column is `public`.
 
-Classify all 64 columns of the catalog, sampling the 29 text columns with the platform's detector, whose recognizers [a later section](#tune-the-recognizers) chooses, and compare the proposals with the reviewed metadata:
+Strictest is a choice. Presidio's own tool for tables, Presidio structured, gives each column one entity, and its default, Most Common, picks the entity that occurs most often ([Presidio docs](https://github.com/data-privacy-stack/presidio/blob/2.2.364/docs/structured/index.md)). That suits choosing how to mask a column. For classifying it, a column that holds one card number in 200 values still holds card numbers.
 
-Example `classify-sampled-columns` (Python 3.12.15 · duckdb 2.0.0 · phonenumbers 9.0.43 · presidio-analyzer 2.2.366 · pyarrow 26.0.1 · pyiceberg 0.12.0 · pyyaml 6.0.3 · tldextract 5.4.0), passing in Edition 2026.11.26:
+Proposals for every column of the catalog, from the platform's detector, whose recognizers [a later section](#tune-the-recognizers) chooses, show where each differs from the reviewed metadata:
+
+Example `classify-sampled-columns` (Python 3.12.15 · duckdb 2.0.0 · phonenumbers 9.0.43 · presidio-analyzer 2.2.366 · pyarrow 26.0.1 · pyiceberg 0.12.0 · pyyaml 6.0.3 · tldextract 5.4.0), passing in Edition 2026.11.27:
 
 ```python
+"""Proposes a classification for every column, the strictest of what its name and its sampled values support, and compares
+each proposal with the reviewed metadata. The prose's table rests on the proposed and found lines of each column, and
+its counts on the totals printed after them."""
 from lib import metadata, pii
 from lib.catalog import open_catalog
 from lib.warehouse import connect
 
 catalog = open_catalog()
-findings = pii.classify(catalog, connect(catalog), pii.platform_detector())
+findings = pii.classify(catalog, connect(catalog), pii.platform_detector())    # the platform's tuned detector, not the defaults
 print("columns classified:", len(findings))
 print("columns sampled:", sum(f.sampled > 0 for f in findings))
 
 holding = [f for f in findings if f.found]          # columns where sampled values hold personal data
 print("columns whose sampled values hold personal data:", len(holding))
+# A column counts when its values hold an entity other than the one its name suggests (named is None when no rule matches).
 print("of them, holding something their name doesn't suggest:", sum(set(f.found) != {f.named} for f in holding))
 for f in holding:
     print(f"{f.table}.{f.column}, proposed: {f.classification}")
     print(f"{f.table}.{f.column}, found: " + ", ".join(f"{e} in {n} of {f.sampled}" for e, n in f.found.most_common()))
-[cards] = [f for f in findings if f.column == "card_number"]
+[cards] = [f for f in findings if f.column == "card_number"]     # the one card_number column in the catalog
+# The card recognizer's count: values that match its pattern and pass its Luhn check, out of the values sampled.
 print("sampled card numbers the card recognizer accepts:", f"{cards.found['CREDIT_CARD']} of {cards.sampled}")
 
+# Classifications the values raise above what the name alone gives: the floor is used for a name no rule matches.
 named_only = [f for f in findings if pii.CLASSIFICATION.get(f.named, pii.FLOOR) != f.classification]
 print("columns the values classify more strictly than the name:", ", ".join(f"{f.table}.{f.column}" for f in named_only))
 
@@ -255,7 +283,7 @@ print("of them, equal to the metadata:",
       sum(f.classification == described[f.table].columns[f.field_id].classification for f in evidenced))
 for f in evidenced:
     reviewed = described[f.table].columns[f.field_id].classification
-    if metadata.stricter(f.classification, reviewed) != reviewed:
+    if metadata.stricter(f.classification, reviewed) != reviewed:     # the stricter of the two: a lower proposal prints nothing
         print(f"stricter than the metadata, {f.table}.{f.column}: {f.classification}, reviewed as {reviewed}")
 ```
 
@@ -291,7 +319,7 @@ of them, equal to the metadata: 13
 stricter than the metadata, support.tickets.body: sensitive, reviewed as personal
 ```
 
-Of the 9 columns whose sampled values hold personal data, some hold only what their name says, such as `crm.learners.email`. These 5 hold something their name doesn't suggest, or have a name that suggests nothing:
+The values settle what the names leave open. Some of the 9 columns whose samples hold personal data hold only what their name says, such as `crm.learners.email`. The other 5 hold something their name doesn't suggest, or have a name that suggests nothing:
 
 | Column | Proposed | Found in the sample |
 | --- | --- | --- |
@@ -301,23 +329,28 @@ Of the 9 columns whose sampled values hold personal data, some hold only what th
 | `learning.reviews.body` | personal | EMAIL_ADDRESS in 4 of 200 |
 | `learning.events.ip_address` | personal | IP_ADDRESS in 200 of 200, PHONE_NUMBER in 39 of 200 |
 
-The values settle what the name couldn't. Of the sampled card numbers, 151 of 200 match Presidio's card pattern and pass the Luhn checksum it checks ([source](https://github.com/data-privacy-stack/presidio/blob/2.2.364/presidio-analyzer/presidio_analyzer/predefined_recognizers/generic/credit_card_recognizer.py)), and the rest are formats the pattern doesn't cover ([see where patterns fail](#where-patterns-fail)). The legacy column holds the full card numbers its description says it "Should not be stored at all", and the sample turns that belief into evidence that `team-billing`, the table's owner, can act on. The notes are `personal` on their values alone. The ticket text is `sensitive`, because learners paste card numbers and IBANs into tickets, which makes it the one proposal stricter than the metadata, where people reviewed it as `personal`. Of the 14 columns with any evidence, 13 match the reviewed classification.
+The legacy card column's description says it "Should not be stored at all", and the sample shows it holds full card numbers, which `team-billing`, the table's owner, can act on. Of the sampled card numbers, 151 of 200 match Presidio's card pattern and pass the Luhn checksum it checks ([source](https://github.com/data-privacy-stack/presidio/blob/2.2.364/presidio-analyzer/presidio_analyzer/predefined_recognizers/generic/credit_card_recognizer.py)), and the rest are formats the pattern doesn't cover ([see where patterns fail](#where-patterns-fail)). The notes are `personal` on their values alone. The ticket text is `sensitive`, because learners paste card numbers and IBANs into tickets, making it the one proposal stricter than the metadata, where people reviewed it as `personal`. Of the 14 columns with any evidence, 13 match the reviewed classification.
 
-Read the evidence, not only the verdict. Some of the IP addresses are also read as phone numbers. Here it changes nothing, because an IP address is `personal` anyway, but it shows that a detector's label says what a value looks like, not what it is.
+Read the evidence, not only the verdict. Some IP addresses are also read as phone numbers. That changes nothing here, because an IP address is `personal` anyway, but a detector's label says what a value looks like, not what it is.
 
-**Working rule:** Propose the strictest classification that the name or any sampled value supports, with `internal` as the floor, and show the evidence with the proposal. A proposal stricter than the reviewed metadata is a finding for the table's owner, who raises the classification or records why not; never let a detector lower one. OpenMetadata skips a column "already tagged as `PII`"; we recommend sampling every text column on every run instead, because the reviewed tag is the thing being checked.
+**Working rule:** Propose the strictest classification that the name or any sampled value supports, with `internal` as the floor, and show the evidence with the proposal. A proposal stricter than the reviewed metadata is a finding for the table's owner, who raises the classification or records why not; never let a detector lower one. OpenMetadata skips any column that already carries a PII tag; we recommend sampling every text column on every run instead, because the reviewed tag is the thing being checked.
 
 ## Measure a detector against labelled spans {#measure-against-labelled-spans}
 
-A column-level answer is enough to classify `support.tickets.body`, but not to mask it: masking replaces each span of personal data in each text, and a span the detector misses stays readable. To know what a detector misses, compare its spans with [the truth](#finding-personal-data), the labelled spans of every ticket and review. Two matching rules are standard, and `lib.pii` applies both. **Exact** matching, from the CoNLL-2003 shared task, counts an entity "correct only if it is an exact match of the corresponding entity in the data file" ([Tjong Kim Sang and De Meulder, 2003](https://aclanthology.org/W03-0419.pdf)): the detector found the span with the same boundaries and a label of its type. **Overlap** matching asks only for one shared character, still with a label of its type, which the SemEval-2013 task on drug interactions calls "Type matching" ([Segura-Bedmar et al., 2013](https://aclanthology.org/S13-2056.pdf)). Neither credits a span hidden under another label, so `lib.pii` adds a third measure, **coverage**: whether every character of the span is inside some detection, whatever its label. Each answers a different question. Exact asks whether the detector labelled the whole span right, overlap whether it noticed the span as what it is, and coverage whether masking its detections hides the span.
+A column-level answer is enough to classify `support.tickets.body`, but not to mask it: masking replaces each span of personal data in each text, and a span the detector misses stays readable. To know what a detector misses, compare its spans with [the truth](#finding-personal-data), the labelled spans of every ticket and review. Two matching rules are standard, and `lib.pii` applies both.
 
-`lib.pii.score` computes exact and overlap matching as **recall**, the share of labelled spans of each type that a detector finds with a label of that type, and **precision**, the share of each label's detections that match a labelled span. `lib.pii.coverage` gives the share of each type's spans that are covered. `score` also counts the texts in which every labelled character falls inside some detection, the texts masking would leave with nothing personal. The Text Anonymization Benchmark counts a person as protected only "if all of its mentions are masked" ([Pilán et al., 2022](https://aclanthology.org/2022.cl-4.19.pdf)); the platform counts whole texts, which is stricter. And recall comes first: Presidio's evaluation guide says "recall is often more important than precision, as we'd like to avoid missing any PII" ([Presidio docs](https://github.com/data-privacy-stack/presidio/blob/2.2.364/docs/evaluation/index.md)).
+**Exact** matching, from the CoNLL-2003 shared task, counts an entity "correct only if it is an exact match of the corresponding entity in the data file" ([Tjong Kim Sang and De Meulder, 2003](https://aclanthology.org/W03-0419.pdf)). **Overlap** matching asks only for one shared character, with a label of its type, which the SemEval-2013 task on drug interactions calls "Type matching" ([Segura-Bedmar et al., 2013](https://aclanthology.org/S13-2056.pdf)). Neither credits a span hidden under another label, so `lib.pii` adds a third measure, **coverage**: whether every character of the span is inside some detection, whatever its label. Exact asks whether the detector labelled the whole span right, overlap whether it noticed the span as what it is, and coverage whether masking its detections hides the span.
 
-Run Presidio with its defaults over all 5,000 tickets and reviews, and score its 3,902 detections against the 4,292 labelled spans:
+`lib.pii.score` computes exact and overlap matching as **recall**, the share of labelled spans of each type that a detector finds with a label of that type, and **precision**, the share of each label's detections that match a labelled span. `lib.pii.coverage` gives the share of each type's spans covered. `score` also counts the texts in which every labelled character falls inside some detection, the texts that masking would leave with nothing personal. The Text Anonymization Benchmark protects a person only when all of their mentions are masked ([Pilán et al., 2022](https://aclanthology.org/2022.cl-4.19.pdf)), and the platform counts whole texts, which is stricter. Recall comes first: Presidio's evaluation guide says it often matters more than precision, because missing personal data is the error to avoid ([Presidio docs](https://github.com/data-privacy-stack/presidio/blob/2.2.364/docs/evaluation/index.md)).
 
-Example `measure-pattern-recognizers` (Python 3.12.15 · duckdb 2.0.0 · phonenumbers 9.0.43 · presidio-analyzer 2.2.366 · pyarrow 26.0.1 · pyiceberg 0.12.0 · pyyaml 6.0.3 · tldextract 5.4.0), passing in Edition 2026.11.26:
+Presidio's defaults, scored against the labelled spans of every ticket and review, give the baseline the rest of the chapter improves on:
+
+Example `measure-pattern-recognizers` (Python 3.12.15 · duckdb 2.0.0 · phonenumbers 9.0.43 · presidio-analyzer 2.2.366 · pyarrow 26.0.1 · pyiceberg 0.12.0 · pyyaml 6.0.3 · tldextract 5.4.0), passing in Edition 2026.11.27:
 
 ```python
+"""Runs Presidio with its defaults over every ticket and review, and scores its detections against the truth's labelled
+spans. The prose rests on the recall and precision lines, the count of texts left with nothing personal, and the two
+date lines that test the truth's limits."""
 import re
 
 from lib import pii
@@ -328,6 +361,7 @@ print("labelled spans:", f"{len(labelled):,}")
 
 detector = pii.detector()                 # Presidio's defaults: every recognizer, threshold 0
 found = pii.find(detector)
+# scoring needs a label of the span's type; coverage doesn't
 scores, covered = pii.score(found, labelled), pii.coverage(found, labelled)
 print("detections:", f"{len(found):,}")
 
@@ -335,12 +369,14 @@ for entity, (n, exact, overlap) in scores.recall.items():
     print(f"{entity}, labelled: {n:,}")
     print(f"{entity}, recall, exact: {exact / n:.2f}")
     print(f"{entity}, recall, overlap: {overlap / n:.2f}")
-    print(f"{entity}, covered, any label: {covered[entity][1] / n:.2f}")
+    print(f"{entity}, covered, any label: {covered[entity][1] / n:.2f}")    # covered[entity] is (spans, covered), so n is the same count
 
-for label, (n, exact, overlap) in scores.precision.items():
+for label, (n, exact, overlap) in scores.precision.items():     # precision is per label: what each detection was called
     print(f"{label}, detections: {n:,}")
     print(f"{label}, precision, exact: {exact / n:.2f}")
 
+# every bank number and driver's licence detection is a false alarm: none matches a labelled span
+assert all(scores.precision[entity][1] == 0 for entity in ("US_BANK_NUMBER", "US_DRIVER_LICENSE"))
 print("precision of all detections, exact:", f"{pii.precision_overall(scores):.2f}")
 print("texts holding personal data:", f"{scores.texts:,}")
 print("texts with every labelled span masked:", f"{scores.masked:,}")
@@ -348,10 +384,12 @@ print("texts with every labelled span masked:", f"{scores.masked:,}")
 # The truth's limits. The generator builds every text from a few sentence templates, and writes every date of birth
 # one way. Presidio's date patterns don't read every way of writing one.
 print("sentence templates the texts are built from:", len(pii.templates()))
-births = [pii.text_of(s) for s in labelled if s.entity == "DATE_TIME"]
-print("dates of birth written like 1985-03-12:", sum(re.fullmatch(r"\d{4}-\d\d-\d\d", d) is not None for d in births))
+births = [pii.text_of(s) for s in labelled if s.entity == "DATE_TIME"]    # the truth's dates are the dates of birth: dates of a problem are unlabelled
+written_ymd = sum(re.fullmatch(r"\d{4}-\d\d-\d\d", d) is not None for d in births)   # year first, the generator's one form
+assert written_ymd == len(births)           # so every date of birth is written this way
+print("dates of birth written like 1985-03-12:", written_ymd)
 for written in ("1985-03-12", "12 March 1985"):
-    text = f"My date of birth on the account is wrong, it should be {written}."
+    text = f"My date of birth on the account is wrong, it should be {written}."     # a sentence in the generator's shape
     print(f"dates found in a date of birth written {written}:", sum(e == "DATE_TIME" for _, _, e, _ in pii.detect(detector, text)))
 ```
 
@@ -434,29 +472,35 @@ dates found in a date of birth written 12 March 1985: 0
 | `LOCATION` | 210 | 0.00 | 0.00 | 0.00 |
 | `DATE_TIME` | 196 | 1.00 | 1.00 | 1.00 |
 
-The patterns find every email, IBAN and date of birth, most phone numbers and card numbers, and no names or street addresses at all, which is most of what the tickets hold. Precision is poor: 0.38 of all detections match a labelled span. The 689 US bank numbers, 683 driver's licences and 751 URLs are all wrong, with a precision of 0.00: phone, card and invoice numbers, all runs of digits, are read as bank numbers and licences, and pieces of emails and a few addresses as URLs. A wrong label still hides the digits, so phone and card numbers are covered more often than they're found. Of the 2,586 texts that hold personal data, 425 would come out of masking with nothing personal left.
+The defaults find every email, IBAN and date of birth, most phone and card numbers, and no names or street addresses at all, which is most of what the tickets hold. Most of what they flag is wrong: 0.38 of all detections match a labelled span. The 689 US bank numbers, 683 driver's licences and 751 URLs are all wrong. Phone, card and invoice numbers, all runs of digits, come out as bank numbers and licences, and pieces of emails and a few addresses come out as URLs. A wrong label still hides the digits, so phone and card numbers are covered more often than they're found.
 
-The truth has its own limits, because the text is generated. Every ticket and review is put together from 30 sentence templates in `prep/generate.py`, so each [hard case](#where-patterns-fail) is one sentence frame, and all 196 dates of birth are written like `1985-03-12`. A recall of 1.00 for dates means that one format: in the generator's sentence, Presidio finds 1 date when the date of birth is written `1985-03-12`, and 0 when it's written `12 March 1985`. A measure on this text tells you how a detector behaves on these shapes, not how it will do on yours.
+Masking would leave personal data in most texts that hold it. Only 425 of the 2,586 texts would come out with nothing personal left.
+
+The truth has its own limits, because the text is generated. Every ticket and review is built from 30 sentence templates in `prep/generate.py`, so each [hard case](#where-patterns-fail) is one sentence frame, and all 196 dates of birth are written like `1985-03-12`. The date recall of 1.00 therefore measures one format: in the generator's own sentence, Presidio finds 1 date when the date of birth is written `1985-03-12`, and 0 when it's written `12 March 1985`. A measure on this text tells you how a detector behaves on these shapes, not how it will do on yours.
 
 **Working rule:** Measure every detector against labelled spans before it masks anything: recall per entity type by exact and by overlap matching, both with a label of the right type, coverage whatever the label, precision per label, and the share of texts with nothing personal left. Weigh recall first. Before you trust a detector on your text, label a few hundred real records by hand and measure on those too.
 
 ## Tune the recognizers against the truth {#tune-the-recognizers}
 
-[Presidio's defaults](#measure-against-labelled-spans) return every weak match, and the FAQ names the remedies: "1. Change the acceptance threshold", and "2. Remove unnecessary PII recognizers, if the dataset does not contain these entities", noting that "there is a trade-off between false positives (falsely detected text) and false negatives" ([FAQ](https://github.com/data-privacy-stack/presidio/blob/2.2.364/docs/faq.md)). Presidio 2.2.364 added "per-recognizer and per-entity score threshold configuration", with the analyzer's default threshold "as the fallback" ([changelog](https://github.com/data-privacy-stack/presidio/blob/2.2.364/CHANGELOG.md), [release notes](https://github.com/data-privacy-stack/presidio/releases/tag/2.2.364)). The phone recognizer has one more setting that matters on a platform whose learners live in many countries: the regions whose numbering plans it reads ([source](https://github.com/data-privacy-stack/presidio/blob/2.2.364/presidio-analyzer/presidio_analyzer/predefined_recognizers/generic/phone_recognizer.py)).
+[Presidio's defaults](#measure-against-labelled-spans) return every weak match. The FAQ names two remedies, changing the acceptance threshold and removing the recognizers a dataset doesn't need, and it notes a trade-off between false positives and false negatives ([FAQ](https://github.com/data-privacy-stack/presidio/blob/2.2.364/docs/faq.md)). Presidio 2.2.364 added per-recognizer and per-entity score thresholds, with the analyzer's default as the fallback ([changelog](https://github.com/data-privacy-stack/presidio/blob/2.2.364/CHANGELOG.md), [release notes](https://github.com/data-privacy-stack/presidio/releases/tag/2.2.364)). The phone recognizer has one more setting that matters on a platform whose learners live in many countries: the regions whose numbering plans it reads ([source](https://github.com/data-privacy-stack/presidio/blob/2.2.364/presidio-analyzer/presidio_analyzer/predefined_recognizers/generic/phone_recognizer.py)).
 
-`governance/pii.toml` keeps 6 recognizers, for the identifiers the platform's text can hold, each with its own threshold. The phone regions aren't a setting: `lib.pii.countries` reads the countries the learners live in from `crm.learners`, so the regions follow the data. Run four settings against the same truth:
+`governance/pii.toml` keeps 6 recognizers, for the identifiers the platform's text can hold, each with its own threshold. The phone regions aren't a setting: `lib.pii.countries` reads the countries the learners live in from `crm.learners`, so the regions follow the data. Four settings are scored against the same truth:
 
-Example `tune-pattern-recognizers` (Python 3.12.15 · duckdb 2.0.0 · phonenumbers 9.0.43 · presidio-analyzer 2.2.366 · pyarrow 26.0.1 · pyiceberg 0.12.0 · pyyaml 6.0.3 · tldextract 5.4.0), passing in Edition 2026.11.26:
+Example `tune-pattern-recognizers` (Python 3.12.15 · duckdb 2.0.0 · phonenumbers 9.0.43 · presidio-analyzer 2.2.366 · pyarrow 26.0.1 · pyiceberg 0.12.0 · pyyaml 6.0.3 · tldextract 5.4.0), passing in Edition 2026.11.27:
 
 ```python
+"""Scores four detector settings against the same truth: Presidio's defaults, one threshold for every recognizer, the kept
+recognizers with their own thresholds, and those with phone numbers read in the learners' countries. The prose rests on
+the precision, phone recall, coverage and fully masked texts of each setting."""
 from lib import pii
 
 labelled = pii.truth()
-print("recognizers kept:", len(pii.THRESHOLDS))
+print("recognizers kept:", len(pii.THRESHOLDS))                  # read from governance/pii.toml
 print("recognizers kept, with their thresholds:", ", ".join(f"{name} {t}" for name, t in pii.THRESHOLDS.items()))
-print("phone regions, Presidio's default:", ", ".join(pii.PhoneRecognizer.DEFAULT_SUPPORTED_REGIONS))
-print("phone regions, the learners' countries:", ", ".join(pii.countries()))
+print("phone regions, Presidio's default:", ", ".join(pii.PhoneRecognizer.DEFAULT_SUPPORTED_REGIONS))   # Presidio's own list
+print("phone regions, the learners' countries:", ", ".join(pii.countries()))   # read from crm.learners
 
+# In the order the prose builds them: the defaults, one threshold, the kept recognizers, then their regions.
 settings = {
     "Presidio's defaults": pii.detector(),
     "one threshold of 0.5": pii.detector(default_threshold=0.5),
@@ -466,10 +510,11 @@ settings = {
 for name, detector in settings.items():
     found = pii.find(detector)
     scores, covered = pii.score(found, labelled), pii.coverage(found, labelled)
-    n, exact, _ = scores.recall["PHONE_NUMBER"]
+    n, exact, _ = scores.recall["PHONE_NUMBER"]         # the table reads exact recall, so the overlap count is left out
     print(f"{name}, detections: {len(found):,}")
     print(f"{name}, precision, exact: {pii.precision_overall(scores):.2f}")
     print(f"{name}, phone recall, exact: {exact / n:.2f}")
+    # coverage takes a detection under any label
     for entity, short in (("PHONE_NUMBER", "phones"), ("CREDIT_CARD", "cards")):
         print(f"{name}, {short} covered, any label: {covered[entity][1] / covered[entity][0]:.2f}")
     print(f"{name}, texts with every labelled span masked: {scores.masked:,}")
@@ -517,19 +562,22 @@ kept recognizers, learners' phone regions, texts with every labelled span masked
 | Cards covered | 0.89 | 0.71 | 0.72 | 0.72 |
 | Texts fully masked | 425 | 284 | 394 | 405 |
 
-The obvious fix fails. One threshold of 0.5 removes the weak matches and every phone number with them, because a phone number scores 0.40 when no context word can raise it. Keeping 6 recognizers, with the phone recognizer's threshold at its own score, raises precision to 0.97 and keeps phone recall where it was. Presidio's default regions are US, GB, DE, FR, IL, IN, CA, BR; the learners live in AU, BR, CA, DE, ES, FR, GB, IN, JP, MX, PL, US, and reading their numbering plans raises phone recall to 0.84.
+The obvious fix fails. One threshold of 0.5 removes the weak matches and every phone number with them, because a phone number scores 0.40 when no context word can raise it. Keeping only the 6 recognizers, each with its own threshold, and setting the phone threshold at the score a phone number gets, raises precision to 0.97 and leaves phone recall where it was. Reading phone numbers in the learners' regions, rather than Presidio's default regions, raises phone recall to 0.84.
 
-One number goes the wrong way: fewer texts come out fully masked than with the defaults. The recognizers the platform dropped had been masking some phone and card numbers under the wrong label, and a wrong label still hides the digits: without them, coverage falls from 0.91 to 0.78 for phone numbers and from 0.89 to 0.72 for card numbers. We think precision of 0.97 is worth that price, because detections are the evidence a reviewer reads, and with the defaults the tickets and reviews hold 689 bank numbers and 683 driver's licences, none of them real. `governance/pii.toml` maps neither entity to a classification, so they change no proposal, but each is a finding someone has to read and dismiss. Dropping the US recognizers is also a claim about the platform's text: the truth holds no US bank or licence numbers. If the platform ever asks for one, that claim, and the measurement, must change.
+One number goes the wrong way: fewer texts come out fully masked than with the defaults. The dropped recognizers had masked some phone and card numbers under the wrong label, which still hides the digits. Without them, coverage falls from 0.91 to 0.78 for phone numbers, and from 0.89 to 0.72 for card numbers. We think precision is worth the price, because detections are the evidence a reviewer reads, and with the defaults the tickets and reviews hold 689 bank numbers and 683 driver's licences, none of them real. `governance/pii.toml` maps neither entity to a classification, so they change no proposal, but each is a finding someone has to read and dismiss. Dropping the US recognizers is also a claim about the platform's text: the truth holds no US bank or licence numbers. If the platform ever asks for one, that claim, and the measurement, must change.
 
 **Working rule:** Never run with Presidio's default threshold of 0, or with one threshold for every recognizer. Keep only the recognizers for identifiers your text can hold, set each one's threshold from its own scores, and read phone numbers in the regions your users live in, derived from your data. Put all of it in code, and measure again whenever it changes.
 
 ## See where patterns fail {#where-patterns-fail}
 
-[The tuned recognizers](#tune-the-recognizers) score well on totals, and totals hide where they fail. A pattern detector fails in three ways: there's no pattern for the thing at all, its pattern or its validation rejects the value, or it matches something that only looks personal. The platform's tickets plant cases of each kind, as its data card says: names typed in lowercase, initials, first names that are ordinary words, phone numbers typed without separators, and invoice numbers, order numbers and dates of a problem, which [the truth](#finding-personal-data) leaves unlabelled. Count each with the platform's detector. A case counts as caught when some detection overlaps it, whatever its label:
+[The tuned recognizers](#tune-the-recognizers) score well on totals, and totals hide where they fail. A pattern detector fails in three ways: there's no pattern for the thing at all, its pattern or its validation rejects the value, or it matches something that only looks personal. The platform's tickets plant cases of each kind, as its data card says: names typed in lowercase, initials, first names that are ordinary words, phone numbers typed without separators, and invoice numbers, order numbers and dates of a problem, which [the truth](#finding-personal-data) leaves unlabelled. Count each case with the platform's detector. A case counts as caught when some detection overlaps it, whatever its label:
 
-Example `pattern-hard-cases` (Python 3.12.15 · duckdb 2.0.0 · phonenumbers 9.0.43 · presidio-analyzer 2.2.366 · pyarrow 26.0.1 · pyiceberg 0.12.0 · pyyaml 6.0.3 · tldextract 5.4.0), passing in Edition 2026.11.26:
+Example `pattern-hard-cases` (Python 3.12.15 · duckdb 2.0.0 · phonenumbers 9.0.43 · presidio-analyzer 2.2.366 · pyarrow 26.0.1 · pyiceberg 0.12.0 · pyyaml 6.0.3 · tldextract 5.4.0), passing in Edition 2026.11.27:
 
 ```python
+"""Counts each hard case the tickets and reviews plant, and each look-alike number or date the platform's detector flags,
+then checks the card and phone numbers it misses. The prose rests on the caught counts for names and invoice numbers,
+and on the misses' lengths, first digits and validity."""
 from collections import Counter
 
 from lib import pii
@@ -544,11 +592,13 @@ for case, spans in cases.items():
     print(f"{case}, caught: {pii.caught(spans, found)}")
 print("hard cases of a name, caught:", pii.caught([s for spans in cases.values() for s in spans if s.entity == "PERSON"], found))
 
+# Look-alikes are numbers and dates that aren't personal data, so any detection on one is a false alarm.
 for kind, spans in pii.lookalikes().items():
     print(f"{kind}, in the tickets: {len(spans)}")
     print(f"{kind}, flagged as personal data: {pii.caught(spans, found)}")
 
 # Card numbers the card pattern misses: too short or long for its 13 to 17 digits, or a first digit it doesn't accept.
+# Out of range, the length is the reason; in range, the first digit is, since the pattern accepts only some of them.
 missed = pii.missed([s for s in labelled if s.entity == "CREDIT_CARD"], found, {"CREDIT_CARD"})
 why = lambda digits: f"{len(digits)} digits" if not 13 <= len(digits) <= 17 else f"{len(digits)} digits starting with {digits[0]}"
 print("CREDIT_CARD, missed:", len(missed))
@@ -556,7 +606,8 @@ for reason, n in Counter(why(pii.text_of(s)) for s in missed).most_common():
     print(f"CREDIT_CARD, missed, {reason}: {n}")
 print("IBAN_CODE, missed:", len(pii.missed([s for s in labelled if s.entity == "IBAN_CODE"], found, {"IBAN_CODE"})))
 
-# Are the phone numbers the patterns miss valid where the ticket's learner lives? Phones appear only in tickets.
+# Are the phone numbers the patterns miss valid where the ticket's learner lives? Phones appear only in tickets,
+# so each phone's learner comes from its ticket.
 learner_of = {row["ticket_id"]: row["learner_id"] for row in load("support.tickets").to_pylist()}
 country_of = {row["learner_id"]: row["country"] for row in load("crm.learners").to_pylist()}
 phones = pii.missed([s for s in labelled if s.entity == "PHONE_NUMBER"], found, {"PHONE_NUMBER"})
@@ -595,21 +646,30 @@ phone numbers missed: 65
 of them, invalid in the learner's country: 63
 ```
 
-There is no pattern for a name, so every hard case of a name is missed. The tickets hold 211 names typed in lowercase, 163 initials with a surname and 187 first names such as Grace or Will, and the reviews name an instructor 798 times; the patterns catch 0 of them. Phones typed as digits only do well, 220 of 257, and the price is the look-alikes: 31 of the 224 invoice numbers are read as phone numbers. The 212 order numbers are flagged 0 times, and the 225 dates of a problem, such as `12/03`, 0 times. With [Presidio's defaults](#run-presidio-offline), `12/03` was a date at 0.10, and the date recognizer returned 421 dates where the truth labels 196; its threshold in `governance/pii.toml` keeps such weak matches out.
+Names are the gap, since no pattern matches a name. Across the names in lowercase, the initials with a surname, the first names that are ordinary words and the instructors named in reviews, the patterns catch 0 of them. Phones typed as digits only do well, 220 of 257. The price is the look-alikes: 31 of the 224 invoice numbers are read as phone numbers.
 
-The card pattern's shape causes the card misses. It accepts 13 to 17 digits starting with 1, 3, 4, 50 to 55 or 6, but no 13-digit number starting with 1 ([source](https://github.com/data-privacy-stack/presidio/blob/2.2.364/presidio-analyzer/presidio_analyzer/predefined_recognizers/generic/credit_card_recognizer.py)), and every card number in the data passes the Luhn checksum, so validation rejects none. Of the 62 card numbers it misses, 23 have 19 digits and 22 have 12, and the rest start with 2: 10 of 16 digits and 7 of 15. Validation causes the other misses. The IBAN recognizer checks each country's format and length and the IBAN's check digits ([source](https://github.com/data-privacy-stack/presidio/blob/2.2.364/presidio-analyzer/presidio_analyzer/predefined_recognizers/generic/iban_recognizer.py)). Every labelled IBAN passes, so it misses 0, but a learner who mistypes one digit of an IBAN writes a value it rejects. The phone recognizer accepts only numbers that python-phonenumbers calls valid ([source](https://github.com/daviddrysdale/python-phonenumbers/blob/v9.0.41/python/phonenumbers/phonenumbermatcher.py)), and the generator doesn't always write those: of the 65 phone numbers the platform's detector misses, 63 aren't valid in the country the ticket's learner lives in, so most of the phone misses are the generator's, not the detector's.
+The platform's detector flags 0 of the 212 order numbers and 0 of the 225 dates of a problem. With [Presidio's defaults](#run-presidio-offline), `12/03` was a date at 0.10, and the date recognizer returned 421 dates where the truth labels 196. The threshold in `governance/pii.toml` keeps such weak matches out.
+
+The card pattern's shape causes the card misses. It accepts 13 to 17 digits starting with 1, 3, 4, 50 to 55 or 6, but no 13-digit number starting with 1 ([source](https://github.com/data-privacy-stack/presidio/blob/2.2.364/presidio-analyzer/presidio_analyzer/predefined_recognizers/generic/credit_card_recognizer.py)), and every card number in the data passes the Luhn checksum, so validation rejects none. Of the 62 card numbers it misses, 23 have 19 digits and 22 have 12, and the rest start with 2, which the pattern doesn't accept.
+
+Validation causes the other misses. The IBAN recognizer checks each country's format, length and check digits ([source](https://github.com/data-privacy-stack/presidio/blob/2.2.364/presidio-analyzer/presidio_analyzer/predefined_recognizers/generic/iban_recognizer.py)). Every labelled IBAN passes, so it misses 0, but a learner who mistypes one digit writes a value it rejects. The phone recognizer accepts only numbers that python-phonenumbers calls valid ([source](https://github.com/daviddrysdale/python-phonenumbers/blob/v9.0.41/python/phonenumbers/phonenumbermatcher.py)), and the generator doesn't always write those. Of the 65 phone numbers the detector misses, 63 aren't valid in the country the ticket's learner lives in, so most of the phone misses are the generator's, not the detector's.
 
 **Working rule:** Read a detector's misses by case, not by total, and keep a list of the cases your text holds. Use patterns for what has a checkable shape, such as emails, IBANs, card numbers, phone numbers and dates, and never for names or addresses. Keep the checksums and numbering plans, because they're what makes the patterns precise. Check the card pattern against the card numbers your payment provider issues, and the date patterns against the ways your users write dates.
 
 ## Compare a PII model {#compare-a-named-entity-model}
 
-[The patterns](#where-patterns-fail) have nothing for names or addresses, and those are most of the personal data in the platform's text: 2,455 names and 210 addresses among the 4,292 labelled spans. Finding them takes a model that reads context, and a general named-entity model is the wrong one. The authors of the SPY dataset "define PII entities as those that can be used to identify, contact, or locate a specific individual", and found that "dedicated NER models exhibit limitations when applied to PII-specific contexts" ([Savkin et al., 2025](https://aclanthology.org/2025.naacl-srw.23.pdf)). We use a PII model, one trained for personally identifiable information: OpenAI's Privacy Filter, an Apache-2.0 model with eight fixed labels, such as `private_person`, `private_address` and `account_number` ([model card](https://huggingface.co/openai/privacy-filter/blob/7ffa9a043d54d1be65afb281eddf0ffbe629385b/README.md)). The labels are the model's: it "does not support configuring label policies dynamically at runtime" ([OpenAI, 2026](https://cdn.openai.com/pdf/c66281ed-b638-456a-8ce1-97e9f5264a90/OpenAI-Privacy-Filter-Model-Card.pdf), section 4.2). We chose it over the runner-up among open PII models, GLiNER2-PII, for those fixed labels: GLiNER2-PII "conditions on the labels you provide at inference time" and takes a threshold ([model card](https://huggingface.co/fastino/gliner2-privacy-filter-PII-multi/blob/1cb4166094dc58fa8d836429f060d6c95f62b495/README.md)), so its recording would have to pin both. Privacy Filter has 1.5 billion parameters, 50 million of them active, and runs on a CPU.
+[The patterns](#where-patterns-fail) have nothing for names or addresses, and those are most of the personal data in the platform's text: 2,455 names and 210 addresses among the 4,292 labelled spans. Finding them takes a model that reads context, not a general named-entity model. The authors of the SPY dataset define PII as the entities that can identify, contact or locate a specific individual, and found that dedicated named-entity models have limits in PII contexts ([Savkin et al., 2025](https://aclanthology.org/2025.naacl-srw.23.pdf)). We use a PII model, one trained for personally identifiable information: OpenAI's Privacy Filter, an Apache-2.0 model with eight fixed labels, such as `private_person`, `private_address` and `account_number` ([model card](https://huggingface.co/openai/privacy-filter/blob/7ffa9a043d54d1be65afb281eddf0ffbe629385b/README.md)).
 
-The book's examples never run a model, so they read a recording of its output. The recording, `data/recorded/pii-entities/`, which this chapter and [chapter 9](#replace-personal-data) use, holds every span the model found in every ticket and review, with its offsets, its text and the model's label. `recordings/pii_entities.py` made it on a CPU with the model's reference decoder, `opf` ([code](https://github.com/openai/privacy-filter/tree/f7f00ca7fb869683eb732c010299d901457f19c3)), which chooses the best sequence of labels for a whole text, so most spans come back in one piece rather than token by token. It used the default operating point, all six of the decoder's transition biases at 0 ([calibration file](https://huggingface.co/openai/privacy-filter/blob/7ffa9a043d54d1be65afb281eddf0ffbe629385b/original/viterbi_calibration.json)), which can be set "for improved recall" instead (section 2.3.2). The manifest pins the model's revision and the SHA-256 of its weights, so anyone can record it again and compare, and `lib.pii.recorded` refuses spans that don't match the text at their offsets. The recording keeps the model's labels. The example maps them to the truth's entity types, `account_number` to both card numbers and IBANs, so a different mapping never needs a new recording. Score the model, the platform's patterns, and both together, masking whatever either finds:
+The labels are the model's own. OpenAI's card says its label policies can't be set while the model runs ([OpenAI, 2026](https://cdn.openai.com/pdf/c66281ed-b638-456a-8ce1-97e9f5264a90/OpenAI-Privacy-Filter-Model-Card.pdf), section 4.2). We chose it over GLiNER2-PII, the runner-up among open PII models, for those fixed labels. GLiNER2-PII takes the labels to look for at inference time, along with a threshold ([model card](https://huggingface.co/fastino/gliner2-privacy-filter-PII-multi/blob/1cb4166094dc58fa8d836429f060d6c95f62b495/README.md)), so a recording of it would have to pin both. Privacy Filter has 1.5 billion parameters, 50 million of them active, and runs on a CPU.
 
-Example `privacy-filter-spans` (Python 3.12.15 · duckdb 2.0.0 · phonenumbers 9.0.43 · presidio-analyzer 2.2.366 · pyarrow 26.0.1 · pyiceberg 0.12.0 · pyyaml 6.0.3 · tldextract 5.4.0), passing in Edition 2026.11.26:
+The book's examples never run a model, so they read a recording of its output. The recording, `data/recorded/pii-entities/`, which this chapter and [chapter 9](#replace-personal-data) use, holds every span the model found in every ticket and review, with its offsets, its text and the model's label. `recordings/pii_entities.py` made it on a CPU with the model's reference decoder, `opf` ([code](https://github.com/openai/privacy-filter/tree/f7f00ca7fb869683eb732c010299d901457f19c3)), which chooses the best sequence of labels for a whole text, so most spans come back in one piece rather than token by token. It used the default operating point, with all six transition biases at 0 ([calibration file](https://huggingface.co/openai/privacy-filter/blob/7ffa9a043d54d1be65afb281eddf0ffbe629385b/original/viterbi_calibration.json)); the model can also be set "for improved recall" (section 2.3.2). The manifest pins the model's revision and the SHA-256 of its weights, so anyone can record it again and compare, and `lib.pii.recorded` refuses spans that don't match the text at their offsets. The recording keeps the model's labels, and the example maps them to the truth's types, so a different mapping never needs a new recording. Score the model, the platform's patterns and both together, masking whatever either finds:
+
+Example `privacy-filter-spans` (Python 3.12.15 · duckdb 2.0.0 · phonenumbers 9.0.43 · presidio-analyzer 2.2.366 · pyarrow 26.0.1 · pyiceberg 0.12.0 · pyyaml 6.0.3 · tldextract 5.4.0), passing in Edition 2026.11.27:
 
 ```python
+"""Scores the recorded spans of OpenAI's Privacy Filter against the truth, alone and beside the platform's patterns. The
+prose rests on the recall lines for names, addresses, phones and cards, the precision lines, and the texts left with
+nothing personal."""
 from lib import pii
 
 # Privacy Filter's eight labels, mapped to the truth's entity types. A label the truth has no type for matches nothing.
@@ -617,11 +677,12 @@ MATCHES = {"private_person": {"PERSON"}, "private_email": {"EMAIL_ADDRESS"}, "pr
            "private_address": {"LOCATION"}, "account_number": {"CREDIT_CARD", "IBAN_CODE"},
            "private_date": {"DATE_TIME"}, "private_url": set(), "secret": set()}
 
-model, manifest = pii.recorded("pii-entities")
+model, manifest = pii.recorded("pii-entities")      # the model's spans, from a recording: no model runs here
 print("model:", manifest["model"], "decoded with", manifest["settings"]["decode_mode"])
 labelled = pii.truth()
 detectors = {"patterns": pii.find(pii.platform_detector()), "model": model}
-detectors["both"] = detectors["patterns"] + model          # mask whatever either one finds
+# both lists joined: a span either one finds is masked, and a span both find is simply counted twice
+detectors["both"] = detectors["patterns"] + model
 
 for name, found in detectors.items():
     scores = pii.score(found, labelled, MATCHES)           # Presidio's labels aren't in MATCHES, so match themselves
@@ -632,6 +693,7 @@ for name, found in detectors.items():
     print(f"{name}, precision, exact: {pii.precision_overall(scores):.2f}")
     print(f"{name}, texts with every labelled span masked: {scores.masked:,} of {scores.texts:,}")
 
+# Precision by the model's own label: a label that's right for one truth type can still be wrong for another
 for label, (n, exact, overlap) in pii.score(model, labelled, MATCHES).precision.items():
     print(f"model, {label}, detections: {n:,}")
     print(f"model, {label}, precision, exact: {exact / n:.2f}")
@@ -723,15 +785,21 @@ model, private_phone, precision, overlap: 0.89
 | Precision, exact | 0.97 | 0.84 | 0.88 |
 | Texts fully masked | 405 of 2,586 | 2,095 of 2,586 | 2,120 of 2,586 |
 
-The model finds most of the names and addresses the patterns can't. Card numbers are where the two detectors complement each other: the model and the patterns find about the same share, 0.69 and 0.71, but not the same cards, so together they find 0.92; [a later section](#what-a-wrong-label-costs) shows why the model's share is low. The model pays in precision, 0.84 overall, and only 0.51 for `account_number` and 0.50 for `private_date`. That partly measures a difference in label policy: the truth leaves invoice numbers and dates of a problem unlabelled, and the card warns that "definitions of appropriate label policies and decision boundaries can differ" (section 4.2). Together, the two detectors leave 2,120 of 2,586 texts with nothing personal in them, against 405 of 2,586 for the patterns alone.
+The model finds most of the names and addresses the patterns can't, and the two detectors complement each other on card numbers. The model and the patterns find about the same share of cards, 0.69 and 0.71, but not the same cards, so together they find 0.92. [A later section](#what-a-wrong-label-costs) shows why the model's share is low.
+
+The model pays in precision, 0.84 overall, and only 0.51 for `account_number` and 0.50 for `private_date`. That partly measures a difference in label policy. The truth leaves invoice numbers and dates of a problem unlabelled, and OpenAI's card says appropriate label policies can differ (section 4.2).
+
+Together, the two detectors leave 2,120 of 2,586 texts with nothing personal in them, against 405 of 2,586 for the patterns alone.
 
 ### Read the model's misses {#read-the-models-misses}
 
-OpenAI's card for Privacy Filter lists where it fails: "under-detection of uncommon personal names, regional naming conventions, initials, honorific-heavy references, or domain-specific identifiers; over-redaction of public entities, locations, or common nouns when local context is ambiguous" ([OpenAI, 2026](https://cdn.openai.com/pdf/c66281ed-b638-456a-8ce1-97e9f5264a90/OpenAI-Privacy-Filter-Model-Card.pdf), section 4.3). Check that list against [the hard cases](#where-patterns-fail) the tickets plant:
+OpenAI's card says where the model fails: it misses rare names, names from other naming traditions, initials, names wrapped in titles and domain-specific identifiers, and it over-masks public entities, locations and common nouns when the local context is unclear ([OpenAI, 2026](https://cdn.openai.com/pdf/c66281ed-b638-456a-8ce1-97e9f5264a90/OpenAI-Privacy-Filter-Model-Card.pdf), section 4.3). Check that list against [the hard cases](#where-patterns-fail) the tickets plant:
 
-Example `privacy-filter-hard-cases` (Python 3.12.15 · duckdb 2.0.0 · phonenumbers 9.0.43 · presidio-analyzer 2.2.366 · pyarrow 26.0.1 · pyiceberg 0.12.0 · pyyaml 6.0.3 · tldextract 5.4.0), passing in Edition 2026.11.26:
+Example `privacy-filter-hard-cases` (Python 3.12.15 · duckdb 2.0.0 · phonenumbers 9.0.43 · presidio-analyzer 2.2.366 · pyarrow 26.0.1 · pyiceberg 0.12.0 · pyyaml 6.0.3 · tldextract 5.4.0), passing in Edition 2026.11.27:
 
 ```python
+"""Counts how many of each hard case the model's recorded spans catch, and reads the names it misses by case and length.
+The prose rests on the missed-name counts and on the first lowercase ticket that both detectors miss."""
 from collections import Counter
 
 from lib import pii
@@ -756,9 +824,12 @@ for case in ("first names that are words", "instructors named in reviews"):
 # A first name on its own says less than a full name: how many of the misses are one word?
 print("missed names that are one word:", sum(len(pii.text_of(s).split()) == 1 for s in missed))
 print("missed names of two words or more:", sum(len(pii.text_of(s).split()) > 1 for s in missed))
+# islower() counts only names typed entirely in lowercase, so a name with a capital letter, such as "Jane", doesn't.
 print("of them, typed in lowercase:", sum(len(pii.text_of(s).split()) > 1 and pii.text_of(s).islower() for s in missed))
 
 # A lowercase name that neither the model nor the platform's patterns cover any part of, in the first ticket with one.
+# The model's spans and the patterns' together: a name is missed only when both miss it. The lowest ticket ID is taken,
+# so the same ticket is printed on every run.
 first = min(pii.missed(cases["names in lowercase"], model + pii.find(pii.platform_detector())), key=lambda s: s.row_id)
 print("first ticket with a lowercase name both detectors miss:", first.row_id)
 print("the name, as typed:", pii.text_of(first))
@@ -790,19 +861,27 @@ first ticket with a lowercase name both detectors miss: 19
 the name, as typed: juan fonseca
 ```
 
-On the platform's text, initials aren't the problem: the model catches 162 of 163. Lowercase names are mostly caught, 167 of 211. The misses are first names that are also words, 128 of 187 caught, and an instructor's first name alone in a review, 535 of 798 caught. Most often it misses the words Summer, Will, Hope and the instructors' names Marie, Lori, Augustin. The model also flags far more look-alikes than the tuned patterns: 224 invoice numbers, 125 order numbers and 188 dates of a problem, against 31, 0 and 0.
+The misses are first names that are also words, and an instructor's first name alone in a review. The model catches 128 of the 187 first names that are words, and 535 of the 798 instructors' names.
 
-Reading the misses also says how much they matter. Of the 387 names the model misses, 337 are a single word, a first name on its own, and 50 are longer, 43 of those typed in lowercase. The authors of the Text Anonymization Benchmark draw the same line: "failing to detect a direct identifier such as a full person name is much more harmful from a privacy perspective than failing to detect a quasi-identifier" ([Pilán et al., 2022](https://aclanthology.org/2022.cl-4.19.pdf)). A first name alone still needs masking, since a review carries its learner's ID and an instructor's first name in a review of their own course points at one person. The card's own advice is to measure: "Before production use, it's best to evaluate the model in-domain against local policy references" (section 4.5). It also lists education among the settings where "Additional caution is warranted" (section 4.4), and calls the model "a redaction and data minimization aid, not an anonymization, compliance, or a safety guarantee" (section 4.1).
+Initials aren't the problem: the model catches 162 of 163 initials with a surname, and lowercase names are mostly caught, 167 of 211.
+
+Most often it misses the words Summer, Will, Hope and the instructors' names Marie, Lori, Augustin. The model also flags far more look-alikes than the tuned patterns: 224 invoice numbers, 125 order numbers and 188 dates of a problem, against 31, 0 and 0.
+
+How much the misses matter depends on their length. Of the 387 names the model misses, 337 are a single word, a first name on its own, and 50 are longer, 43 of those typed in lowercase. The authors of the Text Anonymization Benchmark draw the same distinction: missing a direct identifier, such as a full name, is much more harmful than missing a quasi-identifier ([Pilán et al., 2022](https://aclanthology.org/2022.cl-4.19.pdf)). A first name alone still needs masking, since a review carries its learner's ID, and an instructor's first name in a review of their own course points at one person.
+
+The card recommends testing the model in your own domain against local policy references before production use (section 4.5). It also lists education among the settings that need extra caution (section 4.4), and calls the model "a redaction and data minimization aid, not an anonymization, compliance, or a safety guarantee" (section 4.1).
 
 **Working rule:** Mask free text with a PII model and the tuned patterns together, whatever either finds: the model for names and addresses, the patterns' checksums for card numbers and IBANs. Record the model's output with its revision, weights and operating point pinned, keep its own labels, and map them in code. Measure it on your own text, by hard case, before use and after every model change; if it misses too much, try an operating point that leans toward recall and record again. Treat masked text as reduced, never as anonymous.
 
 ## Count what a wrong label costs {#what-a-wrong-label-costs}
 
-[The comparison with the patterns](#compare-a-named-entity-model) scored the model by exact and overlap matching, which both need a label of the span's type. Masking doesn't read the label: a card number the model labels `private_phone` is still hidden. Classification does, because `governance/pii.toml` maps each entity type to a classification, a phone number to `personal` and a card number to `sensitive`. Measure the model's coverage beside its recall, and the labels it gives the platform's card numbers, phone numbers and addresses:
+[The comparison with the patterns](#compare-a-named-entity-model) scored the model by exact and overlap matching, which both need a label of the span's type. Masking doesn't read the label: a card number the model labels `private_phone` is still hidden. Classification does, because `governance/pii.toml` maps each entity type to a classification: a phone number to `personal`, a card number to `sensitive`. Measure the model's coverage beside its recall, and the labels it gives the platform's card numbers, phone numbers and addresses:
 
-Example `privacy-filter-labels` (Python 3.12.15 · duckdb 2.0.0 · phonenumbers 9.0.43 · presidio-analyzer 2.2.366 · pyarrow 26.0.1 · pyiceberg 0.12.0 · pyyaml 6.0.3 · tldextract 5.4.0), passing in Edition 2026.11.26:
+Example `privacy-filter-labels` (Python 3.12.15 · duckdb 2.0.0 · phonenumbers 9.0.43 · presidio-analyzer 2.2.366 · pyarrow 26.0.1 · pyiceberg 0.12.0 · pyyaml 6.0.3 · tldextract 5.4.0), passing in Edition 2026.11.27:
 
 ```python
+"""Measures the model's coverage of card numbers, phone numbers and addresses whatever their label, and counts the labels
+that would misclassify them. The prose rests on the coverage lines, the mislabelled counts and the uncovered addresses."""
 from lib import pii
 
 # What the model's labels cost. A span is covered when every character of it is inside some detection, whatever its
@@ -822,6 +901,7 @@ print("phone numbers labelled account_number:", pii.caught(spans["PHONE_NUMBER"]
 on = pii.labels_on(spans["LOCATION"], model)
 print("addresses with no detection at all:", sum(not labels for labels in on))
 print("addresses read, at least in part, as a person:", sum("private_person" in labels for labels in on))
+# A person label and no address label: the address was read as a name, which overlap matching can't credit.
 print("of them, with no address label:", sum({"private_person"} <= labels and "private_address" not in labels for labels in on))
 left = [pii.uncovered(address, model) for address in spans["LOCATION"]]
 print("addresses not fully covered:", sum(bool(chars) for chars in left))
@@ -843,21 +923,27 @@ addresses not fully covered: 70
 of them, with only spaces and punctuation left: 21
 ```
 
-The model covers 0.87 of card numbers, but labels 40 of the 213 as phone numbers, so its recall for cards is only 0.69. If the platform classified columns from the model's labels, a column of those card numbers would be proposed `personal`, not `sensitive`. That's what the patterns add: their Luhn check keeps card numbers labelled as cards. The mistake also runs the other way, toward the stricter side: the model labels 27 phone numbers `account_number`, which maps to card numbers and IBANs, so its phone coverage is 1.00 and its recall 0.94.
+A wrong label costs classification more than it costs masking. The model covers 0.87 of card numbers, but labels 40 of the 213 as phone numbers, so its recall for cards is only 0.69. If the platform classified columns from the model's labels, a column of those card numbers would be proposed `personal`, not `sensitive`. That's what the patterns add: their Luhn check keeps card numbers labelled as cards.
 
-Addresses show what each measure counts. They score 0.67 by exact matching, 0.79 by overlap, and 0.67 by coverage. The model finds nothing at all in 24 addresses. It reads part of 28 as a person, since Faker builds many street names from surnames, as the platform's data card notes, and gives 20 of those no address label at all, so overlap matching misses them too. Other addresses come back in pieces with the right label, such as a street and a town split at a comma, which overlap matching credits and coverage doesn't: of the 70 addresses not fully covered, 21 have every letter and digit masked and only a comma or a space left. Coverage is the measure masking needs, and it's strict.
+The mistake also runs the other way, toward the stricter side. The model labels 27 phone numbers `account_number`, which maps to card numbers and IBANs, so its phone coverage is 1.00 and its recall 0.94.
+
+Addresses show what each measure counts. The model's exact recall for them is 0.67 and its overlap recall 0.79, and its coverage is 0.67. The model finds nothing at all in 24 addresses.
+
+The model reads part of 28 addresses as a person, since Faker builds many street names from surnames, as the platform's data card notes. It gives 20 of those no address label at all, so overlap matching misses them too. Other addresses come back in pieces with the right label, such as a street and a town split at a comma. Overlap matching credits those, and coverage doesn't. Of the 70 addresses not fully covered, 21 have every letter and digit masked and only a comma or a space left. Coverage is the measure masking needs, and it's strict.
 
 **Working rule:** Report coverage, whatever the label, beside recall with the right label: masking needs the first, classification the second. Read which labels a detector gives each type of span, and keep a recognizer with a checksum for every identifier whose label decides a classification, such as card numbers.
 
 ## Classify again when the schema changes {#reclassify-on-schema-change}
 
-A classification describes a column at one moment, and [chapter 2](#catch-schema-changes) showed how schemas move under it. The question is when to run the classifier again. Not on every schema ID: in PyIceberg, editing a column's description gives the schema a new ID with no new column. What needs classifying is a [field ID](#key-column-metadata-by-field-id), the number Iceberg gives each column, that the metadata has never seen, because Iceberg gives every added column a new one, and a renamed column keeps its ID and so its reviewed classification. Values can also change while the schema stays the same, so the samples of text columns need a rerun on a schedule as well. Vendors promise this as a service: Databricks says its classification's "scanning is incremental and optimized to ensure all new data is classified without manual configuration" ([Databricks docs](https://docs.databricks.com/aws/en/data-governance/unity-catalog/data-classification)), a claim we don't test.
+A classification describes a column at one moment, and [chapter 2](#catch-schema-changes) showed how schemas move under it. So the question is when to classify again, not on every schema ID: in PyIceberg, editing a column's description gives the schema a new ID with no new column. What needs classifying is a [field ID](#key-column-metadata-by-field-id), the number Iceberg gives each column, that the metadata has never seen. Iceberg gives every added column a new one, and a renamed column keeps its ID and so its reviewed classification. Values can also change without a schema change, so the samples of text columns need a rerun on a schedule too. Vendors promise this as a service: Databricks says its classification scans incrementally and classifies new data with no manual setup ([Databricks docs](https://docs.databricks.com/aws/en/data-governance/unity-catalog/data-classification)), a claim we don't test.
 
-On the platform, the support team wants a number to call learners back on for tickets opened by phone, and adds a column called `callback_number` to `support.tickets`. Edit a description first, then add the column, fill it from the learners' phone numbers, and classify only the field IDs that `governance/metadata.toml` lacks:
+The support team wants a number to call learners back on for tickets opened by phone, so it adds a column called `callback_number` to `support.tickets`. The change comes in four steps: edit a description, add the column, fill it from the learners' phone numbers, then classify only the field IDs that `governance/metadata.toml` lacks:
 
-Example `reclassify-new-columns` (Python 3.12.15 · duckdb 2.0.0 · phonenumbers 9.0.43 · presidio-analyzer 2.2.366 · pyarrow 26.0.1 · pyiceberg 0.12.0 · pyyaml 6.0.3 · tldextract 5.4.0), passing in Edition 2026.11.26:
+Example `reclassify-new-columns` (Python 3.12.15 · duckdb 2.0.0 · phonenumbers 9.0.43 · presidio-analyzer 2.2.366 · pyarrow 26.0.1 · pyiceberg 0.12.0 · pyyaml 6.0.3 · tldextract 5.4.0), passing in Edition 2026.11.27:
 
 ```python
+"""Edits the tickets table twice, first a column's description and then a new column, and after each change counts the field
+IDs the metadata lacks. The prose rests on the schema IDs, the field counts and the proposal for the new column."""
 from pyiceberg.types import StringType
 
 from lib import metadata, pii
@@ -868,6 +954,7 @@ from lib.warehouse import connect
 catalog = open_catalog(["support.tickets"])
 tickets = catalog.load_table("support.tickets")
 reviewed = metadata.load()["support.tickets"].columns           # field ID -> the column as people reviewed it
+# A field ID the reviewed metadata doesn't have: Iceberg gives each added column a new one.
 unclassified = lambda: {f.field_id for f in tickets.schema().fields if f.field_id not in reviewed}
 print("schema ID at the start:", tickets.schema().schema_id)
 
@@ -880,10 +967,12 @@ print("fields to classify after the doc edit:", len(unclassified()))
 with tickets.update_schema() as update:
     update.add_column("callback_number", StringType(), doc="Where to call the learner back.")
 phone_of = {row["learner_id"]: row["phone"] for row in load("crm.learners").to_pylist()}
+# tickets from other channels have no callback number, so their value is None
 fill_column(tickets, "callback_number", lambda row: phone_of[row["learner_id"]] if row["channel"] == "phone" else None)
 print("schema ID after adding a column:", tickets.schema().schema_id)
 print("fields to classify after adding a column:", len(unclassified()))
 
+# only= keeps the proposals to the field IDs the metadata lacks.
 for f in pii.classify(catalog, connect(catalog), pii.platform_detector(), only={"support.tickets": unclassified()}):
     found = ", ".join(f"{entity} in {n} of {f.sampled}" for entity, n in f.found.items())
     print(f"{f.table}.{f.column}, field ID: {f.field_id}")
@@ -906,15 +995,19 @@ support.tickets.callback_number, found in its sampled values: PHONE_NUMBER in 15
 support.tickets.callback_number, proposed classification: personal
 ```
 
-The doc edit moved the schema ID to 1 and left 0 fields to classify. Adding the column moved it to 2, with 1 field to classify, field 9. No name rule matches it, since `callback_number` contains none of the words the phone rule looks for, which is how a name rule misses a column nobody wrote it for. Its values settle it, PHONE_NUMBER in 154 of 173, and the proposal is personal. The pull request that adds the column is where its classification belongs, beside the metadata entry it needs: [chapter 10](#run-every-rule-as-one-job) fails that pull request until the column has one. A proposal from values, like this one, can come only once the column holds values, so it comes from the sample on a schedule.
+A doc edit moves the schema to a new ID and leaves 0 fields to classify, since it adds no column. Adding the column moves the schema to 2, with 1 field to classify: field 9.
+
+No name rule matches `callback_number`, since it contains none of the words the phone rule looks for, which is how a name rule misses a column nobody wrote it for. Its values settle it. The sample finds PHONE_NUMBER in 154 of 173, and the proposal is personal.
+
+The pull request that adds the column is where its classification belongs, beside the metadata entry it needs: [chapter 10](#run-every-rule-as-one-job) fails that pull request until the column has one. A proposal from values needs a column that holds values, so this one comes from the scheduled sample.
 
 **Working rule:** Classify every field ID the metadata doesn't have, in the pull request that adds it, and don't let it merge without a reviewed classification. Key the trigger on field IDs, never on schema IDs. Sample every text column again on a schedule too, because values change without a schema change.
 
 ## What goes wrong in production {#personal-data-in-production}
 
-A detector fails quietly. Its output always looks like a list of findings, and what it misses never appears in it:
+A detector's worst failure is a miss, and its output always looks like a list of findings: what it misses never appears in it:
 
-- **Phone numbers read as bank numbers.** With Presidio's defaults, every run of 8 to 17 digits is a US bank number, and every phone number typed without separators is one. The evidence for the ticket table lists hundreds of bank numbers that aren't there, a report of "bank numbers in tickets" sends someone to the wrong team, and mapping that entity to a classification would raise columns for the wrong reason. Keep only the recognizers your text needs, with thresholds of their own, as [the tuning section](#tune-the-recognizers) does, and notice the problem by counting detections per label: a label with hundreds of hits and no labelled spans is a false positive.
+- **Phone numbers read as bank numbers.** With Presidio's defaults, every run of 8 to 17 digits is a US bank number, and so is every phone number typed without separators. The evidence for the ticket table lists 689 bank numbers that aren't there, a report of "bank numbers in tickets" sends someone to the wrong team, and mapping that entity to a classification would raise columns for the wrong reason. Keep only the recognizers your text needs, each with its own threshold, as [the tuning section](#tune-the-recognizers) does, and count detections per label: a label with hundreds of hits and no labelled spans is a false positive.
 - **Names in free text missed.** Patterns find no names, and [the model](#read-the-models-misses) misses some lowercase names, first names that are also words, and first names standing alone. Ticket 19 still says "this is juan fonseca, i still can't log in" after both detectors have run, and passes every check that counts detections. You notice only by measuring recall against labelled text, per hard case, and by reading a sample of masked output.
 - **Personal data in a column called `notes`.** No name rule marks it, and a reviewer who never read it classifies it `internal`. Sample every text column's values, and treat free-text columns as personal until a sample says otherwise.
 - **A column more sensitive than its metadata.** Learners paste card numbers into tickets, so `support.tickets.body` holds `sensitive` data under a `personal` classification. Compare every proposal with the reviewed metadata, and route a stricter one to the table's owner.
@@ -926,8 +1019,8 @@ A detector fails quietly. Its output always looks like a list of findings, and w
 - **Columns are classified from their name, their type and their values.** Name rules run on every column; text columns are sampled; the strictest evidence wins, with `internal` as the floor, and only a person sets `public`.
 - **Samples are reproducible:** 200 non-null values per text column, by a seeded reservoir sample on one DuckDB thread.
 - **Presidio runs offline,** on `NoOpNlpEngine`, with 6 recognizers, each with its own threshold, phone regions read from the learners' countries, and tldextract's own copy of the Public Suffix List, checked when `lib.pii` loads.
-- **Detectors are measured against labelled spans,** by exact and overlap matching with a label of the right type and by coverage whatever the label, as recall per entity type, precision per label and texts left with nothing personal, with recall weighed first.
+- **Detectors are measured against labelled spans:** recall per entity type by exact and overlap matching with a label of the right type, coverage whatever the label, precision per label and texts left with nothing personal, with recall weighed first.
 - **A proposal stricter than the metadata is a finding:** `support.tickets.body` goes to `team-support` as `sensitive`, and `billing.payments.card_number` to `team-billing`, with the evidence that it holds full card numbers.
 - **Free text is masked with two detectors:** OpenAI's Privacy Filter, recorded at a pinned revision and operating point, for names and addresses, and the tuned patterns for card numbers, IBANs and phone numbers, whose checksums keep card numbers labelled as cards. Masking hides whatever either finds; neither is trusted to make text anonymous.
 - **No example prints a whole phone number, card number or IBAN:** `lib.pii.masked` keeps the last four digits.
-- **Reclassification follows field IDs:** every field the metadata lacks is classified in the pull request that adds it, and text columns are sampled again on a schedule.
+- **Reclassification follows field IDs:** every field the metadata lacks is classified in the pull request that adds it, and text columns are sampled again on a schedule. A detector is only as good as the measurement behind it, and what it misses never appears in its output. The measurement is what tells a team which of its classifications it can rely on, and which it has to check by hand.

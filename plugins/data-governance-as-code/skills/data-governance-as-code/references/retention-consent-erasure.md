@@ -3,26 +3,26 @@ title: "Data Governance as Code"
 chapter: "Retention, consent and erasure"
 chapter_id: retention-consent-erasure
 book: data-governance-as-code
-edition: 2026.11.26
-verified: 2026-11-13
-edition_code: Y6HK-BWT6
+edition: 2026.11.27
+verified: 2026-11-14
+edition_code: 2QX0-VKZT
 canonical: https://rollingedition.com/data-governance-as-code/retention-consent-erasure
 license: CC BY 4.0
-attribution: "“Retention, consent and erasure,” chapter 7 of Data Governance as Code, Edition 2026.11.26, examples passed Nov 13, 2026. By Rolling Edition, https://rollingedition.com/data-governance-as-code/retention-consent-erasure. Text CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Retention, consent and erasure,” chapter 7 of Data Governance as Code, Edition 2026.11.27, examples passed Nov 14, 2026. By Rolling Edition, https://rollingedition.com/data-governance-as-code/retention-consent-erasure. Text CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Retention, consent and erasure
 
 By the end of this chapter you can keep retention rules as reviewed config, make a withdrawal of consent change the next query, and erase one person from every table their data reached. You'll apply the rules against a day you pass in, find those tables from lineage, and keep only what your legal team has recorded an exception for. You'll also remove what a row delete leaves behind in an Iceberg table, old snapshots, unreferenced files and column statistics, and finish with a scan that reads every file left and shows that none of them holds the person.
 
-The platform, the online learning platform this book follows, sells professional courses to adult learners and keeps its warehouse as Iceberg tables in one catalog. It has kept everything since its first sign-up in January 2024: every support ticket, and every learning event with the IP address it came from. Nothing says how long either should stay. Two requests from one learner test the rest of its governance. Learner 3590 withdraws their consent to marketing email, and some weeks later asks the platform to erase their data. The first should change what marketing sees from the next query on. The second should leave no copy of the learner anywhere: not in the tables built from theirs, and not in the old versions of each table that Iceberg keeps on purpose.
+The online learning platform this book governs has kept everything since its first sign-up in January 2024 in one Iceberg catalog: every support ticket, and every learning event with the IP address it came from. Nothing says how long either should stay. Learner 3590 withdraws their consent to marketing email, and some weeks later asks the platform to erase their data. The first should change what marketing sees from the next query on. The second should leave no copy of the learner anywhere: not in the tables built from theirs, and not in the old versions of each table that Iceberg keeps on purpose.
 
 Three terms name the chapter's subjects. **Retention** is how long the platform keeps each kind of data. **Consent** is a person's agreement to one use of their data, such as marketing email, which they can withdraw. **Erasure** is removing a person's data on request. The chapter adds two things to the book's shared code: the platform's retention rules, in `governance/retention.toml`, and the module `lib.retention`, which applies them, plans and carries out an erasure, cleans up and checks the files afterwards, and keeps the register of erasures. It uses `lib.lineage` from [chapter 4](#lineage-from-pipelines) to find where a learner's data went, and the classifications in `lib.metadata` from [chapter 2](#a-catalog-you-can-test). Every example runs PyIceberg 0.12.0 on a local catalog.
 
 ## Keep retention rules in a reviewed file {#retention-rules-in-a-file}
 
-A retention rule says how long one kind of data is kept, from which date the time counts, and which rows it applies to. The EU's General Data Protection Regulation (GDPR) states the principle as storage limitation: personal data are to be "kept in a form which permits identification of data subjects for no longer than is necessary for the purposes for which the personal data are processed" (Article 5(1)(e)), and its Recital 39 says that "time limits should be established by the controller for erasure or for a periodic review" ([GDPR](https://eur-lex.europa.eu/eli/reg/2016/679/oj)). NIST's catalog of security and privacy controls describes the same job in neutral words, in control SI-12(3): "dispose of, destroy, or erase information following the retention period" ([NIST SP 800-53 Rev. 5](https://csrc.nist.gov/pubs/sp/800/53/r5/upd1/final)). How long is necessary is for the platform's owners and lawyers to decide; the code applies what they decide, the same way every time.
+A retention rule says how long one kind of data is kept, from which date the time counts, and which rows it applies to. The EU's General Data Protection Regulation (GDPR) states the principle as storage limitation: personal data are to be "kept in a form which permits identification of data subjects for no longer than is necessary for the purposes for which the personal data are processed" (Article 5(1)(e)). Its Recital 39 asks the controller to set time limits for erasure or for a periodic review ([GDPR](https://eur-lex.europa.eu/eli/reg/2016/679/oj)). NIST's catalog of security and privacy controls describes the same job, asking that information be disposed of, destroyed or erased once its retention period ends (control SI-12(3)) ([NIST SP 800-53 Rev. 5](https://csrc.nist.gov/pubs/sp/800/53/r5/upd1/final)). The platform's owners and lawyers decide how long is necessary; the code applies what they decide, every time.
 
-That argues for rules as config, in a file reviewed like the access policies, and for code that applies them against a day it is given rather than the clock. A job that reads the clock deletes different rows depending on when it runs: a test can't pin its result, and a rerun after a failure can delete more than the run it replaces.
+That argues for rules as config, reviewed like the access policies, and for code that applies them to a day it is given, not the clock. A job that reads the clock deletes different rows depending on when it runs: a test can't pin its result, and a rerun after a failure can delete more than the run it replaces.
 
 The platform's rules are in `governance/retention.toml`. The periods are the platform's own choices for this book's case, not legal advice:
 
@@ -41,12 +41,13 @@ keep_days = 3650                  # a placeholder for the period the platform's 
 counted_from = "paid_at"
 ```
 
-Closed tickets are kept two years, events one year, and payments 3,650 days, a placeholder that [the erasure plan](#plan-erasure-from-lineage) relies on. The tickets rule should count from when a ticket was closed, but the table records only `opened_at`, so a ticket opened 25 months ago and closed last week goes at once. The platform lives with that because adding a `closed_at` column is the support team's change to their own table, not the governance team's; until they make it, the rule errs toward deleting early. `lib.retention.due` turns a rule and a day into an Iceberg filter. Count the rows due on the book's "today", Oct 1, 2026, and 90 days later:
+Closed tickets are kept two years, events one year, and payments 3,650 days, a placeholder that [the erasure plan](#plan-erasure-from-lineage) relies on. The tickets rule should count from when a ticket was closed, but the table records only `opened_at`, so a ticket opened 25 months ago and closed last week goes at once. The platform lives with that because adding a `closed_at` column is the support team's change, not the platform team's; until they make it, the rule errs toward deleting early. `lib.retention.due` turns a rule and a day into an Iceberg filter. Counted on the book's "today", Oct 1, 2026, and 90 days later, the rows each rule selects come out like this:
 
-Example `retention-rules-due` (Python 3.12.15 · duckdb 2.0.0 · openlineage-python 1.55.0 · pyarrow 26.0.1 · pyiceberg 0.12.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.26:
+Example `retention-rules-due` (Python 3.12.15 · duckdb 2.0.0 · openlineage-python 1.55.0 · pyarrow 26.0.1 · pyiceberg 0.12.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.27:
 
 ```python
-"""Which rows the platform's retention rules no longer keep, counted against a day the job is given, never the clock."""
+"""The rows each retention rule makes due on the book's today and 90 days later, counted against the day the job is given.
+The `rows due` lines are the counts the prose gives."""
 from datetime import timedelta
 
 from lib import retention
@@ -60,9 +61,11 @@ for name, rule in sorted(rules.items()):
     print(f"{name}: kept {rule['keep_days']} days from {rule['counted_from']}"
           + (f", once {state['column']} is {state['equals']}" if state else ""))
 
+# the book's today, then 90 days later: the day is passed in, never read from the clock
 for day in (TODAY, TODAY + timedelta(days=90)):
     for name, rule in sorted(rules.items()):
         table = catalog.load_table(name)
+        # the earliest date kept: keep_days before the day
         print(f"{name} on {day}, kept from:", retention.cutoff(rule, day))
         print(f"{name} on {day}, rows due:", f"{retention.count(table, retention.due(rule, day)):,}")
         print(f"{name} on {day}, rows in the table:", f"{retention.count(table):,}")
@@ -94,20 +97,21 @@ support.tickets on 2026-12-30, rows due: 111
 support.tickets on 2026-12-30, rows in the table: 2,000
 ```
 
-On Oct 1, 2026, the events rule keeps events from 2025-10-01 on, so 9,060 of the 100,000 events are due, and 58 of the 2,000 tickets are closed and were opened more than two years ago. Ninety days later, the same rules make 15,545 events and 111 tickets due. The payments rule makes 0 of the 17,562 payments due on Oct 1 and 0 on Dec 30. The counts depend on the day passed in and on the data, and on nothing else.
+The rows due depend on the day passed in and the data, and on nothing else. On Oct 1, 2026, the events rule keeps events from 2025-10-01 on, so 9,060 of the 100,000 events are due, and on Dec 30, 90 days later, 15,545 are. The tickets rule makes 58 of the 2,000 tickets due on Oct 1, all closed and opened over two years ago. On Dec 30 it makes 111 due. The payments rule makes 0 of the 17,562 payments due on Oct 1 and 0 on Dec 30.
 
 **Working rule:** Keep each table's retention period, the column it counts from and the state a row must be in, in a reviewed file, and apply it against a day the scheduler passes in, never the clock. Count from the date the rule means. When the table doesn't record that date, as the platform's tickets don't record when they closed, ask the table's owner to add the column rather than let the rule count from another date for good, and say in the rule's file which way it errs until then.
 
 ## Delete expired rows with row deletes {#delete-expired-rows}
 
-With [the rules in a file](#retention-rules-in-a-file), the retention job deletes what they say. Iceberg writers delete rows in one of two ways, set by the table property `write.delete.mode`, which defaults to `copy-on-write` ([Iceberg configuration](https://iceberg.apache.org/docs/latest/configuration/)). Copy-on-write rewrites each affected data file without the deleted rows. Merge-on-read leaves the data file alone and writes a delete file beside it, which the spec defines in two kinds ([Iceberg table spec](https://iceberg.apache.org/spec/)): "Position deletes -- Mark a row deleted by data file path and the row position in the data file", a deletion vector in tables of version 3 or above, and "Equality deletes -- Mark a row deleted by one or more column values, like id = 5". PyIceberg 0.12.0's `Table.delete` always copies on write: with `merge-on-read` set, it warns "Merge on read is not yet supported, falling back to copy-on-write" and rewrites the files anyway ([source](https://github.com/apache/iceberg-python/blob/pyiceberg-0.12.0/pyiceberg/table/__init__.py)). Either way, a delete is a commit, a new snapshot, and the snapshot before it is still there.
+With [the rules in a file](#retention-rules-in-a-file), the retention job deletes what they say. Iceberg writers delete rows in one of two ways, set by the table property `write.delete.mode`, which defaults to `copy-on-write` ([Iceberg configuration](https://iceberg.apache.org/docs/latest/configuration/)). Copy-on-write rewrites each affected data file without the deleted rows. Merge-on-read leaves the data file alone and writes a delete file beside it. The spec has two kinds of delete file: position deletes, which mark a row by its data file and its position (a deletion vector, in tables of version 3 or above), and equality deletes, which mark it by the values of one or more columns ([Iceberg table spec](https://iceberg.apache.org/spec/)). PyIceberg 0.12.0's `Table.delete` always copies on write: with `merge-on-read` set, it warns that merge-on-read isn't supported yet, and rewrites the files anyway ([source](https://github.com/apache/iceberg-python/blob/pyiceberg-0.12.0/pyiceberg/table/__init__.py)). Either way, a delete is a commit, a new snapshot, and the snapshot before it is still there.
 
-`lib.retention.apply` deletes, for each rule, the rows `due` returns for the day it's given, and records the rule's table and the day in the commit's snapshot summary, so the table's own history says why the rows went. Apply the platform's rules on Oct 1, 2026, apply them again, read each table as it is now and by time travel to the snapshot before the delete, and expire the old snapshots by age:
+`lib.retention.apply` deletes, for each rule, the rows `due` returns for the day it's given, and records the rule's table and the day in the commit's snapshot summary, so the table's own history says why the rows went. Two runs for Oct 1, 2026, read now and by time travel, show what a delete leaves behind, and expiring the old snapshots by age comes last:
 
-Example `apply-retention` (Python 3.12.15 · duckdb 2.0.0 · openlineage-python 1.55.0 · pyarrow 26.0.1 · pyiceberg 0.12.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.26:
+Example `apply-retention` (Python 3.12.15 · duckdb 2.0.0 · openlineage-python 1.55.0 · pyarrow 26.0.1 · pyiceberg 0.12.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.27:
 
 ```python
-"""Apply the retention rules on the book's "today": Iceberg row deletes, which leave the old rows in older snapshots."""
+"""Applies the retention rules for the book's today as Iceberg row deletes, which leave the old rows in older snapshots.
+The rerun line is zero, and the time-travel lines show the rows the snapshot before each delete still returns."""
 from datetime import datetime, timedelta, timezone
 
 from lib import retention
@@ -116,6 +120,7 @@ from lib.platform import TODAY
 
 rules = retention.rules()["tables"]
 catalog = open_catalog(sorted(rules))
+# each table's snapshot from before the deletes, which the time-travel lines read
 before = {name: catalog.load_table(name).current_snapshot().snapshot_id for name in rules}
 
 deleted = retention.apply(catalog, TODAY)
@@ -127,6 +132,7 @@ for name in (name for name, rows in deleted.items() if rows):
     rule, table = rules[name], catalog.load_table(name)
     summary = table.current_snapshot().summary
     print(f"{name}, snapshots:", " then ".join(s.summary.operation.value for s in table.snapshots()))
+    # copy-on-write writes the rows it keeps again as new records, which is what this line counts
     print(f"{name}, rows written again to delete the others:", f"{int(summary['added-records']):,}")
     print(f"{name}, the commit records:", summary["retention-rule"], "on", summary["retention-day"])
     rows_due = retention.due(rule, TODAY)
@@ -134,6 +140,7 @@ for name in (name for name, rows in deleted.items() if rows):
     print(f"{name}, rows due, read by time travel:", f"{retention.count(table, rows_due, before[name]):,}")
     # Snapshots carry real commit times, so their age is measured on the clock, by the table's own setting.
     print(f"{name}, snapshots expired by age today:", retention.expire_by_age(table))
+    # six days on, the snapshot from before the delete is older than the table's five-day setting
     later = datetime.now(timezone.utc) + timedelta(days=6)
     print(f"{name}, snapshots expired by age six days later:", retention.expire_by_age(table, later))
 ```
@@ -161,23 +168,25 @@ support.tickets, snapshots expired by age today: 0
 support.tickets, snapshots expired by age six days later: 1
 ```
 
-The job deleted 9,060 events, 58 tickets and 0 payments. Running it again for the same day deleted 0 rows and made no commit, so a retried run is harmless. Each table it changed went from an `append` snapshot to an `overwrite`, and the summary shows what copy-on-write costs: to delete the old events, PyIceberg wrote the other 90,940 again, because the table is one unpartitioned file. Partitioned by month of `occurred_at`, the table would let the same delete drop whole files instead, which `Table.delete` does when every row of a file matches. In PyIceberg 0.12.0, writing a table partitioned by month needs the `pyiceberg-core` extra, which this book's examples don't install.
+A retried run is harmless: a second run for the same day deleted 0 rows and made no commit. The first run deleted 9,060 events, 58 tickets and 0 payments. Each table it changed went from an `append` snapshot to an `overwrite`, and the summary shows what copy-on-write costs: to delete the old events, PyIceberg wrote the other 90,940 again, because the table is one unpartitioned file. Partitioned by month of `occurred_at`, the table would let the same delete drop whole files instead, which `Table.delete` does when every row of a file matches. In PyIceberg 0.12.0, writing a table partitioned by month needs the `pyiceberg-core` extra, which this book's examples don't install.
 
-The time-travel lines matter most here. Read as it is now, `learning.events` holds 0 rows past their retention. Read by time travel, the snapshot before the delete still returns all 9,060, IP addresses included, and the Parquet file that holds them is still on disk. `lib.retention.expire_by_age` expires snapshots older than the table's own `history.expire.max-snapshot-age-ms`, five days here, measured on the clock: it expires 0 snapshots of `learning.events` straight after the delete, and 1 six days later. The retention job isn't finished until the old snapshots are [expired](#expire-snapshots) and [the files no snapshot references are removed](#remove-unreferenced-files): the same clean-up an erasure needs.
+A delete doesn't remove the rows from the table's earlier snapshots. Read as it is now, `learning.events` holds 0 rows past their retention, but read by time travel, the snapshot before the delete still returns all 9,060, IP addresses included, and the Parquet file that holds them is still on disk. `lib.retention.expire_by_age` expires snapshots older than the table's own `history.expire.max-snapshot-age-ms`, five days here, measured on the clock. It expires 0 snapshots of `learning.events` straight after the delete, and 1 six days later. The retention job isn't finished until the old snapshots are [expired](#expire-snapshots) and [the files no snapshot references are removed](#remove-unreferenced-files): the same clean-up an erasure needs.
 
 **Working rule:** Apply retention as Iceberg row deletes, one rule at a time, and record the rule and the day in each commit's snapshot summary. Make the job idempotent for a given day. Partition large tables by the column a rule counts from, so its deletes drop whole files instead of rewriting them; in PyIceberg, install its `pyiceberg-core` extra to write them. Count the job done only once the old snapshots are expired and their files removed.
 
 ## Read consent where the query runs {#consent-at-query-time}
 
-[Retention](#retention-rules-in-a-file) removes rows by age. Consent changes who may use them, and withdrawing it isn't the same event as asking for erasure, so the platform's code treats them as two paths. The GDPR's Article 7(3) says: "The data subject shall have the right to withdraw his or her consent at any time. The withdrawal of consent shall not affect the lawfulness of processing based on consent before its withdrawal." ([GDPR](https://eur-lex.europa.eu/eli/reg/2016/679/oj)). Article 17(1)(b) lists a withdrawal as one ground for erasure, "where there is no other legal ground for the processing". Whether that applies to a given request is for the platform's lawyers. In the code, a withdrawal changes one attribute; an erasure deletes rows.
+[Retention](#retention-rules-in-a-file) removes rows by age. Consent changes who may use them, and withdrawing it isn't the same event as asking for erasure, so the platform's code treats them as two paths. Article 7(3) of the EU's General Data Protection Regulation (GDPR) says: "The data subject shall have the right to withdraw his or her consent at any time. The withdrawal of consent shall not affect the lawfulness of processing based on consent before its withdrawal." ([GDPR](https://eur-lex.europa.eu/eli/reg/2016/679/oj)). Article 17(1)(b) of the same regulation makes a withdrawal one ground for erasure, but only where no other legal ground for the processing remains. In the code, a withdrawal changes one attribute; an erasure deletes rows.
 
-On the platform, consent is an attribute of the data that the access policy reads, as [chapter 5](#narrow-by-attribute) set it up: marketing's row filter keeps only learners whose `marketing_consent` is true, and the course assistant's keeps only the reviews whose authors' `ai_training_consent` is true. So a withdrawal needs no change to the policy. The CRM, the application where learners manage their accounts, syncs the new value into `crm.learners`, and the next query marketing runs through the enforcement layer, which [chapter 6](#enforcing-policies-on-queries) builds to rewrite every query, returns one learner fewer. Withdraw learner 3590's marketing consent, and compare what marketing sees and the tables hold before the withdrawal, after it, and after the marketing pipeline runs again:
+On the platform, consent is an attribute of the data that the access policy reads, as [chapter 5](#narrow-by-attribute) set it up: marketing's row filter keeps only learners whose `marketing_consent` is true, and the course assistant's keeps only the reviews whose authors' `ai_training_consent` is true. So a withdrawal needs no change to the policy. The CRM, the application where learners manage their accounts, syncs the new value into `crm.learners`, and the next query marketing runs, through the enforcement layer that [chapter 6](#enforcing-policies-on-queries) builds to rewrite every query, returns one learner fewer.
 
-Example `consent-withdrawal` (Python 3.12.15 · duckdb 2.0.0 · openlineage-python 1.55.0 · pyarrow 26.0.1 · pyiceberg 0.12.0 · pyyaml 6.0.3 · regopy 1.5.2 · sqlglot 30.31.0), passing in Edition 2026.11.26:
+Withdraw learner 3590's marketing consent, then read what marketing sees and what the tables hold before the withdrawal, after it, and once the marketing pipeline has run again.
+
+Example `consent-withdrawal` (Python 3.12.15 · duckdb 2.0.0 · openlineage-python 1.55.0 · pyarrow 26.0.1 · pyiceberg 0.12.0 · pyyaml 6.0.3 · regopy 1.5.2 · sqlglot 30.31.0), passing in Edition 2026.11.27:
 
 ```python
-"""A learner withdraws marketing consent: one attribute changes, and marketing's next query returns one learner fewer.
-No row is deleted. A table built with the consent filter keeps the learner until its pipeline runs again."""
+"""A learner withdraws marketing consent: one attribute changes, so marketing's next query returns one learner fewer and
+no row is deleted. The table built with the consent filter keeps the learner until its pipeline runs again, as the audience lines show."""
 import json
 
 import pyarrow as pa
@@ -189,26 +198,31 @@ from lib.enforce import Enforcer
 
 LEARNER = 3590
 catalog = open_catalog(["crm.learners", "learning.enrollments", "learning.courses"])
+# the audience is built with the consent filter applied at build time, as the nightly job builds it
 pipelines.run(catalog, "marketing_audience")
 decision = policy.decide(policy.request("marketing-1", "crm.learners", ["learner_id"]))
 print("marketing's row filters on crm.learners:", json.dumps(decision["row_filters"]))
 
 
-def report(when: str) -> None:
+def report(when: str) -> list[int]:
+    # marketing's query runs through the enforcement layer, which applies its row filters
     seen = [row[0] for row in Enforcer(catalog).sql("select learner_id from crm.learners", "marketing-1").fetchall()]
     print(f"{when}, learners marketing sees:", f"{len(seen):,}")
     print(f"{when}, marketing sees learner {LEARNER}:", LEARNER in seen)
     print(f"{when}, rows stored in crm.learners:", f"{retention.count(catalog.load_table('crm.learners')):,}")
     audience = retention.count(catalog.load_table("marketing.audience"), EqualTo("learner_id", LEARNER))
     print(f"{when}, learner {LEARNER}'s rows in marketing.audience:", audience)
+    return seen
 
 
-report("before")
+before = report("before")
+assert LEARNER in before                                   # marketing's query returns the learner before the withdrawal
 learners = catalog.load_table("crm.learners")
 row = learners.scan(row_filter=EqualTo("learner_id", LEARNER)).to_arrow()
 row = row.set_column(row.schema.get_field_index("marketing_consent"), "marketing_consent", pa.array([False]))
 learners.overwrite(row, overwrite_filter=EqualTo("learner_id", LEARNER))     # what the CRM's sync writes
-report("after the withdrawal")
+after = report("after the withdrawal")
+assert LEARNER not in after                                # the next query, through the consent filter, drops the learner
 pipelines.run(catalog, "marketing_audience")
 report("after the audience is built again")
 ```
@@ -231,9 +245,9 @@ after the audience is built again, rows stored in crm.learners: 5,000
 after the audience is built again, learner 3590's rows in marketing.audience: 0
 ```
 
-Marketing's row filters stay `[{"column": "marketing_consent", "equals": true}, {"column": "status", "equals": "active"}]`. Before the withdrawal, marketing sees 1,861 learners, learner 3590 among them; after it, 1,860, without learner 3590. `crm.learners` still stores 5,000 rows. Nothing was deleted, and the learner's account, enrollments and history are as they were.
+The withdrawal took effect at the next query and removed nothing: marketing sees 1,861 learners before it, learner 3590 among them, and 1,860 after it, without learner 3590. Marketing's row filters stay `[{"column": "marketing_consent", "equals": true}, {"column": "status", "equals": "active"}]`, and `crm.learners` still stores 5,000 rows. Nothing was deleted; the learner's account, enrollments and history are as they were.
 
-The copy is the problem. `marketing.audience`, the list a marketing pipeline builds each night, applies the consent filter when it's built, and the policy gives marketing that table with no consent filter of its own. After the withdrawal it still holds 1 row for learner 3590. Until someone classifies the table's columns, the policy redacts them for every reader; once someone does, as [chapter 4](#classifications-from-lineage) proposes, a campaign sent from the table before its next build reaches someone who said no. Only once the pipeline runs again does it hold 0. A training corpus is built with a consent filter too, and [chapter 9](#withdrawn-after-the-build) checks each build against today's consent before training on it.
+The copy is the problem. `marketing.audience`, the list a marketing pipeline builds each night, applies the consent filter when it's built, and the policy gives marketing that table with no consent filter of its own. After the withdrawal it still holds 1 row for learner 3590. Until someone classifies the table's columns, the policy redacts them for every reader; once someone does, as [chapter 4](#classifications-from-lineage) proposes, a campaign sent from the table before its next build reaches someone who said no. Only once the pipeline runs again does the count fall to 0. A training corpus is built with a consent filter too, and [chapter 9](#withdrawn-after-the-build) checks each build against today's consent before training on it.
 
 A true-or-false column also says too little: `ai_training_consent` is null for everyone who signed up before the platform asked, and false can mean refused or withdrawn. The Data Privacy Vocabulary, a W3C Community Group report rather than a standard, names the states a consent can be in, given, refused, withdrawn, expired and unknown among them ([DPV 2.3](https://w3c-cg.github.io/dpv/2.3/dpv/)).
 
@@ -241,9 +255,9 @@ A true-or-false column also says too little: `ai_training_consent` is null for e
 
 ## Plan an erasure from lineage {#plan-erasure-from-lineage}
 
-[A withdrawal](#consent-at-query-time) changes one attribute; an erasure has to find the person everywhere. The GDPR's Article 17(1) opens: "The data subject shall have the right to obtain from the controller the erasure of personal data concerning him or her without undue delay", on the grounds it lists ([GDPR](https://eur-lex.europa.eu/eli/reg/2016/679/oj)). Which grounds apply is a legal question. The platform treats a request as reaching every copy, so the first job is a list of where the person's data is, an engineering question with two halves. The source tables that hold a learner's ID come from the catalog: [chapter 2](#classify-pseudonymous-ids) decided that every table with a `learner_id` is part of every erasure, whatever its classification. The tables built from them come from lineage: [chapter 4](#impact-of-a-column-change)'s walk of the column graph, run from each source table, reaches every table their rows shaped.
+[A withdrawal](#consent-at-query-time) sets one attribute; an erasure has to find the person everywhere. Article 17(1) of the GDPR gives a person the right to have their data erased without undue delay, on the grounds it lists ([GDPR](https://eur-lex.europa.eu/eli/reg/2016/679/oj)). The platform treats a request as reaching every copy, so its first job, an engineering question, is a list in two halves of where the person's data is. The source tables that hold a learner's ID come from the catalog: [chapter 2](#classify-pseudonymous-ids) decided that every table with a `learner_id` is part of every erasure, whatever its classification. The tables built from them come from lineage: [chapter 4](#impact-of-a-column-change)'s walk of the column graph, run from each source table, reaches every table their rows shaped.
 
-Some data stays. Article 17(3) opens: "Paragraphs 1 and 2 shall not apply to the extent that processing is necessary:", and its five points include "(b) for compliance with a legal obligation which requires processing by Union or Member State law to which the controller is subject" ([GDPR](https://eur-lex.europa.eu/eli/reg/2016/679/oj)). Whether an exception applies, to which table, and for how long is the platform's legal team's decision, never the code's. The code gives the decision one place, in `governance/retention.toml`, where the legal team writes each exception with its reason. The book's reason is a placeholder, because we decide no legal question:
+Some data stays. Article 17(3) of the same regulation sets out where erasure doesn't apply, to the extent that processing is necessary: among its five points, for compliance with a legal obligation under Union or Member State law to which the controller is subject ([GDPR](https://eur-lex.europa.eu/eli/reg/2016/679/oj)). Whether an exception applies, to which table, and for how long is the legal team's decision, never the code's. The code gives that decision one place, `governance/retention.toml`, where the legal team writes each exception with its reason. The book's reason is a placeholder, because we decide no legal question:
 
 ```toml
 [erasure.exceptions."billing.payments"]
@@ -254,19 +268,22 @@ erase_columns = ["card_number"]   # what the obligation doesn't need; an empty l
 
 An erasure keeps an excepted table's rows until the table's [retention rule](#retention-rules-in-a-file) deletes them, and erases the columns `erase_columns` lists from them at once: here the full card number, which the platform's metadata says "Should not be stored at all". `lib.retention.exceptions` refuses an exception with no reason, or one for a table no rule ends.
 
-Finding a derived table isn't the same as finding the learner's rows in it. `lib.retention.plan` looks at the lineage edges into each table the walk reaches, for a column copied unchanged, an IDENTITY edge in OpenLineage's terms, from the learner's ID or from the ID of one of their rows, such as a review. If there is one, the plan deletes by that column. If there's none, the learner's rows only shaped the table, and the plan runs the table's job again once the sources are erased. The catalog the plan reads is the platform as the request finds it, weeks after the withdrawal: `crm.learners` holds learner 3590's withdrawn consent, and the four pipelines of [chapter 4](#lineage-from-pipelines), which build the analytics, marketing and AI tables, have run since, with their lineage recorded. Plan learner 3590's erasure:
+Finding a derived table isn't the same as finding the learner's rows in it. `lib.retention.plan` looks at the lineage edges into each table the walk reaches, for a column copied unchanged, an IDENTITY edge in OpenLineage's terms, from the learner's ID or from the ID of one of their rows, such as a review. If there is one, the plan deletes by that column. If there's none, the learner's rows only shaped the table, and the plan runs the table's job again once the sources are erased. The plan reads the platform as the request finds it, weeks after the withdrawal: `crm.learners` holds learner 3590's withdrawn consent, and the four pipelines of [chapter 4](#lineage-from-pipelines), which build the analytics, marketing and AI tables, have run since, with their lineage recorded.
 
-Example `erasure-plan` (Python 3.12.15 · duckdb 2.0.0 · openlineage-python 1.55.0 · phonenumbers 9.0.43 · presidio-analyzer 2.2.366 · pyarrow 26.0.1 · pyiceberg 0.12.0 · pyyaml 6.0.3 · sqlglot 30.31.0 · tldextract 5.4.0), passing in Edition 2026.11.26:
+The plan for learner 3590 prints one line per step, each table with what it does there:
+
+Example `erasure-plan` (Python 3.12.15 · duckdb 2.0.0 · openlineage-python 1.55.0 · phonenumbers 9.0.43 · presidio-analyzer 2.2.366 · pyarrow 26.0.1 · pyiceberg 0.12.0 · pyyaml 6.0.3 · sqlglot 30.31.0 · tldextract 5.4.0), passing in Edition 2026.11.27:
 
 ```python
-"""Plan one learner's erasure: the tables that hold their learner_id, then every table lineage says their rows reach,
-with the exceptions the platform's legal team recorded in governance/retention.toml."""
+"""The steps that erase one learner: the tables with their learner_id column, then the tables lineage says their rows reach,
+with the exception the legal team recorded. The counts show how many steps each route found; the last two lines are the text the scan searches for and the rows that name the learner."""
 from lib import pii, retention
 
 LEARNER = 3590
 catalog, graph = retention.open_platform()           # weeks after the learner withdrew marketing consent
 steps = retention.plan(catalog, graph, LEARNER)
 for step in steps:
+    # no column is copied from the learner here: the table's own job runs again once its sources are erased
     if step.column is None:
         print(f"{step.table}: run {retention.job_for(step.table)} again")
     elif step.kept:
@@ -276,16 +293,20 @@ for step in steps:
               + (f", a copy of {step.via}" if step.via else ""))
 
 print("tables in the plan:", len(steps))
+# a step with a column and no lineage edge came from the table's own learner_id column
 print("tables found by their learner_id column:", sum(1 for step in steps if step.column and not step.via))
+# found by lineage: a copy of another table's ID, or a rebuild, because the learner's rows only shaped the table
 print("tables found by lineage:", sum(1 for step in steps if step.via or step.column is None))
 for step in (step for step in steps if step.kept):
     print(f"the reason recorded for {step.table}:", step.kept)
 theirs = retention.rows_of([LEARNER])
 for name in ("billing.payments", "marketing.audience"):
     print(f"the learner's rows in {name}:", retention.count(catalog.load_table(name), theirs))
+# the values the scan will search for, noted before any row is deleted
 found = retention.traces(catalog, steps, LEARNER)
 # The phone number is printed through lib.pii.masked, which keeps its shape and its last four digits.
 print("the learner's identifying values, as the scan searches for them:", pii.masked(", ".join(found.texts)))
+# rows the plan keeps, in any string column, whose text holds one of those values
 named = retention.mentions(catalog, steps, found)
 print("rows the plan doesn't delete whose text names the learner:", sum(named.values()))
 ```
@@ -313,7 +334,7 @@ the learner's identifying values, as the scan searches for them: •••-•�
 rows the plan doesn't delete whose text names the learner: 0
 ```
 
-The plan visits 10 tables: 6 source tables with a `learner_id` column, and 4 that lineage adds. It keeps the learner's 2 payments under the exception. The plan is decided by columns and lineage, not rows, so it lists two tables that hold nothing of the learner's: `support.tickets`, since learner 3590 never opened a ticket, and `marketing.audience`, which holds 0 rows because the pipeline rebuilt it after the withdrawal. `ai.review_corpus` has no `learner_id` at all, but lineage says its `review_id` is an IDENTITY copy of `learning.reviews.review_id`, so the plan deletes the learner's one review by that ID. `analytics.course_performance` holds only counts and averages per course, so the plan rebuilds it from the erased sources. Whether an average that once counted the learner is still their data is a legal question; rebuilding costs one pipeline run, so the code doesn't need the answer.
+The plan visits 10 tables: 6 source tables with a `learner_id` column, and 4 that lineage adds. It keeps the learner's 2 payments under the exception. The steps are decided by columns and lineage, not by rows, so the plan lists two tables that hold none of the learner's rows: `support.tickets`, since learner 3590 never opened a ticket, and `marketing.audience`, which holds 0 rows because the pipeline rebuilt it after the withdrawal. `ai.review_corpus` has no `learner_id` at all, but lineage says its `review_id` is an IDENTITY copy of `learning.reviews.review_id`, so the plan deletes the learner's review by that ID. `analytics.course_performance` holds only counts and averages per course, so the plan rebuilds it from the erased sources. Rebuilding costs one pipeline run, so the code doesn't need to decide whether an average that once counted the learner is still their data.
 
 Text can name a person in rows the plan doesn't delete, such as another learner's ticket. The example searches every string column for the identifying values `governance/retention.toml` lists, and finds 0 such rows. The search matches the first 15 characters of each value, lowercased, anywhere in the text: here `•••-•••-5880 x•, 87199 jacob rad, alexa reed, alexa590@post.e`, printed with the phone number masked, cut to 15 for the reason [the final scan](#verify-the-erasure) explains. A name typed differently or a phone number without separators needs the detectors of [chapter 3](#finding-personal-data).
 
@@ -321,27 +342,32 @@ Text can name a person in rows the plan doesn't delete, such as another learner'
 
 ## Erase the rows the plan lists {#erase-the-rows}
 
-[The plan](#plan-erasure-from-lineage) says where learner 3590's data is, and `lib.retention.erase` carries it out, in its order. It deletes each step's rows with `Table.delete`, sources first, writes the rows an exception keeps again with the exception's columns empty, and runs the job of each table the plan rebuilds once the sources are done. Every commit records the request's ID, `erasure-0001`, in its snapshot summary. A summary is written into the table's metadata files, which Iceberg keeps after the snapshot expires: all of them by default, and the last `write.metadata.previous-versions-max`, 100 by default, with `write.metadata.delete-after-commit.enabled` set ([Iceberg maintenance](https://iceberg.apache.org/docs/latest/maintenance/), [Iceberg configuration](https://iceberg.apache.org/docs/latest/configuration/)). So the summary holds only the request's ID, which [the erasure register](#erased-learner-comes-back) pairs with a keyed hash of the learner's ID, and never the learner's email. Erase the learner, then read two tables as they are now and by time travel:
+[The plan](#plan-erasure-from-lineage) says where learner 3590's data is, and `lib.retention.erase` carries it out in the plan's order. It deletes each step's rows with `Table.delete`, sources first, writes the rows an exception keeps again with the exception's columns empty, and runs the job of each table the plan rebuilds once the sources are done. Every commit records the request's ID, `erasure-0001`, in its snapshot summary. Iceberg keeps a summary in the table's metadata files after its snapshot expires, in all of them by default, or only the last `write.metadata.previous-versions-max` (100 by default) once `write.metadata.delete-after-commit.enabled` is set ([Iceberg maintenance](https://iceberg.apache.org/docs/latest/maintenance/), [Iceberg configuration](https://iceberg.apache.org/docs/latest/configuration/)). So the summary holds only the request's ID, which [the erasure register](#erased-learner-comes-back) pairs with a keyed hash of the learner's ID, and never the learner's email.
 
-Example `erase-learner` (Python 3.12.15 · duckdb 2.0.0 · openlineage-python 1.55.0 · pyarrow 26.0.1 · pyiceberg 0.12.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.26:
+The erasure runs on learner 3590's plan under one request ID; reading `crm.learners` and `learning.events` now and by time travel shows what it leaves:
+
+Example `erase-learner` (Python 3.12.15 · duckdb 2.0.0 · openlineage-python 1.55.0 · pyarrow 26.0.1 · pyiceberg 0.12.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.27:
 
 ```python
-"""Carry out the erasure plan with Iceberg row deletes. The current snapshots no longer hold the learner; the snapshots
-before them still do, and time travel reads them."""
+"""Carries out the erasure plan with Iceberg row deletes. The current snapshots no longer hold the learner, but the snapshots
+before them still do, and the `read by time travel` lines show it."""
 from lib import retention
 
 LEARNER = 3590
 catalog, graph = retention.open_platform()
 steps = retention.plan(catalog, graph, LEARNER)
+# each table's snapshot from before the erasure, which the time-travel lines read
 before = {step.table: catalog.load_table(step.table).current_snapshot().snapshot_id for step in steps}
 
-done = retention.erase(catalog, steps, "erasure-0001")
+done = retention.erase(catalog, steps, "erasure-0001")       # the request's ID goes into every commit's summary
 for table, rows in done.items():
+    # a rebuilt table reports 'rebuilt' rather than a count of rows
     print(f"{table}, rows deleted:" if rows != "rebuilt" else f"{table}:", rows)
 print("tables one row was deleted from:", ", ".join(table for table, rows in done.items() if rows == 1))
 theirs = retention.rows_of([LEARNER])
 payments = catalog.load_table("billing.payments").scan(row_filter=theirs).to_arrow()
 print("billing.payments, the learner's rows kept:", payments.num_rows)
+# the exception erases card_number to null, so the values that are not null are the card numbers left
 print("billing.payments, card numbers left in them:", payments.num_rows - payments["card_number"].null_count)
 for name in ("crm.learners", "learning.events"):
     table = catalog.load_table(name)
@@ -349,8 +375,10 @@ for name in ("crm.learners", "learning.events"):
     print(f"the learner's rows in {name}, read by time travel:", retention.count(table, theirs, before[name]))
 
 summary = catalog.load_table("crm.learners").current_snapshot().summary
+# copy-on-write writes the rows it keeps again as new records, so this counts every other row of the file
 print("crm.learners, rows written again to delete one:", f"{int(summary['added-records']):,}")
 print("crm.learners, the commit records:", summary["erasure-request"])
+# snapshots of tables the plan deleted from (not rebuilt, not kept) that still return a row the erasure deleted
 holding = [(table, snapshot) for step in steps if step.column is not None
            for table in [catalog.load_table(step.table)] for snapshot in table.snapshots()
            if not step.kept and retention.count(table, retention.rows(step), snapshot.snapshot_id)]
@@ -384,23 +412,27 @@ snapshots that still hold the rows the erasure deleted: 6
 of them current: 0
 ```
 
-The erasure deleted the learner's rows from every table in the plan that held any: 19 events, 2 enrollments, and one row from each of `crm.learners, learning.reviews, analytics.learner_activity, ai.review_corpus`. It deleted none from `support.tickets` and `marketing.audience`, which held none, and it rebuilt `analytics.course_performance`. `billing.payments` keeps the learner's 2 payments, with 0 card numbers left in them. Read now, `crm.learners` holds 0 rows for the learner. Read by time travel to the snapshot before the erasure, it returns 1, with name, email, phone and address, and `learning.events` returns all 19 events. To delete one row of `crm.learners`, PyIceberg wrote the other 4,999 into a new file, as copy-on-write does, and the old file, with the learner in it, belongs to the snapshot before.
+The erasure took the learner out of every table in the plan holding any. It deleted 19 of the learner's events, 2 enrollments, and one row each from `crm.learners, learning.reviews, analytics.learner_activity, ai.review_corpus`. It deleted nothing from `support.tickets` and `marketing.audience`, which held none, and it rebuilt `analytics.course_performance`.
 
-Across the plan's tables, 6 snapshots still hold the rows the erasure deleted, and 0 of them are current. That is what snapshots are for: a reader can go back to any of them, and a bad commit can be rolled back. For an erasure, it means the delete took the learner out of the table but not out of storage.
+`billing.payments` keeps the learner's 2 payments, with 0 card numbers left in them. Read now, `crm.learners` holds 0 rows for the learner. Read by time travel to the snapshot before the erasure, it returns 1, with name, email, phone and address, and `learning.events` returns all 19 of the learner's events the same way.
+
+To delete one row of `crm.learners`, PyIceberg wrote the other 4,999 into a new file, as copy-on-write does, and the old file, with the learner in it, belongs to the snapshot before.
+
+Across the plan's tables, 6 snapshots still hold the rows the erasure deleted, and 0 of them are current. That is what snapshots are for: a reader can go back to any of them. For an erasure, it means the delete took the learner out of the table but not out of storage.
 
 **Working rule:** Carry out an erasure as row deletes in the plan's order, and record only a request ID in each commit, never a value of the person's. Treat the delete as the first of three steps: the snapshots before it still hold the person, and anyone allowed to time travel can read them until they're [expired](#expire-snapshots).
 
 ## Expire snapshots by the table's own settings {#expire-snapshots}
 
-[After the erasure's deletes](#erase-the-rows), learner 3590's rows live on in the snapshots before them. The Iceberg spec says what comes next: "Table snapshots expire and are removed from metadata to allow removed or replaced data files to be physically deleted" ([Iceberg table spec](https://iceberg.apache.org/spec/)). Each table says how, in its properties ([Iceberg configuration](https://iceberg.apache.org/docs/latest/configuration/)): `gc.enabled` "Allows garbage collection operations such as expiring snapshots and removing orphan files", `history.expire.min-snapshots-to-keep` is how many snapshots to keep however old they are, and `history.expire.max-snapshot-age-ms` is the age at which the rest may go. In Iceberg's Java library, "Regularly expiring snapshots deletes unused data files" ([Iceberg maintenance](https://iceberg.apache.org/docs/latest/maintenance/)).
+[After the erasure's deletes](#erase-the-rows), learner 3590's rows live on in the snapshots before them. The Iceberg spec says snapshots expire so that the data files they removed or replaced can be physically deleted ([Iceberg table spec](https://iceberg.apache.org/spec/)). Each table sets how in its properties ([Iceberg configuration](https://iceberg.apache.org/docs/latest/configuration/)): `gc.enabled` allows garbage collection, such as expiring snapshots and removing orphan files; `history.expire.min-snapshots-to-keep` is how many snapshots to keep however old they are; and `history.expire.max-snapshot-age-ms` is the age at which the rest may go. In Iceberg's Java library, regularly expiring snapshots deletes unused data files ([Iceberg maintenance](https://iceberg.apache.org/docs/latest/maintenance/)).
 
-PyIceberg 0.12.0 does less. Its `table.maintenance.expire_snapshots()` commits one change, which removes the snapshots from the table's metadata, and deletes no file ([source](https://github.com/apache/iceberg-python/blob/pyiceberg-0.12.0/pyiceberg/table/update/snapshot.py)), though its documentation offers it to "clean up table metadata and reduce storage costs" ([PyIceberg API](https://py.iceberg.apache.org/api/)). Nothing in it reads `gc.enabled`, and only its command-line tool reads the `history.expire` settings. An issue asks for expiry to delete files too ([issue 2604](https://github.com/apache/iceberg-python/issues/2604)). Take `crm.learners` with 3 snapshots, the load and two deletes, once with `gc.enabled=false` and once with `history.expire.min-snapshots-to-keep=3`. Expire both by age with PyIceberg, `older_than` the current time, and with `lib.retention.expire`, which reads the two settings first:
+PyIceberg 0.12.0 does less. Its `table.maintenance.expire_snapshots()` commits one change, which removes the snapshots from the table's metadata and deletes no file ([source](https://github.com/apache/iceberg-python/blob/pyiceberg-0.12.0/pyiceberg/table/update/snapshot.py)), though its documentation offers it to "clean up table metadata and reduce storage costs" ([PyIceberg API](https://py.iceberg.apache.org/api/)). Nothing in it reads `gc.enabled`, and only its command-line tool reads the `history.expire` settings. An issue asks for expiry to delete files too ([issue 2604](https://github.com/apache/iceberg-python/issues/2604)). Two copies of `crm.learners` each have 3 snapshots, the load and two deletes. One copy has `gc.enabled=false`, the other `history.expire.min-snapshots-to-keep=3`, and each is expired two ways: by age with PyIceberg, `older_than` the current time, and with `lib.retention.expire`, which reads the two settings first.
 
-Example `expiry-ignores-table-settings` (Python 3.12.15 · duckdb 2.0.0 · openlineage-python 1.55.0 · pyarrow 26.0.1 · pyiceberg 0.12.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.26:
+Example `expiry-ignores-table-settings` (Python 3.12.15 · duckdb 2.0.0 · openlineage-python 1.55.0 · pyarrow 26.0.1 · pyiceberg 0.12.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.27:
 
 ```python
-"""PyIceberg's snapshot expiry ignores two of the table's own settings, gc.enabled and min-snapshots-to-keep. The
-book's expiry reads them first."""
+"""PyIceberg's snapshot expiry ignores two of the table's own settings, gc.enabled and min-snapshots-to-keep, so it expires
+snapshots they would keep. The book's expiry reads both first, and the `left by PyIceberg's expiry` lines show the difference."""
 from datetime import datetime, timezone
 
 from pyiceberg.expressions import EqualTo
@@ -414,6 +446,7 @@ def learners_with(settings: dict):
     table = open_catalog(["crm.learners"]).load_table("crm.learners")
     with table.transaction() as transaction:
         transaction.set_properties(settings)
+    # two deletes, so there are snapshots from before them for the expiry to consider
     for learner in (3590, 3591):
         table.delete(EqualTo("learner_id", learner))
     return table
@@ -427,7 +460,8 @@ for settings in ({"gc.enabled": "false"}, {"history.expire.min-snapshots-to-keep
         print(f"{setting}, the book's expiry expires:", retention.expire(table))
     except retention.RetentionError as error:
         print(f"{setting}, the book's expiry refuses:", error)
-    table.maintenance.expire_snapshots().older_than(datetime.now(timezone.utc)).commit()     # by age, as of now
+    # PyIceberg's expiry by age, as of now: it reads neither setting
+    table.maintenance.expire_snapshots().older_than(datetime.now(timezone.utc)).commit()
     print(f"{setting}, snapshots left by PyIceberg's expiry:", len(table.snapshots()))
 ```
 
@@ -442,33 +476,41 @@ history.expire.min-snapshots-to-keep=3, the book's expiry expires: 0
 history.expire.min-snapshots-to-keep=3, snapshots left by PyIceberg's expiry: 1
 ```
 
-With garbage collection off, PyIceberg's expiry by age left 1 of the 3 snapshots, and with three to keep, it also left 1: `older_than` expires every snapshot older than the time it's given except those a branch or tag points at, here only the current one. The book's expiry refused the first table, `crm.learners has gc.enabled=false, which turns off garbage collection for the table`, and expired 0 snapshots of the second. An owner sets these properties for reasons the expiring code can't see, and in PyIceberg they are only advice.
+PyIceberg's expiry ignores both settings. It left 1 of the first table's 3 snapshots, and 1 of the second's. `older_than` expires every snapshot older than the time it's given except those a branch or tag points at, here only the current one.
 
-For an erasure, both settings mean the job can't finish: a table that keeps a snapshot from before the delete still holds the person. A job that stopped at that table would already have deleted rows from the tables before it, and would leave every table after it unexpired, so the check belongs before the first delete. `lib.retention.erase_everywhere` runs `lib.retention.blocked` on every table in the plan first: garbage collection off, more than one snapshot to keep, or a branch or tag besides `main`. If any table fails, the job refuses to start and names every such table. Turn off garbage collection on `crm.learners`, keep three snapshots of `learning.events`, then run the job and the scan:
+The book's expiry refused the first table, `crm.learners has gc.enabled=false, which turns off garbage collection for the table`, and expired 0 snapshots of the second. An owner sets these properties for reasons the expiring code can't see, and in PyIceberg they are only advice.
 
-Example `erasure-refuses-to-start` (Python 3.12.15 · duckdb 2.0.0 · openlineage-python 1.55.0 · pyarrow 26.0.1 · pyiceberg 0.12.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.26:
+For an erasure, both settings mean the job can't finish: a table that keeps a snapshot from before the delete still holds the person. A job that stopped at that table would already have deleted rows from the tables before it and left the rest unexpired, so the check belongs before the first delete. `lib.retention.erase_everywhere` runs `lib.retention.blocked` on every table in the plan first: garbage collection off, more than one snapshot to keep, or a branch or tag besides `main`. If any table fails, the job refuses to start and names every such table.
+
+Here `crm.learners` has garbage collection off, and `learning.events` keeps three snapshots. Then the job and the scan run:
+
+Example `erasure-refuses-to-start` (Python 3.12.15 · duckdb 2.0.0 · openlineage-python 1.55.0 · pyarrow 26.0.1 · pyiceberg 0.12.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.27:
 
 ```python
-"""The erasure job checks every table in its plan before it changes any. When a table's own settings would keep the
-learner, it refuses to start and names the tables; the scan of every file still runs, and finds the learner."""
+"""The erasure job checks every table in its plan before it changes any, and refuses to start when a table's own settings
+would keep the learner. The scan still runs, from the traces the refusal carries, and finds the learner in the files."""
 from datetime import timedelta
 
 from lib import retention
 
 LEARNER = 3590
 catalog, graph = retention.open_platform()
+# each setting stops expiry from removing the snapshot from before the delete: garbage collection off, or three snapshots kept
 for name, settings in (("crm.learners", {"gc.enabled": "false"}),
                        ("learning.events", {"history.expire.min-snapshots-to-keep": "3"})):
     with catalog.load_table(name).transaction() as transaction:
         transaction.set_properties(settings)
+# every table's current snapshot, to count the tables the job changes
 before = {name: catalog.load_table(name).current_snapshot().snapshot_id for name in retention.tables(catalog)}
 
 try:
+    # min_age of zero: one writer and nothing in flight, so no file needs a minimum age to be safe to sweep
     steps, found, done = retention.erase_everywhere(catalog, graph, LEARNER, "erasure-0001", min_age=timedelta(0))
 except retention.ErasureRefused as refusal:
     for name, why in refusal.tables.items():
         print(f"the job refuses, because of {name}:", why)
     found = refusal.found
+# a table the job changed has a new current snapshot
 print("tables the job changed:", sum(catalog.load_table(name).current_snapshot().snapshot_id != snapshot
                                      for name, snapshot in before.items()))
 report = retention.scan(catalog, found)
@@ -486,21 +528,23 @@ tables whose files hold the learner: 7
 files holding the learner: 8
 ```
 
-The job names both tables, `crm.learners` because `gc.enabled=false turns off garbage collection for the table`, and `learning.events` because `history.expire.min-snapshots-to-keep=3 keeps the snapshot from before the delete`, and changed 0 tables. The scan runs either way, from the traces the refusal carries, and finds the learner in 8 files across 7 tables, since nothing was erased. A person then decides with the tables' owners, rather than code overriding an owner's setting.
+The job refuses. It names both tables, `crm.learners` because `gc.enabled=false turns off garbage collection for the table`, and `learning.events` because `history.expire.min-snapshots-to-keep=3 keeps the snapshot from before the delete`, and 0 tables changed.
+
+The scan runs either way, from the traces the refusal carries, and finds the learner in 8 files across 7 tables. A person then decides with the tables' owners, rather than code overriding an owner's setting.
 
 **Working rule:** Expire snapshots through one function of your own that reads `gc.enabled` and the `history.expire` settings before it expires anything, and refuses when garbage collection is off, because PyIceberg's expiry reads neither; check again at every PyIceberg release. Before an erasure deletes anything, check every table in its plan the same way, and refuse the whole erasure when one would keep the person. For an erasure, expire every snapshot older than the delete. For retention, expire by age, as `history.expire.max-snapshot-age-ms` says, measured on the clock, since snapshots carry real commit times.
 
 ## Remove the files no snapshot references {#remove-unreferenced-files}
 
-Once [the old snapshots are expired](#expire-snapshots), the files only they referenced are unreferenced: under the table's location, but in no snapshot's metadata. Iceberg calls them orphans, and its Java library removes them in a separate action, with a warning: "It is dangerous to remove orphan files with a retention interval shorter than the time expected for any write to complete", and "The default interval is 3 days." ([Iceberg maintenance](https://iceberg.apache.org/docs/latest/maintenance/)). PyIceberg 0.12.0 has no such action. Its release notes list none ([release notes](https://github.com/apache/iceberg-python/releases/tag/pyiceberg-0.12.0)), the issue that asked for one was closed by the project's stale bot, marked not planned ([issue 1200](https://github.com/apache/iceberg-python/issues/1200)), and two pull requests that added one were closed without being merged ([1958](https://github.com/apache/iceberg-python/pull/1958), [3358](https://github.com/apache/iceberg-python/pull/3358)). Its only call that deletes data files is `purge_table`, which deletes the whole table ([source](https://github.com/apache/iceberg-python/blob/pyiceberg-0.12.0/pyiceberg/catalog/__init__.py)).
+Once [the old snapshots are expired](#expire-snapshots), the files only they referenced are unreferenced: under the table's location, but in no snapshot's metadata. Iceberg calls them orphans. Its Java library removes them in a separate action, and warns that removing orphan files with a retention interval shorter than the time expected for any write to complete is dangerous; its default interval is 3 days ([Iceberg maintenance](https://iceberg.apache.org/docs/latest/maintenance/)). PyIceberg 0.12.0 has no such action. Its release notes list none ([release notes](https://github.com/apache/iceberg-python/releases/tag/pyiceberg-0.12.0)). The issue that asked for one was closed by the project's stale bot, marked not planned ([issue 1200](https://github.com/apache/iceberg-python/issues/1200)). Two pull requests that added one were closed without being merged ([1958](https://github.com/apache/iceberg-python/pull/1958), [3358](https://github.com/apache/iceberg-python/pull/3358)). Its only call that deletes data files is `purge_table`, which deletes the whole table ([source](https://github.com/apache/iceberg-python/blob/pyiceberg-0.12.0/pyiceberg/catalog/__init__.py)).
 
-So `lib.retention` removes them itself, from what the metadata tables PyIceberg exposes as `table.inspect` say a table references. `lib.retention.referenced` collects the metadata files, current and logged, every snapshot's manifest list, every manifest (a manifest lists data files, with each file's column statistics), every data and delete file live in any snapshot, and any statistics files. Every other file under the table's location is unreferenced, and `lib.retention.sweep` deletes the ones older than the minimum age its caller passes. `governance/retention.toml` sets that age to 72 hours, Java's default, and `lib.retention.min_file_age` reads it. After the erasure, expire the plan's tables, sweep with that age and then with none, and check every file for the learner:
+So `lib.retention` removes them itself, from what the metadata tables PyIceberg exposes as `table.inspect` say a table references. `lib.retention.referenced` collects the metadata files, current and logged, every snapshot's manifest list, every manifest (a manifest lists data files, with each file's column statistics), every data and delete file live in any snapshot, and any statistics files. Every other file under the table's location is unreferenced, and `lib.retention.sweep` deletes the ones older than the minimum age its caller passes. `governance/retention.toml` sets that age to 72 hours, Java's default, and `lib.retention.min_file_age` reads it. After the erasure, the plan's tables are expired, swept with that age and then with none, and every file is checked for the learner:
 
-Example `sweep-unreferenced-files` (Python 3.12.15 · duckdb 2.0.0 · openlineage-python 1.55.0 · pyarrow 26.0.1 · pyiceberg 0.12.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.26:
+Example `sweep-unreferenced-files` (Python 3.12.15 · duckdb 2.0.0 · openlineage-python 1.55.0 · pyarrow 26.0.1 · pyiceberg 0.12.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.27:
 
 ```python
-"""After the erasure, expire the old snapshots, then remove the files no snapshot references. PyIceberg's expiry
-deletes no file, and it has no orphan-file removal, so lib.retention.sweep does it with PyIceberg's inspect tables."""
+"""After the erasure, expire the old snapshots, then remove the files no snapshot references. PyIceberg's expiry deletes no
+file and has no orphan-file removal, so lib.retention.sweep does it with the inspect tables; the last lines show the manifest entries still holding the learner's email."""
 from datetime import timedelta
 
 from lib import retention
@@ -515,15 +559,18 @@ print("snapshots expired:", sum(retention.expire(table) for table in tables))
 print("files under the plan's tables:", sum(len(retention.files_under(table.location())) for table in tables))
 print("files no metadata references:", sum(len(retention.unreferenced(table)) for table in tables))
 print("files holding the learner, after expiry:", sum(held for _, held in retention.scan(catalog, found).values()))
+# the configured minimum age, 72 hours, from governance/retention.toml
 print("files swept with the configured minimum age:", sum(retention.sweep(t, retention.min_file_age()) for t in tables))
 # One writer, nothing in flight: no file is too young to remove, so the examples sweep with no minimum age.
 print("files swept with no minimum age:", sum(retention.sweep(table, timedelta(0)) for table in tables))
 print("files holding the learner, after the sweep:", sum(held for _, held in retention.scan(catalog, found).values()))
 
 for table in tables:
+    # every manifest entry, including those of deleted files, with the bounds it keeps for the email column
     entries = table.inspect.entries()
     for status, metrics in zip(entries["status"].to_pylist(), entries["readable_metrics"].to_pylist()):
         bounds = metrics.get("email") or {}
+        # bounds are compared lowercased: the learner's email is typed in capitals in the manifest
         kept = (bounds.get("lower_bound"), bounds.get("upper_bound"))
         if any(text in bound.lower() for bound in kept if bound for text in found.texts):
             print(f"{'.'.join(table.name()[-2:])}, manifest entry with status {status}, email bounds:",
@@ -543,9 +590,9 @@ files holding the learner, after the sweep: 1
 crm.learners, manifest entry with status 2, email bounds: ALEXA590@POST.EX to zofia.haase@exan
 ```
 
-Expiry removed 8 snapshots and no file. Of the 100 files under the plan's tables, 28 are referenced by nothing, and 9 files hold the learner. A sweep with the configured 72 hours deleted 0 files, since every file was written seconds before. The examples then pass an age of zero, because one process writes their catalog. That sweep deleted 28 files, and 1 file still holds the learner: a manifest that the current snapshot of `crm.learners` references.
+Expiry removes snapshots, not files. Of the files under the plan's tables, 28 are referenced by nothing, and 9 hold the learner. The sweep at the configured 72 hours deletes 0 unreferenced files, since every file was written seconds before. The examples pass an age of zero because one process writes their catalog. The sweep with no minimum age deletes all the unreferenced files, and 1 file still holds the learner: a manifest that the current snapshot of `crm.learners` references.
 
-The spec says why: "When a file is replaced or deleted from the dataset, its manifest entry fields store the snapshot ID in which the file was deleted and status 2 (deleted)" ([Iceberg table spec](https://iceberg.apache.org/spec/)). That entry keeps the deleted file's column statistics. By default, under the metrics mode `truncate(16)` ([Iceberg configuration](https://iceberg.apache.org/docs/latest/configuration/)), those include each string column's smallest value, cut to 16 characters, and its largest, cut to 16 with the last character raised by one, so that it still bounds every value in the file ([source](https://github.com/apache/iceberg-python/blob/pyiceberg-0.12.0/pyiceberg/utils/truncate.py)). The deleted entry in `crm.learners` keeps the email bounds `ALEXA590@POST.EX to zofia.haase@exan`. The first is learner 3590's email, typed in capitals, which sorts before every other email on the platform. The second is learner 4998's, the platform's largest, whose 16th character, an `m`, became an `n`. No learner is safe from this: each data file's entry keeps the smallest and largest value of every column, so a table of many small files names many learners.
+The spec says why: when a file is replaced or deleted, its manifest entry stores the snapshot in which the file was deleted and status 2 (deleted) ([Iceberg table spec](https://iceberg.apache.org/spec/)), and that entry keeps the deleted file's column statistics. By default, under the metrics mode `truncate(16)` ([Iceberg configuration](https://iceberg.apache.org/docs/latest/configuration/)), those include each string column's smallest value, cut to 16 characters, and its largest, cut to 16 with the last character raised by one, so that it still bounds every value in the file ([source](https://github.com/apache/iceberg-python/blob/pyiceberg-0.12.0/pyiceberg/utils/truncate.py)). The deleted entry in `crm.learners` keeps the email bounds `ALEXA590@POST.EX to zofia.haase@exan`. The first is learner 3590's email, typed in capitals, which sorts before every other email on the platform. The second is learner 4998's, the platform's largest, whose 16th character, an `m`, became an `n`. No learner is safe from this: each data file's entry keeps the smallest and largest value of every column, so a table of many small files names many learners.
 
 **Working rule:** Remove unreferenced files after every expiry, with a sweep of your own built on the inspect tables, since PyIceberg has none, and keep a minimum age of days in production so that a write in progress keeps its files. Use an age of zero only where a single process writes. Don't count a person erased because no data file holds them: the manifests may still hold their values.
 
@@ -553,13 +600,13 @@ The spec says why: "When a file is replaced or deleted from the dataset, its man
 
 [The sweep](#remove-unreferenced-files) left the learner's email in a manifest, as a column bound. Iceberg lets a table choose, per column, what its manifests keep, with the property `write.metadata.metrics.column.<name>`: `none` keeps nothing, `counts` keeps value and null counts, `truncate(n)` adds bounds cut to n characters, and `full` adds whole bounds ([Iceberg configuration](https://iceberg.apache.org/docs/latest/configuration/)). PyIceberg 0.12.0 looks the property up by the column's name when it writes a file ([source](https://github.com/apache/iceberg-python/blob/pyiceberg-0.12.0/pyiceberg/io/pyarrow.py)).
 
-Typed by hand, those properties would drift from the classifications. `lib.retention.properties` generates them instead, from `governance/metadata.toml` and the `[statistics]` section of `governance/retention.toml`: `none` for every column classified `personal` or `sensitive`, and for every column nobody has classified, the same fail-closed default the access policy uses. It adds the `history.expire` settings from the rules' `[snapshots]` section. `lib.retention.apply_properties` sets them on every table and rewrites each table's data once, because a metrics mode applies only to the files written after it's set; expiry and a sweep then remove the files from before. Erase learner 4998, whose email is the largest bound in the manifest of `crm.learners`, on two platforms, one with default statistics and one with the generated properties:
+Typed by hand, those properties would drift from the classifications. `lib.retention.properties` generates them from `governance/metadata.toml` and the `[statistics]` section of `governance/retention.toml`: `none` for every column classified `personal` or `sensitive`, and for every column nobody has classified, the same fail-closed default the access policy uses. It adds the `history.expire` settings from the rules' `[snapshots]` section. `lib.retention.apply_properties` sets them on every table and rewrites each table's data once, because a metrics mode applies only to the files written after it's set; expiry and a sweep then remove the files from before. Learner 4998, whose email is the largest bound in `crm.learners`' manifest, is the test case, erased on two platforms, one with default statistics and one with the generated properties:
 
-Example `statistics-off-for-personal-columns` (Python 3.12.15 · duckdb 2.0.0 · openlineage-python 1.55.0 · pyarrow 26.0.1 · pyiceberg 0.12.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.26:
+Example `statistics-off-for-personal-columns` (Python 3.12.15 · duckdb 2.0.0 · openlineage-python 1.55.0 · pyarrow 26.0.1 · pyiceberg 0.12.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.27:
 
 ```python
-"""Generate each table's properties from the classifications, so manifests keep no values of personal columns, then
-erase the learner whose email is the platform's largest on a platform with them and on one without."""
+"""Generates each table's properties from the classifications, so manifests keep no bounds on personal columns, then erases
+the learner whose email is the platform's largest, on a platform with the properties and on one without. The `files holding` lines are the proof."""
 from datetime import timedelta
 
 from lib import retention
@@ -570,14 +617,17 @@ for statistics_off in (False, True):
     label = "statistics off for protected columns" if statistics_off else "default statistics"
     if statistics_off:
         generated = retention.properties(catalog)
+        # the per-column metrics settings; the history.expire settings are not counted here
         turned_off = [key for wanted in generated.values() for key in wanted if key.startswith(retention.METRICS)]
         print("columns with statistics turned off:", len(turned_off))
+        # tables with no entry in governance/metadata.toml, which the generated properties still cover
         unclassified = [name for name in generated if name not in retention.metadata.load()]
         print("of them in tables nobody has classified:",
               sum(key.startswith(retention.METRICS) for name in unclassified for key in generated[name]))
         print("crm.learners, properties set:", len(generated["crm.learners"]))
         for key, value in sorted(generated["crm.learners"].items()):
             print(f"  {key} = {value}")
+    # crm.learners has one data file, so its one manifest entry keeps the table's email bounds
     entry = catalog.load_table("crm.learners").inspect.entries()["readable_metrics"].to_pylist()[0]
     print(f"{label}, crm.learners email bounds:", entry["email"]["lower_bound"], "to", entry["email"]["upper_bound"])
     columns = retention.metadata.load()["crm.learners"].columns.values()
@@ -615,7 +665,11 @@ statistics off for protected columns, of them with bounds in the manifest: 0
 statistics off for protected columns, files holding learner 4998 after erasure, expiry and sweep: 0
 ```
 
-The generated properties turn statistics off for 24 columns, 10 of them in `marketing.audience` and `ai.review_corpus`, the two tables that [chapter 2](#test-the-catalog-against-the-metadata) found with no metadata. `crm.learners` gets 9 properties, the two expiry settings and `none` for each personal column. With default statistics, the manifest's email bounds are `ALEXA590@POST.EX to zofia.haase@exan`, and it keeps bounds for 7 of the table's 7 personal columns. After the erasure, expiry and sweep, 1 file still holds learner 4998, through that raised upper bound. With statistics off, the email bounds are `None to None`, the manifest keeps bounds for 0 personal columns, and 0 files hold the learner.
+With default statistics, 1 file still holds learner 4998 after the erasure, expiry and sweep, through a raised upper bound. The manifest keeps bounds for 7 of the table's personal columns, and its email bounds are `ALEXA590@POST.EX to zofia.haase@exan`.
+
+Turning statistics off for personal columns is what keeps learner 4998 out of the files. The email bounds are `None to None`, the manifest keeps bounds for 0 of the table's 7 personal columns, and 0 files hold the learner after the erasure, expiry and sweep.
+
+The generated properties turn statistics off for 24 columns, 10 of them in `marketing.audience` and `ai.review_corpus`, the two tables that [chapter 2](#test-the-catalog-against-the-metadata) found with no metadata. `crm.learners` gets 9 properties: the two expiry settings, and `none` for each personal column.
 
 The cost is pruning. Iceberg uses the bounds in manifests to skip files a query's filter can't match ([Iceberg table spec](https://iceberg.apache.org/spec/)), so without them, a query that filters on `email` reads every file. The platform filters and erases by `learner_id`, which is `internal` and keeps its statistics. `counts` is the other choice: it keeps the counts that help a planner, and no values. And because PyIceberg 0.12.0 keeps the property under the column's old name on a rename, leaving the new name without it, the properties are generated again on every schema change, as [chapter 2](#key-column-metadata-by-field-id) asks of every view of the metadata keyed by name.
 
@@ -623,21 +677,22 @@ The cost is pruning. Iceberg uses the bounds in manifests to skip files a query'
 
 ## Prove the erasure by reading every file {#verify-the-erasure}
 
-[The delete](#erase-the-rows), [the expiry](#expire-snapshots), [the sweep](#remove-unreferenced-files) and [the statistics settings](#keep-values-out-of-manifests) each removed something the step before left behind, and left something of its own, which is the case for checking the result rather than trusting the steps. The European Data Protection Board's report on how controllers handle erasure, adopted in February 2026, found backups, and anonymisation used in place of deletion, among the weak points, and recommends that controllers "Verify that erasure has been carried out and be able to demonstrate such erasure" ([EDPB, 2026](https://www.edpb.europa.eu/system/files/2026-02/edpb_cef-report_2025_right-to-erasure_en.pdf)).
+Each step so far removed something the one before left behind, and left something of its own: the [delete](#erase-the-rows), the [expiry](#expire-snapshots), the [sweep](#remove-unreferenced-files) and the [statistics settings](#keep-values-out-of-manifests). That is the case for checking the result rather than trusting the steps. The European Data Protection Board's report on how controllers handle erasure, adopted in February 2026, found backups, and anonymisation used in place of deletion, among the weak points, and recommends that controllers "Verify that erasure has been carried out and be able to demonstrate such erasure" ([EDPB, 2026](https://www.edpb.europa.eu/system/files/2026-02/edpb_cef-report_2025_right-to-erasure_en.pdf)).
 
-`lib.retention.scan` reads every file under the catalog's warehouse, each with its own format's reader, and looks for the learner's traces, which `lib.retention.traces` noted before the erasure: the IDs of every row the plan deletes, by column, and the first 15 characters, lowercased, of each identifying value. Fifteen, because a manifest keeps a largest value's first 15 characters unchanged and raises the 16th by one, so a search for 16 misses a person whose value is a file's largest, as learner 4998's email is. A Parquet file is read as rows. A manifest or manifest list, both Avro, is read record by record with PyIceberg's Avro reader: every string in it, bounds included, and the bounds of each ID column, decoded by the schema the manifest carries. A metadata file is read as text. In a table an exception keeps, the learner's IDs are expected, so there the scan looks only for values, including those of the columns the exception erased. `lib.retention.erase_everywhere` runs the whole job: plan, note the traces, check every table, erase, expire, sweep. Run it on the platform with the generated properties, then scan:
+`lib.retention.scan` reads every file under the catalog's warehouse, each with its own format's reader, and looks for the learner's traces. `lib.retention.traces` notes those before the erasure: the IDs of every row the plan deletes, by column, and the first 15 characters, lowercased, of each identifying value. Fifteen, because a manifest keeps a largest value's first 15 characters unchanged and raises the 16th by one, so a search for 16 misses a person whose value is a file's largest, as learner 4998's email is. A Parquet file is read as rows. A manifest or manifest list, both Avro, is read record by record with PyIceberg's Avro reader: every string in it, bounds included, and the bounds of each ID column, decoded by the schema the manifest carries. A metadata file is read as text. In a table an exception keeps, the learner's IDs are expected, so there the scan looks only for values, including those of the columns the exception erased. `lib.retention.erase_everywhere` runs the whole job: plan, note the traces, check every table, erase, expire, sweep. On the platform with the generated properties, the whole job runs and ends with the scan:
 
-Example `verify-erasure` (Python 3.12.15 · duckdb 2.0.0 · openlineage-python 1.55.0 · pyarrow 26.0.1 · pyiceberg 0.12.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.26:
+Example `verify-erasure` (Python 3.12.15 · duckdb 2.0.0 · openlineage-python 1.55.0 · pyarrow 26.0.1 · pyiceberg 0.12.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.27:
 
 ```python
-"""The whole erasure job on the platform with statistics off for protected columns, ending with a scan of every file
-under the warehouse. What it prints is the evidence: IDs and counts, never the learner's values."""
+"""Runs the whole erasure job on the platform with statistics off for protected columns, then scans every file under the
+warehouse. The `files holding the learner` line is the proof; the rest is evidence of IDs and counts, never the learner's values."""
 from datetime import timedelta
 
 from lib import retention
 
 LEARNER, REQUEST = 3590, "erasure-0001"
 catalog, graph = retention.open_platform(statistics_off=True)
+# min_age of zero: one writer, so nothing is in flight that a sweep could take
 steps, found, done = retention.erase_everywhere(catalog, graph, LEARNER, REQUEST, min_age=timedelta(0))
 
 report = retention.scan(catalog, found)
@@ -646,10 +701,12 @@ for table, (files, holding) in report.items():
 
 print("request:", REQUEST)
 print("tables visited:", len(steps))
+# each table the job deleted from has a count of rows; the one it reran has 'rebuilt' instead
 print("rows deleted:", sum(rows for rows in done.values() if rows != "rebuilt"))
 print("tables rebuilt:", ", ".join(table for table, rows in done.items() if rows == "rebuilt"))
 print("tables kept under an exception, columns erased:",
       "; ".join(f"{step.table}, {', '.join(step.cleared)}" for step in steps if step.kept))
+# every snapshot but the current one: the ones a reader can still time travel to
 print("snapshots a reader can still time travel to:",
       sum(len(catalog.load_table(step.table).snapshots()) - 1 for step in steps))
 print("files no metadata references:",
@@ -686,29 +743,29 @@ files read: 115
 files holding the learner: 0
 ```
 
-The scan read 115 files under every table's location, and 0 of them hold the learner. No reader can time travel to the learner, since 0 snapshots older than the current ones remain, and 0 files are unreferenced. The lines after the per-table counts are the evidence: the request's ID, 10 tables visited, 25 rows deleted, the table rebuilt, the table an exception keeps and the column erased from it, `billing.payments, card_number`, with the reason in `governance/retention.toml`, and the scan's counts. They name no value of the learner's, so keeping them puts none back into the platform, which [chapter 8](#produce-evidence-as-data) relies on when it writes them to the audit log.
+The scan finds the learner in 0 of the 115 files it reads, and no reader can time travel to the learner, since 0 older snapshots remain, and 0 files are unreferenced. The lines after the per-table counts are the evidence: the request's ID, the tables visited, the rows deleted, the table the job rebuilt, the table an exception keeps and the column erased from it, `billing.payments, card_number`, with the reason in `governance/retention.toml`, and the scan's counts. They name no value of the learner's, so keeping them puts none back, which [chapter 8](#produce-evidence-as-data) relies on when it writes them to the audit log.
 
 One line is a warning: `analytics.course_performance` lacks its generated properties, because `lib.pipelines.run` dropped the table and created it again without them. That table has no personal columns. The next table a pipeline rebuilds might have them, and the scan would then report its manifests' bounds as a failed erasure, so the check belongs after every pipeline run.
 
 IDs can stay in a manifest too, since the ID columns keep their statistics. An erased ID that was a file's smallest or largest, such as learner 5000's, stays in the deleted entry's bounds, and the scan reports it. One more commit to the table, followed by an expiry and a sweep, removes it, because PyIceberg's next append leaves out a manifest that holds only deleted files ([source](https://github.com/apache/iceberg-python/blob/pyiceberg-0.12.0/pyiceberg/table/update/snapshot.py)).
 
-The scan covers the warehouse only. Exports, backups, the source systems and logs outside it can hold the learner too, and the same traces can be searched for in each of them the platform can read.
+The scan covers the warehouse only. Exports, backups, the source systems and logs outside it can hold the learner too, and the same traces can be searched for in each the platform can read.
 
 **Working rule:** End every erasure with a scan of every file the platform stores, for the person's IDs and identifying values, read with each format's own reader, and keep its result, counts and IDs only, as the evidence. Search for as much of each value as every bound keeps unchanged, which is one character less than the truncation length. Treat any file that still holds the person as a failed erasure, not a warning. Search the stores outside the warehouse that you control, and list in the record the ones you can't search.
 
 ## What goes wrong in production {#retention-in-production}
 
-Retention and erasure fail quietly: a delete that succeeds looks the same whether the data is gone or still in storage. The first failure here undoes a finished erasure.
+A delete that succeeds looks the same whether the data is gone or still in storage, and that is how erasure fails. The first failure here undoes a finished erasure.
 
 ### An erased learner comes back {#erased-learner-comes-back}
 
-Besides the CRM's sync, the warehouse reloads all of `crm.learners` each night from the application's export, and the erasure ran in the warehouse only. Erase learner 3590 everywhere [the plan](#plan-erasure-from-lineage) says, then run the nightly reload and the pipelines that read it:
+Besides the CRM's sync, the warehouse reloads all of `crm.learners` nightly from the application's export, and the erasure ran in the warehouse only. Erase learner 3590 everywhere [the plan](#plan-erasure-from-lineage) says, then let the nightly reload and the pipelines that read the table run:
 
-Example `erased-learner-returns` (Python 3.12.15 · duckdb 2.0.0 · openlineage-python 1.55.0 · pyarrow 26.0.1 · pyiceberg 0.12.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.26:
+Example `erased-learner-returns` (Python 3.12.15 · duckdb 2.0.0 · openlineage-python 1.55.0 · pyarrow 26.0.1 · pyiceberg 0.12.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.27:
 
 ```python
-"""An erased learner comes back: the warehouse's copy of the CRM is reloaded each night from the application's
-export, which nobody erased, and the pipelines rebuild from it. A check against the erasure register catches it."""
+"""An erased learner comes back: the nightly reload of crm.learners from the application's export brings the rows back, and
+the pipelines rebuild from them. A check against the erasure register catches the rows."""
 from datetime import timedelta
 
 from lib import pipelines, retention
@@ -721,13 +778,16 @@ print("the erasure register's entry:", register[0]["request"], register[0]["lear
 learners = catalog.load_table("crm.learners")
 print("the learner's rows in crm.learners after the erasure:", retention.count(learners, retention.rows_of([LEARNER])))
 
-learners.overwrite(retention.crm_export())          # the nightly reload, from the application's export
+# the nightly reload: the application's export still holds the learner, since nobody erased it there
+learners.overwrite(retention.crm_export())
+# the pipelines that read crm.learners rebuild from the reloaded table
 for name in ("learner_activity", "marketing_audience"):
     pipelines.run(catalog, name)
 for table in ("crm.learners", "analytics.learner_activity", "marketing.audience"):
     print(f"the learner's rows in {table} after the nightly run:",
           retention.count(catalog.load_table(table), retention.rows_of([LEARNER])))
 
+# hashes each learner_id in every table and looks it up in the register, so no learner's ID is printed
 for table, rows in retention.erased_rows(catalog, register).items():
     print(f"the check against the register, rows of erased learners in {table}:", rows)
 ```
@@ -744,16 +804,16 @@ the check against the register, rows of erased learners in analytics.learner_act
 the check against the register, rows of erased learners in crm.learners: 1
 ```
 
-After the erasure, `crm.learners` holds 0 rows for the learner. After the nightly run it holds 1 again, and `analytics.learner_activity`, rebuilt from it, holds 1. `marketing.audience` stays clear only because the learner's consent comes back withdrawn and their enrollments, which it joins, were erased.
+An erasure done only in the warehouse doesn't last. After it, `crm.learners` holds 0 rows for the learner; after the nightly run it holds 1 again, and `analytics.learner_activity`, rebuilt from it, holds 1. `marketing.audience` stays clear only because the learner's consent comes back withdrawn and their enrollments, which it joins, were erased.
 
-The check that catches this keeps an erasure register: for each request, its ID and a keyed hash (HMAC-SHA256) of the erased learner's ID, and nothing else. The key is the erasure job's secret, kept like the enforcement layer's pseudonymization key in [chapter 6](#write-masks-as-sql) but a different one, because whoever holds it can hash every learner ID and find whom the register names. After every load, restore and rebuild, `lib.retention.erased_rows` hashes each `learner_id` in every table with that column and looks it up, so a restore or a backfill is checked without the register holding anyone's ID. It finds the learner in `analytics.learner_activity` and `crm.learners`, and leaves out `billing.payments`, whose rows the exception keeps. The audit log's record of the erasure, in [chapter 8](#produce-evidence-as-data), holds the same request ID and counts, never the learner, so the register is the only place a request meets a learner, as a hash. We treat a keyed hash of an ID as pseudonymized data, never anonymized, so whether the platform may keep the register, and for how long, is a question for its lawyers.
+The check that catches this keeps an erasure register: for each request, its ID and a keyed hash (HMAC-SHA256) of the erased learner's ID, and nothing else. The key is the erasure job's secret, kept like the enforcement layer's pseudonymization key in [chapter 6](#write-masks-as-sql) but a different one, because whoever holds it can hash every learner ID and find whom the register names. After every load, restore and rebuild, `lib.retention.erased_rows` hashes each `learner_id` in every table with that column and looks it up, so a restore or a backfill is checked without the register holding anyone's ID. It finds the learner in `analytics.learner_activity` and `crm.learners`, and leaves out `billing.payments`, whose rows the exception keeps. The audit log's record of the erasure, in [chapter 8](#produce-evidence-as-data), holds the same request ID and counts, never the learner, so the register is the only place a request meets a learner, as a hash. We treat a keyed hash of an ID as pseudonymized data, never anonymized.
 
 **Working rule:** Erase in the source system first, or in the same request, and keep a register of keyed hashes of erased IDs that every load filters against and every run checks, with the key held as a secret apart from the data. Treat a row with an erased ID as an incident, as you would a leak.
 
 ### Other failures {#other-retention-failures}
 
 - **Old snapshots and files keep "deleted" data.** A retention or erasure job that stops after its delete leaves everything readable by time travel, and in PyIceberg the files stay after expiry too. Run [the expiry](#expire-snapshots) and [the sweep](#remove-unreferenced-files) in the same job, then the scan.
-- **Another engine deletes by merge-on-read.** PyIceberg reads the deletion vectors other engines write ([release notes](https://github.com/apache/iceberg-python/releases/tag/pyiceberg-0.12.0)). Rows deleted that way stay in their data files until compaction rewrites them, and a delete file may keep their values: "Both position and equality delete files allow encoding deleted row values with a delete" ([Iceberg table spec](https://iceberg.apache.org/spec/)). Compact the affected files before [the expiry](#expire-snapshots) and [the sweep](#remove-unreferenced-files), and scan the delete files too.
+- **Another engine deletes by merge-on-read.** PyIceberg reads the deletion vectors other engines write ([release notes](https://github.com/apache/iceberg-python/releases/tag/pyiceberg-0.12.0)). Rows deleted that way stay in their data files until compaction rewrites them, and a delete file may keep their values, since both kinds of delete file can encode the values of the rows they delete ([Iceberg table spec](https://iceberg.apache.org/spec/)). Compact the affected files before [the expiry](#expire-snapshots) and [the sweep](#remove-unreferenced-files), and scan the delete files too.
 - **Backups keep everything the sweep deletes.** They are one of the weak points [the EDPB's report](#verify-the-erasure) names. Decide with the people who answer for the backups how they're erased or aged out, and record it with each request.
 - **A derived table nobody erased.** A job that sends no lineage writes a copy the plan can't see, as [chapter 4's uninstrumented export](#job-nobody-instrumented) does. Run `lib.lineage.unaccounted` before every erasure.
 - **A rebuilt table loses its properties.** A pipeline that drops and creates its table loses the generated statistics settings, and the next erasure leaves values in its manifests. Apply the properties after every run, or create tables with them.
@@ -762,7 +822,7 @@ The check that catches this keeps an erasure register: for each request, its ID 
 
 ## What this chapter decided {#retention-decisions}
 
-- **Retention rules are config,** applied against a day the job is given, never the clock. Events are kept 365 days, payments 3,650, and closed tickets 730 days from opening, because the table has no `closed_at`: the platform's choices, not legal advice.
+- **Retention rules are config,** applied against a day the job is given, never the clock. Each period is the platform's own choice, kept in [the rules](#retention-rules-in-a-file), and closed tickets count from opening, because the table has no `closed_at`.
 - **Consent is an attribute the policy reads** at query time; a withdrawal deletes nothing, and tables built with a consent filter are rebuilt.
 - **An erasure is planned from the catalog and the lineage:** every table with a `learner_id` column, then every table lineage reaches.
 - **Exceptions to erasure are the legal team's,** recorded in `governance/retention.toml` with their reasons; the code keeps what they say until the table's retention rule ends it.
@@ -771,4 +831,4 @@ The check that catches this keeps an erasure register: for each request, its ID 
 - **The book's sweep removes unreferenced files,** with a minimum age of 72 hours in production.
 - **Manifests keep no values of protected columns:** metrics mode `none`, generated from the classifications.
 - **Every erasure ends with a scan** of every file, for IDs and 15 characters of each identifying value; its counts are the evidence.
-- **The erasure register keeps a keyed hash of each erased ID,** checked after every load, restore and rebuild; whether to keep it, and how long, is for the lawyers.
+- **The erasure register keeps a keyed hash of each erased ID,** checked after every load, restore and rebuild. Retention and erasure are checked by what remains: a scan after each erasure, a register of hashes, and rules that count from the day the job is given. A scan can pass while data remains somewhere it didn't look, so the register is checked again after every load, restore and rebuild.

@@ -1,7 +1,7 @@
 {
   "name": "data-governance-as-code",
   "displayName": "Data Governance as Code",
-  "version": "2026.11.26",
+  "version": "2026.11.27",
   "description": "Governing a data platform with code that runs in CI: a tested catalog, finding personal data, lineage from pipelines, access policies enforced as row filters and column masks, erasure that removes data, an audit trail, and rules for data used by AI, on an online learning platform's Iceberg tables.",
   "author": {
     "name": "Rolling Edition",

@@ -3,20 +3,22 @@ title: "Data Governance as Code"
 chapter: "A catalog you can test"
 chapter_id: a-catalog-you-can-test
 book: data-governance-as-code
-edition: 2026.11.26
-verified: 2026-11-13
-edition_code: Y6HK-BWT6
+edition: 2026.11.27
+verified: 2026-11-14
+edition_code: 2QX0-VKZT
 canonical: https://rollingedition.com/data-governance-as-code/a-catalog-you-can-test
 license: CC BY 4.0
-attribution: "“A catalog you can test,” chapter 2 of Data Governance as Code, Edition 2026.11.26, examples passed Nov 13, 2026. By Rolling Edition, https://rollingedition.com/data-governance-as-code/a-catalog-you-can-test. Text CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“A catalog you can test,” chapter 2 of Data Governance as Code, Edition 2026.11.27, examples passed Nov 14, 2026. By Rolling Edition, https://rollingedition.com/data-governance-as-code/a-catalog-you-can-test. Text CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # A catalog you can test
 
 By the end of this chapter you can keep a catalog's metadata as code. Every table gets an owner and a domain, and every column a description and a classification, in a file your team reviews. The file is keyed so a rename can't lose anything, written into the Iceberg catalog, and checked by a test that fails when anything is missing. You'll also have a local model draft descriptions and classifications, and measure how often its drafts are wrong before anyone accepts them.
 
-The platform, the online learning platform this book follows, sells professional courses to adult learners and keeps its warehouse in an Iceberg catalog. Eight source tables sit under the namespaces of the teams that run them, such as `crm.learners` and `support.tickets`, and the platform's pipelines build reporting tables from them. [Chapter 1](#governance-end-to-end) built a rough version of the whole governed platform. This chapter makes its catalog solid, and the catalog has three problems. The pipelines keep creating tables, and nothing says who owns `marketing.audience`, the list of learners marketing may email, or whether `ai.review_corpus`, the text the platform's course assistant reads, holds personal data. A column renamed in a schema change can lose its classification without anyone noticing. And every table a pipeline adds needs a description and a classification for each of its columns, written by hand, which is slow enough that teams skip it.
+The platform's catalog has three problems. Its warehouse, an Iceberg catalog kept by an online learning platform whose pipelines keep adding tables, holds eight source tables in namespaces named after the teams that run them, such as `crm.learners` and `support.tickets`. Its pipelines build reporting tables from those and keep creating tables, and nothing says who owns `marketing.audience`, the list of learners marketing may email, or whether `ai.review_corpus`, the text the platform's course assistant reads, holds personal data. A column renamed in a schema change can lose its classification without anyone noticing. And every table a pipeline adds needs a description and a classification for each of its columns, written by hand, which is slow enough that teams skip it.
 
-The chapter's examples use five of the book's shared modules. `lib.catalog.open_catalog` builds a fresh catalog of the platform's tables in a temporary folder, with PyIceberg's SQL catalog on SQLite, which PyIceberg's docs recommend "for exploratory or development purposes" only ([PyIceberg configuration](https://github.com/apache/iceberg-python/blob/pyiceberg-0.12.0/mkdocs/docs/configuration.md)). `lib.pipelines.run` runs one of the platform's pipelines and writes its output to the catalog. `lib.warehouse.connect` opens DuckDB on the catalog's tables, so a query can name them as the platform does, and `lib.policy` evaluates the platform's access policies, which [chapter 5](#access-policies-as-code) writes. And `lib.metadata`, which this chapter builds up, loads the platform's metadata, writes it into the catalog and checks the catalog against it.
+[Chapter 1](#governance-end-to-end) built a rough version of the whole governed platform. This chapter makes its catalog solid.
+
+The chapter's examples use five of the book's shared modules. `lib.catalog.open_catalog` builds a fresh catalog of the platform's tables in a temporary folder, on PyIceberg's SQL catalog over SQLite, which PyIceberg's docs recommend only for exploration and development ([PyIceberg configuration](https://github.com/apache/iceberg-python/blob/pyiceberg-0.12.0/mkdocs/docs/configuration.md)). `lib.pipelines.run` runs one of the platform's pipelines and writes its output to the catalog. `lib.warehouse.connect` opens DuckDB on the catalog's tables, so a query can name them as the platform does, and `lib.policy` evaluates the platform's access policies, which [chapter 5](#access-policies-as-code) writes. And `lib.metadata`, which this chapter builds up, loads the platform's metadata, writes it into the catalog and checks the catalog against it.
 
 ## Keep the metadata in a reviewed file {#keep-metadata-in-a-reviewed-file}
 
@@ -38,11 +40,13 @@ A classification is one of four values, ordered from least to most protected:
 | `personal` | Identifies a person or tells something about one | A learner's email, or text they wrote |
 | `sensitive` | Data whose leak would directly harm someone | A card number, an instructor's bank account |
 
-The order matters: when a column is built from several others, as a pipeline's output columns often are, the stricter classification wins, and `lib.metadata.stricter` returns it. Load the file and count what it says:
+The order matters: when a column is built from several others, as a pipeline's output columns often are, the stricter classification wins, and `lib.metadata.stricter` returns it. Loaded and counted, the file shows what it covers:
 
-Example `metadata-model` (Python 3.12.15 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.26:
+Example `metadata-model` (Python 3.12.15 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.27:
 
 ```python
+"""Loads the metadata file and counts what it describes, then prints four of the learners table's columns, looked up by
+field ID. The prose's point rests on the `country` and `city` lines, whose descriptions give the reason for each classification."""
 from collections import Counter
 
 from lib import metadata
@@ -61,7 +65,7 @@ print("owners:", ", ".join(owners))
 learners = described["crm.learners"]
 print("crm.learners owner:", learners.owner)
 print("crm.learners domain:", learners.domain)
-for field_id in (1, 3, 5, 6):
+for field_id in (1, 3, 5, 6):                    # field IDs, which the file keys columns by, not positions in the table
     column = learners.columns[field_id]
     print(f"crm.learners field {field_id}:", column.name, "|", column.classification, "|", column.description)
 ```
@@ -85,21 +89,25 @@ crm.learners field 5: country | internal | The learner's country, as an ISO 3166
 crm.learners field 6: city | personal | The learner's city. Identifying together with date of birth.
 ```
 
-The file describes 10 tables and 77 columns: the eight source tables and the two reporting tables the platform's analysts rely on. Most columns are `internal`, 57 of them, because most of a warehouse is IDs, dates and counts. The file classifies 12 as `personal` and 2 as `sensitive`, the card number in `billing.payments` and the payout account in `crm.instructors`, and every table belongs to one of 5 owning teams. Each column's description says what a reviewer needs in order to check the classification: `country` is `internal` because a country alone doesn't single anyone out, while `city` is `personal` because, as its description says, it identifies a learner together with their date of birth.
+Most columns are `internal`, because most of a warehouse is IDs, dates and counts: 57 of its 77 columns are. The protected columns are few. Of the file's columns, 12 are `personal`, and `sensitive` holds the card number in `billing.payments` and the payout account in `crm.instructors`. The file covers the eight source tables and the two reporting tables the platform's analysts rely on, and every table belongs to one of 5 owning teams. The point is that each description carries the reason for its classification. `country` is `internal` because a country alone doesn't single anyone out, while `city` is `personal` because, as its description says, it identifies a learner together with their date of birth.
 
-The four values and the one-owner rule are ours, not a standard's. The Open Data Contract Standard (ODCS) records a domain, ownership as a free-text role on a team, and a free-text classification ([ODCS v3.2.0](https://github.com/bitol-io/open-data-contract-standard/tree/v3.2.0/docs)), which its JSON schema accepts as any string ([ODCS JSON schema](https://github.com/bitol-io/open-data-contract-standard/blob/v3.2.0/schema/odcs-json-schema-v3.2.0.json)). The catalog servers differ too. DataHub types its owners ([ownership types](https://docs.datahub.com/docs/ownership/ownership-types)), allows an asset "only one Domain at a time" ([domains](https://docs.datahub.com/docs/domains)), and classifies columns with glossary terms ([business glossary](https://docs.datahub.com/docs/glossary/business-glossary)). In OpenMetadata, "either a team or multiple user can be the owner", a rule that "is enforced at the instance level" and is on by default ([data ownership](https://docs.open-metadata.org/v2.0.x/how-to-guides/guide-for-data-users/data-ownership)), and a classification is a controlled vocabulary of tags ([classification](https://docs.open-metadata.org/v2.0.x/how-to-guides/data-governance/classification)), such as `PII.Sensitive` ([PII tags](https://docs.open-metadata.org/v2.0.x/how-to-guides/data-governance/classification/sample-data-using-pii-tag)). In Databricks' Unity Catalog every object has an owner, who holds every privilege on it ([privileges](https://docs.databricks.com/aws/en/data-governance/unity-catalog/manage-privileges)). Tables and columns carry tags ([tags](https://docs.databricks.com/aws/en/database-objects/tags)), and a governed tag takes values "only from a predefined set of allowed values" ([governed tags](https://docs.databricks.com/aws/en/admin/governed-tags/)). A file like the platform's maps onto each of them. What none of these documents describes is the check this chapter's test makes: a team, never a person, as the owner of every table, and one of the four classifications on every column.
+The four values and the one-owner rule are ours, not a standard's. The Open Data Contract Standard (ODCS) records a domain, an owner as a free-text role on a team, and a free-text classification ([ODCS v3.2.0](https://github.com/bitol-io/open-data-contract-standard/tree/v3.2.0/docs)), and its JSON schema accepts any string as a classification ([ODCS JSON schema](https://github.com/bitol-io/open-data-contract-standard/blob/v3.2.0/schema/odcs-json-schema-v3.2.0.json)). The catalog servers differ too. DataHub types its owners ([ownership types](https://docs.datahub.com/docs/ownership/ownership-types)), and it lets an asset belong to only one domain at a time ([domains](https://docs.datahub.com/docs/domains)). It classifies columns with glossary terms ([business glossary](https://docs.datahub.com/docs/glossary/business-glossary)).
+
+OpenMetadata lets an owner be either a team or several users, a rule enforced at the instance level and on by default ([data ownership](https://docs.open-metadata.org/v2.0.x/how-to-guides/guide-for-data-users/data-ownership)). Its classifications are a controlled vocabulary of tags ([classification](https://docs.open-metadata.org/v2.0.x/how-to-guides/data-governance/classification)), such as `PII.Sensitive` ([PII tags](https://docs.open-metadata.org/v2.0.x/how-to-guides/data-governance/classification/sample-data-using-pii-tag)). In Databricks' Unity Catalog every object has an owner, who holds every privilege on it ([privileges](https://docs.databricks.com/aws/en/data-governance/unity-catalog/manage-privileges)). Tables and columns carry tags ([tags](https://docs.databricks.com/aws/en/database-objects/tags)), and a governed tag takes values "only from a predefined set of allowed values" ([governed tags](https://docs.databricks.com/aws/en/admin/governed-tags/)). A file like the platform's maps onto each of them. None of these documents describes the check this chapter's test makes: a team, never a person, as the owner of every table, and one of the four classifications on every column.
 
 **Working rule:** Keep owners, domains, descriptions and classifications in a file in the repository, reviewed like the pipelines. Use a closed list of classifications, ordered by how much protection each needs, and one owning team per table. If your organization edits metadata in a catalog server's web page, make one side the source and generate the other from it; two sources that both accept edits drift apart.
 
 ## Key column metadata by field ID {#key-column-metadata-by-field-id}
 
-[The platform's metadata file](#keep-metadata-in-a-reviewed-file) keys each column by a number, not by its name, because names change. Iceberg gives every column a **field ID**: "Each field in the tuple is named and has an integer id that is unique in the table schema", and "Renaming an existing field must change the name, but not the field ID" ([Iceberg table spec](https://iceberg.apache.org/spec/)). Readers find a column's values by that ID too, since "Columns in Iceberg data files are selected by field id", so a renamed column still reads the files written before the rename. Metadata keyed by name has nothing to hold on to: after a rename, the old name points at nothing and the new name has no entry.
+[The platform's metadata file](#keep-metadata-in-a-reviewed-file) keys each column by a number, not by its name, because names change. Iceberg gives every column a **field ID**, an integer unique within the table's schema, and the spec requires that a rename keep it: "Renaming an existing field must change the name, but not the field ID" ([Iceberg table spec](https://iceberg.apache.org/spec/)). Readers find values by that ID too, since Iceberg selects a data file's columns by field ID, so a renamed column still reads the files written before the rename ([Iceberg table spec](https://iceberg.apache.org/spec/)). Metadata keyed by name has nothing to hold on to: after a rename, the old name points at nothing and the new name has no entry.
 
-The platform's CRM team wants `crm.learners.email` called `contact_email`, to make room for a work email. The example renames it in a scratch catalog, then looks the column up in two ways: in the platform's metadata file, keyed by field ID, and in a copy keyed by name, the way a spreadsheet of columns usually is:
+The platform's CRM team wants `crm.learners.email` called `contact_email`, to make room for a work email. Staged in a scratch catalog, the rename shows what a name-keyed copy loses. The column is looked up in the metadata file, keyed by field ID, and in a copy keyed by name, as a spreadsheet of columns usually is:
 
-Example `rename-orphans-name-keys` (Python 3.12.15 · pyarrow 26.0.1 · pyiceberg 0.12.0 · regopy 1.5.2), passing in Edition 2026.11.26:
+Example `rename-orphans-name-keys` (Python 3.12.15 · pyarrow 26.0.1 · pyiceberg 0.12.0 · regopy 1.5.2), passing in Edition 2026.11.27:
 
 ```python
+"""Renames crm.learners.email in a scratch catalog, then looks the column up by field ID and by name. The prose's point
+rests on the two classification lines, which disagree, and on the check's `renamed from email` line."""
 from lib import catalog, metadata, policy
 
 platform = catalog.open_catalog(["crm.learners"])
@@ -109,7 +117,7 @@ by_name = {column.name: column.classification for column in by_id.values()}  # a
 
 learners = platform.load_table("crm.learners")
 with learners.update_schema() as update:
-    update.rename_column("email", "contact_email")
+    update.rename_column("email", "contact_email")                           # renames in place: the field ID stays
 field = learners.schema().find_field("contact_email")
 print("contact_email field ID:", field.field_id)
 values = learners.scan(selected_fields=("contact_email",)).to_arrow().column("contact_email")
@@ -138,26 +146,30 @@ check: crm.learners.contact_email: renamed from email since it was reviewed
 a support agent reading contact_email sees it as: redact
 ```
 
-The rename kept field ID 3, and every value came through under the new name: 5,000 of 5,000. The two lookups disagree. Keyed by name, `contact_email` has no classification, and the entry for `email` matches no column. Keyed by field ID, the column is still `personal`. A check built on the name-keyed copy would report an unclassified column and miss that a classified one had gone; the ID-keyed file knows it is the same column.
+The two lookups disagree, and only the one keyed by field ID knows the column is the same. The rename kept field ID 3, and 5,000 of 5,000 values came through under the new name. Keyed by name, `contact_email` has no classification, and the entry for `email` matches no column. Keyed by field ID, the column is still `personal`. A check built on the name-keyed copy would report an unclassified column and miss that a classified one had gone.
 
-The ID-keyed file does notice the rename, and `lib.metadata.problems`, the check this chapter builds on, reports it: `contact_email: renamed from email since it was reviewed`. The data surviving a rename doesn't make the rename harmless. SQL that names `email` breaks, and so does any system that knows columns only by name. Access policies are one: the platform's policies, which [chapter 5](#access-policies-as-code) writes, receive the columns a query reads by name, so they read classifications from a name-keyed view that `lib.policy` generates from this file. When the check fails, someone updates the name in the file, reads the description again, and the generated view follows. Until then, the view has no entry for `contact_email`, and the policies treat a column they can't find as `sensitive`. A support agent, who sees every other personal column of `crm.learners`, gets `contact_email` as `redact`: the rename fails closed, and support notices first.
+The ID-keyed file does notice the rename, and `lib.metadata.problems`, the check this chapter builds on, reports it: `contact_email: renamed from email since it was reviewed`. The data surviving a rename doesn't make the rename harmless: SQL that names `email` breaks, and so does any system that knows columns only by name. The platform's access policies, which [chapter 5](#access-policies-as-code) writes, receive the columns a query reads by name, so they read classifications from a name-keyed view that `lib.policy` generates from this file. When the check fails, someone updates the name in the file, rereads the description, and the generated view follows. Until then, the view has no entry for `contact_email`, and the policies treat a column they can't find as `sensitive`. A support agent, who sees every other personal column of `crm.learners`, gets `contact_email` as `redact`: the rename fails closed, and support notices first.
 
 **Working rule:** Key column metadata by field ID, with the name beside it for people. Treat a name that no longer matches as a reason to review the column's description, not as a new column. Where a system knows columns only by name, generate its name-keyed view from the ID-keyed file, never maintain it by hand.
 
 ## Write descriptions into the table's schema {#write-descriptions-into-the-schema}
 
-[The metadata file](#keep-metadata-in-a-reviewed-file) is where the platform's metadata is reviewed. People and tools that read a table, though, look in the catalog, so some of the metadata has to be copied there. The question is where in the catalog each fact belongs, and Iceberg answers part of it. Each column in an Iceberg schema "may have an optional comment or doc string", its `doc` ([Iceberg table spec](https://iceberg.apache.org/spec/)), which travels with the schema. A table also has properties, a map of strings, but the spec says that map "is used to control settings that affect reading and writing and is not intended to be used for arbitrary metadata."
+[The metadata file](#keep-metadata-in-a-reviewed-file) is where the platform's metadata is reviewed. People and tools that read a table, though, look in the catalog, so some of the metadata has to be copied there. The question is where each fact belongs in the catalog, and Iceberg answers part of it: each column can carry a `doc`, an optional comment that travels with the schema ([Iceberg table spec](https://iceberg.apache.org/spec/)). A table also has properties, a map of strings, but the spec says that map "is used to control settings that affect reading and writing and is not intended to be used for arbitrary metadata."
 
-So we follow the spec as far as we can. Column descriptions go into `doc`. Classifications stay in the file, where the policies and checks read them. The owner and the domain go into two table properties, as a pointer for tools that read only the table, so anyone with a table and no repository can find the team to ask. That last choice goes against the spec's stated intent, and we keep it to those two short values. The Iceberg project's own answer is a separate channel: the REST catalog spec of Iceberg 1.12.0 adds `labels`, ownership or classification that a catalog returns with a table, per table and per field ID, kept out of properties on purpose ([REST catalog spec](https://github.com/apache/iceberg/blob/apache-iceberg-1.12.0/open-api/rest-catalog-open-api.yaml), [pull request 15750](https://github.com/apache/iceberg/pull/15750)). PyIceberg 0.12.0's REST client doesn't read them ([source](https://github.com/apache/iceberg-python/blob/pyiceberg-0.12.0/pyiceberg/catalog/rest/__init__.py)).
+So we follow the spec as far as we can. Column descriptions go into `doc`, and classifications stay in the file, where the policies and checks read them. The owner and the domain go into two table properties, as a pointer for tools that read only the table, so anyone with a table and no repository can find the team to ask. That last choice goes against the spec's stated intent, and we keep it to those two short values.
 
-`lib.metadata.apply` does the copying: for every table the file describes and the catalog holds, it writes each description into its column's `doc`, and the owner and domain into the properties, changing only what differs. Apply it to a fresh catalog of the platform's eight source tables:
+The Iceberg project's own answer is a separate channel. The REST catalog spec of Iceberg 1.12.0 adds `labels`, ownership or classification that a catalog returns with a table, per table and per field ID, kept out of properties on purpose ([REST catalog spec](https://github.com/apache/iceberg/blob/apache-iceberg-1.12.0/open-api/rest-catalog-open-api.yaml)). The change came in with [pull request 15750](https://github.com/apache/iceberg/pull/15750). PyIceberg 0.12.0's REST client doesn't read them ([source](https://github.com/apache/iceberg-python/blob/pyiceberg-0.12.0/pyiceberg/catalog/rest/__init__.py)).
 
-Example `apply-metadata` (Python 3.12.15 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.26:
+`lib.metadata.apply` does the copying. For every table the file describes and the catalog holds, it writes each description into its column's `doc`, and the owner and domain into the properties, changing only what differs. Against a fresh catalog of the platform's eight source tables, `apply` shows what it changes:
+
+Example `apply-metadata` (Python 3.12.15 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.27:
 
 ```python
+"""Writes the metadata file into a fresh catalog of the eight source tables, then applies it again. The prose's point rests
+on the second `tables changed` line, which is zero: applying a file the catalog already matches writes nothing."""
 from lib import catalog, metadata
 
-platform = catalog.open_catalog()
+platform = catalog.open_catalog()                # all eight source tables, with no metadata yet
 described = metadata.load()
 print("crm.learners schema ID before:", platform.load_table("crm.learners").schema().schema_id)
 print("tables changed:", len(metadata.apply(platform, described)))
@@ -165,7 +177,8 @@ print("tables changed:", len(metadata.apply(platform, described)))
 learners = platform.load_table("crm.learners")
 print("crm.learners schema ID after:", learners.schema().schema_id)
 print("email's doc, in the Iceberg schema:", learners.schema().find_field("email").doc)
-scanned = learners.scan(selected_fields=("email",), limit=1).to_arrow()
+scanned = learners.scan(selected_fields=("email",), limit=1).to_arrow()   # one row is enough: the schema comes back with it
+# Arrow keeps an Iceberg column's doc in the field's metadata, under the bytes key b"doc".
 print("email's doc, in a scan's Arrow schema:", scanned.schema.field("email").metadata[b"doc"].decode())
 print("crm.learners properties:", ", ".join(f"{k}={v}" for k, v in sorted(learners.properties.items())))
 print("tables changed by applying again:", len(metadata.apply(platform, described)))
@@ -183,19 +196,21 @@ crm.learners properties: domain=crm, owner=team-crm
 tables changed by applying again: 0
 ```
 
-All 8 tables changed. The description of `email` is now in the Iceberg schema and in the Arrow schema that a scan returns, as field metadata under `doc`, so code that reads the table through PyIceberg gets the description with the data, without knowing the file exists. The properties hold `owner=team-crm` and `domain=crm`, and applying a second time changes 0 tables, so `apply` can run on every merge without writing anything when nothing changed. The schema ID of `crm.learners` went from 0 to 1, although no column's ID, name or type changed, which is the subject of [the next subsection](#a-description-edit-is-a-schema-change).
+Applying the file writes the metadata into the catalog, and applying it again writes nothing, so `apply` can run on every merge. The first run changed 8 tables. The description of `email` is now in the Iceberg schema and in the Arrow schema a scan returns, so code that reads the table through PyIceberg gets it with the data, without knowing the file exists. The properties hold `owner=team-crm` and `domain=crm`. A second run changed 0 tables. The schema ID of `crm.learners` went from 0 to 1, although no column's ID, name or type changed, which is the subject of [the next subsection](#a-description-edit-is-a-schema-change).
 
 ### A description edit is a schema change {#a-description-edit-is-a-schema-change}
 
-Iceberg's spec says that every schema change produces "a new schema that is identified by a unique schema ID, is added to the table's list of schemas, and is set as the table's current schema" ([Iceberg table spec](https://iceberg.apache.org/spec/)). In PyIceberg 0.12.0, editing nothing but a column's `doc` counts as such a change. Edit the description of `learning.reviews.body`, after [`lib.metadata.apply`](#write-descriptions-into-the-schema) has written the platform's descriptions into the schema:
+Iceberg's spec gives every schema change a new schema with its own ID, which becomes the table's current schema and joins the list of schemas the table keeps ([Iceberg table spec](https://iceberg.apache.org/spec/)). In PyIceberg 0.12.0, editing nothing but a column's `doc` counts as such a change. Change nothing but the description of `learning.reviews.body`, after [`lib.metadata.apply`](#write-descriptions-into-the-schema) has written the platform's descriptions, and watch the schema ID:
 
-Example `doc-edit-schema-id` (Python 3.12.15 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.26:
+Example `doc-edit-schema-id` (Python 3.12.15 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.27:
 
 ```python
+"""Changes one column's description after the metadata is applied, then compares schema IDs with field IDs, names and
+types. The prose's point rests on the schema ID changing while the shape stays the same, which the assert checks."""
 from lib import catalog, metadata
 
 platform = catalog.open_catalog(["learning.reviews"])
-metadata.apply(platform, metadata.load())
+metadata.apply(platform, metadata.load())    # the platform's descriptions go in first, so the edit below is the only change
 reviews = platform.load_table("learning.reviews")
 before = reviews.schema()
 print("schema ID before the edit:", before.schema_id)
@@ -203,6 +218,7 @@ print("schema ID before the edit:", before.schema_id)
 with reviews.update_schema() as update:                                        # change one description, nothing else
     update.update_column("body", doc="The review's text, as the learner wrote it. May hold names and emails.")
 after = reviews.schema()
+assert metadata.shape(before) == metadata.shape(after), "a doc edit changed a field ID, name or type"
 print("schema ID after the edit:", after.schema_id)
 print("schemas the table keeps:", len(reviews.metadata.schemas))
 print("schema ID changed:", before.schema_id != after.schema_id)
@@ -219,7 +235,7 @@ schema ID changed: True
 field IDs, names or types changed: False
 ```
 
-The schema ID went from 1 to 2, and the table keeps 3 schemas: the original, the one `apply` wrote, and this one. Yet the field IDs, names and types are the same, which `lib.metadata.shape` compares. A rule such as "classify a table again whenever its schema ID changes" would fire on every description edit, and teams learn to ignore a check that fires for nothing.
+A description edit changes the schema ID and nothing a review should compare. The ID went from 1 to 2, and the table keeps 3 schemas: the original, the one `apply` wrote, and this one. The field IDs, names and types are the same, which `lib.metadata.shape` compares. A rule that asks for a new classification whenever the schema ID changes would fire on every description edit, and teams learn to ignore a check that fires for nothing.
 
 **Working rule:** Write column descriptions into Iceberg's `doc`, so every reader of the table gets them, and keep classifications in the reviewed file. Put no more than an owner and a domain in table properties, and say in your code why. To decide whether a schema change needs a review, compare field IDs, names and types, never schema IDs.
 
@@ -227,17 +243,20 @@ The schema ID went from 1 to 2, and the table keeps 3 schemas: the original, the
 
 With [the metadata applied to the catalog](#write-descriptions-into-the-schema), the remaining question is whether the file covers everything the catalog holds. A test answers it, and it has to start from the catalog: a check that walks the file finds problems only in tables someone already described. `lib.metadata.problems` lists every table in every namespace of the catalog, and reports a table with no entry or no owner, a column whose field ID has no classification, a classification that isn't one of the four, and a column renamed since it was reviewed.
 
-On the platform, the gaps come from pipelines. Each pipeline is one `create table ... as select ...` in `pipelines/`, and running it creates a table. Run all four of them on a fresh catalog, then check:
+On the platform, the gaps come from pipelines. Each pipeline is one `create table ... as select ...` in `pipelines/`, and running it creates a table. Run all four pipelines on a fresh catalog and check it, and the gaps show:
 
-Example `metadata-gaps` (Python 3.12.15 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0 · sqlglot 30.31.0), passing in Edition 2026.11.26:
+Example `metadata-gaps` (Python 3.12.15 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0 · sqlglot 30.31.0), passing in Edition 2026.11.27:
 
 ```python
+"""Runs the platform's four pipelines on a fresh catalog, then checks every table in it against the metadata file. The
+prose's point rests on the `problems found` line and the two `no metadata` lines that follow it."""
 from lib import catalog, metadata, pipelines
 
 platform = catalog.open_catalog()
-for name in ("course_performance", "learner_activity", "marketing_audience", "review_corpus"):
+for name in ("course_performance", "learner_activity", "marketing_audience", "review_corpus"):   # each one a file in pipelines/
     print("pipeline output:", pipelines.run(platform, name))
 
+# The eight source tables plus the four outputs the pipelines just created.
 tables = [f"{namespace}.{name}" for (namespace,) in platform.list_namespaces() for _, name in platform.list_tables(namespace)]
 print("tables in the catalog:", len(tables))
 found = metadata.problems(platform, metadata.load())
@@ -259,7 +278,9 @@ problem: ai.review_corpus: no metadata
 problem: marketing.audience: no metadata
 ```
 
-The catalog holds 12 tables, and the check finds 2 problems: `ai.review_corpus: no metadata` and `marketing.audience: no metadata`. The two analytics tables pass, because the file describes them, with field IDs that match the order of their `select` lists. The two that fail are the ones that matter most. `marketing.audience` copies learners' names and emails out of `crm.learners`, and `ai.review_corpus` copies the free text of reviews, so both hold personal data, and neither has an owner who would answer for it. Until someone classifies them, the platform's access policy, `governance/policies/access.rego`, treats every column it can't find a classification for as `sensitive`, so the gap fails closed rather than open. [Chapter 4](#classifications-from-lineage) proposes their classifications from lineage, from the columns each output column was built from.
+The two tables that fail are the ones that matter most. The catalog holds 12 tables, and the check finds 2 problems: `ai.review_corpus: no metadata` and `marketing.audience: no metadata`. The two analytics tables pass, because the file describes them, with field IDs that match the order of their `select` lists.
+
+`marketing.audience` copies learners' names and emails out of `crm.learners`, and `ai.review_corpus` copies the free text of reviews, so both hold personal data, and neither has an owner who would answer for it. Until someone classifies them, the platform's access policy, `governance/policies/access.rego`, treats every column it can't find a classification for as `sensitive`, so the gap fails closed rather than open. [Chapter 4](#classifications-from-lineage) proposes their classifications from lineage, from the columns each output column was built from.
 
 The test is then one line, `assert not metadata.problems(catalog, metadata.load())`, run wherever the catalog changes: in the pull request that adds a pipeline, which [chapter 10](#run-every-rule-as-one-job) sets up, and on a schedule against the production catalog, which catches tables created outside any pull request.
 
@@ -267,13 +288,17 @@ The test is then one line, `assert not metadata.problems(catalog, metadata.load(
 
 ## Catch schema changes before the metadata goes stale {#catch-schema-changes}
 
-[The test against the catalog](#test-the-catalog-against-the-metadata) catches new tables. Tables also change underneath their metadata, through schema evolution, and each kind of change needs its own response. A rename keeps the field ID, so the entry survives, but its description may now be wrong. An added column gets a field ID nobody has reviewed. A dropped column leaves an entry that describes nothing. And dropping a column and adding one with the same name doesn't bring the old column back: the spec says that "adding a new field assigns a new ID for that field" ([Iceberg table spec](https://iceberg.apache.org/spec/)), so it's a different column. Schemas change often enough for this to matter: in a study of ten open-source applications, "80% of the schema changes happened in 20-30% of the tables" ([Qiu, Li and Su, 2013](https://www.cs.ucdavis.edu/~su/publications/fse13-db-study.pdf)). The study is of application databases, not warehouses. If a warehouse's changes concentrate the same way, its busiest tables are the ones whose metadata goes stale first.
+[The test against the catalog](#test-the-catalog-against-the-metadata) catches new tables. Tables also change underneath their metadata, and each kind of change needs its own response. A rename keeps the field ID, so the entry survives, but its description may now be wrong. An added column gets a field ID nobody has reviewed. A dropped column leaves an entry that describes nothing. And dropping a column and adding one with the same name doesn't bring the old column back: the spec gives every added field a new ID ([Iceberg table spec](https://iceberg.apache.org/spec/)), so the re-added column is a different column.
 
-Stage two of those changes on `crm.learners` in a scratch catalog: add a column, `preferred_name`, with a description but no classification, then drop `country` and add it back. Run `problems`, and `lib.metadata.dropped`, which reports entries whose field ID the table no longer has. Then read the dropped column's values the way Iceberg's time travel does, by naming a snapshot:
+Schema changes are frequent enough for this to matter. In a study of ten open-source applications, "80% of the schema changes happened in 20-30% of the tables" ([Qiu, Li and Su, 2013](https://www.cs.ucdavis.edu/~su/publications/fse13-db-study.pdf)). That study covers application databases, not warehouses. If a warehouse's changes concentrate the same way, its busiest tables are the ones whose metadata goes stale first.
 
-Example `schema-changes-checked` (Python 3.12.15 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.26:
+Two changes staged on `crm.learners` show both checks working: one adds `preferred_name`, with a description but no classification, and the other drops `country` and adds it back. `problems` and `lib.metadata.dropped`: the second reports entries whose field ID the table no longer has, and reads the dropped column's values the way Iceberg's time travel does, by naming a snapshot:
+
+Example `schema-changes-checked` (Python 3.12.15 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.27:
 
 ```python
+"""Adds an unreviewed column, drops a column and adds it back, then runs both checks and reads the dropped values by time
+travel. The prose's point rests on the two field IDs, and on the time-travel line, which still returns every country."""
 from pyiceberg.types import StringType
 
 from lib import catalog, metadata
@@ -289,12 +314,13 @@ with learners.update_schema() as update:                                     # a
 with learners.update_schema() as update:                                     # drop a column, then add it back
     update.delete_column("country")
 with learners.update_schema() as update:
-    update.add_column("country", StringType())
+    update.add_column("country", StringType())                               # an added field gets a new ID, never the old one
 
 country = learners.schema().find_field("country")
 print("country field ID, after it was added back:", country.field_id)
 values = learners.scan(selected_fields=("country",)).to_arrow().column("country")
 print("country values after it was added back:", f"{values.null_count:,} nulls of {len(values):,}")
+# Minus the one snapshot that wrote the rows: the schema changes wrote none of their own.
 print("snapshots the schema changes wrote:", len(learners.metadata.snapshots) - 1)
 old = learners.scan(snapshot_id=written.snapshot_id, selected_fields=("country",)).to_arrow().column("country")
 print("country values, read by time travel to that snapshot:", f"{len(old) - old.null_count:,} of {len(old):,}")
@@ -317,21 +343,26 @@ problems(): crm.learners.country: not classified
 dropped(): crm.learners.country: field 5 is described but no longer in the table
 ```
 
-Both added columns are unclassified, and the check says so. The description given to `preferred_name` doesn't count: a description is a doc in the schema, and a classification is a reviewed line in the file. `country` came back as field 17, with 5,000 nulls of 5,000, because a plain scan reads with the current schema, where field 5 no longer exists. The learners' countries haven't gone anywhere. A schema change writes no snapshot (0 here), so the table's snapshot is still the one its rows were written in, and a snapshot records the "ID of the table's current schema when the snapshot was created" ([Iceberg table spec](https://iceberg.apache.org/spec/)). In PyIceberg 0.12.0, a scan that names a snapshot reads with that schema, and it returns 5,000 of 5,000 countries. Every snapshot stays readable this way, each with its own schema, until it expires and the files only it referenced are deleted. Dropping a column deletes nothing: [chapter 7](#retention-consent-erasure) is where the platform erases data for good. To the check, the re-added `country` is a column like any other new one, and `dropped` reports that the reviewed entry for the old field now describes nothing. The rename from [the field ID section](#key-column-metadata-by-field-id) is the third kind of change, and `problems` reports it the same way, as a column to review.
+A re-added column is a new column: `country` came back as field 17, not 5, and a plain scan, which reads through the current schema where the old field no longer exists, returns 5,000 nulls of 5,000 for it. Both added columns are unclassified, and the description given to `preferred_name` doesn't count: a description is a doc in the schema, and a classification is a reviewed line in the file.
+
+The learners' countries haven't gone anywhere. A schema change writes no snapshot (0 here), so the table's current snapshot is still the one its rows were written in. A snapshot records the ID of the table's current schema when it was created ([Iceberg table spec](https://iceberg.apache.org/spec/)), and in PyIceberg 0.12.0, a scan that names a snapshot reads with that schema. So time travel to that snapshot returns 5,000 of 5,000 countries. Dropping a column deletes none of its values: [chapter 7](#retention-consent-erasure) is where the platform erases data for good. `dropped` reports that the reviewed entry for the old field now describes nothing. The rename from [the field ID section](#key-column-metadata-by-field-id) is the third kind of change, which `problems` reports as a column to review.
 
 **Working rule:** Run both checks on every schema change: `problems` for columns nobody has classified or renamed ones nobody has re-read, and `dropped` for entries that describe nothing. Remove a dropped column's entry in the same pull request that drops it. Dropping a personal column doesn't remove its values, which time travel reads until the snapshots that hold them expire and their files are deleted. Never drop and re-add a column to rename it: rename it in place, so it keeps its field ID and its data.
 
 ## Classify pseudonymous IDs for joining {#classify-pseudonymous-ids}
 
-[The metadata file](#keep-metadata-in-a-reviewed-file) classifies some columns that point at people as `internal`, and the most common of them is `learner_id`. It's a number with no meaning of its own, and the platform's analysts and data scientists need it to join enrollments, events, payments and tickets to each other. An ID like this is a **pseudonymous identifier**: it doesn't name anyone, but it leads to someone through another table. Count the tables that carry it and how many enrollments one join turns into an email, then ask the platform's access policy who can make that join and see names:
+[The metadata file](#keep-metadata-in-a-reviewed-file) classifies some columns that point at people as `internal`, and the most common of them is `learner_id`. It's a number with no meaning of its own, and the platform's analysts and data scientists need it to join enrollments, events, payments and tickets to each other. An ID like this is a **pseudonymous identifier**: it doesn't name anyone, but it leads to someone through another table. One ID reaches further than its classification suggests. The code counts the tables that carry it, joins enrollments to learners, and asks the access policy who can make that join and see names:
 
-Example `pseudonymous-learner-id` (Python 3.12.15 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0 · regopy 1.5.2), passing in Edition 2026.11.26:
+Example `pseudonymous-learner-id` (Python 3.12.15 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0 · regopy 1.5.2), passing in Edition 2026.11.27:
 
 ```python
+"""Counts the tables that carry learner_id and how many enrollments one join resolves to an email, then asks the access
+policy who sees learners' names and also reads another table's learner_id. The prose's point rests on the enrollments
+line and the last line's list of users."""
 from lib import catalog, metadata, policy, warehouse
 
 described = metadata.load()
-carrying = {name: table.column("learner_id") for name, table in described.items() if table.column("learner_id")}
+carrying = {name: table.column("learner_id") for name, table in described.items() if table.column("learner_id")}   # column() gives None when absent
 print("tables with a learner_id column:", len(carrying))
 print("learner_id classified as:", ", ".join(sorted({column.classification for column in carrying.values()})))
 personal = [c.name for c in described["crm.learners"].columns.values() if c.classification == "personal"]
@@ -339,18 +370,19 @@ print("personal columns in crm.learners:", ", ".join(personal))
 
 con = warehouse.connect(catalog.open_catalog(["crm.learners", "learning.enrollments"]))
 found, total = con.execute("""
+    -- the left join keeps every enrollment; count(l.email) counts only those whose learner has an email
     select count(l.email), count(*)
     from learning.enrollments e left join crm.learners l on l.learner_id = e.learner_id
-""").fetchall()[0]
+""").fetchall()[0]                              # fetchall returns a list of rows, and this query has exactly one
 print("enrollments whose learner_id leads to an email:", f"{found:,} of {total:,}")
 
 # Who can put a name on another table's learner_id: users who read that table and see crm.learners' names unmasked.
 rego, seeing, naming = policy.interpreter(), [], []
 for user in policy.data_document()["platform"]["users"]:
     names = policy.decide(policy.request(user, "crm.learners", ["full_name"]), rego)
-    if names["allow"] and "full_name" not in names["column_masks"]:
+    if names["allow"] and "full_name" not in names["column_masks"]:          # allowed, and not masked: the name shows in clear
         seeing.append(user)
-        tables = [t for t in carrying if t != "crm.learners"
+        tables = [t for t in carrying if t != "crm.learners"                 # the other tables with learner_id this user may read
                   and policy.decide(policy.request(user, t, ["learner_id"]), rego)["allow"]]
         naming += [f"{user} ({', '.join(tables)})"] if tables else []
 print("users who see learners' names in crm.learners:", ", ".join(seeing))
@@ -368,9 +400,11 @@ users who see learners' names in crm.learners: agent-a01, agent-a05, agent-a09, 
 of them, users who read learner_id in another table: agent-a01 (support.tickets), agent-a05 (support.tickets), agent-a09 (support.tickets)
 ```
 
-`learner_id` appears in 7 tables, classified `internal` in every one. One join to `crm.learners` gives every enrollment an email, 20,000 of 20,000, and with it the learner's name, phone number, address and date of birth, which are among the table's `personal` columns. The EU's General Data Protection Regulation (GDPR) addresses data like this in Recital 26: "Personal data which have undergone pseudonymisation, which could be attributed to a natural person by the use of additional information should be considered to be information on an identifiable natural person" ([GDPR, Recital 26](https://eur-lex.europa.eu/eli/reg/2016/679/oj)). What the recital means for a given platform is a question for its lawyers, and we don't answer it.
+One join reaches a person: 20,000 of 20,000 enrollments lead to an email, and with the email come the learner's name, phone number, address and date of birth, which are among the table's `personal` columns. Yet `learner_id` is `internal` in all 7 tables that carry it.
 
-What we do decide is how the book's code treats the ID. `internal` describes what the column reveals in the table that holds it, and each `learner_id`'s description in the metadata file says the rest, as `learning.enrollments`' does: "The learner who enrolled. Identifies a person when joined with crm.learners." The protection sits on the table that resolves the ID: [chapter 5](#return-the-decision-as-one-document) decides who may read the personal columns of `crm.learners`, and the example's last lines ask its policy who sees learners' names there: agent-a01, agent-a05, agent-a09, marketing-1. Of them, only the support agents also read a `learner_id` in another table: agent-a01 (support.tickets), agent-a05 (support.tickets), agent-a09 (support.tickets). They can put a name on every ticket of their region, and that's their job. Marketing sees names but reads no other table that holds the ID.
+The EU's General Data Protection Regulation (GDPR) addresses data like this in Recital 26: "Personal data which have undergone pseudonymisation, which could be attributed to a natural person by the use of additional information should be considered to be information on an identifiable natural person" ([GDPR, Recital 26](https://eur-lex.europa.eu/eli/reg/2016/679/oj)). What the recital means for a given platform is a question for its lawyers, and we don't answer it.
+
+What we do decide is how the book's code treats the ID. `internal` describes what the column reveals in the table that holds it, and each `learner_id`'s description in the metadata file says the rest, naming `crm.learners` as the table that resolves it, as `learning.enrollments`' does: "The learner who enrolled. Identifies a person when joined with crm.learners." The protection sits on the table that resolves the ID. [Chapter 5](#return-the-decision-as-one-document) decides who may read the personal columns of `crm.learners`, and the example's last lines ask its policy who sees learners' names there: agent-a01, agent-a05, agent-a09, marketing-1. Of them, only the support agents also read a `learner_id` in another table: agent-a01 (support.tickets), agent-a05 (support.tickets), agent-a09 (support.tickets). They can put a name on every ticket of their region, and that's their job. Marketing sees names but reads no other table that holds the ID.
 
 So the policy, not the ID's classification, decides who can make the join. Classifying `support.tickets.learner_id` as `personal` would change nothing for support, the only group that reads the table, because the policy already shows support every personal column. Erasure, in [chapter 7](#plan-erasure-from-lineage), has to reach every table that holds a learner's `learner_id`, whatever its classification. We call such IDs pseudonymized, never anonymized.
 
@@ -378,28 +412,30 @@ So the policy, not the ID's classification, decides who can make the join. Class
 
 ## Draft metadata with a local model {#draft-descriptions-with-a-local-model}
 
-[The test against the catalog](#test-the-catalog-against-the-metadata) tells you which columns nobody has described, but it doesn't write the descriptions. Writing a description and choosing a classification for every column is the slowest part of keeping a catalog, and the work comes back with every table a pipeline adds. A language model can draft both from what a catalog tool can show it: a column's name, its type and a few of its values. Research supports both the help and its limits. On one benchmark, given instructions and a two-step pipeline, ChatGPT labelled the semantic types of table columns with "F1 scores of over 85% in zero- and one-shot setups" ([Korini and Bizer, 2023](https://arxiv.org/abs/2306.00745)), while a study of generated column descriptions found that "models unsurprisingly struggle with columns that exhibit inherent ambiguity, highlighting the need for manual expert input" ([Wretblad et al., 2024](https://arxiv.org/abs/2408.04691)). So a model's draft is a proposal that a person accepts, corrects or rejects in the pull request, and the first job is to measure how wrong the drafts are, so the review knows where to look.
+[The test against the catalog](#test-the-catalog-against-the-metadata) tells you which columns nobody has described, but it doesn't write the descriptions. Writing a description and choosing a classification for every column is the slowest part of keeping a catalog, and the work comes back with every table a pipeline adds. A language model can draft both from what a catalog tool can show it: a column's name, its type and a few of its values. Research supports both the help and its limits. On one benchmark, given instructions and a two-step pipeline, ChatGPT labelled the semantic types of table columns with "F1 scores of over 85% in zero- and one-shot setups" ([Korini and Bizer, 2023](https://arxiv.org/abs/2306.00745)). A study of generated column descriptions found that models struggle with columns whose meaning is ambiguous, and that those columns need manual expert input ([Wretblad et al., 2024](https://arxiv.org/abs/2408.04691)). So a model's draft is a proposal that a person accepts, corrects or rejects in the pull request. The first job is to measure how wrong the drafts are, so the review knows where to look.
 
-The book's drafts, which the examples call the metadata suggestions, were recorded once by `recordings/metadata_suggestions.py`, and the examples read that recording; none of them calls a model. The script runs Qwen3-1.7B at a pinned revision. The model is open, under the Apache-2.0 licence, so anyone can download the same weights. At 1.7 billion parameters it runs on a CPU, with no GPU, which keeps the sample values on the machine that runs it. And it's instruction-tuned, with a switch that turns off its "thinking", the reasoning it otherwise writes before it answers. The script decodes greedily, always taking the most likely next token, although the model's card suggests sampling in this mode: "Temperature=0.7, TopP=0.8, TopK=20, and MinP=0" ([Qwen3-1.7B](https://huggingface.co/Qwen/Qwen3-1.7B)). A recording has to come out the same when someone records it again, and a sampled answer is one draw among many.
+The book's drafts, which the examples call the metadata suggestions, were recorded once by `recordings/metadata_suggestions.py`, and the examples read that recording, so none of them calls a model. The script runs Qwen3-1.7B at a pinned revision. The model is open, under the Apache-2.0 licence, so anyone can download the same weights. At 1.7 billion parameters it runs on a CPU, with no GPU, which keeps the sample values on the machine that runs it. And it's instruction-tuned, with a switch that turns off its "thinking", the reasoning it otherwise writes before it answers. The script decodes greedily, taking the most likely next token, although the model's card suggests sampling in this mode: "Temperature=0.7, TopP=0.8, TopK=20, and MinP=0" ([Qwen3-1.7B](https://huggingface.co/Qwen/Qwen3-1.7B)). A recording has to come out the same when someone records it again, and a sampled answer is one draw among many.
 
-For each column of the platform's eight source tables, the model saw the table's name, the column's name and Iceberg type, five of the column's values chosen with a fixed seed, and the four classifications with the meanings in [the table of classifications](#keep-metadata-in-a-reviewed-file). Each meaning comes with two examples, and none of them is a column the platform has: for `sensitive`, "a government ID number or a health condition". The model was asked for a one-sentence description and one classification, as JSON. The recording's manifest names the model, its revision, a hash of the prompts and settings, and the date, so anyone can record again and compare.
+For each column of the platform's eight source tables, the model saw the table's name, the column's name and Iceberg type, five of the column's values chosen with a fixed seed, and the four classifications with the meanings from [the table of classifications](#keep-metadata-in-a-reviewed-file). Each meaning comes with two examples, and none of them is a column the platform has. For `sensitive`, they are "a government ID number or a health condition". The model was asked for a one-sentence description and one classification, as JSON. The recording's manifest names the model, its revision, a hash of the prompts and settings, and the date, so anyone can record again and compare.
 
 Those five values are personal data whenever the column is: for `support.tickets.body`, the tickets the model read held learners' names, street addresses, a phone number, a date of birth and a bank account number. A model running on your own machine keeps them there. Sending the same prompt to a hosted model sends the platform's personal data to another company, which needs the same decision as any other transfer of it.
 
-Compare the model's classifications with the reviewed ones in the metadata file:
+Set against the reviewed file, each draft's classification shows whether it agrees:
 
-Example `suggestion-agreement` (Python 3.12.15 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.26:
+Example `suggestion-agreement` (Python 3.12.15 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.27:
 
 ```python
+"""Compares the recorded model's classification of each source column with the reviewed one, and counts how many agree.
+The prose's point rests on the agreement line and on the two lines counting personal and sensitive columns."""
 from collections import Counter
 
 from lib import metadata
 
 reviewed = metadata.load()                                   # governance/metadata.toml, reviewed by people
-suggested = metadata.suggestions()                           # data/recorded/metadata-suggestions
-assert all(reviewed[s.table].columns[s.field_id].name == s.column for s in suggested)
+suggested = metadata.suggestions()                           # the recorded answers under the book's prompt: no model runs here
+assert all(reviewed[s.table].columns[s.field_id].name == s.column for s in suggested)   # each answer names the file's column at its field ID
 print("columns the model was asked about:", len(suggested))
-print("answers that parse as the JSON asked for:", sum(s.description is not None for s in suggested))
+print("answers that parse as the JSON asked for:", sum(s.description is not None for s in suggested))   # None when the answer isn't that JSON
 print("answers with one of the four classifications:", sum(s.classification in metadata.LEVELS for s in suggested))
 
 pairs = Counter((reviewed[s.table].columns[s.field_id].classification, s.classification) for s in suggested)
@@ -428,21 +464,25 @@ personal columns the model called personal: 0 of 12
 sensitive columns the model called sensitive: 0 of 2
 ```
 
-All 64 answers are valid JSON with one of the four classifications, which shows that the prompt's format worked and says nothing about whether the answers are right. They agree with the review on 40 of 64 (62%) columns, and that single number hides where the misses are. Most of the agreement is `internal` columns called `internal`. Of the platform's personal columns, the model called 0 of 12 `personal`, and of its `sensitive` ones, the card number and the payout account, 0 of 2: it called both `internal`.
+All 64 answers are valid JSON with one of the four classifications, which shows the format worked and says nothing about whether the answers are right. They agree with the review on 40 of 64 (62%) columns, and that single number hides where the misses are. Most of the agreement is `internal` columns called `internal`. Of the platform's personal columns, the model called 0 of 12 `personal`, and of its `sensitive` ones, the card number and the payout account, 0 of 2: it called both `internal`.
 
 ### Examples in a prompt can give the answer away {#prompt-examples-give-answers-away}
 
-A prompt's examples are part of the measurement. The script also records the same model on the same columns under a second prompt, identical but for its examples. It gives examples for `personal` and `sensitive` only, and they're the platform's own columns: `personal` is "a name, contact details, an address or text they wrote", and `sensitive` is "a card number or a bank account". Those two are `billing.payments.card_number` and `crm.instructors.payout_iban`, the platform's only sensitive columns. Compare the two prompts' answers:
+A prompt's examples are part of the measurement. The script also records the same model on the same columns under a second prompt, identical but for its examples. That prompt gives examples for `personal` and `sensitive` only, and they're the platform's own columns. For `personal`, they are "a name, contact details, an address or text they wrote", and for `sensitive`, a card number or a bank account. Those two are `billing.payments.card_number` and `crm.instructors.payout_iban`, the only sensitive columns. Side by side, the answers show what the examples change:
 
-Example `suggestions-with-platform-examples` (Python 3.12.15 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.26:
+Example `suggestions-with-platform-examples` (Python 3.12.15 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.27:
 
 ```python
+"""Scores the recorded answers under two prompts against the reviewed classifications: the book's prompt, whose examples
+come from outside the platform, and one whose examples are the platform's own columns. The prose's point rests on
+the sensitive-column lines and the agreement counts."""
 from lib import metadata
 
 reviewed = metadata.load()
 prompts = {"the book's prompt": metadata.SUGGESTIONS,
            "the prompt with the platform's columns as examples": metadata.SUGGESTIONS_WITH_PLATFORM_EXAMPLES}
 for name, path in prompts.items():
+    # Each recorded answer, paired with the classification the file reviewed for its column.
     suggested = [(s, reviewed[s.table].columns[s.field_id].classification) for s in metadata.suggestions(path)]
     agree = sum(s.classification == was for s, was in suggested)
     print(f"{name}, classifications that agree with the review:", f"{agree} of {len(suggested)}")
@@ -470,21 +510,28 @@ the prompt with the platform's columns as examples, crm.instructors.payout_iban:
 the prompt with the platform's columns as examples, billing.payments.card_number: sensitive
 ```
 
-Named in the prompt, the sensitive columns come out right: 2 of 2. With examples from elsewhere, the model finds 0 of 2 and calls both `internal`. Overall agreement hardly moves, 41 of 64 against 40 of 64, so a report of one number would never show the difference. The examples for `personal` didn't help: 0 of 12 personal columns came out `personal` under that prompt too. "A card number" names `card_number` almost word for word, while "a name" leaves the model to decide that `full_name` is one, and it didn't. A prompt whose examples match the catalog makes a model look better than it is, on the columns that need protection most, so the book's prompt takes its examples from outside the platform's data.
+A prompt that names the platform's own columns gets the sensitive ones right, and the book's prompt does not. With the platform's columns as examples, the model gets 2 of 2 sensitive columns right. The book's prompt gets 0 of 2, and calls both `internal`.
+
+Overall agreement hardly moves, 41 of 64 against 40 of 64, so one number would never show the difference. Personal columns gained nothing from their examples: 0 of 12 came out `personal` under that prompt too.
+
+"A card number" names `card_number` almost word for word, while "a name" leaves the model to decide that `full_name` is one, and it didn't. A prompt whose examples match the catalog makes a model look better than it is, on the columns that need protection most, so the book's prompt takes its examples from outside the platform's data.
 
 **Working rule:** Draft metadata with a model only from inputs you're allowed to send it, preferably to a model on your own machines. Record each answer with the model, its revision, the prompt and the settings, so a reviewer can see what produced each draft, and parse and validate every answer before anything reads it. Take the prompt's examples from outside the tables you measure it on. Report agreement with the reviewed metadata per classification, never as one number.
 
 ## Measure where the model's drafts are wrong {#measure-where-the-drafts-are-wrong}
 
-[The recorded drafts](#draft-descriptions-with-a-local-model), a local model's descriptions and classifications for the platform's source tables, agree with the reviewed classifications on most columns. For governance, what matters more is which way they miss. A classification more protected than it should be costs a reviewer a minute and an analyst a masked column. One less protected than it should be leaves personal data where the policies treat it as staff data, or as data anyone may see. Count the misses in each direction:
+[The recorded drafts](#draft-descriptions-with-a-local-model), a local model's descriptions and classifications for the platform's source tables, agree with the reviewed classifications on most columns. For governance, which way they miss matters more. A classification more protected than it should be costs a reviewer a minute and an analyst a masked column. One less protected than it should be leaves personal data where the policies treat it as staff data, or as data anyone may see. Splitting the misses by direction shows which way the model fails:
 
-Example `suggestion-mistakes` (Python 3.12.15 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.26:
+Example `suggestion-mistakes` (Python 3.12.15 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.27:
 
 ```python
+"""Counts the recorded classifications that protect a column less than the review does, and those that protect it more,
+then lists each kind of miss. The prose's point rests on the two counts and on the `personal columns the model called
+internal` line."""
 from lib import metadata
 
 reviewed = metadata.load()
-rank = metadata.LEVELS.index
+rank = metadata.LEVELS.index                                   # a column's position in LEVELS: a larger rank is more protected
 weaker, stronger = [], []
 for s in metadata.suggestions():
     if s.classification not in metadata.LEVELS:                    # an answer nobody can act on goes to a person
@@ -524,23 +571,27 @@ public columns the model called internal: 3
 which, public called internal: learning.courses.course_id, learning.courses.title, learning.courses.price_usd
 ```
 
-The model protected 19 columns less than the review did, and 5 more. Every personal and sensitive column is among the less protected. The model called 9 personal columns `internal`, including both tables' names and emails, the learners' phone numbers, dates of birth and notes, the IP addresses of events and the text of support tickets. It called 3 of them `public`: learners' cities and street addresses, and the text of their reviews. The prompt's own meaning for `personal` begins "identifies a person or tells something about one", and a name or an email does both. The other 5 less protected columns are three timestamps, an event's type and its user agent, which the model called `public` where the review chose `internal`: a smaller mistake, but one a reviewer still has to catch. The misses the other way cost less. The model called the 2 consent flags `sensitive`, and 3 public columns of the course catalog `internal`.
+The model's misses fall on the columns that need protection most. It protected 19 columns less than the review did, and 5 more. Every personal and sensitive column is among the less protected. It called 9 personal columns `internal`, among them the names and emails in both `crm.learners` and `crm.instructors`, the learners' phone numbers, dates of birth and notes, the IP addresses of events and the text of support tickets. It called 3 of them `public`: learners' cities and street addresses, and the text of their reviews. The prompt's own meaning for `personal` begins "identifies a person or tells something about one", and a name or an email does both.
 
-Descriptions go wrong differently. Put four of the model's descriptions beside the reviewed ones:
+The other less protected columns are timestamps, an event's type and its user agent, which the model called `public` where the review chose `internal`: a smaller mistake, but one a reviewer still has to catch. The misses the other way cost less. The model called the 2 consent flags `sensitive`, and it called the course catalog's public ID, title and price `internal`.
 
-Example `suggestion-descriptions` (Python 3.12.15 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.26:
+Descriptions fail in another way, and four of the model's show it beside the reviewed ones:
+
+Example `suggestion-descriptions` (Python 3.12.15 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.27:
 
 ```python
+"""Prints the recorded description beside the reviewed one for four columns, where the review knows what a name, a type
+and five values can't say. The prose's point rests on the pairs themselves, read one after another."""
 from lib import metadata
 
 reviewed = metadata.load()
-suggested = {(s.table, s.column): s for s in metadata.suggestions()}
+suggested = {(s.table, s.column): s for s in metadata.suggestions()}   # keyed by name, so the four columns below can be named
 
 # Four columns where the platform knows more than a name, a type and five values say.
 for table, column in [("crm.learners", "ai_training_consent"), ("crm.learners", "support_region"),
                       ("crm.learners", "notes"), ("billing.payments", "card_number")]:
     print(f"{table}.{column}, the model:", suggested[table, column].description)
-    print(f"{table}.{column}, the review:", reviewed[table].column(column).description)
+    print(f"{table}.{column}, the review:", reviewed[table].column(column).description)   # looked up by name: the file keys columns by field ID, but `column()` finds one by name
 ```
 
 Output:
@@ -556,21 +607,21 @@ billing.payments.card_number, the model: Stores the card numbers of customers fo
 billing.payments.card_number, the review: The full card number, from a legacy export. Should not be stored at all.
 ```
 
-Every description is fluent and plausible, and three of the four miss something that only someone who knows how the platform fills the column could write. `ai_training_consent` records whether the learner's text may train the platform's AI, not whether the learner wants training, and a null in it means the question was never asked. `notes` are written by support agents about learners, as the values hint ("Asked about invoices for their employer."), not by learners. And `card_number` is a legacy column that shouldn't exist at all, which is the most useful thing its description can say. The fourth is right in substance: the platform gives each learner the `support_region` of the support team that serves their country, and the model calls it their "regional support area". Nothing in a fluent description says which kind it is, so a reviewer reads every one. The authors of one method for generating column descriptions name the same failure in single-prompt models: "hallucinated or incomplete descriptions" ([Cai et al., 2026](https://arxiv.org/abs/2606.21685)).
+Every description is fluent and plausible, and three of the four miss something that only someone who knows how the platform fills the column could write. `ai_training_consent` records whether the learner's text may train the platform's AI, not whether the learner wants training, and a null means the question was never asked. `notes` are written by support agents about learners, as the values hint, with a note about invoices for the learner's employer, and not by learners. And `card_number` is a legacy column that shouldn't exist at all, which is the most useful thing its description can say. The fourth is right in substance: the platform gives each learner the `support_region` of the support team that serves their country, and the model calls it their "regional support area". Nothing in a fluent description says whether it's right or missing something, so a reviewer reads every one. The authors of one method for generating column descriptions name the same failure in single-prompt models, which write hallucinated or incomplete descriptions ([Cai et al., 2026](https://arxiv.org/abs/2606.21685)).
 
-These are one small model's answers, decoded greedily, to two prompts. The recording can't tell whether the 0 of 12 for personal columns comes from the model's size or from drafting with only a name, a type and five values to go on. A larger model or a better prompt may get more columns right, and the way to find out is to measure it the same way, against the reviewed file, before trusting it with tables nobody has reviewed.
+These are one small model's answers, decoded greedily, to two prompts. The recording can't tell whether the model misses personal columns because of its size, or because it drafts with only a name, a type and five values to go on. A larger model or a better prompt may get more columns right, and the way to find out is to measure it the same way, against the reviewed file, before trusting it with tables nobody has reviewed.
 
 **Working rule:** Let a model raise a column's classification, never lower it: only a reviewer lowers one, in the pull request, with the reason in the column's description. Treat the model's descriptions as first drafts for someone who knows the column to rewrite. Before a model drafts metadata for tables nobody has reviewed, measure it against your reviewed metadata, per classification and per direction of error, and measure again whenever the model or the prompt changes.
 
 ## What goes wrong in production {#catalog-in-production}
 
-A catalog's metadata fails quietly: nothing errors when it goes stale, and every failure below looks like a complete catalog until someone relies on it.
+Nothing errors when metadata goes stale, and each failure below looks complete until someone relies on it.
 
 - **Owners go stale.** Teams are renamed, merged and dissolved, and the owner in the file outlives them. A team, unlike a person, survives one departure, but the file still needs a check that every owner is a team that exists, run against your organization's list of teams. If you keep ownership in ODCS, its team members carry a `dateOut` and a `replacedByUsername` ([ODCS v3.2.0](https://github.com/bitol-io/open-data-contract-standard/tree/v3.2.0/docs)), which a check can read to find a team with no current member in the `owner` role.
-- **Descriptions describe last year's schema.** A column's meaning changes while its name and type stay the same: `amount` starts holding refunds as negative numbers, or `status` gains a value. No schema check sees it. Code comments fail the same way, and research on them found that a detector catches inconsistencies more accurately when it sees the code change, "before they are committed", than when it sees only the code that results ([Panthaplackel et al., 2021](https://arxiv.org/abs/2010.01625)). The comparison holds for columns only where the change is in a pull request: a pipeline's code changes in a diff, but a source system can change what it writes with no diff anywhere. Where there is a diff, make the pull request that changes a pipeline's logic show the descriptions of the columns it writes, so the reviewer reads both.
+- **Descriptions describe last year's schema.** A column's meaning changes while its name and type stay the same: `amount` starts holding refunds as negative numbers, or `status` gains a value. No schema check sees it. Code comments fail the same way. Research on them found that a detector catches inconsistencies more accurately when it sees a change before it's committed than when it sees only the code that results ([Panthaplackel et al., 2021](https://arxiv.org/abs/2010.01625)). For columns, the comparison holds only where a pull request shows the change. A pipeline's code changes in a diff, but a source system can change what it writes with no diff anywhere. Where there is a diff, make the pull request that changes a pipeline's logic show the descriptions of the columns it writes, so the reviewer reads both.
 - **Metadata keyed by name goes stale on a rename.** A spreadsheet of columns, a dashboard's data dictionary, or a policy written against column names loses a column on every rename, as [the field ID section](#key-column-metadata-by-field-id) shows, and reports nothing. Generate every name-keyed view from the ID-keyed file, and run `problems` on every schema change.
-- **Two sources of metadata overwrite each other.** A catalog server's web page and a file in a repository both accept edits, and a sync in either direction loses the other's. DataHub keeps edits made in its UI apart from ingested metadata "to avoid accidental overwrites of user-provided data by ingestion pipelines" ([DataHub dataset entity](https://docs.datahub.com/docs/generated/metamodel/entities/dataset)). Choose one source, and make the other read-only or generated.
-- **Description edits trigger reviews nobody needs.** In PyIceberg every doc edit gives the schema a new ID, as [the doc edit above](#a-description-edit-is-a-schema-change) shows, so a review keyed on schema IDs fires for nothing, and people learn to ignore it. Compare field IDs, names and types instead.
+- **Two sources of metadata overwrite each other.** A catalog server's web page and a file in a repository both accept edits, and a sync in either direction loses the other's. DataHub keeps edits made in its UI apart from ingested metadata, so that ingestion pipelines don't overwrite what users entered ([DataHub dataset entity](https://docs.datahub.com/docs/generated/metamodel/entities/dataset)). Choose one source, and make the other read-only or generated.
+- **Description edits trigger reviews nobody needs.** In PyIceberg every doc edit gives the schema a new ID, as [the doc edit above](#a-description-edit-is-a-schema-change) shows, so a review keyed on schema IDs fires for nothing. Compare field IDs, names and types instead.
 - **Drafted classifications are approved in bulk.** A pull request that adds forty model-drafted columns gets its descriptions read and its classifications skimmed, and [the recorded drafts](#measure-where-the-drafts-are-wrong) show where that leads. List each drafted classification separately from the descriptions, least protected first, so the reviewer sees what each draft would leave unprotected.
 - **A table created outside the pipelines escapes the test.** A notebook or a one-off backfill creates a table nobody will add to the file. Run [`problems`](#test-the-catalog-against-the-metadata) on a schedule against the production catalog, not only in pull requests.
 
@@ -585,4 +636,4 @@ A catalog's metadata fails quietly: nothing errors when it goes stale, and every
 - **`learner_id` is `internal`** in every table, with a description that says it resolves through `crm.learners`. The protection sits on that table, and the access policy decides who may join the two with names in view.
 - **`apply` and `problems` run on every change:** `apply` writes the file into the catalog on every merge, and `problems` runs in every pull request and on a schedule against the production catalog.
 - **The model that drafts metadata runs on the platform's own machines,** because the sample values it's shown are personal data whenever the column is.
-- **Model-drafted metadata is a proposal.** Descriptions and classifications drafted by a local model are recorded, measured against the reviewed file and rewritten by a person. A model may raise a classification, never lower it: the recorded model called 0 of 12 personal columns `personal`, and found the sensitive ones only when the prompt named them.
+- **Model-drafted metadata is a proposal.** Drafts are recorded with their model, measured against the reviewed file, and rewritten by a person. A model may raise a classification, never lower it. A prompt that names the catalog's own columns flatters the model, so the examples in a prompt come from outside the platform's data. A stale description becomes a failed check.
