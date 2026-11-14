@@ -3,12 +3,12 @@ title: "Open Table Formats"
 chapter: "Build a first table, end to end"
 chapter_id: first-table
 book: open-table-formats
-edition: 2026.11.5
-verified: 2026-11-10
-edition_code: 5XY7-09KG
+edition: 2026.11.6
+verified: 2026-11-14
+edition_code: 7P1Z-JFJ2
 canonical: https://rollingedition.com/open-table-formats/first-table
 license: CC BY 4.0
-attribution: "“Build a first table, end to end,” chapter 1 of Open Table Formats, Edition 2026.11.5, examples passed Nov 10, 2026. By Rolling Edition, https://rollingedition.com/open-table-formats/first-table. Text CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Build a first table, end to end,” chapter 1 of Open Table Formats, Edition 2026.11.6, examples passed Nov 14, 2026. By Rolling Edition, https://rollingedition.com/open-table-formats/first-table. Text CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Build a first table, end to end
 
@@ -26,9 +26,9 @@ By the end of this chapter you can commit batches of rows to a table, read the t
 
 You know SQL, Python and Parquet, and you know what a partition is. This chapter does not explain them.
 
-The book follows one case throughout: an hourly pageviews table, which we call the pageviews table. Each row says how many times one public Wikipedia article was viewed in one hour, in one language edition. The rows cover six hours of 3 June 2024, from 00:00 to 05:59 UTC. They come from the [Wikimedia pageviews dumps](https://dumps.wikimedia.org/other/pageviews/2024/2024-06/), which the Wikimedia project releases under CC0. The book keeps the 500 most-viewed titles in each hour, across the English, German, French and Japanese editions, after special pages are removed. The day is fixed and in the past, so the dumps for it will not change, and the data in the repository will not go stale. [The data folder's README](https://github.com/rollingedition/book-open-table-formats/blob/13f10ba2166ecbad813d583d2792c4d618a786b6/examples/data/README.md) gives the source, the licence and the exact cut.
+The book follows one case throughout: an hourly pageviews table, which we call the pageviews table. Each row says how many times one public Wikipedia article was viewed in one hour, in one language edition. The rows cover six hours of 3 June 2024, from 00:00 to 05:59 UTC. They come from the [Wikimedia pageviews dumps](https://dumps.wikimedia.org/other/pageviews/2024/2024-06/), which the Wikimedia project releases under CC0. The book keeps the 500 most-viewed titles in each hour, across the English, German, French and Japanese editions, after special pages are removed. The day is fixed and in the past, so the dumps for it will not change, and the data in the repository will not go stale. [The data folder's README](https://github.com/rollingedition/book-open-table-formats/blob/a917156a8ff947942a0ff79949efc3324c9c51af/examples/data/README.md) gives the source, the licence and the exact cut.
 
-The data is messy on purpose. Titles carry underscores and non-Latin scripts, and the counts are skewed: the top title in hour 00 has far more views than the title at position 500. Every row in the cut has a `response_bytes` of 0, as the [data folder's README](https://github.com/rollingedition/book-open-table-formats/blob/13f10ba2166ecbad813d583d2792c4d618a786b6/examples/data/README.md) records. The book keeps the column as the cut gives it, so it is 0 throughout. These values stay in the data, because a table format has to store them as they are.
+The data is messy on purpose. Titles carry underscores and non-Latin scripts, and the counts are skewed: the top title in hour 00 has far more views than the title at position 500. Every row in the cut has a `response_bytes` of 0, as the [data folder's README](https://github.com/rollingedition/book-open-table-formats/blob/a917156a8ff947942a0ff79949efc3324c9c51af/examples/data/README.md) records. The book keeps the column as the cut gives it, so it is 0 throughout. These values stay in the data, because a table format has to store them as they are.
 
 ## What a table format adds to files {#what-a-table-format-adds}
 
@@ -40,7 +40,7 @@ Where the metadata sits differs too. An Iceberg table keeps a metadata file that
 
 The example below loads six hours into Iceberg, Delta Lake and DuckLake, one hour at a time, then reads each table back and compares the totals.
 
-Example `rough-lakehouse` (Python 3.12.15 · deltalake 1.6.6 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.5:
+Example `rough-lakehouse` (Python 3.12.15 · deltalake 1.6.6 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.6:
 
 ```python
 """Load six hours into Iceberg, Delta Lake and DuckLake, then read each table back."""
@@ -184,7 +184,7 @@ The `hour_utc` column holds a timestamp without a time zone, in UTC, and the two
 
 Each append is one commit. The example below creates the table, appends hours 00, 01 and 02 in order, and then lists the snapshots in commit order with their operation and the rows each commit added.
 
-Example `append-hours` (Python 3.12.15 · deltalake 1.6.6 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.5:
+Example `append-hours` (Python 3.12.15 · deltalake 1.6.6 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.6:
 
 ```python
 """Create the Iceberg table, append hours 00 to 02 as three commits, then repeat hour 00."""
@@ -261,7 +261,7 @@ With the table in place, you want to ask it questions. DuckDB runs SQL, but an I
 
 The example below appends the three hours and asks two questions: the five most-viewed titles in hour 00, and the total views across the three hours. It checks the total against the sum that the scan itself gives.
 
-Example `scan-into-duckdb` (Python 3.12.15 · deltalake 1.6.6 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.5:
+Example `scan-into-duckdb` (Python 3.12.15 · deltalake 1.6.6 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.6:
 
 ```python
 """Read the current Iceberg snapshot into DuckDB and check the totals."""
@@ -353,6 +353,6 @@ The first chapter's path is short, and it hides four problems that you will meet
 - **Unpartitioned tables.** Chapter 1 creates tables without a partition spec. Chapter 4 changes the partitioning. The pyiceberg-core package is pinned beside pyiceberg, because the day and hour transforms in chapter 4 need it.
 - **Inlining off in the examples.** DuckLake examples set `DATA_INLINING_ROW_LIMIT` to 0, so each insert writes a Parquet file and the file counts mean the same thing wherever the book prints them.
 - **Delta tables are read through deltalake's `QueryBuilder` only.** The reading helper in `examples/lib/lakehouse.py` takes that path, and each later chapter that reads a Delta table uses the same helper.
-- **Real data, not a stand-in.** The examples read the cut of the six public dumps that [the data README](https://github.com/rollingedition/book-open-table-formats/blob/13f10ba2166ecbad813d583d2792c4d618a786b6/examples/data/README.md) describes. The book ships no generated data for this chapter.
+- **Real data, not a stand-in.** The examples read the cut of the six public dumps that [the data README](https://github.com/rollingedition/book-open-table-formats/blob/a917156a8ff947942a0ff79949efc3324c9c51af/examples/data/README.md) describes. The book ships no generated data for this chapter.
 - **SQLite for the Iceberg catalog.** A SQLite file needs no server, so the Iceberg examples run on a laptop with the network off. The examples also turn off DuckDB's automatic extension download, so a run that needs the network fails instead of fetching.
 - **Labels stand in for IDs.** The examples print `snapshot 1`, `snapshot 2` and so on in place of snapshot IDs, so the printed output does not change from run to run.

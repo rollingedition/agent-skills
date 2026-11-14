@@ -1,7 +1,7 @@
 {
   "name": "open-table-formats",
   "displayName": "Open Table Formats",
-  "version": "2026.11.5",
+  "version": "2026.11.6",
   "description": "How Iceberg, Delta Lake and DuckLake store a table, change it, clean it up, register it in a catalog and move it to another format, on one hourly pageviews table, with examples that run offline on a laptop.",
   "author": {
     "name": "Rolling Edition",

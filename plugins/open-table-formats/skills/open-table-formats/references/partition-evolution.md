@@ -3,12 +3,12 @@ title: "Open Table Formats"
 chapter: "Change partitioning without rewriting old files"
 chapter_id: partition-evolution
 book: open-table-formats
-edition: 2026.11.5
-verified: 2026-11-10
-edition_code: 5XY7-09KG
+edition: 2026.11.6
+verified: 2026-11-14
+edition_code: 7P1Z-JFJ2
 canonical: https://rollingedition.com/open-table-formats/partition-evolution
 license: CC BY 4.0
-attribution: "“Change partitioning without rewriting old files,” chapter 4 of Open Table Formats, Edition 2026.11.5, examples passed Nov 10, 2026. By Rolling Edition, https://rollingedition.com/open-table-formats/partition-evolution. Text CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Change partitioning without rewriting old files,” chapter 4 of Open Table Formats, Edition 2026.11.6, examples passed Nov 14, 2026. By Rolling Edition, https://rollingedition.com/open-table-formats/partition-evolution. Text CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Change partitioning without rewriting old files
 
@@ -46,7 +46,7 @@ with table.update_spec() as update:
 
 Both calls go in one block, so the table gets one spec change with the day field gone. The example lists the specs in order and the transform of each field. The field names are the ones this book uses: `ts_day` and `ts_hour`, so a spec label says which transform each field applies. The source column stays `hour_utc`. The day field is a transform of that column, and the hour field is another, so a reader's filter on the column keeps working across both eras.
 
-Example `day-then-hour-spec` (Python 3.12.15 · deltalake 1.6.6 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.5:
+Example `day-then-hour-spec` (Python 3.12.15 · deltalake 1.6.6 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.6:
 
 ```python
 """Partition an Iceberg table by day, then change the spec to hour and load three more hours.
@@ -127,7 +127,7 @@ A partition spec is a way to skip files. Before a query reads a file, the planne
 
 The example plans three scans. Two filters each ask for one hour: hour 01 of the case's day, which was loaded before the change, and hour 04, which was loaded after it. The third has no filter, which is a full scan. It counts the planned files for each, before the spec change from day to hour partitions (see [moving to hourly partitions](#daily-to-hourly-partitions)) and after the three hour-partitioned loads.
 
-Example `plan-files-by-partition` (Python 3.12.15 · deltalake 1.6.6 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.5:
+Example `plan-files-by-partition` (Python 3.12.15 · deltalake 1.6.6 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.6:
 
 ```python
 """Count the files an Iceberg scan plans for two hours and for the whole table, before and after a spec change.
@@ -222,7 +222,7 @@ DeltaError: Generic error: Specified table partitioning does not match table par
 
 The example first makes that write with `mode="overwrite"` alone, and prints the error. It then makes the same write with `schema_mode="overwrite"`, which is the setting the library's API at the pins uses in place of the older `overwrite_schema` flag. The rows are read into memory before the overwrite starts, because an overwrite replaces every row the table holds. Writing the rows back is the only way to keep them.
 
-Example `delta-partition-overwrite` (Python 3.12.15 · deltalake 1.6.6 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.5:
+Example `delta-partition-overwrite` (Python 3.12.15 · deltalake 1.6.6 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.6:
 
 ```python
 """Change a Delta Lake table's partition columns from day to hour, which rewrites the table.
@@ -299,7 +299,7 @@ The Delta change is a rewrite of the table's current files, not a metadata edit.
 
 **DuckLake** stores partitioning as a table setting in its catalog, and a change applies to later loads only. The [DuckLake documentation](https://ducklake.select/docs/stable/duckdb/advanced_features/partitioning) says the partitioning keys of a table affect only the data written after the change. The example sets the table to partition by `hour(hour_utc)`, loads one more hour, and counts the data files before and after that load. The helper attaches the catalog with inlining off, so each load writes a data file, and the file count shows what each load did.
 
-Example `ducklake-partition-alter` (Python 3.12.15 · deltalake 1.6.6 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.5:
+Example `ducklake-partition-alter` (Python 3.12.15 · deltalake 1.6.6 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.6:
 
 ```python
 """Set a DuckLake table's partitioning to hour, then load one more hour and count the files each load wrote.

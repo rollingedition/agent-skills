@@ -3,12 +3,12 @@ title: "Open Table Formats"
 chapter: "Expire snapshots and remove unreferenced files"
 chapter_id: expiry-and-cleanup
 book: open-table-formats
-edition: 2026.11.5
-verified: 2026-11-10
-edition_code: 5XY7-09KG
+edition: 2026.11.6
+verified: 2026-11-14
+edition_code: 7P1Z-JFJ2
 canonical: https://rollingedition.com/open-table-formats/expiry-and-cleanup
 license: CC BY 4.0
-attribution: "“Expire snapshots and remove unreferenced files,” chapter 7 of Open Table Formats, Edition 2026.11.5, examples passed Nov 10, 2026. By Rolling Edition, https://rollingedition.com/open-table-formats/expiry-and-cleanup. Text CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Expire snapshots and remove unreferenced files,” chapter 7 of Open Table Formats, Edition 2026.11.6, examples passed Nov 14, 2026. By Rolling Edition, https://rollingedition.com/open-table-formats/expiry-and-cleanup. Text CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Expire snapshots and remove unreferenced files
 
@@ -42,7 +42,7 @@ The overwrite adds two snapshots, not one. pyiceberg writes a delete snapshot th
 
 The expiry call deletes no data files, so the example counts them. It counts the distinct files that the snapshots list, and the files on disk that no snapshot lists. Here is the example:
 
-Example `expire-iceberg-snapshots` (Python 3.12.15 · deltalake 1.6.6 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.5:
+Example `expire-iceberg-snapshots` (Python 3.12.15 · deltalake 1.6.6 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.6:
 
 ```python
 """Expire three Iceberg snapshots by ID, then count the data files they kept alive."""
@@ -138,7 +138,7 @@ The default retention in deltalake is 168 hours, seven days. A table can set its
 
 A dry run lists the files that a real vacuum would delete and deletes none of them. Run one before every vacuum, and compare its count with the table's history. The case is three appends, a delete in version 3 and an append in version 4. A short list can be checked by hand: here, each file in the list is one that a delete removed, and the one that matters is the delete in version 3. Here is the example:
 
-Example `vacuum-delta-dry-run` (Python 3.12.15 · deltalake 1.6.6 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.5:
+Example `vacuum-delta-dry-run` (Python 3.12.15 · deltalake 1.6.6 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.6:
 
 ```python
 """Vacuum a Delta table: dry run first, then the teaching-only zero-hour run, then a read of a removed version."""
@@ -208,7 +208,7 @@ A third call, `ducklake_delete_orphaned_files`, handles files that no snapshot l
 
 The case: attaching the catalog and creating the schema and the table through the helpers makes three snapshots before any rows. The attach makes snapshot 1, and the two `CREATE` statements make snapshots 2 and 3. This book labels DuckLake's snapshots from 1 in commit order, so label N is DuckLake's snapshot number N−1, because DuckLake counts from 0. The example then inserts hours 00 to 02, deletes hour 02, and inserts the corrected hour 02. That makes 8 snapshots, which the example labels "snapshot 1" up to the last one. The last is the corrected insert. The one before it is the delete, which drops the old hour-02 file. The insert before that, snapshot 6, is the last snapshot that lists it.
 
-Example `ducklake-expire-cleanup` (Python 3.12.15 · deltalake 1.6.6 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.5:
+Example `ducklake-expire-cleanup` (Python 3.12.15 · deltalake 1.6.6 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.6:
 
 ```python
 """Expire DuckLake snapshots, then clean up the files they released, in two steps."""

@@ -3,12 +3,12 @@ title: "Open Table Formats"
 chapter: "Correct rows with deletes, updates and merges"
 chapter_id: corrections-and-merges
 book: open-table-formats
-edition: 2026.11.5
-verified: 2026-11-10
-edition_code: 5XY7-09KG
+edition: 2026.11.6
+verified: 2026-11-14
+edition_code: 7P1Z-JFJ2
 canonical: https://rollingedition.com/open-table-formats/corrections-and-merges
 license: CC BY 4.0
-attribution: "“Correct rows with deletes, updates and merges,” chapter 5 of Open Table Formats, Edition 2026.11.5, examples passed Nov 10, 2026. By Rolling Edition, https://rollingedition.com/open-table-formats/corrections-and-merges. Text CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Correct rows with deletes, updates and merges,” chapter 5 of Open Table Formats, Edition 2026.11.6, examples passed Nov 14, 2026. By Rolling Edition, https://rollingedition.com/open-table-formats/corrections-and-merges. Text CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Correct rows with deletes, updates and merges
 
@@ -34,7 +34,7 @@ The two libraries in this chapter take the predicate in different forms. pyicebe
 
 The example deletes hour 02 rows with fewer than 180 views. The number is a choice of this chapter. The cut in [chapter 1](#land-three-hours) keeps only the most-viewed rows in each hour, so a predicate for fewer than two views matches nothing. pyiceberg warns with `UserWarning: Delete operation did not match any records` and writes no snapshot, as its [source](https://raw.githubusercontent.com/apache/iceberg-python/pyiceberg-0.12.0/pyiceberg/table/__init__.py) shows. A threshold of 180 catches a few of the least-viewed rows in hour 02, which is enough to show what a delete writes.
 
-Example `delete-low-views` (Python 3.12.15 · deltalake 1.6.6 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.5:
+Example `delete-low-views` (Python 3.12.15 · deltalake 1.6.6 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.6:
 
 ```python
 """Delete the rows below 180 views from hour 02 in Iceberg, in a Delta Lake copy and in DuckLake."""
@@ -144,7 +144,7 @@ The key finds the row that a change applies to, and it decides when two incoming
 
 pyiceberg's `upsert` takes an Arrow table of rows and the columns that form the key, passed as `join_cols`. It returns the count of rows it updated and the count it inserted. A row counts as updated only when a non-key column changed, so a row that is identical to the table is not counted as updated. Copy-on-write still rewrites such a row when its file also holds a changed row.
 
-Example `redeliver-hour-upsert` (Python 3.12.15 · deltalake 1.6.6 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.5:
+Example `redeliver-hour-upsert` (Python 3.12.15 · deltalake 1.6.6 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.6:
 
 ```python
 """Upsert the corrected hour 02 into the Iceberg table on its key, then upsert it again."""
@@ -238,7 +238,7 @@ The `WHEN NOT MATCHED` branch also inserts `response_bytes`, which is 0 in every
 
 The `AND t.views <> s.views` condition matters. Without it, the `MERGE` would update and count every matched row, so a rerun would count them all again. With it, a matched row whose counts already agree is left alone and not counted. The examples do not run the statement without the condition, so the first half of that sentence is a reading of the statement, not a measured count.
 
-Example `merge-correction-ducklake` (Python 3.12.15 · deltalake 1.6.6 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.5:
+Example `merge-correction-ducklake` (Python 3.12.15 · deltalake 1.6.6 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.6:
 
 ```python
 """MERGE the corrected hour 02, and its late row, into the DuckLake copy, then run the same MERGE again."""
@@ -310,7 +310,7 @@ The second table in this book, `wiki.domains`, maps each domain code to a langua
 
 An `UPDATE` would change the label. The `MERGE` shape also has a `WHEN NOT MATCHED` clause, which inserts a domain code the table does not hold yet, so a feed that adds a domain can use the same statement. A rerun that finds the label already set changes nothing. This table lives only in DuckLake, so the merge runs there. The pageviews table is merged in DuckLake in [MERGE in DuckLake](#merge-in-ducklake). In a pipeline, the label you merge here is the label that [chapter 8's join](#join-tables-from-two-catalogs) returns.
 
-Example `merge-domains-label` (Python 3.12.15 · deltalake 1.6.6 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.5:
+Example `merge-domains-label` (Python 3.12.15 · deltalake 1.6.6 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.6:
 
 ```python
 """MERGE a changed language label into the domains table in DuckLake, then run the same MERGE again."""
@@ -372,7 +372,7 @@ Three things go wrong with corrections in practice: a repeated key, a loop of si
 
 **A repeated key in the batch.** A correction sent twice, or two rows with the same key from a bad join, makes the batch invalid. The example sends one corrected row twice. pyiceberg refuses the upsert before it writes anything:
 
-Example `duplicate-source-keys` (Python 3.12.15 · deltalake 1.6.6 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.5:
+Example `duplicate-source-keys` (Python 3.12.15 · deltalake 1.6.6 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.6:
 
 ```python
 """Show what an upsert or a MERGE does when the batch has two rows for one key."""
