@@ -3,12 +3,12 @@ title: "Data Governance as Code"
 chapter: "A catalog you can test"
 chapter_id: a-catalog-you-can-test
 book: data-governance-as-code
-edition: 2026.11.27
+edition: 2026.11.28
 verified: 2026-11-14
-edition_code: 2QX0-VKZT
+edition_code: GR11-MS4B
 canonical: https://rollingedition.com/data-governance-as-code/a-catalog-you-can-test
 license: CC BY 4.0
-attribution: "“A catalog you can test,” chapter 2 of Data Governance as Code, Edition 2026.11.27, examples passed Nov 14, 2026. By Rolling Edition, https://rollingedition.com/data-governance-as-code/a-catalog-you-can-test. Text CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“A catalog you can test,” chapter 2 of Data Governance as Code, Edition 2026.11.28, examples passed Nov 14, 2026. By Rolling Edition, https://rollingedition.com/data-governance-as-code/a-catalog-you-can-test. Text CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # A catalog you can test
 
@@ -42,7 +42,7 @@ A classification is one of four values, ordered from least to most protected:
 
 The order matters: when a column is built from several others, as a pipeline's output columns often are, the stricter classification wins, and `lib.metadata.stricter` returns it. Loaded and counted, the file shows what it covers:
 
-Example `metadata-model` (Python 3.12.15 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.27:
+Example `metadata-model` (Python 3.12.15 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.28:
 
 ```python
 """Loads the metadata file and counts what it describes, then prints four of the learners table's columns, looked up by
@@ -103,7 +103,7 @@ OpenMetadata lets an owner be either a team or several users, a rule enforced at
 
 The platform's CRM team wants `crm.learners.email` called `contact_email`, to make room for a work email. Staged in a scratch catalog, the rename shows what a name-keyed copy loses. The column is looked up in the metadata file, keyed by field ID, and in a copy keyed by name, as a spreadsheet of columns usually is:
 
-Example `rename-orphans-name-keys` (Python 3.12.15 · pyarrow 26.0.1 · pyiceberg 0.12.0 · regopy 1.5.2), passing in Edition 2026.11.27:
+Example `rename-orphans-name-keys` (Python 3.12.15 · pyarrow 26.0.1 · pyiceberg 0.12.0 · regopy 1.5.2), passing in Edition 2026.11.28:
 
 ```python
 """Renames crm.learners.email in a scratch catalog, then looks the column up by field ID and by name. The prose's point
@@ -162,7 +162,7 @@ The Iceberg project's own answer is a separate channel. The REST catalog spec of
 
 `lib.metadata.apply` does the copying. For every table the file describes and the catalog holds, it writes each description into its column's `doc`, and the owner and domain into the properties, changing only what differs. Against a fresh catalog of the platform's eight source tables, `apply` shows what it changes:
 
-Example `apply-metadata` (Python 3.12.15 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.27:
+Example `apply-metadata` (Python 3.12.15 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.28:
 
 ```python
 """Writes the metadata file into a fresh catalog of the eight source tables, then applies it again. The prose's point rests
@@ -202,7 +202,7 @@ Applying the file writes the metadata into the catalog, and applying it again wr
 
 Iceberg's spec gives every schema change a new schema with its own ID, which becomes the table's current schema and joins the list of schemas the table keeps ([Iceberg table spec](https://iceberg.apache.org/spec/)). In PyIceberg 0.12.0, editing nothing but a column's `doc` counts as such a change. Change nothing but the description of `learning.reviews.body`, after [`lib.metadata.apply`](#write-descriptions-into-the-schema) has written the platform's descriptions, and watch the schema ID:
 
-Example `doc-edit-schema-id` (Python 3.12.15 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.27:
+Example `doc-edit-schema-id` (Python 3.12.15 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.28:
 
 ```python
 """Changes one column's description after the metadata is applied, then compares schema IDs with field IDs, names and
@@ -245,7 +245,7 @@ With [the metadata applied to the catalog](#write-descriptions-into-the-schema),
 
 On the platform, the gaps come from pipelines. Each pipeline is one `create table ... as select ...` in `pipelines/`, and running it creates a table. Run all four pipelines on a fresh catalog and check it, and the gaps show:
 
-Example `metadata-gaps` (Python 3.12.15 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0 · sqlglot 30.31.0), passing in Edition 2026.11.27:
+Example `metadata-gaps` (Python 3.12.15 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0 · sqlglot 30.31.0), passing in Edition 2026.11.28:
 
 ```python
 """Runs the platform's four pipelines on a fresh catalog, then checks every table in it against the metadata file. The
@@ -294,7 +294,7 @@ Schema changes are frequent enough for this to matter. In a study of ten open-so
 
 Two changes staged on `crm.learners` show both checks working: one adds `preferred_name`, with a description but no classification, and the other drops `country` and adds it back. `problems` and `lib.metadata.dropped`: the second reports entries whose field ID the table no longer has, and reads the dropped column's values the way Iceberg's time travel does, by naming a snapshot:
 
-Example `schema-changes-checked` (Python 3.12.15 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.27:
+Example `schema-changes-checked` (Python 3.12.15 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.28:
 
 ```python
 """Adds an unreviewed column, drops a column and adds it back, then runs both checks and reads the dropped values by time
@@ -353,7 +353,7 @@ The learners' countries haven't gone anywhere. A schema change writes no snapsho
 
 [The metadata file](#keep-metadata-in-a-reviewed-file) classifies some columns that point at people as `internal`, and the most common of them is `learner_id`. It's a number with no meaning of its own, and the platform's analysts and data scientists need it to join enrollments, events, payments and tickets to each other. An ID like this is a **pseudonymous identifier**: it doesn't name anyone, but it leads to someone through another table. One ID reaches further than its classification suggests. The code counts the tables that carry it, joins enrollments to learners, and asks the access policy who can make that join and see names:
 
-Example `pseudonymous-learner-id` (Python 3.12.15 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0 · regopy 1.5.2), passing in Edition 2026.11.27:
+Example `pseudonymous-learner-id` (Python 3.12.15 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0 · regopy 1.5.2), passing in Edition 2026.11.28:
 
 ```python
 """Counts the tables that carry learner_id and how many enrollments one join resolves to an email, then asks the access
@@ -422,7 +422,7 @@ Those five values are personal data whenever the column is: for `support.tickets
 
 Set against the reviewed file, each draft's classification shows whether it agrees:
 
-Example `suggestion-agreement` (Python 3.12.15 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.27:
+Example `suggestion-agreement` (Python 3.12.15 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.28:
 
 ```python
 """Compares the recorded model's classification of each source column with the reviewed one, and counts how many agree.
@@ -470,7 +470,7 @@ All 64 answers are valid JSON with one of the four classifications, which shows 
 
 A prompt's examples are part of the measurement. The script also records the same model on the same columns under a second prompt, identical but for its examples. That prompt gives examples for `personal` and `sensitive` only, and they're the platform's own columns. For `personal`, they are "a name, contact details, an address or text they wrote", and for `sensitive`, a card number or a bank account. Those two are `billing.payments.card_number` and `crm.instructors.payout_iban`, the only sensitive columns. Side by side, the answers show what the examples change:
 
-Example `suggestions-with-platform-examples` (Python 3.12.15 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.27:
+Example `suggestions-with-platform-examples` (Python 3.12.15 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.28:
 
 ```python
 """Scores the recorded answers under two prompts against the reviewed classifications: the book's prompt, whose examples
@@ -522,7 +522,7 @@ Overall agreement hardly moves, 41 of 64 against 40 of 64, so one number would n
 
 [The recorded drafts](#draft-descriptions-with-a-local-model), a local model's descriptions and classifications for the platform's source tables, agree with the reviewed classifications on most columns. For governance, which way they miss matters more. A classification more protected than it should be costs a reviewer a minute and an analyst a masked column. One less protected than it should be leaves personal data where the policies treat it as staff data, or as data anyone may see. Splitting the misses by direction shows which way the model fails:
 
-Example `suggestion-mistakes` (Python 3.12.15 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.27:
+Example `suggestion-mistakes` (Python 3.12.15 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.28:
 
 ```python
 """Counts the recorded classifications that protect a column less than the review does, and those that protect it more,
@@ -577,7 +577,7 @@ The other less protected columns are timestamps, an event's type and its user ag
 
 Descriptions fail in another way, and four of the model's show it beside the reviewed ones:
 
-Example `suggestion-descriptions` (Python 3.12.15 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.27:
+Example `suggestion-descriptions` (Python 3.12.15 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.28:
 
 ```python
 """Prints the recorded description beside the reviewed one for four columns, where the review knows what a name, a type

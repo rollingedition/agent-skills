@@ -6,23 +6,23 @@ compatibility: "The book's examples ran on Python 3.12.15 and the versions its p
 metadata:
   publisher: "Rolling Edition"
   book: "Data Governance as Code"
-  edition: "2026.11.27"
+  edition: "2026.11.28"
   verified: "2026-11-14"
   examples: "108 of 108 examples pass"
-  edition-code: "2QX0-VKZT"
+  edition-code: "GR11-MS4B"
   source: "https://rollingedition.com/data-governance-as-code"
 ---
 
 # Data Governance as Code
 
-This agent skill is *Data Governance as Code*, Edition 2026.11.27, from Rolling Edition. Examples passed Nov 14, 2026: 108 of 108 examples pass. It's built from that edition, never written separately: the procedures below come from the book's sections, and each step links to its section on rollingedition.com, whose page has the section's text and its examples, with their code and output.
+This agent skill is *Data Governance as Code*, Edition 2026.11.28, from Rolling Edition. Examples passed Nov 14, 2026: 108 of 108 examples pass. It's built from that edition, never written separately: the procedures below come from the book's sections, and each step links to its section on rollingedition.com, whose page has the section's text and its examples, with their code and output.
 
 ## How to use this skill
 
 - **Pick the procedure that fits the task,** and follow its steps in order. Each step links the section it comes from: read that section before you act on it, with the Rolling Edition MCP server's `get_section` (book `data-governance-as-code` and the section's ID, the link's last part) or on its page, and adapt it to the project in front of you.
 - **Check against the book.** An example's section shows its code, the versions it ran on and its output. If the project uses other versions, say so before relying on a step.
-- **Is this copy current?** Call `check_code` with `2QX0-VKZT` on the Rolling Edition MCP server (https://rollingedition.ai/mcp), or compare the edition with the book's page: https://rollingedition.com/data-governance-as-code
-- **Credit the book** when you quote it or reuse its code: Data Governance as Code, Edition 2026.11.27, examples passed Nov 14, 2026. By Rolling Edition, https://rollingedition.com/data-governance-as-code. Text CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people.
+- **Is this copy current?** Call `check_code` with `GR11-MS4B` on the Rolling Edition MCP server (https://rollingedition.ai/mcp), or compare the edition with the book's page: https://rollingedition.com/data-governance-as-code
+- **Credit the book** when you quote it or reuse its code: Data Governance as Code, Edition 2026.11.28, examples passed Nov 14, 2026. By Rolling Edition, https://rollingedition.com/data-governance-as-code. Text CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people.
 
 The full skill, with the chapters beside it and every example as a script to run at the book's pinned versions, is the `data-governance-as-code` plugin and the zip on the book's page at rollingedition.ai.
 

@@ -3,12 +3,12 @@ title: "Data Governance as Code"
 chapter: "Lineage from pipelines"
 chapter_id: lineage-from-pipelines
 book: data-governance-as-code
-edition: 2026.11.27
+edition: 2026.11.28
 verified: 2026-11-14
-edition_code: 2QX0-VKZT
+edition_code: GR11-MS4B
 canonical: https://rollingedition.com/data-governance-as-code/lineage-from-pipelines
 license: CC BY 4.0
-attribution: "“Lineage from pipelines,” chapter 4 of Data Governance as Code, Edition 2026.11.27, examples passed Nov 14, 2026. By Rolling Edition, https://rollingedition.com/data-governance-as-code/lineage-from-pipelines. Text CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Lineage from pipelines,” chapter 4 of Data Governance as Code, Edition 2026.11.28, examples passed Nov 14, 2026. By Rolling Edition, https://rollingedition.com/data-governance-as-code/lineage-from-pipelines. Text CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Lineage from pipelines
 
@@ -35,7 +35,7 @@ The Python client, openlineage-python 1.55.0, builds events from `RunEvent`, `Ru
 
 The examples need the same bytes every time, yet an event's time and random run ID change by default. Here `lib.lineage` stamps every event with the nominal start of the nightly run on the book's "today", and derives the run ID with the client's `generate_static_uuid`, which, its docstring says, "always produces the same result" for the same time and data: here, the job's name. Run the four pipelines with lineage twice, into two files, and print what the first file's events say, not the raw JSON:
 
-Example `pipeline-run-events` (Python 3.12.15 · duckdb 2.0.0 · openlineage-python 1.55.0 · pyarrow 26.0.1 · pyiceberg 0.12.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.27:
+Example `pipeline-run-events` (Python 3.12.15 · duckdb 2.0.0 · openlineage-python 1.55.0 · pyarrow 26.0.1 · pyiceberg 0.12.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.28:
 
 ```python
 """Runs the four pipelines with lineage twice, into two files, and reads back what the first file's events say. The
@@ -110,7 +110,7 @@ sqlglot, a SQL parser, does it with `sqlglot.lineage.lineage`. Given a statement
 
 Start with `marketing_audience`, which feeds the list marketing may email. In words, it picks learners who agreed to marketing email and whose account is active, and adds each one's favourite course category, which a CTE computes by ranking categories by the learner's enrollments. Ask sqlglot for the lineage of the pipeline's outputs and of two `course_performance` columns, to see what it leaves out:
 
-Example `sqlglot-misses-row-inputs` (Python 3.12.15 · duckdb 2.0.0 · openlineage-python 1.55.0 · pyarrow 26.0.1 · pyiceberg 0.12.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.27:
+Example `sqlglot-misses-row-inputs` (Python 3.12.15 · duckdb 2.0.0 · openlineage-python 1.55.0 · pyarrow 26.0.1 · pyiceberg 0.12.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.28:
 
 ```python
 """What sqlglot.lineage says the pipeline outputs come from, and what it leaves out. The prose rests on the CTE-traced
@@ -182,7 +182,7 @@ ROW_CLAUSES = {"joins": "JOIN", "where": "FILTER", "group": "GROUP_BY", "having"
 
 Run it on the same pipeline and the same two columns:
 
-Example `indirect-column-lineage` (Python 3.12.15 · duckdb 2.0.0 · openlineage-python 1.55.0 · pyarrow 26.0.1 · pyiceberg 0.12.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.27:
+Example `indirect-column-lineage` (Python 3.12.15 · duckdb 2.0.0 · openlineage-python 1.55.0 · pyarrow 26.0.1 · pyiceberg 0.12.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.28:
 
 ```python
 """The book's column lineage for the marketing audience pipeline and two course performance columns: each input,
@@ -248,7 +248,7 @@ The platform's [column lineage](#add-indirect-inputs) is only as good as the par
 
 All four of the platform's pipelines are `CREATE TABLE ... AS` statements. As tables grow, pipelines like these often become incremental: an `INSERT` that appends a day's revenue to `analytics.daily_revenue`, or a `MERGE` that updates `analytics.learner_activity` in place. Ask sqlglot and `lib.lineage.column_lineage` about each, the `INSERT` and the `MERGE` in two forms, and compare the answers:
 
-Example `insert-and-merge-lineage` (Python 3.12.15 · duckdb 2.0.0 · openlineage-python 1.55.0 · pyarrow 26.0.1 · pyiceberg 0.12.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.27:
+Example `insert-and-merge-lineage` (Python 3.12.15 · duckdb 2.0.0 · openlineage-python 1.55.0 · pyarrow 26.0.1 · pyiceberg 0.12.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.28:
 
 ```python
 """sqlglot.lineage's answers for an INSERT and for two MERGE statements, beside the book's lineage: sqlglot names the
@@ -318,7 +318,7 @@ For the `MERGE` whose `USING` names a table, sqlglot returns none, and no error.
 
 A misspelt column, the third case, depends on how the column is written. The platform's pipelines qualify every column with its table's alias, as in `l.email`, and sqlglot checks a qualified column against the schema itself:
 
-Example `misspelt-column-lineage` (Python 3.12.15 · duckdb 2.0.0 · openlineage-python 1.55.0 · pyarrow 26.0.1 · pyiceberg 0.12.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.27:
+Example `misspelt-column-lineage` (Python 3.12.15 · duckdb 2.0.0 · openlineage-python 1.55.0 · pyarrow 26.0.1 · pyiceberg 0.12.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.28:
 
 ```python
 """A misspelt column, emial for email, in a query on one table: sqlglot raises when the column is qualified by its
@@ -368,7 +368,7 @@ With [column lineage](#add-indirect-inputs) in every COMPLETE event, the platfor
 
 Take three changes the platform's teams might make. The CRM team lowercases every email, or renames `crm.learners.email`. A new sign-up flow changes what `crm.learners.marketing_consent` means for older accounts. The learning team renames a category in `learning.courses`. Make a guess first: how many columns can the consent change reach?
 
-Example `column-impact` (Python 3.12.15 · duckdb 2.0.0 · openlineage-python 1.55.0 · pyarrow 26.0.1 · pyiceberg 0.12.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.27:
+Example `column-impact` (Python 3.12.15 · duckdb 2.0.0 · openlineage-python 1.55.0 · pyarrow 26.0.1 · pyiceberg 0.12.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.28:
 
 ```python
 """What a change to one source column can break, walked over the column graph that the nightly run's events describe.
@@ -433,7 +433,7 @@ Two more choices follow from the same caution. OpenLineage's `masking` flag says
 
 `lib.lineage.propose` proposes a classification for every column a job wrote, and `lib.metadata.problems` lists the tables that need one. Check the rule on the two tables people did classify, `analytics.course_performance` and `analytics.learner_activity`, before you trust it on `marketing.audience` and `ai.review_corpus`, the two with no metadata:
 
-Example `propagate-classifications` (Python 3.12.15 · duckdb 2.0.0 · openlineage-python 1.55.0 · pyarrow 26.0.1 · pyiceberg 0.12.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.27:
+Example `propagate-classifications` (Python 3.12.15 · duckdb 2.0.0 · openlineage-python 1.55.0 · pyarrow 26.0.1 · pyiceberg 0.12.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.28:
 
 ```python
 """Proposes classifications from lineage for the columns with no declared one, then checks the rule against the columns
@@ -511,7 +511,7 @@ DIRECT inputs alone reproduce 10 of 13, and miss 3: `course_id`, `title` and `ca
 
 So build a table whose filter does. For a birthday offer, marketing wants the learners who consented and were born this month, with their ID and country, and nothing else:
 
-Example `personal-filter-propagates` (Python 3.12.15 · duckdb 2.0.0 · openlineage-python 1.55.0 · pyarrow 26.0.1 · pyiceberg 0.12.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.27:
+Example `personal-filter-propagates` (Python 3.12.15 · duckdb 2.0.0 · openlineage-python 1.55.0 · pyarrow 26.0.1 · pyiceberg 0.12.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.28:
 
 ```python
 """A birthday-offer table whose only personal input is a filter on date of birth. The prose rests on the learner count,
@@ -581,7 +581,7 @@ Lineage fails quietly: a missing edge looks exactly like a column with no depend
 
 The client reads `OPENLINEAGE_DISABLED` from the environment, and when it's `true`, events are dropped ([configuration](https://openlineage.io/docs/client/python/configuration)). In the client's source, that check comes first ([openlineage-python](https://pypi.org/project/openlineage-python/1.54.0/), `client/client.py`): before it looks at the transport you passed explicitly, the client picks a transport that does nothing. Its only notice is an INFO log line: "OpenLineage is disabled. No events will be emitted." Python's root logger is set to `WARNING` by default, so the line never shows ([logging HOWTO](https://docs.python.org/3.12/howto/logging.html)). A variable left in a shared environment file after debugging is enough. Set the variable, run `review_corpus` with an explicit file transport, and check what reaches the file:
 
-Example `lineage-disabled-silently` (Python 3.12.15 · duckdb 2.0.0 · openlineage-python 1.55.0 · pyarrow 26.0.1 · pyiceberg 0.12.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.27:
+Example `lineage-disabled-silently` (Python 3.12.15 · duckdb 2.0.0 · openlineage-python 1.55.0 · pyarrow 26.0.1 · pyiceberg 0.12.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.28:
 
 ```python
 """With OPENLINEAGE_DISABLED=true in the environment, an explicit file transport writes nothing and raises nothing. The
@@ -626,7 +626,7 @@ With the variable set, the pipeline still runs, but nothing reaches the file. Th
 
 Lineage covers only the jobs that send it. The platform's marketing team runs a weekly Python script that copies `marketing.audience` into `marketing.campaign_list`, a table its email tool reads. Nobody wired the script to OpenLineage:
 
-Example `uninstrumented-job` (Python 3.12.15 · duckdb 2.0.0 · openlineage-python 1.55.0 · pyarrow 26.0.1 · pyiceberg 0.12.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.27:
+Example `uninstrumented-job` (Python 3.12.15 · duckdb 2.0.0 · openlineage-python 1.55.0 · pyarrow 26.0.1 · pyiceberg 0.12.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.28:
 
 ```python
 """A Python step copies marketing.audience for the email tool and sends no lineage. The prose rests on the walk from the
@@ -669,7 +669,7 @@ An export that sends no events is invisible to impact analysis. The script copie
 
 Instrumenting [the marketing team's export](#job-nobody-instrumented) fixes the graph, and exposes a second problem. When the export's owner created `marketing.campaign_list`, they classified every column internal, because only the marketing team reads it. That's a statement about who reads a table, not what it holds. Wrap the script's work in `lib.lineage.record`, with the `SELECT` it runs as its lineage, and compare the declared classifications with lineage's proposal:
 
-Example `personal-copy-tagged-internal` (Python 3.12.15 · duckdb 2.0.0 · openlineage-python 1.55.0 · pyarrow 26.0.1 · pyiceberg 0.12.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.27:
+Example `personal-copy-tagged-internal` (Python 3.12.15 · duckdb 2.0.0 · openlineage-python 1.55.0 · pyarrow 26.0.1 · pyiceberg 0.12.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.28:
 
 ```python
 """The same export, now recorded with lineage, into a table its owner tagged internal. The prose rests on the walk to
