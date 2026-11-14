@@ -3,12 +3,12 @@ title: "Language Models from the Ground Up"
 chapter: "The transformer block"
 chapter_id: the-transformer-block
 book: language-models-from-the-ground-up
-edition: 2026.11.11
+edition: 2026.11.12
 verified: 2026-11-13
-edition_code: 3Y9C-0N1E
+edition_code: J2AF-6HWB
 canonical: https://rollingedition.com/language-models-from-the-ground-up/the-transformer-block
 license: CC BY 4.0
-attribution: "“The transformer block,” chapter 7 of Language Models from the Ground Up, Edition 2026.11.11, examples passed Nov 13, 2026. By Rolling Edition, https://rollingedition.com/language-models-from-the-ground-up/the-transformer-block. Text CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“The transformer block,” chapter 7 of Language Models from the Ground Up, Edition 2026.11.12, examples passed Nov 13, 2026. By Rolling Edition, https://rollingedition.com/language-models-from-the-ground-up/the-transformer-block. Text CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # The transformer block
 
@@ -31,7 +31,7 @@ Two consequences follow. With the additions, the signal can pass "directly from 
 
 Run the store's model on one validation product and, at every layer, measure the length of what attention adds, of what the feed-forward layer adds, and of the vectors after both additions, averaged over positions. A vector's length here is the square root of the sum of its squared numbers:
 
-Example `residual-stream` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.11:
+Example `residual-stream` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.12:
 
 ```python
 """Runs the store's model on one validation product, one block at a time, and prints how much attention and the
@@ -86,7 +86,7 @@ where ε is a tiny number, 10⁻⁵ here, that keeps the division safe, and g is
 
 Normalize the stream of the same validation product by hand at both ends of the model, entering the first block and leaving the last, with the gain left at 1, and compare every position's vector with `lib.transformer.rms_norm`:
 
-Example `rms-norm-by-hand` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.11:
+Example `rms-norm-by-hand` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.12:
 
 ```python
 """Normalizes one validation product's residual stream by hand, entering the first block and leaving the last, and
@@ -142,7 +142,7 @@ where ⊙ multiplies number by number, and SiLU(z) = z · σ(z), with σ the log
 
 What does the gate shut? Compute SiLU at three points, then run the first block's real feed-forward layer on the same validation product and count, at each position, how many of its hidden units the gate nearly shuts:
 
-Example `gated-feed-forward` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.11:
+Example `gated-feed-forward` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.12:
 
 ```python
 """Computes SiLU at three points, then runs block 1's feed-forward layer on one validation product and counts the hidden
@@ -202,7 +202,7 @@ Rotation has two properties that suit attention. It doesn't change a vector's le
 
 Rotate a random query and key of 32 numbers, the size of the store's heads, for positions 0 to 19, and compare scaled scores, as [chapter 6](#attention) defines them, at three pairs, which tests that:
 
-Example `rope-by-hand` (Python 3.12.15 · numpy 2.5.4), passing in Edition 2026.11.11:
+Example `rope-by-hand` (Python 3.12.15 · numpy 2.5.4), passing in Edition 2026.11.12:
 
 ```python
 """Rotates one random query and key for each of 20 positions, checks that the rotation keeps their lengths, and scores
@@ -273,7 +273,7 @@ PyTorch trained the store's model once, in `recordings/transformer.py`, as it tr
 
 To test the whole forward pass, recompute the saved product's logits in NumPy and compare every position with PyTorch's:
 
-Example `transformer-same-as-pytorch` (Python 3.12.15 · numpy 2.5.4), passing in Edition 2026.11.11:
+Example `transformer-same-as-pytorch` (Python 3.12.15 · numpy 2.5.4), passing in Edition 2026.11.12:
 
 ```python
 """Recomputes the store's model's logits in NumPy for the validation product the training script saved, and checks every
@@ -313,7 +313,7 @@ The model is checked; now measure what its blocks contribute. Because every bloc
 
 Which block's removal hurts most? Predict one, then score the names and descriptions of the first 100 validation products, 7,624 predictions in all, with the full model and with each block left out in turn:
 
-Example `skip-a-block` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.11:
+Example `skip-a-block` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.12:
 
 ```python
 """Scores the names and descriptions of the first 100 validation products with the full model, and with each block left
@@ -377,7 +377,7 @@ Every detail of a block has to match the weights it runs with, and a mismatch do
 
 One wrong detail of RoPE at a time shows what each costs: score the same 100 validation products with the trained weights, pairing neighbouring numbers instead of halves, a base of 100,000, SmolLM2's, instead of the store's 10,000, and no RoPE at all:
 
-Example `mismatched-details` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.11:
+Example `mismatched-details` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.12:
 
 ```python
 """Scores the same 100 validation products with the trained weights, changing one detail of RoPE at a time: how it pairs
@@ -428,7 +428,7 @@ The other difference from SmolLM2 is **grouped-query attention**: its 15 query h
 
 With every part built, count what the model learns, and where. A model's parameters are its capacity to learn, and where they sit says what it spends that capacity on. The trained model's count, by part:
 
-Example `transformer-parameters` (Python 3.12.15 · numpy 2.5.4), passing in Edition 2026.11.11:
+Example `transformer-parameters` (Python 3.12.15 · numpy 2.5.4), passing in Edition 2026.11.12:
 
 ```python
 """Counts the store's model's parameters by part from its saved weights, and prints its settings. The prose's point

@@ -3,12 +3,12 @@ title: "Language Models from the Ground Up"
 chapter: "Predicting the next word"
 chapter_id: predicting-the-next-word
 book: language-models-from-the-ground-up
-edition: 2026.11.11
+edition: 2026.11.12
 verified: 2026-11-13
-edition_code: 3Y9C-0N1E
+edition_code: J2AF-6HWB
 canonical: https://rollingedition.com/language-models-from-the-ground-up/predicting-the-next-word
 license: CC BY 4.0
-attribution: "“Predicting the next word,” chapter 1 of Language Models from the Ground Up, Edition 2026.11.11, examples passed Nov 13, 2026. By Rolling Edition, https://rollingedition.com/language-models-from-the-ground-up/predicting-the-next-word. Text CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Predicting the next word,” chapter 1 of Language Models from the Ground Up, Edition 2026.11.12, examples passed Nov 13, 2026. By Rolling Edition, https://rollingedition.com/language-models-from-the-ground-up/predicting-the-next-word. Text CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Predicting the next word
 
@@ -28,7 +28,7 @@ The store's text, which every example in this book learns from, is real. It come
 
 Before counting anything, look at the text: the size of each split, and a few names:
 
-Example `store-text` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.11:
+Example `store-text` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.12:
 
 ```python
 """Counts the store's products in each split and the words in its training names, then prints one ordinary training name
@@ -78,7 +78,7 @@ Two details make the counts complete. A name's first word follows nothing, and i
 
 Start with a word whose next word matters to the search box, `coffee`. The example counts every pair in the training names, then lists what followed it:
 
-Example `count-next-words` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.11:
+Example `count-next-words` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.12:
 
 ```python
 """Counts every word pair in the training names, padded with start and end markers, and lists the words that most often
@@ -130,7 +130,7 @@ Read it as "the probability of `v`, given `w`". Estimating probabilities this wa
 
 Apply the formula to `coffee` and four words that might follow it, printing each probability beside the counts behind it, and then the sum over every word that followed `coffee`:
 
-Example `next-word-probabilities` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.11:
+Example `next-word-probabilities` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.12:
 
 ```python
 """Divides how often each of four words followed coffee by how often coffee was followed by anything, then prints the sum of the
@@ -169,7 +169,7 @@ Autocomplete, the store's first need, wants the likeliest next words, and a prob
 
 Five typed prefixes, from one word to two, show where the suggestions help and where they go wrong. Three suggestions come back for each:
 
-Example `autocomplete` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.11:
+Example `autocomplete` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.12:
 
 ```python
 """Asks the bigram model for its three likeliest next words after five typed prefixes, then counts the training names that
@@ -213,7 +213,7 @@ The same probability table can write text as well as complete it. To **generate*
 
 Six names, drawn from those probabilities by a seeded random generator, come out the same on every run, so the names in this book match what the code produces:
 
-Example `generate-names` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.11:
+Example `generate-names` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.12:
 
 ```python
 """Draws six product names from the bigram model, one word at a time, with a fixed seed so the same six come out on every
@@ -274,7 +274,7 @@ cross-entropy = −(1/N) Σ log P(next word | previous word)
 
 Score one training name, `sled coffee table`, pair by pair to see where its surprise sits, and then every training name at once:
 
-Example `perplexity-by-hand` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.11:
+Example `perplexity-by-hand` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.12:
 
 ```python
 """Scores the training name sled coffee table pair by pair, to show where its surprise sits, then scores every training name
@@ -321,7 +321,7 @@ That number flatters the model, because it's measured on the text the counts cam
 
 A model trained by counting knows only the pairs it has counted, and the validation names were kept apart from the training names for exactly this reason: they show what happens when the model meets text it never saw. The model scored 16.9 on the training names, in [score a model with perplexity](#score-with-perplexity). Before you run the next example, guess its perplexity on the 4,282 validation names.
 
-Example `perplexity-on-new-names` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.11:
+Example `perplexity-on-new-names` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.12:
 
 ```python
 """Scores the bigram model on the validation names, which it never learned from, then counts the pairs in them that never
@@ -375,7 +375,7 @@ where V is the size of the **vocabulary**, every word the model can predict. A w
 
 Two numbers show the cost, the probability of `table` after `coffee` and perplexity, under each model:
 
-Example `add-one-smoothing` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.11:
+Example `add-one-smoothing` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.12:
 
 ```python
 """Compares the counted and add-one bigram models on one probability and on perplexity, to show what add-one smoothing

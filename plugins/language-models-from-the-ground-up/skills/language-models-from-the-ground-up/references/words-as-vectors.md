@@ -3,12 +3,12 @@ title: "Language Models from the Ground Up"
 chapter: "Words as vectors"
 chapter_id: words-as-vectors
 book: language-models-from-the-ground-up
-edition: 2026.11.11
+edition: 2026.11.12
 verified: 2026-11-13
-edition_code: 3Y9C-0N1E
+edition_code: J2AF-6HWB
 canonical: https://rollingedition.com/language-models-from-the-ground-up/words-as-vectors
 license: CC BY 4.0
-attribution: "“Words as vectors,” chapter 4 of Language Models from the Ground Up, Edition 2026.11.11, examples passed Nov 13, 2026. By Rolling Edition, https://rollingedition.com/language-models-from-the-ground-up/words-as-vectors. Text CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Words as vectors,” chapter 4 of Language Models from the Ground Up, Edition 2026.11.12, examples passed Nov 13, 2026. By Rolling Edition, https://rollingedition.com/language-models-from-the-ground-up/words-as-vectors. Text CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Words as vectors
 
@@ -24,7 +24,7 @@ Every model so far has treated tokens as names: `patio` is one entry in a table 
 
 Give the 2,000 most frequent tokens of the training text one-hot vectors, and compare `patio` with `outdoor`, with `sofa` and with itself. Those 2,000 are about half of the store tokenizer's vocabulary, which keeps every matrix in this chapter small enough to compute in seconds:
 
-Example `one-hot-vectors` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.11:
+Example `one-hot-vectors` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.12:
 
 ```python
 """One-hot vectors for the 2,000 most frequent tokens, and the cosine similarity of patio with outdoor, with sofa and with
@@ -76,7 +76,7 @@ The way out is to describe a word by the company it keeps. Two words that appear
 
 Count co-occurrences in the training split's names and descriptions, and list what sits most often near `patio`:
 
-Example `cooccurrence-counts` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.11:
+Example `cooccurrence-counts` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.12:
 
 ```python
 """Counts how often each of the 2,000 kept tokens appears within two tokens of another, and lists the six tokens seen most
@@ -132,7 +132,7 @@ return np.where(counts > 0, np.maximum(pmi, 0), 0.0)
 
 Reweighting is meant to stop frequent neighbours dominating, so swap the raw counts for PPMI and list `patio`'s strongest neighbours again:
 
-Example `ppmi-neighbours` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.11:
+Example `ppmi-neighbours` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.12:
 
 ```python
 """Reweights the co-occurrence counts with positive PMI, and lists the six tokens with the strongest weight beside patio.
@@ -174,7 +174,7 @@ A [PPMI vector](#weigh-by-surprise) of 2,000 numbers, mostly zeros, has a lot of
 
 Six tokens' four nearest neighbours show what the 64 numbers keep:
 
-Example `svd-neighbours` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.11:
+Example `svd-neighbours` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.12:
 
 ```python
 """Compresses the PPMI matrix into 64 numbers per token, and lists the four nearest neighbours of six tokens. The prose's
@@ -228,7 +228,7 @@ np.add.at(outputs, noise, -rate * fake[:, :, None] * v[:, None, :])     # move e
 
 Run three updates on one real pair, `patio` and `umbrella`, with `sofa` and `48` as noise tokens. The centre vectors start small and random and the neighbour vectors at zero, as `lib.skipgram.train` starts them:
 
-Example `skipgram-step` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.11:
+Example `skipgram-step` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.12:
 
 ```python
 """Three updates of skip-gram with negative sampling on one real pair, patio and umbrella, with sofa and 48 as noise tokens,
@@ -282,7 +282,7 @@ Training skip-gram on all the store's training text runs millions of updates, an
 
 Ask the recorded skip-gram vectors for the same six tokens' neighbours, and compare them with the [SVD's](#compress-into-dense-vectors):
 
-Example `skipgram-neighbours` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.11:
+Example `skipgram-neighbours` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.12:
 
 ```python
 """Reads the skip-gram vectors and training losses that recordings/skipgram.py saved, and lists the same six tokens' four
@@ -331,7 +331,7 @@ Embeddings famously support analogies by arithmetic: if the difference between `
 
 Three analogies on the [skip-gram vectors](#compare-learned-and-counted) show where the arithmetic holds and where it breaks, and the nearest neighbours of three tokens they raise show why:
 
-Example `analogies` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.11:
+Example `analogies` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.12:
 
 ```python
 """Three analogies on the skip-gram vectors, each answered by the tokens nearest b minus a plus c; whether lamps and light
@@ -382,7 +382,7 @@ Embeddings for tokens give, with one more step, embeddings for whole texts: aver
 
 Averaging every training name's skip-gram vectors turns each name into one vector. Rare words, most often a product line's name, print as `[name]`, as [chapter 1](#load-the-store-text) explained. Two queries show what that buys: `outdoor bar`, the prefix that stumped [chapter 3](#counting-further-back)'s 4-gram model, and `patio umbrella`:
 
-Example `name-vectors` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.11:
+Example `name-vectors` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.12:
 
 ```python
 """Averages each training name's skip-gram token vectors into one unit-length vector, and prints the four training names

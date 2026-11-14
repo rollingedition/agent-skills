@@ -3,12 +3,12 @@ title: "Language Models from the Ground Up"
 chapter: "Choosing the next token"
 chapter_id: choosing-the-next-token
 book: language-models-from-the-ground-up
-edition: 2026.11.11
+edition: 2026.11.12
 verified: 2026-11-13
-edition_code: 3Y9C-0N1E
+edition_code: J2AF-6HWB
 canonical: https://rollingedition.com/language-models-from-the-ground-up/choosing-the-next-token
 license: CC BY 4.0
-attribution: "“Choosing the next token,” chapter 9 of Language Models from the Ground Up, Edition 2026.11.11, examples passed Nov 13, 2026. By Rolling Edition, https://rollingedition.com/language-models-from-the-ground-up/choosing-the-next-token. Text CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Choosing the next token,” chapter 9 of Language Models from the Ground Up, Edition 2026.11.12, examples passed Nov 13, 2026. By Rolling Edition, https://rollingedition.com/language-models-from-the-ground-up/choosing-the-next-token. Text CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Choosing the next token
 
@@ -24,7 +24,7 @@ The simplest decoder is **greedy**: at every step, take the single likeliest tok
 
 A product with no description is the store's need, so start with one: `front porch welcome sign wall décor`, decoded greedily for up to 60 tokens. Then take a second product, `5 light light bulb`, and print the probability that its description is empty:
 
-Example `greedy-description` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.11:
+Example `greedy-description` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.12:
 
 ```python
 """Greedy decoding writes one description of a product that has none, and shows how it repeats itself, and how likely
@@ -84,7 +84,7 @@ The greedy description also says the sign is `made of natural wood`, which nothi
 
 Which description do you expect beam search to rank likeliest for the welcome sign? Run it twice, with a beam of 4. The first run completes the search query `outdoor bar` by up to 4 tokens, the end of the name included, the way a search box might offer whole phrases; the second writes the welcome sign's description and prints the likeliest text overall and per token, its total log-probability divided by its length.
 
-Example `beam-search` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.11:
+Example `beam-search` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.12:
 
 ```python
 """Beam search with a beam of four, on a search query and on a product's description. The prose quotes the two
@@ -138,7 +138,7 @@ A temperature below 1 sharpens the distribution, giving more of the probability 
 
 To see what temperature does to one real choice, stop the greedy description early and read the next token's distribution at three temperatures. For each one, the example prints the three likeliest tokens, how many cover 90% of the probability, and how much falls outside temperature 1's 90% cover.
 
-Example `temperature-by-hand` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.11:
+Example `temperature-by-hand` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.12:
 
 ```python
 """The next token's distribution after the first nine tokens of the greedy description, at three temperatures, and how
@@ -208,7 +208,7 @@ Top-p adapts to the model's confidence, where top-k doesn't. At the point in the
 
 Four samplers, each from the same random seed, write the welcome sign's description up to 40 tokens: sampling at temperature 1, sampling at 0.7, top-k with k = 20, and top-p with p = 0.9. Then the example replays the temperature-1 sample, listing the tokens drawn from outside each step's 90% nucleus, which top-p 0.9 would have cut.
 
-Example `sample-descriptions` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.11:
+Example `sample-descriptions` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.12:
 
 ```python
 """Four samplers write the same description from one seed, and the temperature-1 draws are then replayed to mark the
@@ -273,7 +273,7 @@ Single samples show the flavour of each method; measurements show the trade-offs
 
 How close does each setting come to real text? Draw 20 validation products at random from those with a description, write a description for each with every method, and compare them with the real ones, cut at the same 60-token limit:
 
-Example `measure-decoding` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.11:
+Example `measure-decoding` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.12:
 
 ```python
 """Seven ways of choosing the next token, measured on the same 20 product descriptions: how often each repeats
@@ -360,7 +360,7 @@ top-p 0.9, average length in tokens: 47
 
 Greedy text is far more predictable than anything a person wrote, with a perplexity of 2.7, and 11% of its four-token phrases repeat. The real descriptions repeat nothing (0% of their four-token phrases), and the model finds them fairly surprising, at a perplexity of 30.5. That figure is higher than [chapter 8](#training-a-small-model)'s for descriptions, because these are a different sample and only their first 60 tokens. [Holtzman and colleagues](https://arxiv.org/abs/1904.09751) made the same observation at scale: human text isn't the text a model finds most probable.
 
-No setting matches the real descriptions on every measure. Sampling at temperature 1 comes closest on perplexity, at 22.6, but only 50% of its descriptions use a word of the product's name, against 95% of the real ones, so it drifts off the product. Top-p 0.9 ends as often as the real text, 30% against 35%, but stays on the product in only 60%. Top-k 20 stays on the product most among the samplers, at 80%, with no repetition and descriptions of 40 tokens on average. Twenty products is a small sample, so read these as directions, not exact rates.
+No setting matches the real descriptions on every measure. Sampling at temperature 1 comes closest on perplexity, at 22.6, but only 50% of its descriptions use a word of the product's name, against 95% of the real ones, so it drifts off the product. Top-p 0.9 ends nearly as often as the real text, 30% against 35%, but stays on the product in only 60%. Top-k 20 stays on the product most among the samplers, at 80%, with no repetition and descriptions of 40 tokens on average. Twenty products is a small sample, so read these as directions, not exact rates.
 
 What the measures can't say is whether a description is true. A description can be fluent, varied, on topic and wrong, and [the previous section's](#sample-and-cut-the-tail) were, about the sign's material.
 
@@ -372,7 +372,7 @@ What the measures can't say is whether a description is true. A description can 
 
 Go back to where the [greedy description](#choose-the-likeliest-token) was about to write `distressed` a second time. Apply the penalty by hand to the next token's logits, check the result against `lib.decoding.penalize`, and compare the probabilities before and after. Then write it greedily with the penalty, to see whether the loop goes:
 
-Example `repetition-penalty-by-hand` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.11:
+Example `repetition-penalty-by-hand` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.12:
 
 ```python
 """The repetition penalty applied by hand to the next token's logits, checked against lib.decoding.penalize, and then
@@ -428,7 +428,7 @@ The [greedy example](#choose-the-likeliest-token) found the model ready to write
 
 The bulb that greedy decoding left empty is the test case. Decode it twice, with no minimum and then with a minimum of 10 tokens; the output first gives the chance its description ends at once:
 
-Example `minimum-length` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.11:
+Example `minimum-length` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.12:
 
 ```python
 """Greedy decoding of the bulb's description, without a minimum length and with one that forbids the end marker until

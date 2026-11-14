@@ -3,12 +3,12 @@ title: "Language Models from the Ground Up"
 chapter: "Tokens"
 chapter_id: tokens
 book: language-models-from-the-ground-up
-edition: 2026.11.11
+edition: 2026.11.12
 verified: 2026-11-13
-edition_code: 3Y9C-0N1E
+edition_code: J2AF-6HWB
 canonical: https://rollingedition.com/language-models-from-the-ground-up/tokens
 license: CC BY 4.0
-attribution: "“Tokens,” chapter 2 of Language Models from the Ground Up, Edition 2026.11.11, examples passed Nov 13, 2026. By Rolling Edition, https://rollingedition.com/language-models-from-the-ground-up/tokens. Text CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Tokens,” chapter 2 of Language Models from the Ground Up, Edition 2026.11.12, examples passed Nov 13, 2026. By Rolling Edition, https://rollingedition.com/language-models-from-the-ground-up/tokens. Text CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Tokens
 
@@ -24,7 +24,7 @@ Cutting text into words gives a model tokens that carry meaning, which is why [c
 
 The validation names are the 10% of the store's products that no model learns from, kept aside to show how a model handles text it hasn't seen. Those names show how far words fall short. Count the validation words the training names never use, and sort them into rare words and ordinary ones:
 
-Example `unseen-words` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.11:
+Example `unseen-words` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.12:
 
 ```python
 """Counts the validation words that the training names never use, then sorts them into rare words and ordinary ones.
@@ -72,7 +72,7 @@ Going to the other extreme fixes the gap. If every character is a token, the voc
 
 Test whether characters close the gap for the store's names. Compare the characters in training and validation names, and count the validation names' tokens both ways:
 
-Example `character-tokens` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.11:
+Example `character-tokens` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.12:
 
 ```python
 """Compares the characters of the training names with those of the validation names, and counts the validation tokens
@@ -128,7 +128,7 @@ The list of merges, in the order they were learned, is the tokenizer. To encode 
 
 Eight merges, run by hand on the training names, are enough to show every step. Each merge prints as it happens, and the last line shows how `table` is spelled after all eight:
 
-Example `merge-pairs-by-hand` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.11:
+Example `merge-pairs-by-hand` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.12:
 
 ```python
 """Runs the merge algorithm by hand on the training names for eight merges, printing each one and how table is spelled
@@ -190,7 +190,7 @@ The algorithm in the [previous section](#merge-frequent-pairs) recounts every pa
 
 The store's tokenizer learns 4,000 merges from the training names and descriptions together, because the book's models will learn from both. Five short texts, two product names and three pairs of words, show what it does with an unseen word and with similar ones:
 
-Example `store-tokenizer` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.11:
+Example `store-tokenizer` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.12:
 
 ```python
 """Learns 4,000 merges from the training names and descriptions, then encodes five short texts with the resulting
@@ -239,7 +239,7 @@ A model still has to learn what a new product line is, but it can at least predi
 
 Learning 16,000 merges once and reading the first 0, 1,000, 2,000, 4,000, 8,000 and 16,000 of them gives six tokenizers. The first k merges of a longer run are exactly the merges a k-merge run would learn. Each one gets three measures: the different tokens the training text uses, the tokens each validation word becomes, and the share of the different tokens the training text uses, its **token types**, that it shows fewer than 20 times. Before reading the table, decide what each end should show:
 
-Example `vocabulary-size` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.11:
+Example `vocabulary-size` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1), passing in Edition 2026.11.12:
 
 ```python
 """Learns 16,000 merges once, then reads the first 0, 1,000, 2,000, 4,000, 8,000 and 16,000 of them as six tokenizers.
@@ -302,7 +302,7 @@ Open language models ship their tokenizer as a file beside their weights. Readin
 
 Encode three product names both ways, and count each tokenizer's tokens per validation name:
 
-Example `smollm2-tokens` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1 · tokenizers 0.23.3), passing in Edition 2026.11.11:
+Example `smollm2-tokens` (Python 3.12.15 · numpy 2.5.4 · pandas 3.1.1 · tokenizers 0.23.3), passing in Edition 2026.11.12:
 
 ```python
 """Encodes three product names with SmolLM2's tokenizer and with the store's, then counts the tokens per validation name
@@ -358,7 +358,7 @@ SmolLM2's vocabulary has 49,152 tokens, against the store tokenizer's 4,138, bec
 - **Every digit is its own token.** `48` becomes `4` and `8`, and `6.5` becomes `6`, `.` and `5`. Splitting digits stops the vocabulary from filling with numbers, each seen a few times, and treats all numbers the same way.
 - **A word at the start of a text has no space before it, so it's a different token.** SmolLM2's vocabulary has `Ġsled` as one token, but not `sled` without the space, so a name that starts with `sled` gets `s` and `led`, as the last lines of the output show. And `barstools`, which SmolLM2's vocabulary lacks as a whole word, splits into `bar`, `st` and `ools`, as the first lines show.
 
-A tokenizer trained on your own text does slightly better on it. The store's tokenizer uses 9.91 tokens per validation name and SmolLM2's uses 10.53, against 6.79 words. The edge is partly because the store's tokenizer doesn't split numbers into digits, and partly because SmolLM2 spends a separate `Ġ` token before every number and splits each name's first word, which has no space before it.
+A tokenizer trained on your own text does slightly better on it. The store's tokenizer uses 9.91 tokens per validation name and SmolLM2's uses 10.53, against 6.79 words. The edge is partly because the store's tokenizer doesn't split numbers into digits, and partly because SmolLM2 spends a separate `Ġ` token before every number that follows a space and splits each name's first word, which has no space before it.
 
 **Working rule:** Use an open model's tokenizer exactly as shipped, whenever you use one; a model only understands the tokens it was trained on. Count tokens with that tokenizer, not words, whenever you budget for context length or cost. When you train your own model on narrow text, train your own tokenizer on that text.
 
@@ -368,7 +368,7 @@ SmolLM2's tokenizer file looks like a black box until you see that it holds the 
 
 Check the file's merges: merge the library's pre-tokenizer pieces of three product names by hand, earliest-learned pair first as the [store's tokenizer](#train-the-store-tokenizer) does, and compare the result with the library's tokens:
 
-Example `merges-by-hand` (Python 3.12.15 · tokenizers 0.23.3), passing in Edition 2026.11.11:
+Example `merges-by-hand` (Python 3.12.15 · tokenizers 0.23.3), passing in Edition 2026.11.12:
 
 ```python
 """Applies SmolLM2's learned merges by hand, earliest first, to the pieces its pre-tokenizer makes of three product names.
