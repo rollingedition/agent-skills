@@ -1,7 +1,7 @@
 {
   "name": "model-context-protocol-in-practice",
   "displayName": "Model Context Protocol in Practice",
-  "version": "2026.11.10",
+  "version": "2026.11.11",
   "description": "Tools and data for agents, for engineers who know APIs: what MCP adds to an HTTP API and when it's the wrong choice, and how to design, build, secure, test and run MCP servers and clients on specification revision 2026-07-28 with the Python SDK, mcp 2.x, with a migration path from the 2025 revisions.",
   "author": {
     "name": "Rolling Edition",

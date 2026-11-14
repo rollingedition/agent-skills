@@ -3,26 +3,28 @@ title: "Model Context Protocol in Practice"
 chapter: "MCP end to end"
 chapter_id: mcp-end-to-end
 book: model-context-protocol-in-practice
-edition: 2026.11.10
-verified: 2026-11-10
-edition_code: H239-A01C
+edition: 2026.11.11
+verified: 2026-11-14
+edition_code: 2VMD-DEEC
 canonical: https://rollingedition.com/model-context-protocol-in-practice/mcp-end-to-end
 license: CC BY 4.0
-attribution: "“MCP end to end,” chapter 1 of Model Context Protocol in Practice, Edition 2026.11.10, examples passed Nov 10, 2026. By Rolling Edition, https://rollingedition.com/model-context-protocol-in-practice/mcp-end-to-end. Text CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“MCP end to end,” chapter 1 of Model Context Protocol in Practice, Edition 2026.11.11, examples passed Nov 14, 2026. By Rolling Edition, https://rollingedition.com/model-context-protocol-in-practice/mcp-end-to-end. Text CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # MCP end to end
 
-By the end of this chapter you can put an existing HTTP API behind a Model Context Protocol server over stdio, call its tool from a client, read every message the two exchange, and let a model choose the tool through a small host. Everything runs on one machine, against the specification at revision 2026-07-28 and the Python SDK, `mcp` 2.3.0.
+By the end of this chapter you can put an existing HTTP API behind a Model Context Protocol server over stdio, call its tool from a client, read every message the two exchange, and let a model choose the tool through a small host. Every example runs on one machine; the chapter's claims hold for revision 2026-07-28 of the specification and for `mcp` 2.3.0, the Python SDK.
+
+A customer writes to Fernhill Supply, a small online shop for kitchen and garden goods, to ask where an order is. The answer lives in Fernhill Supply's systems, not in the ticket, so a model in the support team's host can answer only if something lets it look the order up. This chapter takes on that problem, and [Meet the shop and its API](#the-shop) introduces the shop in full.
 
 The Model Context Protocol (MCP) is how an application that uses a model gets tools and data from programs it didn't write. Three roles share the work, and the book keeps their names exact. The **host** is the application the user works in, such as a support desk or a coding assistant. A **client** is the host's connection to one server. A **server** exposes capabilities, such as tools a model can call ([specification overview](https://modelcontextprotocol.io/specification/2026-07-28)). The messages between a client and a server are JSON-RPC 2.0.
 
-This chapter builds a rough version of the whole thing: an API, a server with one tool, a client, a trace of the wire and one recorded choice by a model. Each later chapter makes one of those parts solid.
+This chapter builds a rough version of the whole thing: an API, a server with one tool, a client, a wire trace and one recorded model choice. Each later chapter makes one of those parts solid.
 
 ## Meet the shop and its API {#the-shop}
 
-An MCP server rarely starts from nothing. Most teams that need one already have an HTTP API with its own data, its own authentication and its own clients, and the server's job is to put part of that API in front of a model. So the first thing to have is the API you're wrapping, running where your examples can reach it.
+An MCP server rarely starts from nothing. Most teams that need one already run an HTTP API with its own data, authentication and clients, and the server's job is to put part of it in front of a model. So the first thing to have is the API you're wrapping, running where your examples can reach it.
 
-This book follows one case study throughout: a small online shop for kitchen and garden goods, Fernhill Supply, which we call **the shop**. The shop is fictional and stands for no real business; its domain, `fernhill.example`, is a reserved name that can never resolve. The shop's support team answers customer tickets, and most tickets need a lookup in the shop's systems: where an order is, whether a product is in stock, how much a refund would be. The book's goal is a host that reads those tickets and calls the shop's tools to answer them.
+Every chapter works on this shop, Fernhill Supply, and we call it **the shop**. The shop is fictional and stands for no real business; its domain, `fernhill.example`, is a reserved name that can never resolve. Its support team answers customer tickets, and most tickets need a lookup in the shop's systems: where an order is, whether a product is in stock, or how much a refund would come to. The book's goal is a host that reads those tickets and calls the shop's tools to answer them.
 
 The shop already has the "before" that every chapter wraps: **the shop's API**, an HTTP API for orders, stock and refunds that checks an API key in the `X-API-Key` header. Its records are **the shop's data**, generated by the book's own code from one fixed seed, so every run sees the same customers, orders and tickets. Three shared modules in `examples/lib/` hold this setup, so the examples stay short:
 
@@ -30,32 +32,35 @@ The shop already has the "before" that every chapter wraps: **the shop's API**, 
 - `lib.shop_api` is the shop's API, a Starlette app over that data.
 - `lib.loopback` serves an app on 127.0.0.1 on a free port and stops it when the block ends.
 
-The first example generates the data, starts the shop's API on loopback, and calls it the way any API client would: once with the key, once without, and once for an order that doesn't exist.
+Before wrapping the API, run it the way any client would: once with the key, once without it, and once for an order that doesn't exist.
 
-Example `start-the-shop-api` (Python 3.12.15 · httpx2 2.16.0 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.10:
+Example `start-the-shop-api` (Python 3.12.15 · httpx2 2.16.0 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.11:
 
 ```python
-"""Start the shop's existing HTTP API on loopback and call it the way any API client does."""
+"""Start the shop's existing HTTP API on loopback and call it three ways: with its key, without it, and for an order
+ that doesn't exist. The point rests on the `without key` line, which shows the API refuses a caller it can't identify."""
 import httpx2
 
 from lib import loopback, shop_api
 from lib.shop_data import SHOP_SEED, load_shop
 
-shop = load_shop()
+shop = load_shop()  # one fixed seed, so every run sees the same customers, orders and tickets
 print("seed:", SHOP_SEED)
 print("customers:", len(shop.customers))
 print("products:", len(shop.products))
 print("orders:", len(shop.orders))
 print("tickets:", len(shop.tickets))
 
-with loopback.serve(shop_api.create_app()) as base_url:
+with loopback.serve(shop_api.create_app()) as base_url:  # serves on 127.0.0.1 at a free port until the block ends
+    # the API checks this header; DEMO_API_KEY is the key the shop's API accepts
     response = httpx2.get(f"{base_url}/orders/O-2476", headers={"X-API-Key": shop_api.DEMO_API_KEY})
     order = response.json()
     print("with key:", response.status_code)
     print("order status:", order["status"])
     print("shipped on:", order["shipped_on"])
     print("total:", order["total"])
-    print("without key:", httpx2.get(f"{base_url}/orders/O-2476").status_code)
+    print("without key:", httpx2.get(f"{base_url}/orders/O-2476").status_code)  # no header at all
+    # O-7144 is a well-formed ID that the generated orders do not contain
     print("unknown order:", httpx2.get(f"{base_url}/orders/O-7144",
                                        headers={"X-API-Key": shop_api.DEMO_API_KEY}).status_code)
 ```
@@ -76,24 +81,27 @@ without key: 401
 unknown order: 404
 ```
 
-The generator's seed is 4217, and it produces 240 customers, 64 products, 1500 orders and 48 support tickets. Emails are at `example.com`, phones are masked to two digits, and payment shows only "card ending" with the last four digits of a published test card. The data card in `examples/data/shop/README.md` lists every field.
+The seed is 4217, and the output beside the example counts the customers, products, orders and tickets that seed produces. Emails are at `example.com`, phones are masked to two digits, and payment shows only "card ending" with the last four digits of a published test card. The data card in `examples/data/shop/README.md` lists every field.
 
-With the key, the API answers 200: order O-2476 is shipped, shipped on 2026-06-24, for a total of €99.00. The shop prices everything in euros, and its API sends amounts as plain decimals with no currency code. Without the key it answers 401, and for an order that doesn't exist, 404. Those three answers are the contract the MCP server has to respect. The server will hold the key, call the same endpoint, `GET /orders/{order_id}`, and turn its answers into something a model can read; it won't reimplement orders.
+With the key the API answers 200: order O-2476 has the status shipped and was sent on 2026-06-24, for a total of €99.00. The shop prices everything in euros, and its API sends amounts as plain decimals with no currency code.
 
-**Working rule:** Wrap the API you already run, and keep it the system of record. The MCP server should be a thin adapter that calls the API with its own credentials and translates the answers, so the API's validation, authorization and logs keep working for every client, not only for models. Build directly on the database only when there is no API to wrap, and even then put the business rules in one place that both kinds of client share.
+Without the key it answers 401, and an order that doesn't exist gets 404. Those three answers are the contract the MCP server has to respect. The server will hold the key, call the same endpoint, `GET /orders/{order_id}`, and turn its answers into something a model can read; it won't reimplement orders.
+
+**Working rule:** Wrap the API you already run and keep it the system of record. The MCP server should be a thin adapter that calls the API with its own credentials and translates the answers, so the API's validation, authorization and logs keep working for every client, not only models. Build on the database directly only when there is no API to wrap, and then keep the business rules in one place that both kinds of client share.
 
 ## Wrap one endpoint as a tool {#wrap-an-endpoint-as-a-tool}
 
-The shop's API from [the previous section](#the-shop) answers "what is the status of order O-2476" for any HTTP client. To answer it for a model, the shop needs an MCP server that exposes that lookup as a **tool**: a named action with a description and a JSON Schema for its inputs, which a model can decide to call ([tools](https://modelcontextprotocol.io/specification/2026-07-28/server/tools)). The server publishes its tools in `tools/list`, and a client runs one with `tools/call`.
+The shop's API from [the previous section](#the-shop) answers "what is the status of order O-2476" for any HTTP client. To answer that for a model, the shop needs an MCP server that exposes the lookup as a **tool**: a named action with a description and a JSON Schema for its inputs, which a model can decide to call ([tools](https://modelcontextprotocol.io/specification/2026-07-28/server/tools)). The server publishes its tools in `tools/list`, and a client runs one with `tools/call`.
 
-In the Python SDK the server class is `MCPServer`, imported from `mcp.server.mcpserver`. The SDK's 1.x releases called it `FastMCP`; at 2.3.0 importing `mcp.server.fastmcp` fails with a pointer to the [migration guide](https://py.sdk.modelcontextprotocol.io/v2/migration/). You register a tool with the `@server.tool()` decorator, called with its parentheses: the bare `@server.tool` raises a `TypeError` that asks for them ([`mcp` source](https://pypi.org/project/mcp/2.3.0/), `mcp/server/mcpserver/server.py`). The SDK reads the tool's name from the function's name, its description from the docstring, and its input schema from the type hints. `server.run()` serves over **stdio**, the transport in which the client starts the server as a subprocess and the two exchange messages on its standard input and output; stdio is `run()`'s default.
+In the Python SDK the server class is `MCPServer`, imported from `mcp.server.mcpserver`. The SDK's 1.x releases called it `FastMCP`, and at 2.3.0 importing `mcp.server.fastmcp` fails with a pointer to the [migration guide](https://py.sdk.modelcontextprotocol.io/v2/migration/). You register a tool with `@server.tool()`, parentheses included, since the bare `@server.tool` raises a `TypeError` that asks for them ([`mcp` source](https://pypi.org/project/mcp/2.3.0/), `mcp/server/mcpserver/server.py`). The SDK takes the tool's name from the function, its description from the docstring and its input schema from the type hints. `server.run()` serves over **stdio**, where the client starts the server as a subprocess and the two exchange messages on standard input and output, which is `run()`'s default.
 
-The shop's first server is called `shop-orders`, and its one tool, `get_order_status`, wraps `GET /orders/{order_id}`. It reads the API's address and key from its environment, so they never appear in the code or on the wire. Server examples in this book follow one pattern: the file defines the server and, run with no arguments, starts a client that launches the same file with `--serve`. Here that client lists the server's tools.
+The shop's first server is called `shop-orders`, and its one tool, `get_order_status`, wraps `GET /orders/{order_id}`. It reads the API's address and key from its environment, so they never appear in the code or on the wire. Server examples follow one pattern: the file defines the server, and with no arguments it starts a client that launches the same file with `--serve` and lists the tools. Run it to see the tool the way a model receives it.
 
-Example `order-status-server` (Python 3.12.15 · cryptography 50.0.2 · httpx2 2.16.0 · mcp 2.3.0 · mcp-types 2.3.0 · pydantic 2.14.3 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.10:
+Example `order-status-server` (Python 3.12.15 · cryptography 50.0.2 · httpx2 2.16.0 · mcp 2.3.0 · mcp-types 2.3.0 · pydantic 2.14.3 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.11:
 
 ```python
-"""The shop's first MCP server: one tool, get_order_status, that wraps GET /orders/{order_id} on the shop's API."""
+"""The shop's first MCP server: one tool, get_order_status, that wraps GET /orders/{order_id} on the shop's API. The
+ point rests on the description and schema lines, the only parts of the tool a model reads."""
 import asyncio
 import json
 import os
@@ -110,17 +118,21 @@ server = MCPServer("shop-orders", version="0.1.0")
 @server.tool()
 def get_order_status(order_id: str) -> dict:
     """Look up one of the shop's orders by its ID, such as O-1873: its status, dates, lines and total."""
+    # read on each call: a missing variable raises KeyError here, and the SDK reports only a generic error
     response = httpx2.get(f"{os.environ['SHOP_API_URL']}/orders/{order_id}",
-                          headers={"X-API-Key": os.environ["SHOP_API_KEY"]}, timeout=5.0)
+                          headers={"X-API-Key": os.environ["SHOP_API_KEY"]},
+                          timeout=5.0)  # seconds; a slow shop API fails this call instead of holding the worker
+    # the shop answers 404 for an order it doesn't have, so the model gets a message it can act on
     if response.status_code == 404:
         raise ToolError(f"The shop has no order {order_id}. Order IDs look like O-1873.")
-    response.raise_for_status()
+    response.raise_for_status()  # any other failure, such as a wrong key, stays on the server as an HTTPError
     return response.json()
 
 
 async def show_tools() -> None:
     from lib import loopback, shop_api
     with loopback.serve(shop_api.create_app()) as base_url:
+        # the API's address and key are the only variables the server gets
         params = StdioServerParameters(command=sys.executable, args=[__file__, "--serve"],
                                        env=shop_api.server_env(base_url))
         async with Client(params) as client:
@@ -145,30 +157,31 @@ description: Look up one of the shop's orders by its ID, such as O-1873: its sta
 input schema: {"type": "object", "properties": {"order_id": {"title": "Order Id", "type": "string"}}, "required": ["order_id"], "title": "get_order_statusArguments"}
 ```
 
-The output is what a client sees. The tool's name is `get_order_status`, its description is the docstring, word for word, and its input schema says that `order_id` is a string and is required. The SDK built the schema from the `order_id: str` hint and added `title` fields of its own, such as `"Order Id"`. The model reads the description and the schema and nothing else about this tool, so the docstring is written for a model: what the tool does, what an ID looks like, and what comes back. [Write descriptions the model reads](#write-tool-descriptions) measures how much that wording matters.
+What the client sees is the tool's definition. Its name is `get_order_status`, its description is the docstring word for word, and its input schema says that `order_id` is a required string. The SDK built that schema from the `order_id: str` hint and added `title` fields of its own, such as `"Order Id"`. The model reads only the description and the schema, so the docstring is written for a model: what the tool does, what an ID looks like and what comes back. [Write descriptions the model reads](#write-tool-descriptions) measures how much that wording matters.
 
-Two details in the tool decide how it behaves under load and when it fails. The function is a plain `def` that makes a blocking HTTP call. At 2.3.0 the SDK runs synchronous tools on a worker thread, so a slow call to the shop's API doesn't stall the server's other requests ([migration guide](https://py.sdk.modelcontextprotocol.io/v2/migration/)). The function also raises `ToolError` when the API answers 404. The SDK passes a `ToolError`'s message to the client as a failed tool result. Any other exception becomes a generic `Error executing tool` message, and the exception's own text stays on the server (`mcp/server/mcpserver/tools/base.py`). [Call the tool from a client](#call-a-tool-from-a-client) shows both kinds of failure.
+The function is a plain `def` that makes a blocking HTTP call, and at 2.3.0 the SDK runs synchronous tools on a worker thread, so a slow call to the shop's API doesn't stall the server's other requests ([migration guide](https://py.sdk.modelcontextprotocol.io/v2/migration/)). The function also raises `ToolError` on a 404, and the SDK passes a `ToolError`'s message to the client as a failed tool result. Any other exception becomes a generic `Error executing tool` message, and its text stays on the server (`mcp/server/mcpserver/tools/base.py`). [Call the tool from a client](#call-a-tool-from-a-client) shows both kinds of failure.
 
-The HTTP client is `httpx2`, a fork of HTTPX that the SDK itself depends on at 2.3.0 ([migration guide](https://py.sdk.modelcontextprotocol.io/v2/migration/)), so the server needs no HTTP library of its own. The tool uses only `httpx2.get()` and the response's `status_code`, `raise_for_status()` and `json()`, which read as they do in HTTPX.
+The server needs no HTTP library of its own, because the SDK depends on `httpx2`, a fork of HTTPX, at 2.3.0 ([migration guide](https://py.sdk.modelcontextprotocol.io/v2/migration/)). The tool uses only `httpx2.get()`, the response's `status_code`, `raise_for_status()` and `json()`, which work as they do in HTTPX.
 
-**Working rule:** Start with one read-only tool that maps to one endpoint, and write its docstring for a model: what it does, what its inputs look like, what it returns. Raise `ToolError` with a message that tells the model what to do differently, and let unexpected exceptions stay generic so internal details never leave the server. Once you wrap more than a handful of endpoints, shape the tools around the tasks the model has to do rather than one per endpoint ([Shape tools around tasks, not endpoints](#tasks-not-endpoints)).
+**Working rule:** Start with one read-only tool for one endpoint, and write its docstring for a model: what it does, what its inputs look like, what it returns. Raise `ToolError` with a message that tells the model what to do differently, and let unexpected exceptions stay generic so internal details never leave the server. Past a handful of endpoints, shape the tools around the tasks the model has to do rather than one per endpoint ([Shape tools around tasks, not endpoints](#tasks-not-endpoints)).
 
 ## Call the tool from a client {#call-a-tool-from-a-client}
 
-The `shop-orders` server from [the previous section](#wrap-an-endpoint-as-a-tool) only runs when something launches it. In the shop's case that something is the host, and the part of the host that talks to one server is a client. Over stdio, a client starts the server as a subprocess, writes requests to its standard input and reads responses from its standard output ([stdio transport](https://modelcontextprotocol.io/specification/2026-07-28/basic/transports/stdio)).
+[Wrap one endpoint as a tool](#wrap-an-endpoint-as-a-tool) defined `shop-orders` but never ran it, because a stdio server runs only when something launches it. In the shop's case that something is the host, and the part of the host that talks to one server is a client. Over stdio, a client starts the server as a subprocess, writes requests to its standard input and reads responses from its standard output ([stdio transport](https://modelcontextprotocol.io/specification/2026-07-28/basic/transports/stdio)).
 
-At the pinned revision there is no handshake and no session. Every request stands alone and carries the protocol version and the client's capabilities in its `_meta` field, and a server "MUST NOT rely on prior requests over the same connection to establish context" ([base protocol](https://modelcontextprotocol.io/specification/2026-07-28/basic)). The same page says that an open connection, such as a stdio process, "is not a conversation or session". Revisions up to 2025-11-25 opened every connection with an `initialize` handshake; [Remove initialize and session IDs](#remove-sessions) covers moving off it.
+At the pinned revision there is no handshake and no session. Each request stands alone and carries the protocol version and the client's capabilities in its `_meta` field, and the specification says a server "MUST NOT rely on prior requests over the same connection to establish context" ([base protocol](https://modelcontextprotocol.io/specification/2026-07-28/basic)). The same page also says an open connection, such as a stdio process, isn't a conversation or a session. Revisions up to 2025-11-25 opened every connection with an `initialize` handshake; [Remove initialize and session IDs](#remove-sessions) covers moving off it.
 
-The Python SDK's high-level client is `mcp.Client`. Given a `StdioServerParameters`, it launches that command as a subprocess. By default it runs in `mode="auto"`: it first sends `server/discover` at the pinned revision, and falls back to the old `initialize` handshake whenever the probe times out or fails with any error except a `-32022` whose list of versions shares none with the client's ([Handle a version the server doesn't support](#version-mismatch)) (`mcp/client/client.py`, `mcp/client/_probe.py`). A 2025-era server answers `server/discover` with an error, so it gets the old handshake. Use `Client` rather than building a low-level `ClientSession` and calling `initialize()` on it yourself, which always speaks the pre-2026 handshake ([migration guide](https://py.sdk.modelcontextprotocol.io/v2/migration/)).
+The Python SDK's high-level client is `mcp.Client`, and given a `StdioServerParameters` it launches the command as a subprocess. In its default `mode="auto"` it first sends `server/discover` at the pinned revision. It falls back to the old `initialize` handshake whenever the probe times out or fails with any error, except a `-32022` whose list of versions shares none with the client's, the case [Handle a version the server doesn't support](#version-mismatch) covers (`mcp/client/client.py`, `mcp/client/_probe.py`). A 2025-era server answers `server/discover` with an error, so it gets the old handshake. Use `Client`, not a hand-called `initialize()` on a low-level `ClientSession`, which always speaks the pre-2026 handshake ([migration guide](https://py.sdk.modelcontextprotocol.io/v2/migration/)).
 
-Two settings in the example matter more than they look. The command is `sys.executable`, the Python running the example, not `"python"`: the server must start in the same environment, with the same pinned packages, whatever is first on the `PATH`. And the shop API's address and key go in `env=` explicitly, because the stdio client doesn't pass the parent's environment through. On Linux and macOS it passes only `HOME`, `LOGNAME`, `PATH`, `SHELL`, `TERM` and `USER`, plus what you give it (`mcp/client/stdio.py`). The client also names itself, `shop-host`, so the server's logs and the wire show who called.
+The command is `sys.executable`, the Python running the example, rather than `"python"`, so the server runs in the same environment with the same pinned packages, whatever is first on the `PATH`. The shop API's address and key go in `env=` explicitly, because the stdio client doesn't pass the parent's environment through. On Linux and macOS it passes only `HOME`, `LOGNAME`, `PATH`, `SHELL`, `TERM` and `USER`, plus what you give it (`mcp/client/stdio.py`). The client also names itself, `shop-host`, so the server's logs and the wire show who called.
 
-The example calls `get_order_status` three ways: for a real order, for an order ID that doesn't exist, and from a second client that forgets the environment.
+The next example makes three calls to show failures from the client's side: one for a real order, one for an order ID that doesn't exist, and one from a second client that forgets the environment.
 
-Example `call-order-status` (Python 3.12.15 · cryptography 50.0.2 · httpx2 2.16.0 · mcp 2.3.0 · mcp-types 2.3.0 · pydantic 2.14.3 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.10:
+Example `call-order-status` (Python 3.12.15 · cryptography 50.0.2 · httpx2 2.16.0 · mcp 2.3.0 · mcp-types 2.3.0 · pydantic 2.14.3 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.11:
 
 ```python
-"""Launch the shop's server over stdio, call get_order_status twice, and show what a missing environment does."""
+"""Launch the shop's server over stdio and call get_order_status for a real order and a wrong one, then for a server
+ started without the shop's variables. The asserts pin the error flags the prose states: a real order is not an error, and a wrong ID is."""
 import asyncio
 import json
 import sys
@@ -178,23 +191,26 @@ from mcp.types import Implementation
 
 from lib import loopback, shop_api
 
-SHOP_HOST = Implementation(name="shop-host", version="0.1.0")
+SHOP_HOST = Implementation(name="shop-host", version="0.1.0")  # the name the server's logs and the wire show
 
 
 async def main() -> None:
     with loopback.serve(shop_api.create_app()) as base_url:
-        env = {"SHOP_API_URL": base_url, "SHOP_API_KEY": shop_api.DEMO_API_KEY}
+        env = {"SHOP_API_URL": base_url, "SHOP_API_KEY": shop_api.DEMO_API_KEY}  # the only two variables the server reads
+        # relative to the examples folder, where examples run, so the server file is found
         params = StdioServerParameters(command=sys.executable, args=["order-status-server.py", "--serve"], env=env)
         async with Client(params, client_info=SHOP_HOST) as client:
             print("protocol revision:", client.protocol_version)
             print("server:", client.server_info.name, client.server_info.version)
             result = await client.call_tool("get_order_status", {"order_id": "O-2476"})
-            print("is error:", result.is_error)
+            assert result.is_error is False        # a real order comes back as a result, not an error
+            # the tool returns the order as JSON text in its first content block
             print("order status:", json.loads(result.content[0].text)["status"])
             wrong = await client.call_tool("get_order_status", {"order_id": "O-7144"})
-            print("wrong ID is error:", wrong.is_error)
+            assert wrong.is_error is True          # an unknown order is a failed tool result, not an exception
             print("wrong ID says:", wrong.content[0].text)
 
+        # no env=, so the server starts without the shop's variables and its tool fails at the first call
         no_env = StdioServerParameters(command=sys.executable, args=["order-status-server.py", "--serve"])
         async with Client(no_env, client_info=SHOP_HOST) as client:
             broken = await client.call_tool("get_order_status", {"order_id": "O-2476"})
@@ -209,31 +225,32 @@ Output:
 ```text
 protocol revision: 2026-07-28
 server: shop-orders 0.1.0
-is error: False
 order status: shipped
-wrong ID is error: True
 wrong ID says: Error executing tool get_order_status: The shop has no order O-7144. Order IDs look like O-1873.
 without env says: Error executing tool get_order_status
 ```
 
-The client and the server agreed on revision 2026-07-28, and the client learned the server's name and version, `shop-orders 0.1.0`, from the `server/discover` answer. The first call succeeds: its error flag is `False` and the order's status is `shipped`, the same answer the shop's API gave directly.
+The first call works. The real order comes back as an ordinary result, not an error, with status shipped, the same answer the shop's API gave directly. On the way, the client and server agreed on revision 2026-07-28, and the `server/discover` answer gave the client the server's name and version, `shop-orders 0.1.0`.
 
-The wrong ID, O-7144, comes back as a result, not an exception: its error flag is `True`, and its text is the `ToolError` message, prefixed by the SDK. A model that reads "Order IDs look like O-1873" can ask the customer again. The third call fails differently. The server started without `SHOP_API_URL`, the tool raised a `KeyError`, and all the client got was `Error executing tool get_order_status`. The `KeyError` itself went to the server's standard error, where an operator can find it and a model can't. That split is deliberate, and it means a missing variable shows up in the server's logs, never in the conversation.
+The wrong ID, O-7144, comes back as a flagged result, not an exception, and its text is the `ToolError` message, prefixed by the SDK. A model that reads "Order IDs look like O-1873" can ask the customer again. The third call fails differently. The server started without `SHOP_API_URL`, so the tool raised a `KeyError`, and all the client got was `Error executing tool get_order_status`. The `KeyError` itself went to the server's standard error, where an operator can find it and a model can't. That split is deliberate, because it puts a missing variable in the server's logs and never in the conversation.
 
-**Working rule:** Connect with `mcp.Client`, launch stdio servers with `sys.executable` and an explicit `env=`, and give the client a name. Pass each variable the server needs, and nothing else from your own environment, so a server never sees secrets meant for another program. When a tool fails with only the SDK's generic message, read the server's standard error before you change the client.
+**Working rule:** Connect with `mcp.Client`, launch stdio servers with `sys.executable` and an explicit `env=`, and give the client a name. Pass each variable the server needs and nothing else from your environment, so no server sees secrets meant for another program. When a tool fails with only the SDK's generic message, read the server's standard error before you change the client.
 
 ## Read the messages on the wire {#read-the-messages}
 
-The client in [the previous section](#call-a-tool-from-a-client) hid every message behind `call_tool()`. When a server misbehaves, or when you need to know what the pinned revision really sends, you read the messages themselves. Over stdio, each message is one line of JSON-RPC on the server's standard input or output, with no embedded newlines, and the server "MUST NOT write anything to its stdout that is not a valid MCP message". Logs belong on standard error ([stdio transport](https://modelcontextprotocol.io/specification/2026-07-28/basic/transports/stdio)).
+The client in [the previous section](#call-a-tool-from-a-client) hid every message behind `call_tool()`. When a server misbehaves, or you need to know what the pinned revision really sends, read the messages. Over stdio, each message is one line of JSON-RPC on the server's standard input or output, with no embedded newlines. The server "MUST NOT" write anything to its stdout that isn't a valid MCP message, and its logs belong on standard error ([stdio transport](https://modelcontextprotocol.io/specification/2026-07-28/basic/transports/stdio)).
 
-A faithful trace needs a real subprocess. The SDK's in-process client, `Client(server)` given a server object, in its default auto mode dispatches calls directly and sends no JSON-RPC at all (`mcp/client/client.py`), so it can't show you the wire. The book's trace printer, `lib.wire`, puts a small relay between the client and the server instead. The client launches the relay, the relay launches the real server, and it copies every line in both directions unchanged while appending it to a log. `wire.print_trace()` then prints the log in order: numbered messages, arrows for direction (`->` from client to server, `<-` back), and request IDs renumbered so the output is stable. Values under names that look like secrets would print as `[redacted]`; this trace has none.
+A faithful trace needs a real subprocess. The SDK's in-process client, `Client(server)` given a server object, dispatches calls directly in its default auto mode, sending no JSON-RPC at all (`mcp/client/client.py`), so it can't show you the wire. The book's trace printer, `lib.wire`, puts a small relay between the client and the server instead: the client launches the relay, the relay launches the real server, and the relay copies every line both ways unchanged while appending it to a log.
 
-The example traces the same call that [the client example](#call-a-tool-from-a-client) made, for order O-2476, and prints three messages in full and the other three on one line each.
+`wire.print_trace()` then prints that log in order, with numbered messages, arrows for direction (`->` from client to server, `<-` back) and request IDs renumbered so the output stays stable. Values under names that look like secrets print as `[redacted]`; this trace has none.
 
-Example `trace-first-call` (Python 3.12.15 · cryptography 50.0.2 · httpx2 2.16.0 · mcp 2.3.0 · mcp-types 2.3.0 · pydantic 2.14.3 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.10:
+To see the wire, run the call for order O-2476 from [the client example](#call-a-tool-from-a-client) through the relay. Three of its messages print in full, and the rest on one line each.
+
+Example `trace-first-call` (Python 3.12.15 · cryptography 50.0.2 · httpx2 2.16.0 · mcp 2.3.0 · mcp-types 2.3.0 · pydantic 2.14.3 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.11:
 
 ```python
-"""Record every message the client and the shop's server exchange for one tool call, and print them in order."""
+"""Record every message the client and the shop's server exchange for one tool call, and print them in order. The point
+ rests on the methods line: the exchange has no initialize."""
 import asyncio
 import pathlib
 import sys
@@ -249,13 +266,15 @@ async def main() -> None:
         server = StdioServerParameters(command=sys.executable, args=["order-status-server.py", "--serve"],
                                        env=shop_api.server_env(base_url))
         pathlib.Path("wire.jsonl").unlink(missing_ok=True)   # the relay appends, so start each run empty
+        # the relay starts the server and copies every line both ways, appending each one to the log
         params = wire.relay(server, log="wire.jsonl")
         async with Client(params, client_info=Implementation(name="shop-host", version="0.1.0")) as client:
             await client.list_tools()
             await client.call_tool("get_order_status", {"order_id": "O-2476"})
+    # messages 1, 5 and 6 print in full; the rest on one line, with strings cut at 48 characters
     messages = wire.print_trace("wire.jsonl", full=(1, 5, 6), depth=4, max_string=48)
     print("messages:", len(messages))
-    print("methods:", ", ".join(m["method"] for m in messages if "method" in m))
+    print("methods:", ", ".join(m["method"] for m in messages if "method" in m))  # results carry no method
 
 
 asyncio.run(main())
@@ -328,37 +347,37 @@ messages: 6
 methods: server/discover, tools/list, tools/call
 ```
 
-The whole exchange is 6 messages, and the methods, in order, are server/discover, tools/list, tools/call. There is no `initialize`. Reading them one at a time:
+Nothing here is a handshake: there is no `initialize`. The exchange is 6 messages, and the methods, in order, are server/discover, tools/list, tools/call. Reading them one at a time:
 
-1. **`server/discover`** is the first request. Its `params` hold only `_meta`, with three entries: `io.modelcontextprotocol/protocolVersion`, `…/clientInfo` with the name `shop-host`, and `…/clientCapabilities`, empty because this client declares none. Every server must implement `server/discover` ([discovery](https://modelcontextprotocol.io/specification/2026-07-28/server/discover)).
-2. **Its result** lists `supportedVersions` and the server's `capabilities`, and its own `_meta` carries `io.modelcontextprotocol/serverInfo`. It also carries `resultType` and two cache hints, `ttlMs` and `cacheScope`, which [Cache list results](#cache-list-results) explains.
-3. **`tools/list`** carries the same `_meta` again. Nothing from the first exchange is assumed.
+1. **`server/discover`** is the first request. Its `params` hold only `_meta`, with three entries: `io.modelcontextprotocol/protocolVersion`, `io.modelcontextprotocol/clientInfo` naming `shop-host`, and `io.modelcontextprotocol/clientCapabilities`, which is empty because this client declares none. Every server must implement `server/discover` ([discovery](https://modelcontextprotocol.io/specification/2026-07-28/server/discover)).
+2. **Its result** lists `supportedVersions` and the server's `capabilities`, and the server's own `_meta` carries `io.modelcontextprotocol/serverInfo`. The result also has `resultType` and two cache hints, `ttlMs` and `cacheScope`, which [Cache list results](#cache-list-results) explains.
+3. **`tools/list`** carries the same `_meta` again.
 4. **Its result** holds the tool definition that [the server example](#wrap-an-endpoint-as-a-tool) printed.
-5. **`tools/call`** names the tool, gives its `arguments`, and once more carries the version, the client's name and its capabilities.
-6. **Its result** holds the order as text `content`, with `isError` false and `resultType` set to `"complete"`.
+5. **`tools/call`** names the tool and gives its `arguments`, and once more carries the protocol version, the client's name and its capabilities.
+6. **Its result** holds the order as text `content`, with `isError` set to false and `resultType` set to `"complete"`.
 
-Every result carries `resultType`, and `"complete"` marks an ordinary answer. The other kind, a request for input in the middle of a call, is the subject of [Return an input request instead of a result](#return-an-input-request). Clients treat a result without the field, from an older server, as complete ([base protocol](https://modelcontextprotocol.io/specification/2026-07-28/basic)). The SDK's server adds both `resultType` and the `serverInfo` stamp itself (`mcp/server/runner.py`).
+Three requests, each saying who is asking and at which revision, because no request may lean on the one before it.
 
-One thing is missing from the trace on purpose: the shop's API key. It reached the server through the subprocess's environment, and the server sent it only to the shop's API. That is how the specification wants stdio servers to get credentials: "retrieve credentials from the environment" rather than follow the OAuth flow that [Authorize clients with OAuth](#authorization) teaches for HTTP ([base protocol](https://modelcontextprotocol.io/specification/2026-07-28/basic)).
+Every result carries `resultType`, and `"complete"` marks an ordinary answer. The other kind, a request for input mid-call, is the subject of [Return an input request instead of a result](#return-an-input-request). A client treats a result without the field, from an older server, as complete ([base protocol](https://modelcontextprotocol.io/specification/2026-07-28/basic)). The SDK's server adds `resultType` and the `serverInfo` stamp itself (`mcp/server/runner.py`).
 
-**Working rule:** When a call behaves in a way you don't expect, trace the wire before you read the SDK's code: a relay that copies lines and logs them works with any client and any server. Never write to standard output from a stdio server, not even a debugging `print()`, because the client reads every line there as a message. Use `logging`, which the SDK sends to standard error, or write to standard error yourself.
+One thing is missing from the trace on purpose: the shop's API key. It reached the server through the subprocess's environment, and the server sent it only to the shop's API. The specification wants stdio servers to retrieve credentials from the environment, not to follow the OAuth flow that [Authorize clients with OAuth](#authorization) teaches for HTTP ([base protocol](https://modelcontextprotocol.io/specification/2026-07-28/basic)).
+
+**Working rule:** When a call behaves unexpectedly, trace the wire before you read the SDK's code: a relay that copies and logs lines works with any client and any server. Never write to standard output from a stdio server, not even a debugging `print()`, because the client reads every line there as a message. Use `logging`, which the SDK sends to standard error, or write to standard error yourself.
 
 ## Let a model choose the tool {#let-a-model-choose}
 
-So far, in [the client example](#call-a-tool-from-a-client), the example code chose the tool and its arguments. In the shop's case a model should make that choice: tools are model-controlled, which means the host shows a model the available tools and the model decides which to call and with what ([tools](https://modelcontextprotocol.io/specification/2026-07-28/server/tools)). The host stays in charge of everything else: it builds the prompt, reads the model's reply, makes the call through its client and decides what to do with the result.
+In [the client example](#call-a-tool-from-a-client), the code chose the tool and its arguments. In the shop's case a model should make that choice. Tools are model-controlled. The host shows a model the available tools, and the model decides which to call and with what arguments ([tools](https://modelcontextprotocol.io/specification/2026-07-28/server/tools)). The host stays in charge of everything else. It builds the prompt, reads the model's reply, makes the call through its client, and decides what to do with the result.
 
-The book's host loop, `lib.host`, is a small host the book writes itself so you can see each of those steps. In this chapter it does one turn. It renders the server's tools into the book's own system prompt, giving each tool's name, description and input schema. It sends that prompt and one ticket to a model, and parses the reply. A reply that holds a `<tool_call>` block with a tool's name and arguments is a choice, and any other reply is an answer in words. The loop keeps the prompt and the parsing in the book's code, not in a model library's, so the same code drives the real model when a recording is made and the replayed recording in examples.
+The book's host loop, `lib.host`, is a small host the book writes itself, so each step is visible. Here it does one turn: it renders the server's tools into the book's own system prompt, giving each tool's name, description and input schema, then sends that prompt and one ticket to a model and parses the reply. A reply holding a `<tool_call>` block with a tool's name and arguments is a choice, and any other reply is an answer in words. The loop keeps the prompt and parsing in the book's code, not a model library's, so the same code drives the real model when a recording is made and the replay in examples.
 
-Examples in this book never call a model, because a model's output isn't deterministic and examples must run offline. Instead, a **recording** holds the model's raw replies under `examples/data/recorded/`, made once by a script in `recordings/`. Examples replay them with `ReplayModel`, which answers only for the exact messages it recorded and fails loudly if the prompt, the ticket or the tools have changed. The model for every recording in this book is Qwen3-4B-Instruct-2507, an open model under the Apache-2.0 licence, quantized to 4 bits (Q4_K_M, in a third-party GGUF conversion) and run on the CPU with llama.cpp, so anyone can make the recordings again. The script `recordings/pick_a_tool.py` made this chapter's recording, `pick-a-tool`, against the same server and prompt, and its manifest names the model file by revision and hash.
+Examples here never call a model, because its output isn't deterministic and examples must run offline. A **recording** holds the model's raw replies under `examples/data/recorded/`, made once by a script in `recordings/`, and examples replay them with `ReplayModel`. The replay fails loudly if the prompt, the ticket or the tools have changed. Every recording in this book uses Qwen3-4B-Instruct-2507, an open model under the Apache-2.0 licence, quantized to 4 bits (Q4_K_M, in a third-party GGUF conversion) and run on the CPU with llama.cpp, so anyone can make the recordings again. The script `recordings/pick_a_tool.py` made this chapter's recording, `pick-a-tool`, against the same server and prompt, and its manifest names the model file's revision and hash.
 
-The example gives the model three of the shop's tickets: one that quotes an order ID as the shop writes it, one with a bare order number, and one about stock, which no tool on this server can answer.
+The uncertain part is the model, so the example gives it three tickets: one quotes an order ID the way the shop writes it, one gives a bare order number, and one asks about stock, which no tool on this server can answer.
 
-Example `host-picks-a-tool` (Python 3.12.15 · cryptography 50.0.2 · httpx2 2.16.0 · mcp 2.3.0 · mcp-types 2.3.0 · pydantic 2.14.3 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.10:
+Example `host-picks-a-tool` (Python 3.12.15 · cryptography 50.0.2 · httpx2 2.16.0 · mcp 2.3.0 · mcp-types 2.3.0 · pydantic 2.14.3 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.11:
 
 ```python
-"""The book's host loop shows three tickets and the server's tools to a model, and calls the tool the model chooses.
-
-The model's replies are a recording (examples/data/recorded/pick-a-tool/), made with recordings/pick_a_tool.py."""
+"""The book's host loop shows three tickets and the server's tools to a model, then calls the tool the model chooses, from recorded replies in examples/data/recorded/. The point rests on the three `tool` lines."""
 import asyncio
 import json
 import sys
@@ -370,7 +389,7 @@ from lib import loopback, shop_api
 from lib.host import ReplayModel, choose_tool
 from lib.shop_data import load_shop
 
-model = ReplayModel("pick-a-tool")
+model = ReplayModel("pick-a-tool")  # answers only with the replies recorded for these exact messages
 
 
 async def main() -> None:
@@ -382,11 +401,12 @@ async def main() -> None:
             tools = (await client.list_tools()).tools
             for ticket_id in ("T-0003", "T-0010", "T-0015"):
                 ticket = shop.ticket(ticket_id)
+                # the longest paragraph of the ticket, which holds the customer's question
                 print(f"{ticket_id} asks:", max(ticket.body.split("\n\n"), key=len))
                 choice = choose_tool(model, ticket, tools)
                 print(f"{ticket_id} tool:", choice.tool or "none")
-                if choice.tool is None:
-                    print(f"{ticket_id} reply:", choice.reply[:72] + "…")
+                if choice.tool is None:  # the model answered in words, so there is no call to make
+                    print(f"{ticket_id} reply:", choice.reply[:72] + "…")  # a reply can run long, so the output shows only its opening
                     continue
                 print(f"{ticket_id} order id:", choice.arguments.get("order_id"))
                 result = await client.call_tool(choice.tool, choice.arguments)
@@ -412,38 +432,38 @@ T-0015 tool: none
 T-0015 reply: I don't have access to real-time inventory or stock levels for Fernhill …
 ```
 
-For ticket T-0003, the model chose `get_order_status` with `order_id` set to O-1942, and the host's call found the order shipped. Ticket T-0010 gave only a bare number, and the model still sent O-2496, the form both the description and the prompt show. For the stock question in T-0015, the model called no tool (the example prints `none`) and said in words that it couldn't check stock. That is the right behaviour for a server that offers only order lookups, and chapter 3 adds the `check_stock` tool the ticket needs.
+The model picked the lookup for the two tickets that need an order and declined the one that needs stock. On ticket T-0003 it chose `get_order_status` for the order the ticket names, and the host's call found that order shipped. Ticket T-0010 gave only a bare number, yet the model still sent O-2496, the form both the description and the prompt show. For the stock question in T-0015, the model called no tool, `none`, and said in words that it couldn't check stock. That is the right behaviour for a server that offers only order lookups, and chapter 3 adds the `check_stock` tool the ticket needs.
 
-Three recorded choices show the loop working; they don't measure how often a model chooses well. [Write descriptions the model reads](#write-tool-descriptions) compares descriptions on more tickets, and [Measure how often the right tool is chosen](#tool-selection-accuracy) measures accuracy over the whole ticket queue.
+Three recorded choices show the loop working. They don't measure how often a model chooses well. [Write descriptions the model reads](#write-tool-descriptions) compares descriptions on more tickets, and [Measure how often the right tool is chosen](#tool-selection-accuracy) measures accuracy over the whole ticket queue.
 
-This host calls `get_order_status` without asking anyone, and that departs from the specification. The specification puts consent on the host: hosts "must obtain explicit user consent before invoking any tool", and MCP itself can't enforce that ([specification overview](https://modelcontextprotocol.io/specification/2026-07-28)). The tools page adds that "there SHOULD always be a human in the loop with the ability to deny tool invocations" ([tools](https://modelcontextprotocol.io/specification/2026-07-28/server/tools)). We skip the question here because the tool only reads, from a server the shop runs itself, so a wrong call changes nothing. We recommend skipping it only in that case. [Ask for consent before side effects](#consent-before-side-effects), in the chapter on MCP's security model, adds the consent step.
+This host calls `get_order_status` without asking anyone, which departs from the specification. The specification puts consent on the host: hosts "must obtain explicit user consent before invoking any tool", and MCP itself can't enforce that ([specification overview](https://modelcontextprotocol.io/specification/2026-07-28)). The tools page adds that there SHOULD always be a human in the loop, able to deny a tool call ([tools](https://modelcontextprotocol.io/specification/2026-07-28/server/tools)). We skip it here, because the tool only reads, from a server the shop runs, and a wrong call changes nothing. We recommend skipping it only in that case. [Ask for consent before side effects](#consent-before-side-effects), in the chapter on MCP's security model, adds the consent step.
 
 **Working rule:** Keep the host's prompt and the parsing of the model's reply in your own code, and test the loop against recorded replies rather than a live model. Record the model's raw text, not SDK objects, so an SDK release doesn't invalidate a recording, and make a replay fail when its input changes. Switch to a live model only for the measurement runs that decide which descriptions and which model you ship.
 
 ## What goes wrong in production {#mcp-end-to-end-in-production}
 
-The shop's first server works on one machine. Taken into production, the same few parts fail in a handful of ways, each with a sign you can watch for.
+The shop's first server works on one machine. Taken into production, the same few parts fail in a handful of ways, each with a sign to watch for.
 
-**Anything on standard output breaks the channel.** A library that prints a banner, or a stray `print()` while debugging, puts a line on the server's standard output that isn't JSON-RPC, and the stdio transport forbids it ([stdio transport](https://modelcontextprotocol.io/specification/2026-07-28/basic/transports/stdio)). You notice it as parse errors or dropped responses in the client, often only for the one code path that prints. The SDK's own logging goes to standard error (`mcp/server/mcpserver/utilities/logging.py`), so route yours there too.
+**Anything on standard output breaks the channel.** A library that prints a banner, or a stray `print()` while debugging, puts a line on the server's standard output that isn't JSON-RPC, which the stdio transport forbids ([stdio transport](https://modelcontextprotocol.io/specification/2026-07-28/basic/transports/stdio)). The client shows it as parse errors or dropped responses, often only on the one code path that prints. The SDK's own logging goes to standard error (`mcp/server/mcpserver/utilities/logging.py`), so route yours there as well.
 
-**The server inherits less than you think.** The stdio client passes a short allowlist of variables and nothing else (`mcp/client/stdio.py`), so a server that works from your shell fails when a host launches it. The sign is the one [the client example](#call-a-tool-from-a-client) showed: a generic `Error executing tool` in the client and a `KeyError` in the server's standard error. Pass every variable in `env=`, and fail at startup if one is missing rather than at the first call. The shop's server reads its variables inside the tool on purpose, so that the client example could show the late failure; a server you ship should read them once, before it serves.
+**The server inherits less than you think.** The stdio client passes a short allowlist of variables and nothing else (`mcp/client/stdio.py`), so a server that works from your shell fails when a host launches it. The sign is the one [the client example](#call-a-tool-from-a-client) showed: a generic `Error executing tool` in the client and a `KeyError` in the server's standard error. Pass every variable in `env=`, and fail at startup if one is missing, not at the first call. The shop's server reads its variables inside the tool on purpose, so that the client example could show the late failure; a server you ship should read them once, before it serves.
 
-**The server dies mid-call.** The specification asks the client to restart a stdio server that exits, and because the protocol is stateless, "any in-flight requests are simply lost and the client can retry them" ([stdio transport](https://modelcontextprotocol.io/specification/2026-07-28/basic/transports/stdio)). `mcp.Client` doesn't restart anything at 2.3.0: a call in flight fails with an `MCPError` that says `Connection closed`, and the host has to open a new `Client` and retry (`mcp/client/stdio.py`, `mcp/shared/jsonrpc_dispatcher.py`). A retried `get_order_status` is harmless. A retried refund isn't, which is why the shop's refund tool needs a once-only check on the server ([Keep round-trip state tamper-proof](#round-trip-state)). For shutdown, the client closes the server's standard input and waits; the SDK gives it 2 seconds before escalating to a signal (`mcp/client/stdio.py`), so servers should exit promptly on end of input.
+**The server dies mid-call.** The specification asks the client to restart a stdio server that exits, and because the protocol is stateless, "any in-flight requests are simply lost and the client can retry them" ([stdio transport](https://modelcontextprotocol.io/specification/2026-07-28/basic/transports/stdio)). `mcp.Client` restarts nothing at 2.3.0: a call in flight fails with an `MCPError` that says `Connection closed`, and the host must open a new `Client` and retry (`mcp/client/stdio.py`, `mcp/shared/jsonrpc_dispatcher.py`). A retried `get_order_status` is harmless, but a retried refund isn't, which is why the shop's refund tool needs a once-only check on the server ([Keep round-trip state tamper-proof](#round-trip-state)). On shutdown the client closes the server's standard input and waits; the SDK allows it 2 seconds before escalating to a signal (`mcp/client/stdio.py`), so servers should exit promptly on end of input.
 
-**A slow start costs time and can change the revision.** The SDK's client waits 10 seconds for the answer to `server/discover` (`mcp/client/session.py`). A server that loads a large model or opens many connections before it reads its first message can miss that window on a cold machine. Auto mode doesn't give up then: it treats the timeout as a failed probe and sends the old `initialize` handshake, which has no default time limit (`mcp/client/_probe.py`). A server built on this SDK that has already answered the late probe rejects `initialize` with the versions it supports, and the client probes once more, so the connection succeeds more than 10 seconds late. A server from another SDK that also answers `initialize` can settle on a 2025 revision without any error. The sign is `client.protocol_version`, not a dead server. Do slow setup lazily, or after the server is reading its input.
+**A slow start costs time and can change the revision.** The SDK's client waits 10 seconds for the answer to `server/discover` (`mcp/client/session.py`). A server that loads a large model or opens many connections before reading its first message can miss that window on a cold machine. Auto mode then treats the timeout as a failed probe and sends the old `initialize` handshake, which has no default time limit (`mcp/client/_probe.py`). A server built on this SDK that has already answered the late probe rejects `initialize` with its supported versions, and the client probes once more, so the connection succeeds more than 10 seconds late. A server from another SDK that also answers `initialize` can settle on a 2025 revision without any error. The sign is `client.protocol_version`, not a dead server. Do slow setup lazily, or after the server reads its input.
 
-**The other side speaks a 2025 revision.** `Client` in auto mode falls back to the old handshake for a 2025-era server. After a fallback the connection speaks the 2025 revision: none of the pinned revision's features are there ([changelog](https://modelcontextprotocol.io/specification/2026-07-28/changelog)), and `client.protocol_version` says which revision you got. A server that doesn't support the client's version answers with an error, which [Handle a version the server doesn't support](#version-mismatch) shows. When the error comes from someone else's server, the trace from [Read the messages on the wire](#read-the-messages) tells you which revision each side sent.
+**The other side speaks a 2025 revision.** `Client` in auto mode falls back to the old handshake for a 2025-era server. After a fallback the connection speaks the 2025 revision, so none of the pinned revision's features are there ([changelog](https://modelcontextprotocol.io/specification/2026-07-28/changelog)), and `client.protocol_version` says which revision you got. A server that doesn't support the client's version answers with an error, which [Handle a version the server doesn't support](#version-mismatch) shows. When the error comes from someone else's server, the trace from [Read the messages on the wire](#read-the-messages) tells you which revision each side sent.
 
 **Other languages lag or lead.** The MCP documentation lists official SDKs by tier. Tier 1 is TypeScript, Python, C#, Go, Rust and Ruby, and the tiers change over time ([SDKs](https://modelcontextprotocol.io/docs/sdk)). A host in one language and a server in another can implement a revision's details differently, and the wire is where you settle which one is right.
 
-**Working rule:** Before a stdio server goes to production, check three things on the machine that will launch it: nothing but JSON-RPC reaches standard output, every variable the server needs is passed explicitly, and the server answers `server/discover` within 10 seconds of starting. Keep the server's standard error in your logs, because that is where its real errors go.
+**Working rule:** On the machine that launches a stdio server in production, check three things: nothing but JSON-RPC reaches standard output, every variable the server needs is passed explicitly, and the server answers `server/discover` within 10 seconds of starting. Keep the server's standard error in your logs, because that is where its real errors go.
 
 ## Decisions this chapter made {#mcp-end-to-end-decisions}
 
-- **The shop's data comes from one seed** and ends on a fixed date, so every example, in every chapter, sees the same customers, orders and tickets.
+- **The shop's data comes from one seed** and ends on a fixed date, so every example in the book sees the same customers, orders and tickets.
 - **The shop's API stays the system of record.** The MCP server is a thin adapter that calls it with its own key.
 - **One read-only tool, `get_order_status`,** wraps one endpoint. Its docstring is written for a model.
-- **Failures the model can act on raise `ToolError`;** every other exception reaches the client as a generic message and stays in the server's standard error.
+- **Failures the model can act on raise `ToolError`;** other exceptions reach the client as a generic message, and their detail stays in the server's standard error.
 - **stdio first,** with `MCPServer.run()`'s default transport. Streamable HTTP comes in [Serve over Streamable HTTP](#streamable-http).
 - **`mcp.Client` in its default auto mode,** never a hand-initialized `ClientSession`, so the first message is `server/discover` at the pinned revision.
 - **Servers launch with `sys.executable` and an explicit `env=`,** and credentials travel in the environment, never on the wire.
