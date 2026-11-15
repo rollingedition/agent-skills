@@ -9,7 +9,7 @@ cycler==0.12.1
 fonttools==4.68.0
 formulaic==1.2.2
 fsspec==2026.9.0
-fugue==0.9.8
+fugue==0.9.9
 holidays==0.108
 interface-meta==2.0.1
 joblib==1.6.0
