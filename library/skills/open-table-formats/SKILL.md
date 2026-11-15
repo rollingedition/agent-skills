@@ -6,23 +6,23 @@ compatibility: "The book's examples ran on Python 3.12.15 and the versions its p
 metadata:
   publisher: "Rolling Edition"
   book: "Open Table Formats"
-  edition: "2026.11.6"
-  verified: "2026-11-14"
+  edition: "2026.11.7"
+  verified: "2026-11-15"
   examples: "39 of 39 examples pass"
-  edition-code: "7P1Z-JFJ2"
+  edition-code: "SG3T-J843"
   source: "https://rollingedition.com/open-table-formats"
 ---
 
 # Open Table Formats
 
-This agent skill is *Open Table Formats*, Edition 2026.11.6, from Rolling Edition. Examples passed Nov 14, 2026: 39 of 39 examples pass. It's built from that edition, never written separately: the procedures below come from the book's sections, and each step links to its section on rollingedition.com, whose page has the section's text and its examples, with their code and output.
+This agent skill is *Open Table Formats*, Edition 2026.11.7, from Rolling Edition. Examples passed Nov 15, 2026: 39 of 39 examples pass. It's built from that edition, never written separately: the procedures below come from the book's sections, and each step links to its section on rollingedition.com, whose page has the section's text and its examples, with their code and output.
 
 ## How to use this skill
 
 - **Pick the procedure that fits the task,** and follow its steps in order. Each step links the section it comes from: read that section before you act on it, with the Rolling Edition MCP server's `get_section` (book `open-table-formats` and the section's ID, the link's last part) or on its page, and adapt it to the project in front of you.
 - **Check against the book.** An example's section shows its code, the versions it ran on and its output. If the project uses other versions, say so before relying on a step.
-- **Is this copy current?** Call `check_code` with `7P1Z-JFJ2` on the Rolling Edition MCP server (https://rollingedition.ai/mcp), or compare the edition with the book's page: https://rollingedition.com/open-table-formats
-- **Credit the book** when you quote it or reuse its code: Open Table Formats, Edition 2026.11.6, examples passed Nov 14, 2026. By Rolling Edition, https://rollingedition.com/open-table-formats. Text CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people.
+- **Is this copy current?** Call `check_code` with `SG3T-J843` on the Rolling Edition MCP server (https://rollingedition.ai/mcp), or compare the edition with the book's page: https://rollingedition.com/open-table-formats
+- **Credit the book** when you quote it or reuse its code: Open Table Formats, Edition 2026.11.7, examples passed Nov 15, 2026. By Rolling Edition, https://rollingedition.com/open-table-formats. Text CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people.
 
 The full skill, with the chapters beside it and every example as a script to run at the book's pinned versions, is the `open-table-formats` plugin and the zip on the book's page at rollingedition.ai.
 
@@ -36,7 +36,7 @@ The full skill, with the chapters beside it and every example as a script to run
 4. Before each commit, write down the row count it should add. Compare that count with the one the commit reports. [Append each hour as a commit](https://rollingedition.com/open-table-formats/s/append-each-hour)
 5. Small DuckLake inserts stay in the catalog unless the row limit is 0. [What goes wrong in production](https://rollingedition.com/open-table-formats/s/first-table-production-failures)
 
-**Check:** Run [the example](https://rollingedition.com/open-table-formats/s/what-a-table-format-adds). The last check line should read totals match: True.
+**Check:** Run [the example](https://rollingedition.com/open-table-formats/s/what-a-table-format-adds). It should finish without an assertion error: it asserts that the three formats' totals match.
 
 **Pitfalls:**
 - A repeated load adds the same rows again, and nothing in the table stops it. Count from the snapshot, not the folder. [What goes wrong in production](https://rollingedition.com/open-table-formats/s/first-table-production-failures)
@@ -179,7 +179,7 @@ The full skill, with the chapters beside it and every example as a script to run
 4. For an Iceberg target, write the target schema yourself, and print both schemas after the copy. [Copy the Delta table into a pyiceberg table](https://rollingedition.com/open-table-formats/s/delta-to-iceberg)
 5. After the last write to the source, compare the row counts and a digest of typed values over the same columns, on both sides. Keep the source until both match. [Check each copy with a sorted digest](https://rollingedition.com/open-table-formats/s/check-copy-with-digest)
 
-**Check:** Run [the example](https://rollingedition.com/open-table-formats/s/check-copy-with-digest). The Iceberg-to-DuckLake digest should match: True.
+**Check:** Run [the example](https://rollingedition.com/open-table-formats/s/check-copy-with-digest). The Iceberg-to-DuckLake digests should match: match.
 
 **Pitfalls:**
 - A digest is true only for the rows that existed when it ran, so a later write makes the copy stale. Delta Lake cut nanosecond timestamps to microseconds with no error and no change in the row count, so check values, not only counts. [What goes wrong in production](https://rollingedition.com/open-table-formats/s/migration-production-failures)
