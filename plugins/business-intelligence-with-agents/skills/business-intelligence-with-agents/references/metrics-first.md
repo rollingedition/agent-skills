@@ -3,33 +3,34 @@ title: "Business Intelligence with Agents"
 chapter: "Route questions to governed metrics first"
 chapter_id: metrics-first
 book: business-intelligence-with-agents
-edition: 2026.11.11
+edition: 2026.11.12
 verified: 2026-11-13
-edition_code: CCKB-954X
+edition_code: 3AH2-KGM3
 canonical: https://rollingedition.com/business-intelligence-with-agents/metrics-first
 license: CC BY 4.0
-attribution: "“Route questions to governed metrics first,” chapter 6 of Business Intelligence with Agents, Edition 2026.11.11, examples passed Nov 13, 2026. By Rolling Edition, https://rollingedition.com/business-intelligence-with-agents/metrics-first. Text CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Route questions to governed metrics first,” chapter 6 of Business Intelligence with Agents, Edition 2026.11.12, examples passed Nov 13, 2026. By Rolling Edition, https://rollingedition.com/business-intelligence-with-agents/metrics-first. Text CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Route questions to governed metrics first
 
 By the end of this chapter, you can give the agent the semantic layer's metrics as tools instead of the warehouse's tables, have it return a structured metric request that's validated before anything runs, have it ask the person back when a question could mean several metrics, and measure the change on the golden questions.
 
-[Chapter 5](#semantic-layer) wrote the shop's definitions down once, as a semantic layer: ten metrics over five semantic models, compiled to SQL by the book's own compiler in `lib/semantic.py`. A person who knows the layer can ask it for net revenue by region in March 2026 and get the finance team's number. The agent can't yet. [Chapter 1](#bi-agent-end-to-end) gave it one metric, and the baseline it has to beat is schema-only SQL, which gets 2 of 24 dev questions right. [Chapter 4](#layered-context) gave the model definitions as text beside the schema, but the model still wrote the SQL, so every definition still had to survive the model's reading of it.
+[Chapter 5](#semantic-layer) wrote down the shop's definitions once, as a semantic layer: ten metrics over five semantic models, compiled to SQL by the book's own compiler in `lib/semantic.py`. A person who knows the layer can ask it for net revenue by region in March 2026 and get the finance team's number. The agent can't yet. [Chapter 1](#bi-agent-end-to-end) gave it one metric, and the baseline it has to beat is schema-only SQL, which gets 2 of 24 dev questions right. [Chapter 4](#layered-context) gave the model its definitions as text beside the schema, but the model still wrote the SQL, so every definition had to survive its reading.
 
-Routing a question to governed metrics first means the model's job shrinks to choosing: which metric, grouped by what, filtered how. The layer, which people own and test, writes the SQL. Warehouse vendors describe their own assistants the same way. Databricks' guidance for its question-answering Genie Agents says "Metric views are particularly effective for Genie Agents because they pre-define metrics, dimensions, and aggregations" ([Databricks](https://docs.databricks.com/aws/en/genie/best-practices)), and Snowflake says "Semantic Views are the recommended approach for working with Cortex Analyst" ([Snowflake](https://docs.snowflake.com/en/user-guide/snowflake-cortex/cortex-analyst)). Those are vendors' recommendations for their own products, not measurements. This chapter measures the pattern on the shop's golden questions, with the same recorded model as every other chapter.
+When the model writes the query, any definition it misreads ends up in the number. Routing a question to governed metrics first takes writing the query away from the model: its job shrinks to choosing which metric, grouped by what, filtered how, and the layer, which people own and test, writes the SQL. Warehouse vendors describe their own assistants the same way. Databricks' guidance for its question-answering Genie Agents says metric views work especially well for them because they pre-define metrics, dimensions and aggregations ([Databricks](https://docs.databricks.com/aws/en/genie/best-practices)), and Snowflake recommends semantic views for Cortex Analyst ([Snowflake](https://docs.snowflake.com/en/user-guide/snowflake-cortex/cortex-analyst)). Like the vendor advice in [chapter 4](#layered-context), these are recommendations, not measurements. This chapter measures the pattern on the shop's golden questions, with the same recorded model as every other chapter.
 
 ## Give the agent metrics, not tables {#metrics-not-tables}
 
-An agent's tools decide what it can get wrong. Given tables, a model can join them the wrong way, miss a filter or pick the legacy mart, as [chapter 2](#wrong-numbers) showed one failure at a time. Given metrics, it can still pick the wrong metric or the wrong dimension, but it can't rewrite a definition, because definitions aren't among the things it can touch. A metric tool exposes what a semantic layer holds in the shape a person would ask for it: metric names with their descriptions, the dimensions each can be grouped and filtered by, and the time grains. Databricks describes its Unity Catalog metric views in the same terms, as separating "measure definitions from the fields (also called dimensions) used to group, filter, and aggregate them" ([Databricks](https://docs.databricks.com/aws/en/metric-views/)).
+An agent's tools decide what it can get wrong. Given tables, a model can join them the wrong way, miss a filter or pick the legacy mart, as [chapter 2](#wrong-numbers) showed one failure at a time. Given metrics, it can still pick the wrong metric or the wrong dimension, but it can't rewrite a definition, because definitions aren't among the things it can touch. A metric tool exposes what a semantic layer holds in the shape a person asks for it: metric names with their descriptions, the dimensions each can be grouped and filtered by, and the time grains. Databricks describes its Unity Catalog metric views in the same terms, as separating "measure definitions from the fields (also called dimensions) used to group, filter, and aggregate them" ([Databricks](https://docs.databricks.com/aws/en/metric-views/)).
 
-The shop's agent gets its metric tools from `lib/metric_tools.py`, a module this chapter adds. Its `MetricToolbox` wraps one warehouse connection and the semantic layer from [chapter 5](#entities-measures-dimensions), and offers five tools: `list_metrics`, `describe_metric`, `query_metric`, `ask_back` and `cannot_answer`. The prompt, `METRICS_FIRST` in `lib/prompts.py`, carries what `list_metrics` returns, so the model doesn't spend a call asking for it: one line per metric, with its description and the dimensions it can use. The prompt also says how the shop's fiscal year runs and how to write a period as a filter value, and it names the regions and the sales channels. It lists no tables and no columns.
+The shop's agent gets its metric tools from `lib/metric_tools.py`, a module this chapter adds. Its `MetricToolbox` wraps one warehouse connection and the semantic layer from [chapter 5](#entities-measures-dimensions), and offers five tools: `list_metrics`, `describe_metric`, `query_metric`, `ask_back` and `cannot_answer`. The prompt, `METRICS_FIRST` in `lib/prompts.py`, carries what `list_metrics` returns, so the model doesn't spend a call asking for it: one line per metric, with its description and the dimensions it can use. The prompt also says how the shop's fiscal year runs and how to write a period as a filter value, and it names the regions and sales channels. It lists no tables and no columns.
 
-The example builds the prompt, prints one line of the catalog and what `describe_metric` returns for the refund rate, and compares the size of two prompts for the same golden question, `gq-002`, net revenue in each region in March 2026: the schema-only prompt from [chapter 1](#ask-for-sql), and this one. Both sizes are the token counts the model's runtime reported when the calls were recorded.
+Look first at what the agent sees. The example builds the prompt and prints net revenue's line of the catalog, then calls `describe_metric` for the refund rate, and sizes one golden question, `gq-002`, net revenue in each region in March 2026, under the schema-only prompt from [chapter 1](#ask-for-sql) and under this one. Both sizes are the token counts the model's runtime reported when the calls were recorded.
 
-Example `metric-tools` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.11:
+Example `metric-tools` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.12:
 
 ```python
-"""Give the agent the semantic layer's metrics instead of the warehouse's tables, and compare what each prompt holds."""
+"""Give the agent the semantic layer's metrics instead of the warehouse's tables, and compare what each prompt holds.
+The prose rests on the metric and table counts and the two prompt token counts, which come from the recordings."""
 from lib.golden import load_golden
 from lib.metric_tools import MetricToolbox, catalog
 from lib.model import RecordedModel
@@ -41,8 +42,8 @@ toolbox = MetricToolbox(con)
 system = metrics_first_prompt(catalog(toolbox.layer))
 print(f"tools: {', '.join(toolbox.tools)}")
 print(f"metrics in the prompt: {len(toolbox.layer.metrics)}")
-print(f"tables in the prompt: {system.count('CREATE TABLE')}")
-print(catalog(toolbox.layer).splitlines()[0])
+print(f"tables in the prompt: {system.count('CREATE TABLE')}")       # a table in the prompt would be written as a CREATE TABLE statement
+print(catalog(toolbox.layer).splitlines()[0])                          # the first line: net revenue, with its dimensions
 
 print(toolbox.call("describe_metric", {"metric": "refund_rate"}).content)
 
@@ -93,12 +94,13 @@ With [metric tools](#metrics-not-tables) in place, the model's reply is no longe
 
 Qwen's chat template for the model this book records with asks for each tool call as JSON inside `<tool_call>` tags, and returns tool results inside `<tool_response>` tags ([Qwen's template](https://huggingface.co/Qwen/Qwen3-4B-Instruct-2507/raw/main/tokenizer_config.json)). Qwen's model card recommends its Qwen-Agent library, which "encapsulates tool-calling templates and tool-calling parsers internally" ([model card](https://huggingface.co/Qwen/Qwen3-4B-Instruct-2507)). We keep the book's own format instead: the prompt asks for one bare JSON object, `{"tool": ..., "arguments": ...}`, which `run_agent()` in `lib/agent.py` parses, as it has since [chapter 1](#answer-from-a-metric). A small parser we own is easier to test than a library's, and no library release can change it.
 
-The shop's case is golden question `gq-003`, net revenue by sales channel in calendar 2025. Schema-only SQL failed it in chapter 1 by filtering `fct_orders` on a `calendar_year` column that exists only in `dim_date`. The recording `metric-agent-runs` holds the same model's replies to the metrics-first prompt for all 48 golden questions. It was made by `recordings/record_metrics_first.py` with the pinned model file, Qwen's recommended sampling and a seed reset before every call, like every recording in this book. The example replays the run for `gq-003`.
+The shop's case is golden question `gq-003`, net revenue by sales channel in calendar 2025. Schema-only SQL failed it in chapter 1 by filtering `fct_orders` on a `calendar_year` column that exists only in `dim_date`. The recording `metric-agent-runs` holds the same model's replies to the metrics-first prompt for all 48 golden questions. It was made by `recordings/record_metrics_first.py` with the pinned model file, Qwen's recommended sampling and a seed reset before every call, like every recording in this book. `gq-003`'s run, replayed, shows the reply, the request and what the layer did with it.
 
-Example `model-returns-a-request` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.11:
+Example `model-returns-a-request` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.12:
 
 ```python
-"""The model returns a metric request, not SQL: the layer compiles the request, and the answer is checked against gold."""
+"""The model returns a metric request, not SQL, and the layer compiles that request. The prose rests on the `matches golden`
+line, which the example asserts; the schema-only outcome shows the baseline's failure on the same question."""
 from lib.agent import run_agent
 from lib.golden import golden_result, load_golden, results_match, schema_only_outcome
 from lib.metric_tools import MetricToolbox, catalog
@@ -112,15 +114,17 @@ toolbox = MetricToolbox(con)
 system = metrics_first_prompt(catalog(toolbox.layer))
 question = next(q for q in load_golden() if q.question_id == "gq-003")
 model = RecordedModel("metric-agent-runs")
-trace = run_agent(question.question, system, model, toolbox, max_steps=4)
+trace = run_agent(question.question, system, model, toolbox, max_steps=4)     # the chapter's limit of four model calls per run
 
 print(f"question: {question.question}")
 print(f"model calls: {sum(step.kind == 'model' for step in trace.steps)}")
-print(f"reply: {trace.steps[0].content}")
-print(MetricRequest.from_arguments(trace.steps[0].arguments))
-print(trace.answer.provenance.sql)
+print(f"reply: {trace.steps[0].content}")                                   # step 0 is the model's first reply, before any tool runs
+print(MetricRequest.from_arguments(trace.steps[0].arguments))               # the reply's arguments, parsed into the typed request
+print(trace.answer.provenance.sql)                                          # SQL the layer compiled from the request, not SQL the model wrote
 print(trace.answer.show())
-print(f"matches golden: {results_match(trace.answer.rows, golden_result(con, question))}")
+matches = results_match(trace.answer.rows, golden_result(con, question))
+assert matches, "the layer's answer to gq-003 should match its golden result"   # the request asks gq-003's own question, net revenue by channel for 2025, so its rows are the golden ones
+print(f"matches golden: {'yes' if matches else 'no'}")
 
 schema = describe_schema(con)
 print(f"schema-only outcome: {schema_only_outcome(con, RecordedModel('schema-only-sql'), schema, question)}")
@@ -149,11 +153,11 @@ order__channel  net_revenue
 app             431,258.70
 marketplace     227,826.99
 web             909,519.42
-matches golden: True
+matches golden: yes
 schema-only outcome: error
 ```
 
-The run took 1 model call. The reply names `net_revenue`, groups by `order__channel` and filters `metric_time__year` to 2025: the question's three parts, each mapped to a name the layer defines. The layer wrote the SQL. It reads `analytics.fct_orders`, leaves out cancelled orders by the metric's own filter, truncates the local business day to its year and groups by channel, and its result matches the golden result: `matches golden: True`. The same question under schema-only SQL ends in `error`.
+The run took 1 model call. The reply names `net_revenue`, groups by `order__channel` and filters `metric_time__year` to 2025: the question's three parts, each mapped to a name the layer defines. The layer wrote the SQL. It reads `analytics.fct_orders`, leaves out cancelled orders by the metric's own filter, truncates the local business day to its year and groups by channel, and its channel totals agree with the golden ones. The same question under schema-only SQL ends in `error`.
 
 The request also makes the answer's provenance exact. `answer.provenance` names the metric, the filters and the SQL that ran, so a person who doubts the number checks a short request and the metric's definition, not a query the model wrote. Reviewing a request takes a glance; reviewing a model's SQL takes the same care as reviewing anyone's.
 
@@ -165,12 +169,13 @@ A [parsed request](#request-not-sql) is well-formed, which isn't the same as rig
 
 `validate_request()` in `lib/metric_tools.py` does that for the shop. It checks each metric's name, and suggests the nearest defined names for a misspelt one. It checks each dimension against what the requested metrics can reach, and when one can't, it names the metrics that can. It checks each categorical filter value against the values in the warehouse, each filter on `metric_time` against its grain, so that a month must be the first day of a month, and each filter on a date dimension, which must be a single day. `query_metric` runs it on every request. A request with problems comes back to the model as an error that lists every problem it finds once the metrics are known, so one correction can fix them all. An unknown metric comes back on its own, before anything else is checked.
 
-The example sends three requests a person might write: orders by customer email, which no semantic model defines; net revenue by product category, which would fan out; and net revenue for a region called `Europe`. Then it replays the model's own first request for `gq-002`, runs it without validation to show what would have happened, and follows the run to its answer.
+A person might type three requests the layer refuses: orders by customer email, which no semantic model defines; net revenue by product category, which would fan out; and net revenue for a region called `Europe`. The model's own first request for `gq-002` comes next: the code runs it unvalidated to show what would have happened, then follows its corrected request to its answer.
 
-Example `reject-unknown-dimension` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.11:
+Example `reject-unknown-dimension` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.12:
 
 ```python
-"""Validate a metric request against the layer and the warehouse before it runs, and show what would run without it."""
+"""Validate a metric request against the layer and the warehouse before it runs, and show what would run without it.
+The prose rests on the unchecked total and the two `matches golden` lines; the example asserts the two matches."""
 from lib.agent import run_agent
 from lib.golden import golden_result, load_golden, results_match
 from lib.metric_tools import MetricToolbox, catalog, validate_request
@@ -186,22 +191,26 @@ for label, request in [("no such dimension", MetricRequest(("orders",), group_by
                        ("fan-out", MetricRequest(("net_revenue",), group_by=("product__category",))),
                        ("no such value", MetricRequest(("net_revenue",), filters={"order__region": "Europe"}))]:
     print(f"{label}: {validate_request(layer, con, request)[0]}")
-print(f"unchecked, region Europe: {layer.query(con, request).rows}")
+print(f"unchecked, region Europe: {layer.query(con, request).rows}")           # `request` is still the Europe filter from the loop
 
 # The model's own requests for gq-002, net revenue in each region in March 2026, replayed from the recording.
 question = next(q for q in load_golden() if q.question_id == "gq-002")
 system = metrics_first_prompt(catalog(layer))
 trace = run_agent(question.question, system, RecordedModel("metric-agent-runs"), toolbox, max_steps=4)
-first, second = (MetricRequest.from_arguments(s.arguments) for s in trace.steps if s.tool == "query_metric")
+first, second = (MetricRequest.from_arguments(s.arguments) for s in trace.steps if s.tool == "query_metric")   # its two query calls
 golden = golden_result(con, question)
 unchecked = layer.query(con, first)                # what would have run without validation
 print(f"first request filters: {first.filters}")
-print(f"unchecked total: {sum(row[1] for row in unchecked.rows):,.2f}")
+print(f"unchecked total: {sum(row[1] for row in unchecked.rows):,.2f}")           # row[1] is the net revenue column
 print(f"golden total: {sum(row[1] for row in golden):,.2f}")
-print(f"unchecked matches golden: {results_match(unchecked.rows, golden)}")
-print(f"validation said: {trace.steps[1].content}")
+unchecked_matches = results_match(unchecked.rows, golden)
+assert not unchecked_matches, "the unchecked request should miss the golden result"   # a month written against a daily date dimension matches only its first day, so this total can't cover the month
+print(f"unchecked matches golden: {'yes' if unchecked_matches else 'no'}")
+print(f"validation said: {trace.steps[1].content}")                               # step 1 is the refusal the layer returned
 print(f"second request filters: {second.filters}")
-print(f"matches golden: {results_match(trace.answer.rows, golden)}")
+matches = results_match(trace.answer.rows, golden)
+assert matches, "the second request should match the golden result"              # filtering metric_time at the month's grain covers every day in March, the golden question's period
+print(f"matches golden: {'yes' if matches else 'no'}")
 ```
 
 Output:
@@ -214,32 +223,33 @@ unchecked, region Europe: ((None,),)
 first request filters: {'order__order_date': '2026-03'}
 unchecked total: 4,150.82
 golden total: 150,082.83
-unchecked matches golden: False
+unchecked matches golden: no
 validation said: error: request rejected: order__order_date = '2026-03': a date dimension matches single days only; for a period, filter metric_time at its grain, as metric_time__month = "2026-03" or metric_time__year = 2025
 second request filters: {'metric_time__month': '2026-03'}
-matches golden: True
+matches golden: yes
 ```
 
 Each of the three requests is refused with a message that says what to do instead: no metric defines a customer's email, two other metrics can reach product category, and the regions are `AMER`, `APAC` and `EMEA`. Without the check, the request for `Europe` runs and returns one row with an empty total, which an agent would report as no revenue.
 
-The model's own request is the case that matters, because no person wrote it. For March 2026 it filtered `order__order_date`, the orders' daily date dimension, to `"2026-03"`. The compiler reads a month written against a daily dimension as the month's first day, so the unchecked request returns March 1 alone: 4,150.82 euros across the three regions, against a golden total of 150,082.83, and `unchecked matches golden: False`. Nothing in that answer says it covers one day. Validation refused the filter and named the dimension to use, `metric_time__month`. The model's second request used it, and its answer matches: `matches golden: True`.
+The model's own request is the case that matters, because no person wrote it. For March 2026 it filtered `order__order_date`, the orders' daily date dimension, to `"2026-03"`. The compiler reads a month written against a daily dimension as the month's first day, so the unchecked request returns March 1 alone: 4,150.82 euros across the three regions, against a golden total of 150,082.83. Nothing in that answer says it covers one day. Validation refused the filter and named the dimension to use, `metric_time__month`. The model's second request used it, and its answer matches the golden result.
 
-The model made the same mistake often. Across the dev split, validation refused 10 requests, and 6 runs went on to a correct answer after a refusal. Most of those refusals were the date filter. The prompt says a month is written as `"2026-03"` and lists `metric_time__month` among the grains, though it never shows the two together. The model reached for `order__order_date` anyway, probably because the catalog lists it beside the region. A check in code catches that mistake every time; a sentence in a prompt catches it only when the model follows the sentence.
+Across the dev split, validation refused 10 requests, and 6 runs went on to a correct answer after a refusal. Most of those refusals were the date filter. The prompt says a month is written as `"2026-03"` and lists `metric_time__month` among the grains, though it never shows the two together. The model reached for `order__order_date` anyway, probably because the catalog lists it beside the region. A check in code catches that mistake every time; a sentence in a prompt catches it only when the model follows the sentence.
 
 **Working rule:** Validate every request before it compiles: names against the layer, categorical values against the warehouse, dates against their grain. Refuse with a message that names the allowed alternatives, and send it back to the model, which can usually correct itself in one call. Treat any request that would compile into an empty or partial result as invalid, not as an answer of zero.
 
 ## Ask back when a question is ambiguous {#ask-back-when-ambiguous}
 
-[Validation](#validate-the-request) catches requests the layer can't serve. It can't catch a valid request for the wrong thing. "Which region is doing best?" maps to a valid request for net revenue by region, and equally to one for orders or refund rate by region, and each can name a different region. When a question fits several metrics and the choice changes the answer, the right reply is a question back to the person, with the choices spelt out. The shop's golden set marks such questions as declines of type `ambiguous`, and [chapter 3](#cover-declines-and-roles) scores any reply to them that doesn't return a result as correct.
+[Validation](#validate-the-request) catches requests the layer can't serve. It can't catch a valid request for the wrong thing. "Which region is doing best?" maps to a valid request for net revenue by region, and equally to one for orders or refund rate by region, and each can name a different region. When a question fits several metrics and the choice changes the answer, the right reply is a question back, with the choices spelt out. The shop's golden set marks such questions as declines of type `ambiguous`, and [chapter 3](#cover-declines-and-roles) scores any reply to them that doesn't return a result as correct.
 
 The `ask_back` tool ends the run with a question to the person and the options the model offers. An option that names a metric is shown with the layer's description of it, so the person chooses between definitions, not between words: revenue becomes revenue in euros after discounts and before tax, from orders that weren't cancelled. The answer carries `ask_back` as its source in the provenance, so a score can count clarifications apart from declines.
 
-The dev split has four questions of kind `decline`, whose right answer is a question back or a reason: two ambiguous, `gq-019` ("Who are our best customers?") and `gq-020` ("Which region is doing best?"), and two unanswerable, a forecast and the cost of shipping. The example replays all four and prints the tool each run ended with, then the questions the agent asked for `gq-019` and `gq-005` and the answer it gave for `gq-020`. Last, it tries a check the recorded runs didn't have, which the end of this section describes.
+Four dev questions should end in a question back or a reason: two are ambiguous, `gq-019`, about our best customers, and `gq-020`, about which region is doing best, and two can't be answered, a forecast and the cost of shipping. The last tool of each run is printed for all four. Then the code prints the questions the agent asked for `gq-019` and `gq-005`, the answer it gave for `gq-020`, and a check the recorded runs didn't have.
 
-Example `clarify-best-customers` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.11:
+Example `clarify-best-customers` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.12:
 
 ```python
-"""Ask back when a question could mean several metrics: the layer supplies each option's definition to the person."""
+"""Ask back when a question could mean several metrics: the layer supplies each option's definition to the person.
+The prose rests on the tool each dev decline ended with and on the ranking check's count of flagged runs."""
 from lib.agent import run_agent
 from lib.golden import load_golden
 from lib.metric_tools import MetricToolbox, catalog, unbounded_ranking
@@ -256,7 +266,7 @@ traces = {q.question_id: run_agent(q.question, system, model, MetricToolbox(con,
                                    max_steps=4) for q in load_golden()}
 for q in load_golden():
     if q.split == "dev" and q.kind == "decline":
-        last = next(s for s in reversed(traces[q.question_id].steps) if s.kind == "model")
+        last = next(s for s in reversed(traces[q.question_id].steps) if s.kind == "model")     # the run's final model reply
         print(f"{q.question_id} ({q.decline_type}): {last.tool}")
         print(f"  {q.question}")
 
@@ -264,7 +274,7 @@ print("gq-019 asks back:")
 print(traces["gq-019"].answer.reason)
 print("gq-005 asks back:")
 print(traces["gq-005"].answer.reason)
-answered = next(s for s in reversed(traces["gq-020"].steps) if s.tool == "query_metric")
+answered = next(s for s in reversed(traces["gq-020"].steps) if s.tool == "query_metric")   # its last query, the one that ran
 print(f"gq-020 request: {answered.arguments}")
 print(traces["gq-020"].answer.show())
 
@@ -275,7 +285,7 @@ final = {question_id: MetricRequest.from_arguments(next(s for s in reversed(t.st
          for question_id, t in traces.items() if t.answer.answered}
 flagged = [question_id for question_id, request in final.items() if unbounded_ranking(request)]
 print(f"runs with a result: {len(final)}")
-print(f"requests that order their result: {sum(bool(r.order_by) for r in final.values())}")
+print(f"requests that order their result: {sum(bool(r.order_by) for r in final.values())}")   # an empty order_by means no ranking
 print(f"ranking check flags: {', '.join(flagged) or 'none'}")
 print(f"ranking check on gq-020: {unbounded_ranking(final['gq-020'])}")
 ```
@@ -322,14 +332,15 @@ So the tool works when the model calls it, and the model's choice of when to cal
 
 ## Measure metrics-first on the golden questions {#measure-metrics-first}
 
-The examples so far followed [single runs](#validate-the-request). The measurement that counts is the one [chapter 3](#hold-out-a-test-split) set up: every golden question, scored by `grade()` with `results_match()`, tuned on the dev split and checked once on the held-out test split, beside the schema-only baseline. The metrics-first prompt and tools were adjusted on dev only. We recorded the dev split three times while tuning, and two changes came from those runs. The catalog in the prompt stopped printing each metric's type beside its name, because the model copied the type into its requests; `describe_metric` still prints it. And a year written as text, such as `"2025"`, became the number it can only mean. Only the final dev recording is kept, and the recording's manifest says the two earlier ones were discarded. The dev numbers below were measured on the split the changes were chosen on, so they're optimistic. The test split was recorded once, after those changes, and nothing changed afterwards.
+So far the book has followed [single runs](#validate-the-request). The measurement that counts is the one [chapter 3](#hold-out-a-test-split) set up: every golden question, scored by `grade()` with `results_match()`, tuned on the dev split and checked once on the held-out test split, beside the schema-only baseline. We recorded the dev split three times while tuning, and two changes came from those runs. The catalog in the prompt stopped printing each metric's type beside its name, because the model copied the type into its requests; `describe_metric` still prints it. And a year written as text, such as `"2025"`, became the number it can only mean. Only the final dev recording is kept, and the recording's manifest says the two earlier ones were discarded. The dev numbers below were measured on the split the changes were chosen on, so they're optimistic. The test split was recorded once, after those changes, and nothing changed afterwards.
 
-Each run gets at most four model calls. A run that uses all four without an answer is a failure, and `grade()` scores it as `step limit`, apart from the declines the model chose. The example replays every run and counts outcomes per split, for metrics-first and for schema-only SQL. Then it counts what the tools did: model calls, refused requests, runs that reached a correct answer after a refusal, and clarifications by kind of question.
+Each run gets at most four model calls. A run that uses all four without an answer is a failure, and `grade()` scores it as `step limit`, apart from the declines the model chose. Every run on both splits, for each approach, is replayed and counted by tool: model calls, refused requests, runs that reached a correct answer after a refusal, and clarifications by kind of question.
 
-Example `metrics-first-score` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.11:
+Example `metrics-first-score` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.12:
 
 ```python
-"""Score metrics-first against the schema-only baseline on both splits: dev for tuning, test once for the final number."""
+"""Score metrics-first against the schema-only baseline on both splits: dev for tuning, test once for the final number.
+The prose rests on the correct counts per split and on the step-limit lines, which count runs out of model calls."""
 from collections import Counter, defaultdict
 
 from lib.agent import run_agent
@@ -346,13 +357,13 @@ agent_model, sql_model = RecordedModel("metric-agent-runs"), RecordedModel("sche
 counts, facts, missed = defaultdict(Counter), defaultdict(Counter), defaultdict(list)
 for q in load_golden():
     toolbox = MetricToolbox(con, layer, role=q.role)
-    trace = run_agent(q.question, system, agent_model, toolbox, max_steps=4)
-    outcome = grade(q, trace.answer, golden_result(con, q))
+    trace = run_agent(q.question, system, agent_model, toolbox, max_steps=4)      # four calls at most, as in every run
+    outcome = grade(q, trace.answer, golden_result(con, q))                       # 'step limit' when the calls ran out
     counts[q.split, "metrics-first"][outcome] += 1
     counts[q.split, "schema-only"][schema_only_outcome(con, sql_model, schema, q)] += 1
     facts[q.split][f"{q.kind} questions"] += 1
     facts[q.split][f"{q.kind} correct"] += outcome == "correct"
-    facts[q.split]["forbidden answered"] += q.kind == "forbidden" and trace.answer.answered
+    facts[q.split]["forbidden answered"] += q.kind == "forbidden" and trace.answer.answered   # a forbidden question answered is a leak
     facts[q.split]["model calls"] += sum(step.kind == "model" for step in trace.steps)
     facts[q.split]["requests rejected"] += len(toolbox.rejected)
     facts[q.split]["correct after a rejection"] += bool(toolbox.rejected) and outcome == "correct"
@@ -363,7 +374,7 @@ for q in load_golden():
 for split in ("dev", "test"):
     for approach in ("schema-only", "metrics-first"):     # only an agent run can hit the step limit
         for outcome in ("correct", "wrong", "error", "declined") + (("step limit",) if approach != "schema-only" else ()):
-            print(f"{split} {approach} {outcome}: {counts[split, approach][outcome]} of 24")
+            print(f"{split} {approach} {outcome}: {counts[split, approach][outcome]} of 24")    # each split holds 24 golden questions
     for kind in ("answer", "decline", "forbidden"):
         print(f"{split} metrics-first {kind} correct: {facts[split][kind + ' correct']} of {facts[split][kind + ' questions']}")
     for fact in ("forbidden answered", "model calls", "requests rejected", "correct after a rejection",
@@ -417,9 +428,13 @@ test asked back, forbidden: 0
 test not correct: gq-028 answer wrong, gq-031 answer wrong, gq-032 answer declined, gq-033 answer declined, gq-034 answer declined, gq-035 answer wrong, gq-036 answer declined, gq-037 answer declined, gq-038 answer wrong, gq-039 answer step limit, gq-040 answer wrong, gq-041 answer declined, gq-046 forbidden wrong, gq-048 forbidden wrong
 ```
 
-On the dev split, metrics-first gets 16 of 24 questions right, against schema-only SQL's 2 of 24. On the held-out test split, the numbers are 10 of 24 and 3 of 24. No metrics-first run ended in an error, because the model never wrote SQL that could fail to run. That isn't the same as never failing: the step limit ended 1 of 24 dev runs and 1 of 24 test runs, `gq-007` and `gq-039`, which used all their calls without an answer. The runs took 43 model calls for the 24 dev questions. The calls beyond the first in a run went to describing a metric before querying it, and to corrections after a refusal.
+Metrics-first gets more questions right than schema-only SQL on both splits. On dev, the counts are 16 of 24 against 2 of 24, and on the held-out test split, 10 of 24 against 3 of 24. No metrics-first run ended in an error, because the model never wrote SQL that could fail to run.
 
-The test split is the number to report, and it is much lower than dev. Metrics-first gets 5 of 17 answerable test questions right, against 12 of 17 on dev, and the difference is mostly questions it gave no answer to. Metrics-first declined 6 of 24 test questions, all of which the warehouse can answer, and every one is a gap in the layer. Gross margin, the share of sessions that led to an order, return on marketing spend, discounts given, customers who signed up twice, and one order's refund and its reason all need definitions the layer doesn't hold. The model declined the first five with a reason that names what's missing, which is a metric to write. It didn't decline the last one, `gq-036`: after a refused request it asked whether the person meant an order ID or a date range, the one clarification on an answerable test question (`test asked back, answer: 1`). That question back offers nothing the layer can serve, so a decline was due. [Chapter 3](#cover-declines-and-roles) found that marketing and support ask answerable questions only in the test split, and the shop's layer was written around the questions finance and the analyst ask, so nothing tuned on dev could reveal those gaps. The test questions whose right answer is a decline were all declined or asked back: 4 of 4.
+That isn't the same as never failing. Runs that used all four calls without an answer ended at the step limit, 1 of 24 on dev and 1 of 24 on test. The dev run is `gq-007`; the test run, `gq-039`. The runs took 43 model calls across the dev split. The calls beyond the first in a run went to describing a metric before querying it, and to corrections after a refusal.
+
+The test split is the number to report, and it is much lower than dev. Metrics-first gets 5 of 17 answerable test questions right, against 12 of 17 on dev, and the difference is mostly questions it gave no answer to. Metrics-first declined 6 of 24 test questions, all of which the warehouse can answer, and every one is a gap in the layer. Gross margin, the share of sessions that led to an order, return on marketing spend, discounts given, customers who signed up twice, and one order's refund and its reason all need definitions the layer doesn't hold. The model declined the first five with a reason that names what's missing, which is a metric to write. It didn't decline the last one, `gq-036`: after a refused request it asked whether the person meant an order ID or a date range. That was 1 clarification on an answerable test question. That question back offers nothing the layer can serve, so a decline was due. [Chapter 3](#cover-declines-and-roles) found that marketing and support ask answerable questions only in the test split, and the shop's layer was written around the questions finance and the analyst ask, so nothing tuned on dev could reveal those gaps.
+
+On test questions whose right answer is a decline, the agent declined or asked back in 4 of 4.
 
 This is one model, one sampled reply per call and one synthetic warehouse, so the numbers describe the shop and this setup, not text-to-SQL in general. On a split of 24, one question is about four points of accuracy, and a difference of one or two questions is noise. The gap between the two approaches here is far larger than that.
 
@@ -427,12 +442,13 @@ This is one model, one sampled reply per call and one synthetic warehouse, so th
 
 ## Read the runs that weren't correct {#read-the-misses}
 
-[The score](#measure-metrics-first) says how many runs failed, but not why. The why is in the traces, and it decides what to fix: a metric, a description, a check or an access rule. The example replays every run that wasn't correct and prints each call, the tool and arguments the model sent and the first line of what came back. It also prints the request for `gq-008`, a correct run that the dev wrong answers are set beside, and it asks the layer for the request `gq-039`'s run was reaching for.
+[The score](#measure-metrics-first) says how many runs failed, but not why. The why is in the traces, and it decides what to fix: a metric, a description, a check or an access rule. Each run that wasn't correct is laid out call by call: the tool and arguments the model sent, and the first line of what came back. It also prints the request for `gq-008`, a correct run that the dev wrong answers are set beside, and asks the layer for the request `gq-039`'s run was reaching for.
 
-Example `metrics-first-misses` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.11:
+Example `metrics-first-misses` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.12:
 
 ```python
-"""Read every metrics-first run that wasn't correct, call by call, and ask the layer what gq-039's run was reaching for."""
+"""Read every metrics-first run that wasn't correct, call by call, and ask the layer what gq-039's run was reaching for.
+The prose rests on the gq-039 line: the layer's own request for it matches the golden result, and the run never found it."""
 import json
 
 from lib.agent import run_agent
@@ -457,7 +473,7 @@ for q in golden:
     print(f"{q.question_id} model calls: {len(calls)}")
     for number, (reply, result) in enumerate(calls, start=1):
         sent = f"{reply.tool} {json.dumps(reply.arguments)}" if reply.tool else reply.content
-        got = result.content.splitlines()[0][:150]
+        got = result.content.splitlines()[0][:150]                              # the result's first line, cut to 150 characters
         ended = {"metric": f"{len(answer.rows)} row" + "s" * (len(answer.rows) != 1), "none": "declined",
                  "ask_back": "asked back"}
         if number == len(calls) and answer.provenance.source in ended:
@@ -471,8 +487,10 @@ gq039 = next(q for q in golden if q.question_id == "gq-039")
 request = MetricRequest(("line_net_revenue",), group_by=("product__product_name",),
                         filters={"metric_time__year": 2025}, order_by=("-line_net_revenue",), limit=5)
 print(f"gq-039 from the layer: {request}")
-print(f"gq-039 from the layer, matches golden: "
-      f"{results_match(layer.query(con, request).rows, golden_result(con, gq039), gq039.order_matters)}")
+# gq-039 is a ranked question, so row order counts in the comparison.
+matched = results_match(layer.query(con, request).rows, golden_result(con, gq039), gq039.order_matters)
+assert matched, "the layer's request for gq-039 should match its golden result"   # the request asks gq-039's question, the five products with the most net revenue in 2025, highest first
+print(f"gq-039 from the layer, matches golden: {'yes' if matched else 'no'}")
 ```
 
 Output:
@@ -579,20 +597,20 @@ gq-048 model calls: 1
   1. query_metric {"metrics": ["orders"], "group_by": ["customer__region"], "filters": {"customer__region": "AMER", "metric_time__year": 2025}} -> 1 row
 gq-048 rows: 1
 gq-039 from the layer: MetricRequest(metrics=('line_net_revenue',), group_by=('product__product_name',), filters={'metric_time__year': 2025}, order_by=('-line_net_revenue',), limit=5)
-gq-039 from the layer, matches golden: True
+gq-039 from the layer, matches golden: yes
 ```
 
-The test run that hit the step limit wasn't a gap in the layer. `gq-039` asks for the five products with the most net revenue in 2025, from the highest down, and the layer can answer it: `line_net_revenue` grouped by product name, ordered by `["-line_net_revenue"]` and limited to five, matches the golden result (`matches golden: True`). The model kept writing the order as `["line_net_revenue", "-"]`, validation refused it each time, and the run ran out of calls.
+The test run that hit the step limit wasn't a gap in the layer. `gq-039` asks for the five products with the most net revenue in 2025, from the highest down, and the layer can answer it: `line_net_revenue` grouped by product name, ordered by `["-line_net_revenue"]` and limited to five, gives the golden rows. The model kept writing the order as `["line_net_revenue", "-"]`, validation refused it each time, and the run ran out of calls.
 
-The test split's wrong answers are the same kinds as dev's. Asked for the country with the highest refund rate, the agent returned every country's rate; asked for revenue in 2024 and in 2025, one total for both years; asked for the average number of units per order, the total number of units; and asked for each day of the week in 2025, it grouped by order date and filtered to January 1, 2025, one day. Each of those requests was valid, and each answered a different question. The last wrong answer, `gq-035`, came from AMER's regional lead, who asked for orders in each country and got all 10 countries, the same problem with roles as dev's `gq-017`.
+The test split's wrong answers are the same kinds as dev's. For the country with the highest refund rate, the agent returned every country's rate; for revenue in 2024 and in 2025, one total for both years; for the average number of units per order, the total number of units; and for each day of the week in 2025, it grouped by order date and filtered to January 1, 2025, one day. Each of those requests was valid, and each answered a different question. The last wrong answer, `gq-035`, came from AMER's regional lead, who asked for orders in each country and got all 10 countries, the same problem with roles as dev's `gq-017`.
 
-The questions it gets wrong on dev fall into four groups, and each points at other work. It picks a near-miss metric: `gq-012` asks for "total revenue" by region and gets `gross_revenue`, where the finance team means net, while `gq-008`, the same words without regions, got net revenue; and `gq-018` asks for refunds on March's orders and gets `refunds`, counted on the day of the refund, instead of `order_refunds`. It answers a question the layer has no metric for with the closest one: `gq-016` asks how many customers placed an order in 2025 and gets the count of new customers. It can't see who is asking: `gq-017`, from EMEA's regional lead, asks about "our countries" and gets all 10, and 2 forbidden questions are answered because nothing below the model stops them, which is [chapter 9](#who-may-see-what)'s work. And it can't answer what only SQL can: `gq-007`, revenue from orders that included a tent, needs a filter on the order lines that no metric offers. It spent its 4 calls on a tent filter, refused first because net revenue can't filter by product and then because no product is named `tent`, and on describe calls whose arguments weren't a JSON object, and then hit the step limit. [Chapter 7](#guarded-sql) gives such questions a guarded SQL path.
+The dev misses fall into four groups, each pointing at different work. The first is a near-miss metric. `gq-012` asks for "total revenue" by region and gets `gross_revenue`, where the finance team means net, while `gq-008`, the same words without regions, got net revenue. `gq-018` asks for refunds on March's orders and gets `refunds`, counted on the day of the refund, instead of `order_refunds`. The second is a question no metric covers, answered with the nearest. `gq-016` asks how many customers placed an order in 2025 and gets the count of new customers. The third can't see who asks. `gq-017`, from EMEA's regional lead, asks about "our countries" and gets all 10, and 2 forbidden questions are answered because nothing below the model stops them, which is [chapter 9](#who-may-see-what)'s work. Last, `gq-007`, revenue from orders that included a tent, needs a filter on the order lines that no metric offers. That run spent its 4 calls on a tent filter, refused first because net revenue can't filter by product and then because no product is named `tent`, and on describe calls whose arguments weren't a JSON object, and hit the step limit. [Chapter 7](#guarded-sql) gives such questions a guarded SQL path.
 
 **Working rule:** Read every run that wasn't correct, call by call, and sort it by what it needs: a near-miss metric means the descriptions need sharpening or the question needs asking back, a missing metric means the layer needs one or the question needs guarded SQL, and an answer that depends on the role means access rules, not prompts.
 
 ## What goes wrong in production {#metrics-first-in-production}
 
-The shop's agent answers about half of its golden questions from metrics, and fewer on the held-out test split. An agent over a real semantic layer fails in these ways, and each has a way to notice.
+The shop's agent answers about half of its golden questions from metrics, and fewer on the held-out test split. Over a real semantic layer, the agent goes wrong through names, messages, values and roles, and each has a symptom you can watch for.
 
 **Two metrics fit the words, and the agent picks the other one.** In [the runs that weren't correct](#read-the-misses), "total revenue" went to net revenue for `gq-008` and to gross revenue for `gq-012`, and refunds on March's orders went to the refund day instead of the order day. A layer with near-duplicates invites this. Databricks' release notes record its dashboard-authoring agent, Genie Code, becoming "more likely to reference existing Unity Catalog metric views instead of creating new ones" when importing Tableau and Power BI reports, on Jul 2, 2026, and, on Sep 10, 2026, preferring governed metric views over ad-hoc SQL datasets when it builds a dashboard ([Databricks](https://docs.databricks.com/aws/en/ai-bi/release-notes/2026)). Those are a vendor's statements about building dashboards, not about answering questions, but they address the same problem: definitions that multiply. Keep one metric per business term where you can, write descriptions that say when not to use a metric, and keep golden questions for each pair of near-duplicates.
 
