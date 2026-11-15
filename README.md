@@ -49,4 +49,4 @@ Each book's page on [rollingedition.ai](https://rollingedition.ai/) also has its
 
 ## Licence
 
-CC BY 4.0, as the books are. Each skill's `LICENSE.md` gives the credit to use.
+[CC BY 4.0](LICENSE), as the books are. Each skill's `LICENSE.md` gives the credit to use.
