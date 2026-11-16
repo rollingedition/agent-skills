@@ -3,12 +3,12 @@ title: "Open Table Formats"
 chapter: "Move a table between formats and check the copy"
 chapter_id: migrating-formats
 book: open-table-formats
-edition: 2026.11.7
+edition: 2026.11.8
 verified: 2026-11-15
-edition_code: SG3T-J843
+edition_code: HYVJ-ADAD
 canonical: https://rollingedition.com/open-table-formats/migrating-formats
 license: CC BY 4.0
-attribution: "“Move a table between formats and check the copy,” chapter 9 of Open Table Formats, Edition 2026.11.7, examples passed Nov 15, 2026. By Rolling Edition, https://rollingedition.com/open-table-formats/migrating-formats. Text CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Move a table between formats and check the copy,” chapter 9 of Open Table Formats, Edition 2026.11.8, examples passed Nov 15, 2026. By Rolling Edition, https://rollingedition.com/open-table-formats/migrating-formats. Text CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Move a table between formats and check the copy
 
@@ -46,7 +46,7 @@ The copy reads the Iceberg table with `scan_arrow`, then gives those rows to Duc
 
 The source is partitioned by the hour of `hour_utc`, which is the layout that [moving from daily to hourly partitions](#daily-to-hourly-partitions) arrives at. Here pyiceberg builds that source with the hourly spec, then appends three hours, one commit each:
 
-Example `iceberg-to-ducklake-copy` (Python 3.12.15 · deltalake 1.6.6 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.7:
+Example `iceberg-to-ducklake-copy` (Python 3.12.15 · deltalake 1.6.6 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.8:
 
 ```python
 """Copy an Iceberg table into DuckLake through Arrow, then print what the copy kept of the layout and the history.
@@ -138,7 +138,7 @@ The attach helper also sets `DATA_INLINING_ROW_LIMIT` to 0, so the copied rows a
 
 The Delta source is built the way a team's pipeline would build it: three appends with deltalake, one per hour. The three appends are versions 0, 1 and 2. The copy reads the current rows with `read_delta` and appends them to an Iceberg table made with the target schema:
 
-Example `delta-to-iceberg-copy` (Python 3.12.15 · deltalake 1.6.6 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.7:
+Example `delta-to-iceberg-copy` (Python 3.12.15 · deltalake 1.6.6 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.8:
 
 ```python
 """Copy a Delta Lake table into Iceberg through Arrow, then compare the copy with its source.
@@ -225,7 +225,7 @@ pyiceberg is strict about names. It checks the Arrow schema against the table's 
 
 Timestamps are a place where the formats disagree, sometimes silently. The Iceberg specification defines nanosecond timestamps as a version 3 type, so a version 2 table has no type for them ([the Iceberg specification](https://iceberg.apache.org/spec/), version 3 section). The example's table is version 2, the default. At this pin, pyiceberg refuses to write version 3, so the nanosecond values can only be kept by a format other than Iceberg. This example writes two values that differ only below a microsecond, 1000000500 and 1000000999 nanoseconds, to each format:
 
-Example `timestamp-precision-check` (Python 3.12.15 · deltalake 1.6.6 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.7:
+Example `timestamp-precision-check` (Python 3.12.15 · deltalake 1.6.6 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.8:
 
 ```python
 """Write two timestamps that differ only below a microsecond to Iceberg, Delta Lake and DuckLake, and show what each kept.
@@ -305,7 +305,7 @@ The pageviews table records hours, so the case never reaches the problem. A tabl
 
 A matching row count does not prove that the values match. A copy can keep the count and change one value, and the count will not show it. A digest does. `digest_rows` sorts the rows, writes each one out as a line of text and hashes the result. The sort makes the digest independent of the order in which the rows come back, so two copies with the same rows get the same digest, however each format returns them. `digest_rows` runs on both copies, and on a copy with one view count changed on purpose:
 
-Example `verify-copies-by-digest` (Python 3.12.15 · deltalake 1.6.6 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.7:
+Example `verify-copies-by-digest` (Python 3.12.15 · deltalake 1.6.6 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.8:
 
 ```python
 """Check each copy against its source with a sorted digest, and show that one changed value fails it.
@@ -351,7 +351,7 @@ def check_delta_to_iceberg():
         source_rows = sql_rows(wh.con, "SELECT * FROM source", source=read_delta(path))
         copy_rows = sql_rows(wh.con, "SELECT * FROM copy", copy=scan_arrow(table))
         print(f"delta to iceberg rows: {len(source_rows)} and {len(copy_rows)}")
-        print(f"delta to iceberg match: {same(source_rows, copy_rows)}")
+        assert same(source_rows, copy_rows)
 
 
 def main():
@@ -374,7 +374,6 @@ iceberg to ducklake rows: 1499 and 1499
 iceberg to ducklake digests: match
 iceberg to ducklake with one changed view count digests: differ
 delta to iceberg rows: 1499 and 1499
-delta to iceberg match: True
 ```
 
 One changed number is enough to change the digest, so a digest that matches is evidence, and a digest that differs is a stop. For the [Iceberg-to-DuckLake copy](#iceberg-to-ducklake), the output prints both row counts, which are equal, and then the digests `match`. The same check on the Delta-to-Iceberg copy also matches. With one view count changed, the digests `differ`.

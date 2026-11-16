@@ -3,12 +3,12 @@ title: "Open Table Formats"
 chapter: "Register tables in a catalog and query them from DuckDB"
 chapter_id: catalogs
 book: open-table-formats
-edition: 2026.11.7
+edition: 2026.11.8
 verified: 2026-11-15
-edition_code: SG3T-J843
+edition_code: HYVJ-ADAD
 canonical: https://rollingedition.com/open-table-formats/catalogs
 license: CC BY 4.0
-attribution: "“Register tables in a catalog and query them from DuckDB,” chapter 8 of Open Table Formats, Edition 2026.11.7, examples passed Nov 15, 2026. By Rolling Edition, https://rollingedition.com/open-table-formats/catalogs. Text CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Register tables in a catalog and query them from DuckDB,” chapter 8 of Open Table Formats, Edition 2026.11.8, examples passed Nov 15, 2026. By Rolling Edition, https://rollingedition.com/open-table-formats/catalogs. Text CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Register tables in a catalog and query them from DuckDB
 
@@ -44,7 +44,7 @@ The pyiceberg `SqlCatalog` keeps its tables in a database. You give it a `uri` f
 
 The next example opens the same catalog file a second time, with the same name, and reads the table through that second object. It then registers a second name for the table's metadata, and shows what a catalog object with a different name can see.
 
-Example `register-iceberg-table` (Python 3.12.15 · deltalake 1.6.6 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.7:
+Example `register-iceberg-table` (Python 3.12.15 · deltalake 1.6.6 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.8:
 
 ```python
 """Register an Iceberg table in a SQL catalog, then reach it through a second catalog object, a stale object and a
@@ -116,7 +116,7 @@ DuckLake's catalog is a database file, and DuckDB attaches it with an `ATTACH` s
 
 The next example creates `wiki.domains` in a fresh DuckLake catalog, detaches it, and attaches the file again with no data path. It then lists the tables in the `wiki` schema of the file.
 
-Example `attach-ducklake` (Python 3.12.15 · deltalake 1.6.6 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.7:
+Example `attach-ducklake` (Python 3.12.15 · deltalake 1.6.6 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.8:
 
 ```python
 """Attach a DuckLake catalog file, detach it, and attach it again from the file alone. The point rests on the
@@ -158,7 +158,7 @@ The [same connecting page](https://ducklake.select/docs/stable/duckdb/usage/conn
 
 A Delta Lake table in this book is a folder. It has no catalog, and nothing in this book's setup names it apart from its path. The `deltalake` package opens the folder with `DeltaTable(path)`, and every read goes through that path. The three appends in the next example are versions 0, 1 and 2.
 
-Example `open-delta-by-path` (Python 3.12.15 · deltalake 1.6.6 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.7:
+Example `open-delta-by-path` (Python 3.12.15 · deltalake 1.6.6 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.8:
 
 ```python
 """Open a Delta Lake table by its path, with no catalog, and read its first version and its current one. The point
@@ -207,7 +207,7 @@ A path is a good name for a table that one job writes and a few jobs read. It ne
 
 DuckDB can query an Arrow table that a library hands it, and a DuckLake table that is attached to the same session, in one statement. The Iceberg table leaves pyiceberg as an Arrow table through `scan_arrow`. DuckDB registers that table under a name, and the join reads `wiki.domains` through the attached catalog. The book does not load DuckDB's `iceberg` extension for this, so the Iceberg side is the Arrow table and nothing else.
 
-Example `join-pageviews-and-domains` (Python 3.12.15 · deltalake 1.6.6 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.7:
+Example `join-pageviews-and-domains` (Python 3.12.15 · deltalake 1.6.6 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.8:
 
 ```python
 """Join an Iceberg table, read through Arrow, with a DuckLake table in one DuckDB statement. The point rests on the
@@ -271,7 +271,7 @@ Only the last failure below has no example.
 
 **The catalog file replaced by an empty one.** The next example attaches a fresh, empty catalog file to the data folder of a live catalog, then runs `ducklake_delete_orphaned_files` with `cleanup_all => true`. The [DuckLake cleanup page](https://ducklake.select/docs/stable/duckdb/maintenance/cleanup_of_files) shows `cleanup_all` deleting all orphaned files, and `dry_run` listing them instead. It defines an orphan as a file that the catalog you run it against does not track. A fresh catalog tracks nothing, so every Parquet file in the folder is an orphan to it.
 
-Example `ducklake-orphan-cleanup-hazard` (Python 3.12.15 · deltalake 1.6.6 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.7:
+Example `ducklake-orphan-cleanup-hazard` (Python 3.12.15 · deltalake 1.6.6 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.8:
 
 ```python
 """Run cleanup_all against a fresh, empty DuckLake catalog that shares a data folder with a live one. The point rests
