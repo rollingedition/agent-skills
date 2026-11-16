@@ -1,0 +1,14 @@
+child budget, steps: 16
+child steps: 5
+child result: no_progress
+parent steps: 2
+parent result: ask_user
+parent tools: start_child, ask_user
+question asked matches the handoff: yes
+child transcript, characters: 5408
+handoff in parent context, characters: 436
+parent context at last step, characters: 1041
+child file text in parent context: no
+parent steps, in order:
+  step 1: start_child: child no_progress at step 5
+  step 2: ask_user: ask_user

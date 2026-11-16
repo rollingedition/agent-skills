@@ -1,0 +1,5 @@
+shown as: == unitcraft/blob.bin: added, not UTF-8 text
+ended: ask_user
+handoff: p-1 was not applied: the copy changed after the answer
+applied: 0 | blob in library: False
+hashes differ for \xff and \xfe: True

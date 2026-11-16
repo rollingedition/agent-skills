@@ -1,0 +1,7 @@
+ended: finish
+proposals: 1 asked: 1
+applied: 1 files applied: 1
+visible tests after the apply: 8 failed, 22 passed
+hidden check after the apply: True
+drifted copy, handoff: p-1 was not applied: the copy changed after the answer
+answer for another proposal, handoff: p-1 was not applied: the answer is to another proposal or diff

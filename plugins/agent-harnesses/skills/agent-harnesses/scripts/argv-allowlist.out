@@ -1,0 +1,11 @@
+allowed: 'python -m pytest -q -p no:cacheprovider'
+allowed: 'python   -m pytest -q  -p no:cacheprovider'
+refused: not on the allowlist: 'python -m pytest -q -p no:cacheprovider --collect-only'
+refused: not on the allowlist: 'pytest -q -p no:cacheprovider'
+refused: not on the allowlist: 'rm -rf tests'
+refused: not on the allowlist: 'python -m pytest -q -p no:cacheprovider; rm -rf tests'
+refused: not on the allowlist: "sh -c 'rm -rf tests'"
+refused: not on the allowlist: "python -c 'print(1)'"
+refused: could not parse the command: "python -m pytest -q 'unclosed"
+allowed commands: 2
+refused commands: 7

@@ -1,0 +1,5 @@
+clean run: 8 failed, 22 passed
+plantings: 3
+visible run text the same as the clean run's: 3
+hidden check passes on the planted copies: 0
+plantings whose code ran: 0

@@ -1,0 +1,64 @@
+T-01 fix v1: done no, ended step_cap, steps 16, tool calls 16, prompt tokens 44836, completion tokens 2025
+T-01 fix v2: done no, ended ask_user, steps 5, tool calls 5, prompt tokens 8314, completion tokens 633
+T-02 fix v1: done no, ended step_cap, steps 16, tool calls 16, prompt tokens 43904, completion tokens 2059
+T-02 fix v2: done no, ended finish, steps 5, tool calls 5, prompt tokens 8555, completion tokens 695
+T-03 fix v1: done no, ended ask_user, steps 12, tool calls 12, prompt tokens 27562, completion tokens 1463
+T-03 fix v2: done no, ended no_progress, steps 5, tool calls 5, prompt tokens 8551, completion tokens 635
+T-04 implement v1: done yes, ended finish, steps 5, tool calls 5, prompt tokens 8809, completion tokens 1054
+T-04 implement v2: done no, ended no_progress, steps 7, tool calls 7, prompt tokens 14912, completion tokens 697
+T-05 implement v1: done yes, ended finish, steps 5, tool calls 5, prompt tokens 8494, completion tokens 906
+T-05 implement v2: done yes, ended finish, steps 6, tool calls 6, prompt tokens 12430, completion tokens 1091
+T-06 implement v1: done no, ended step_cap, steps 16, tool calls 16, prompt tokens 55109, completion tokens 4670
+T-06 implement v2: done no, ended no_progress, steps 8, tool calls 8, prompt tokens 17061, completion tokens 1108
+T-07 implement v1: done no, ended finish, steps 9, tool calls 9, prompt tokens 24989, completion tokens 3468
+T-07 implement v2: done no, ended step_cap, steps 16, tool calls 16, prompt tokens 43524, completion tokens 7861
+T-08 fix v1: done no, ended finish, steps 7, tool calls 7, prompt tokens 13713, completion tokens 1154
+T-08 fix v2: done no, ended no_progress, steps 9, tool calls 9, prompt tokens 22058, completion tokens 1154
+T-09 fix v1: done yes, ended finish, steps 6, tool calls 6, prompt tokens 10324, completion tokens 701
+T-09 fix v2: done yes, ended finish, steps 6, tool calls 6, prompt tokens 11096, completion tokens 633
+T-10 fix v1: done no, ended step_cap, steps 16, tool calls 16, prompt tokens 51056, completion tokens 3549
+T-10 fix v2: done no, ended no_progress, steps 6, tool calls 6, prompt tokens 10988, completion tokens 995
+T-11 implement v1: done no, ended step_cap, steps 16, tool calls 16, prompt tokens 33951, completion tokens 817
+T-11 implement v2: done no, ended step_cap, steps 16, tool calls 16, prompt tokens 43909, completion tokens 3114
+T-12 implement v1: done no, ended ask_user, steps 12, tool calls 12, prompt tokens 30787, completion tokens 1617
+T-12 implement v2: done no, ended no_progress, steps 5, tool calls 5, prompt tokens 8828, completion tokens 744
+T-13 implement v1: done no, ended step_cap, steps 16, tool calls 16, prompt tokens 49249, completion tokens 942
+T-13 implement v2: done no, ended no_progress, steps 12, tool calls 12, prompt tokens 32065, completion tokens 934
+T-14 fix v1: done yes, ended finish, steps 7, tool calls 7, prompt tokens 12651, completion tokens 972
+T-14 fix v2: done yes, ended finish, steps 6, tool calls 6, prompt tokens 10729, completion tokens 781
+T-15 fix v1: done no, ended ask_user, steps 10, tool calls 10, prompt tokens 20409, completion tokens 1254
+T-15 fix v2: done no, ended no_progress, steps 6, tool calls 6, prompt tokens 11279, completion tokens 870
+T-16 stop v1: done no, ended step_cap, steps 16, tool calls 16, prompt tokens 57696, completion tokens 4621
+T-16 stop v2: done no, ended ask_user, steps 5, tool calls 5, prompt tokens 8592, completion tokens 734
+T-17 stop v1: done no, ended ask_user, steps 9, tool calls 9, prompt tokens 17601, completion tokens 1511
+T-17 stop v2: done no, ended no_progress, steps 6, tool calls 6, prompt tokens 10748, completion tokens 840
+T-18 stop v1: done yes, ended ask_user, steps 4, tool calls 4, prompt tokens 5122, completion tokens 304
+T-18 stop v2: done yes, ended ask_user, steps 7, tool calls 7, prompt tokens 12120, completion tokens 746
+T-19 stop v1: done no, ended ask_user, steps 9, tool calls 9, prompt tokens 22713, completion tokens 2154
+T-19 stop v2: done yes, ended ask_user, steps 6, tool calls 6, prompt tokens 12571, completion tokens 1061
+T-20 fix v1: done no, ended ask_user, steps 13, tool calls 13, prompt tokens 33630, completion tokens 2065
+T-20 fix v2: done no, ended ask_user, steps 9, tool calls 9, prompt tokens 20659, completion tokens 1723
+task-set step cap: 16
+task-set done by the rule: 5 of 20
+task-set done without T-18's path match: 4 of 20
+task-set steps: 220
+task-set tool calls: 220
+task-set prompt tokens: 572605
+task-set completion tokens: 37306
+task-set ended ask_user: 7
+task-set ended finish: 6
+task-set ended step_cap: 7
+task-set-v2 step cap: 16
+task-set-v2 done by the rule: 5 of 20
+task-set-v2 done without T-18's path match: 4 of 20
+task-set-v2 steps: 151
+task-set-v2 tool calls: 151
+task-set-v2 prompt tokens: 328989
+task-set-v2 completion tokens: 27049
+task-set-v2 ended ask_user: 5
+task-set-v2 ended finish: 4
+task-set-v2 ended no_progress: 9
+task-set-v2 ended step_cap: 2
+tasks where version 2 takes more steps: T-04 +2, T-05 +1, T-07 +7, T-08 +2, T-18 +3
+tasks where version 2 takes fewer steps: 13
+tasks where the step counts match: 2

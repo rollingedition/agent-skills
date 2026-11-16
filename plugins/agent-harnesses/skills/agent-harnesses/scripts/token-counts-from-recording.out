@@ -1,0 +1,26 @@
+T-01 prompt tokens: 44836 completion tokens: 2025 steps: 16
+T-02 prompt tokens: 43904 completion tokens: 2059 steps: 16
+T-03 prompt tokens: 27562 completion tokens: 1463 steps: 12
+T-04 prompt tokens: 8809 completion tokens: 1054 steps: 5
+T-05 prompt tokens: 8494 completion tokens: 906 steps: 5
+T-06 prompt tokens: 55109 completion tokens: 4670 steps: 16
+T-07 prompt tokens: 24989 completion tokens: 3468 steps: 9
+T-08 prompt tokens: 13713 completion tokens: 1154 steps: 7
+T-09 prompt tokens: 10324 completion tokens: 701 steps: 6
+T-10 prompt tokens: 51056 completion tokens: 3549 steps: 16
+T-11 prompt tokens: 33951 completion tokens: 817 steps: 16
+T-12 prompt tokens: 30787 completion tokens: 1617 steps: 12
+T-13 prompt tokens: 49249 completion tokens: 942 steps: 16
+T-14 prompt tokens: 12651 completion tokens: 972 steps: 7
+T-15 prompt tokens: 20409 completion tokens: 1254 steps: 10
+T-16 prompt tokens: 57696 completion tokens: 4621 steps: 16
+T-17 prompt tokens: 17601 completion tokens: 1511 steps: 9
+T-18 prompt tokens: 5122 completion tokens: 304 steps: 4
+T-19 prompt tokens: 22713 completion tokens: 2154 steps: 9
+T-20 prompt tokens: 33630 completion tokens: 2065 steps: 13
+set tasks: 20
+set prompt tokens: 572605
+set completion tokens: 37306
+live count check: not run
+field completion_tokens would map to gen_ai.usage.output_tokens (data only; OpenTelemetry is not used)
+field prompt_tokens would map to gen_ai.usage.input_tokens (data only; OpenTelemetry is not used)

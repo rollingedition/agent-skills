@@ -1,0 +1,5 @@
+commands stopped at the time limit: 1
+commands that exited non-zero at a cap: 2
+lines printed after a cap was hit: 0
+grandchildren alive after the direct child was killed: 1
+grandchildren alive after the group kill: 0

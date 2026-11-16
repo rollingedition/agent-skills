@@ -1,0 +1,9 @@
+bare names the servers offer: ['delete_page', 'read_file', 'read_file', 'read_issue', 'reset_index']
+names the model sees: ['ask_user', 'docs__delete_page', 'docs__read_file', 'edit_file', 'finish', 'list_files', 'read_file', 'run_tests', 'tracker__read_file', 'tracker__read_issue', 'write_file']
+names: 11
+distinct: 11
+refused, the review's pair: a tool name may not start with '_': docs____read_file
+refused, the same name from docs_: a server name must match [a-z][a-z0-9]*: 'docs_'
+refused, two servers named docs: two server tools share the harness name 'docs__read_file'
+docs__read_file reaches the docs server: True
+tracker__read_file reaches the tracker server: True

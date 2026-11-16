@@ -1,0 +1,31 @@
+task | steps known | exploration | wrong change | auto check | person | design | recorded ended | recorded done
+T-01 | yes | no | low | yes | no | fixed pipeline | step_cap | no
+T-02 | yes | no | low | yes | no | fixed pipeline | step_cap | no
+T-03 | yes | no | low | yes | no | fixed pipeline | ask_user | no
+T-04 | yes | no | low | yes | no | fixed pipeline | finish | yes
+T-05 | yes | no | low | yes | no | fixed pipeline | finish | yes
+T-06 | no | yes | low | yes | no | agent with gates | step_cap | no
+T-07 | no | yes | low | yes | no | agent with gates | finish | no
+T-08 | no | yes | low | yes | no | agent with gates | finish | no
+T-09 | no | yes | low | yes | no | agent with gates | finish | yes
+T-10 | yes | no | low | yes | no | fixed pipeline | step_cap | no
+T-11 | no | yes | high | yes | no | agent with gates | step_cap | no
+T-12 | yes | no | low | yes | no | fixed pipeline | ask_user | no
+T-13 | no | yes | low | yes | no | agent with gates | step_cap | no
+T-14 | yes | no | low | yes | no | fixed pipeline | finish | yes
+T-15 | no | yes | low | yes | no | agent with gates | ask_user | no
+T-16 | yes | no | high | yes | yes | not a design choice: the harness refuses | step_cap | no
+T-17 | no | no | high | no | yes | agent with gates | ask_user | no
+T-18 | yes | no | high | yes | no | not a design choice: the harness refuses | ask_user | yes
+T-19 | no | no | high | no | yes | agent with gates | ask_user | no
+T-20 | yes | no | low | yes | no | fixed pipeline | ask_user | no
+rows with design 'fixed pipeline': 9
+rows with design 'agent with gates': 9
+rows with design 'one model call': 0
+rows the harness refuses: 2
+pipeline rows the recorded agent finished and passed: 3
+agent rows the recorded agent finished and passed: 1
+rows done in the recording: 5
+one-call shape, not in the set: one model call
+largest request in the recording, prompt tokens: 6556
+context window in the recording, tokens: 8192

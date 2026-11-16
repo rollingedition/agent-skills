@@ -1,0 +1,5 @@
+budget (steps): 8
+steps: 8
+tool calls: 8
+ended: step_cap
+last step: step 8: malformed: error: malformed call

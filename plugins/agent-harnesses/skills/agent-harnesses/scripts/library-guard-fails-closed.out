@@ -1,0 +1,5 @@
+write test module: wrote tests/test_marker.py
+run_tests ended: library_changed
+handoff: the case library changed around run_tests: unitcraft/marker.py; the run stops, and nothing is restored
+marker written: True | library changes counted: 1
+proposals: 0

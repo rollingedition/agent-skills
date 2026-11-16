@@ -1,0 +1,3 @@
+no: ended ask_user | publish ran: 0 | file added: False
+yes: ended finish | publish ran: 1 | file added: True
+applied: 1

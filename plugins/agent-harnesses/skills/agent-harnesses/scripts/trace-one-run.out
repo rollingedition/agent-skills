@@ -1,0 +1,16 @@
+{"arguments":{"path":"unitcraft/format.py"},"brief":"23 lines","calls":["run-0001-c1"],"completion_tokens":22,"gate":[],"malformed":[],"offered":["finish","read_file","run_tests"],"parent":null,"prompt_tokens":501,"result":"ok","run":"run-0001","step":1,"stop":"","tool":"read_file"}
+{"arguments":{},"brief":"8 failed, 22 passed","calls":["run-0001-c2"],"completion_tokens":70,"gate":[],"malformed":[],"offered":["finish","read_file","run_tests"],"parent":null,"prompt_tokens":713,"result":"ok","run":"run-0001","step":2,"stop":"","tool":"run_tests"}
+{"arguments":null,"brief":"error: malformed call","calls":["run-0001-c3"],"completion_tokens":560,"gate":[],"malformed":["not JSON (Expecting ',' delimiter)"],"offered":["finish","read_file","run_tests"],"parent":null,"prompt_tokens":941,"result":"refused","run":"run-0001","step":3,"stop":"","tool":"malformed"}
+{"arguments":null,"brief":"error: malformed call","calls":["run-0001-c4"],"completion_tokens":292,"gate":[],"malformed":["not JSON (Expecting ',' delimiter)"],"offered":["finish","read_file","run_tests"],"parent":null,"prompt_tokens":1528,"result":"refused","run":"run-0001","step":4,"stop":"","tool":"malformed"}
+{"arguments":null,"brief":"error: malformed call","calls":["run-0001-c5"],"completion_tokens":296,"gate":[],"malformed":["not JSON (Expecting ',' delimiter)"],"offered":["finish","read_file","run_tests"],"parent":null,"prompt_tokens":1847,"result":"refused","run":"run-0001","step":5,"stop":"","tool":"malformed"}
+{"arguments":null,"brief":"error: malformed call","calls":["run-0001-c6"],"completion_tokens":296,"gate":[],"malformed":["not JSON (Expecting ',' delimiter)"],"offered":["finish","read_file","run_tests"],"parent":null,"prompt_tokens":2170,"result":"refused","run":"run-0001","step":6,"stop":"","tool":"malformed"}
+{"arguments":null,"brief":"error: malformed call","calls":["run-0001-c7"],"completion_tokens":296,"gate":[],"malformed":["not JSON (Expecting ',' delimiter)"],"offered":["finish","read_file","run_tests"],"parent":null,"prompt_tokens":2493,"result":"refused","run":"run-0001","step":7,"stop":"","tool":"malformed"}
+{"arguments":null,"brief":"error: malformed call","calls":["run-0001-c8"],"completion_tokens":296,"gate":[],"malformed":["not JSON (Expecting ',' delimiter)"],"offered":["finish","read_file","run_tests"],"parent":null,"prompt_tokens":2816,"result":"refused","run":"run-0001","step":8,"stop":"step_cap","tool":"malformed"}
+records: 8
+first call ID: run-0001-c1
+results: step 1 ok, step 2 ok, step 3 refused, step 4 refused, step 5 refused, step 6 refused, step 7 refused, step 8 refused
+prompt tokens, summed over the records: 13009
+completion tokens, summed over the records: 2128
+blank line: Expecting value: line 1 column 1 (char 0)
+lines read back: 8
+empty pieces skipped: 1

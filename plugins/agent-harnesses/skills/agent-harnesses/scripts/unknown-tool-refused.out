@@ -1,0 +1,4 @@
+class: never
+result: error: reset_library is not a tool this harness runs
+body ran: 0
+never calls: 1

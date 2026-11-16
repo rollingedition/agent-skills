@@ -1,0 +1,37 @@
+T-02 pipeline ended: finish
+T-02 pipeline done: yes
+T-02 pipeline actions: 4
+T-02 pipeline model calls: 0
+T-02 pipeline prompt tokens: 0
+T-02 agent ended: step_cap
+T-02 agent done: no
+T-02 agent steps: 16
+T-02 agent tool calls: 16
+T-02 agent prompt tokens: 43904
+T-04 pipeline ended: finish
+T-04 pipeline done: yes
+T-04 pipeline actions: 4
+T-04 pipeline model calls: 0
+T-04 pipeline prompt tokens: 0
+T-04 agent ended: finish
+T-04 agent done: yes
+T-04 agent steps: 5
+T-04 agent tool calls: 5
+T-04 agent prompt tokens: 8809
+T-05 pipeline ended: finish
+T-05 pipeline done: yes
+T-05 pipeline actions: 4
+T-05 pipeline model calls: 0
+T-05 pipeline prompt tokens: 0
+T-05 agent ended: finish
+T-05 agent done: yes
+T-05 agent steps: 5
+T-05 agent tool calls: 5
+T-05 agent prompt tokens: 8494
+T-02 agent edits failed: 9 of 9
+T-02 agent test runs: 0
+T-02 agent first edit result: error: old text not found in unitcraft/format.py
+T-04 missing anchor ended: pipeline_stop
+T-04 missing anchor actions: 2
+T-04 missing anchor done: no
+T-04 missing anchor result: error: old text not found in unitcraft/units.py

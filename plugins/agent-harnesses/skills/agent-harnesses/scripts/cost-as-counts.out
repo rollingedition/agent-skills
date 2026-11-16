@@ -1,0 +1,14 @@
+ended ask_user: runs 7, done 1, steps 69, tool calls 69, prompt tokens 157824, completion tokens 10368
+  tasks: T-03, T-12, T-15, T-17, T-18, T-19, T-20
+  done: T-18
+ended finish: runs 6, done 4, steps 39, tool calls 39, prompt tokens 78980, completion tokens 8255
+  tasks: T-04, T-05, T-07, T-08, T-09, T-14
+  done: T-04, T-05, T-09, T-14
+ended step_cap: runs 7, done 0, steps 112, tool calls 112, prompt tokens 335801, completion tokens 18683
+  tasks: T-01, T-02, T-06, T-10, T-11, T-13, T-16
+  done: none
+all: runs 20, done 5, steps 220, tool calls 220, prompt tokens 572605, completion tokens 37306
+step-capped runs done: 0 of 7
+step-capped runs, steps: 112 of 220
+step-capped runs, prompt tokens: 335801 of 572605
+step-capped runs whose prompt count rises at every step: 7 of 7

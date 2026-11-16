@@ -1,0 +1,9 @@
+stored replies: 8
+prompt tokens: 13009
+completion tokens: 2128
+temperature: 0
+top_k: 1
+seed: 4217
+reply texts compared exactly: 8
+steps: 8
+ended: step_cap

@@ -1,0 +1,7 @@
+steps: 8
+ended: finish
+compactions: 5
+notes written: 3
+notes whole in the notes block: 3
+lines in the notes block that name the fact (rstrip): 1
+summary line for the read of format.py: step 1: read_file({"path": "unitcraft/format.py"}) -> """format_quantity: write a quantity as text, such as ``3.50

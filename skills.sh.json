@@ -1,6 +1,7 @@
 {
   "$schema": "https://skills.sh/schemas/skills.sh.schema.json",
   "paths": [
+    "./plugins/agent-harnesses/skills",
     "./plugins/business-intelligence-with-agents/skills",
     "./plugins/data-governance-as-code/skills",
     "./plugins/language-models-from-the-ground-up/skills",

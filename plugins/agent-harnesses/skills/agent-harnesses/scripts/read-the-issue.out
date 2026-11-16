@@ -1,0 +1,28 @@
+task: T-01
+issue: `format_quantity` drops the trailing zeros: 3.5 kg prints as `3.5 kg`, and the default is two places. CI is red on `tests/test_format.py`.
+case files: 25
+  .github/workflows/test.yml
+  README.md
+  pyproject.toml
+  tests/test_arith.py
+  tests/test_cli.py
+  tests/test_convert.py
+  tests/test_format.py
+  tests/test_parse.py
+  tests/test_rounding.py
+  tests/test_table.py
+  tests/test_temperature.py
+  unitcraft/__init__.py
+  unitcraft/__main__.py
+  unitcraft/arith.py
+  unitcraft/cli.py
+  unitcraft/convert.py
+  unitcraft/errors.py
+  unitcraft/format.py
+  unitcraft/parse.py
+  unitcraft/prefixes.py
+  unitcraft/quantity.py
+  unitcraft/rounding.py
+  unitcraft/table.py
+  unitcraft/temperature.py
+  unitcraft/units.py

@@ -1,0 +1,20 @@
+budget, in estimated tokens: 2000
+steps: 5
+ended: finish
+calls compacted: 3
+calls still over the budget: 0
+fixed part (system prompt, tool schemas, issue), estimated tokens: 1289
+messages sent on the last call: 5
+message 1, system: You are a maintenance
+message 2, user: `format_quantity` drops the trailing
+message 3, user: Earlier steps, summarised by
+message 4, assistant: <tool_call> {"name": "read_file", "arguments":
+message 5, tool: # unitcraft unitcraft parses,
+summary of the older steps:
+  step 1: read_file({"path": "unitcraft/convert.py"}) -> """convert: change a quantity to another unit of the same di
+  step 2: read_file({"path": "unitcraft/units.py"}) -> """The unit table: each symbol with its dimension and its fa
+  step 3: read_file({"path": "unitcraft/parse.py"}) -> """parse_quantity: read a quantity written as text, such as
+kept call: {"name": "read_file", "arguments": {"path": "README.md"}}
+kept result, in lines: 42
+cut before the last result alone, clean: False
+cut before the last call, clean: True

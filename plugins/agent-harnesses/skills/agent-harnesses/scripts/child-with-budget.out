@@ -1,0 +1,9 @@
+child budget, steps: 4
+child steps: 4
+child result: step_cap
+child tools: list_files, read_file, run_tests, write_file, edit_file, ask_user, finish
+child steps, in order:
+  step 1: list_files: 25 files
+  step 2: read_file: 23 lines
+  step 3: edit_file: error: old text not found in unitcraft/format.py
+  step 4: read_file: 23 lines

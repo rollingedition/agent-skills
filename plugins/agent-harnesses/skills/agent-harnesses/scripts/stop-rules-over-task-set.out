@@ -1,0 +1,20 @@
+task set step cap: 16
+runs: 20
+step cap without the rules: 7
+step cap without the rules, tasks: T-01, T-02, T-06, T-10, T-11, T-13, T-16
+step cap with the rules: 1
+ended early with the rules: 6
+  finish: 6
+  ask_user: 1
+  step_cap: 1
+  repeated_call: 1
+  no_progress: 11
+  no_tool_call: 0
+done without the rules: 5
+done without the rules, tasks: T-04, T-05, T-09, T-14, T-18
+done with the rules: 5
+done with the rules, by finish: 4
+finish but not done, with the rules: 2
+done with the rules, by ask_user: 1
+ask_user but not done, without the rules: 6
+of those, cut early with the rules: 6

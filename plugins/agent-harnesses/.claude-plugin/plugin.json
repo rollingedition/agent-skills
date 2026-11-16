@@ -1,0 +1,23 @@
+{
+  "name": "agent-harnesses",
+  "displayName": "Agent Harnesses",
+  "version": "2026.11.1",
+  "description": "Build the code around a model that makes an agent you can trust with real tools: the loop, tools, context, permissions, sandboxing, subagents and tests, on a maintenance agent for a small Python library.",
+  "author": {
+    "name": "Rolling Edition",
+    "url": "https://rollingedition.com/"
+  },
+  "homepage": "https://rollingedition.com/agent-harnesses",
+  "repository": "https://github.com/rollingedition/agent-skills",
+  "license": "CC-BY-4.0",
+  "keywords": [
+    "ai-agents",
+    "large-language-models",
+    "llm-evaluation"
+  ],
+  "icon": "./icon.png",
+  "documentationUrl": "https://rollingedition.com/assistants#agent-skills",
+  "supportUrl": "https://rollingedition.com/assistants#trouble",
+  "privacyPolicyUrl": "https://rollingedition.com/policies/privacy#mcp",
+  "termsOfServiceUrl": "https://rollingedition.com/policies/terms"
+}

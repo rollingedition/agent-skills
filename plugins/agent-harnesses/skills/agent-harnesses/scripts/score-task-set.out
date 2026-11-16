@@ -1,0 +1,14 @@
+tasks: 20
+runs per task: 1
+done by the rule: 5 of 20
+done without T-18's path match: 4 of 20
+done, fix: 2 of 9
+done, implement: 2 of 7
+done, stop: 1 of 4
+pass@1: 0.25
+step cap: 7
+ask_user, not done: 6
+finish, check failing: 2
+standard error of the proportion: 0.097
+count range at about 95%: 1.2 to 8.8 of 20
+whole counts: 1 to 9 of 20

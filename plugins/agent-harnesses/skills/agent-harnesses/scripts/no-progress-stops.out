@@ -1,0 +1,7 @@
+without the rule, ended: step_cap at step 16
+with the rule, ended: no_progress at step 5
+edits that left the counts unchanged, steps: 3 and 5
+counts after the last edit: 8 failed, 22 passed
+last two steps:
+  step 4: read_file: 23 lines
+  step 5: edit_file: error: old text not found in unitcraft/format.py

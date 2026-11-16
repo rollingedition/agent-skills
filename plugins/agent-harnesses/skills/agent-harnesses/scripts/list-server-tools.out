@@ -1,0 +1,6 @@
+SDK latest revision: 2026-07-28
+docs protocol revision: 2026-07-28
+docs tools: ['delete_page', 'read_file', 'reset_index']
+tracker protocol revision: 2026-07-28
+tracker tools: ['read_file', 'read_issue']
+offered to the model: ['docs__delete_page', 'docs__read_file', 'tracker__read_file', 'tracker__read_issue']

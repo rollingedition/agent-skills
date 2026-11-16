@@ -1,0 +1,9 @@
+server marks delete_page read-only: True
+harness class of docs__delete_page: change
+server marks reset_index read-only: True
+harness class of docs__reset_index: never
+offered: ['docs__delete_page', 'docs__read_file', 'tracker__read_file', 'tracker__read_issue']
+first call: error: not approved
+second call: output marked untrusted
+reset_index: error: unknown tool: docs__reset_index
+forced call: error: not a tool this harness runs

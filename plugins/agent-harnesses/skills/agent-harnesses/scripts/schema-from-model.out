@@ -1,0 +1,6 @@
+required: path
+max_lines minimum: 1
+max_lines maximum: 1000
+max_lines default: 200
+max_lines description: The most lines to return, from 1 to 1000; the default is 200.
+path description: A file path relative to the case root, with / as the separator.

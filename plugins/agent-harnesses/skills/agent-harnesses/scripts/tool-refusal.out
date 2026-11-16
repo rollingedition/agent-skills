@@ -1,0 +1,2 @@
+refused: error: path outside the case: ../secret.txt
+refused: error: path outside the case: <absolute path>

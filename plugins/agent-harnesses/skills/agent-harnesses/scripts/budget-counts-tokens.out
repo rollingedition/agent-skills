@@ -1,0 +1,29 @@
+load setting, n_ctx, in tokens: 8192
+reply reservation, max_tokens, in tokens: 1024
+prompt budget, in tokens: 7168
+steps recorded: 220
+largest prompt, in tokens: 6556
+largest prompt, run: T-16
+largest prompt, step: 16
+room left for the reply at the largest step: 612
+steps over the prompt budget: 0
+T-01: steps 16, largest prompt 4519
+T-02: steps 16, largest prompt 4419
+T-03: steps 12, largest prompt 3429
+T-04: steps 5, largest prompt 2545
+T-05: steps 5, largest prompt 2389
+T-06: steps 16, largest prompt 6143
+T-07: steps 9, largest prompt 4919
+T-08: steps 7, largest prompt 3123
+T-09: steps 6, largest prompt 2400
+T-10: steps 16, largest prompt 5493
+T-11: steps 16, largest prompt 3139
+T-12: steps 12, largest prompt 3997
+T-13: steps 16, largest prompt 4880
+T-14: steps 7, largest prompt 2763
+T-15: steps 10, largest prompt 3052
+T-16: steps 16, largest prompt 6556
+T-17: steps 9, largest prompt 2878
+T-18: steps 4, largest prompt 1559
+T-19: steps 9, largest prompt 4204
+T-20: steps 13, largest prompt 4183

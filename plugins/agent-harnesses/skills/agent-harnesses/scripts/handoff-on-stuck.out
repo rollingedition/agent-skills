@@ -1,0 +1,21 @@
+child runs: 20
+  finish: 6
+  ask_user: 1
+  step_cap: 1
+  repeated_call: 1
+  no_progress: 11
+  no_tool_call: 0
+done with the rules: 5
+ended with finish or ask_user: 7
+done among the handed back: 0
+handed back to a parent: 13
+  step_cap: 1
+  repeated_call: 1
+  no_progress: 11
+handed back, tasks: T-01, T-02, T-03, T-06, T-10, T-11, T-12, T-13, T-15, T-16, T-17, T-19, T-20
+parent asked the person, with the handoff's question: 13
+child steps, all handed back: 83
+parent steps, all handed back: 13
+child transcripts, characters: 95252
+handoffs the parents read, characters: 5874
+saved by the handoffs, characters: 89378

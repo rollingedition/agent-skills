@@ -1,0 +1,10 @@
+v1 tools: 7
+v1 list_files: List the files in the case, by their case-relative paths.
+v1 read_file: Read one file in the case, given by its case-relative path.
+v1 run_tests: Run the visible test suite on your copy and return the counts of passed and failed tests.
+v1 write_file: Create a new file in your copy with this text; it is refused when the file already exists.
+v1 edit_file: Replace the one occurrence of old text with new text in a file in your copy.
+v1 ask_user: Ask the person a question and end the run; use it when the task needs their decision.
+v1 finish: End the run with a summary of what you changed and why.
+ch1 tools with the same sentence in v1: read_file, run_tests
+ch1 finish has the same sentence in v1: False

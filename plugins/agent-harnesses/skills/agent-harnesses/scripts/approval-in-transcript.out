@@ -1,0 +1,10 @@
+T-04 ended: finish | T-09 ended: ask_user
+transcript, T-04: step 5: finish: p-1 yes, applied 1 files
+transcript, T-09: step 6: finish: p-2 was not applied: the person said no: not in this change
+gate: p-1 1 files, diff 06ee73fd984f: asked
+gate: p-1 answer yes, bound to p-1 and 06ee73fd984f
+gate: p-1 applied: 1 files
+gate: p-2 1 files, diff 95fb833675dd: asked
+gate: p-2 answer no, bound to p-2 and 95fb833675dd
+gate: p-2 not applied: the person said no: not in this change
+applied: 1 refused: 1

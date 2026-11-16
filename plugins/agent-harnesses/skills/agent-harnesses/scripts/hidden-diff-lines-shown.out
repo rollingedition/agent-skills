@@ -1,0 +1,5 @@
+shown: +HIDDEN_CR = 'not shown'\r# a comment long enough to cover the line before it
+shown: +HIDDEN_ESC = 'not shown'
+headers that flag control characters: 2
+raw CR or ESC in the shown text: 0
+applied: 0 refused: 1

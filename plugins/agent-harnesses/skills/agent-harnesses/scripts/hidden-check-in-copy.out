@@ -1,0 +1,6 @@
+case without the fix, hidden check passes: False
+agent copy with the fix, hidden check passes: True
+package and README files in the check's folder: 15
+only the package and README came along: True
+the hidden file is added beside them: test_t04.py
+case library unchanged: True

@@ -10,6 +10,7 @@ This repository is generated from the books, so changes made here are overwritte
 
 | Book | Skill | Edition | Examples |
 | --- | --- | --- | --- |
+| [Agent Harnesses](https://rollingedition.com/agent-harnesses) | `agent-harnesses` | 2026.11.1 | 64 of 64 examples pass |
 | [Business Intelligence with Agents](https://rollingedition.com/business-intelligence-with-agents) | `business-intelligence-with-agents` | 2026.11.12 | 78 of 78 examples pass |
 | [Data Governance as Code](https://rollingedition.com/data-governance-as-code) | `data-governance-as-code` | 2026.11.28 | 108 of 108 examples pass |
 | [Language Models from the Ground Up](https://rollingedition.com/language-models-from-the-ground-up) | `language-models-from-the-ground-up` | 2026.11.12 | 86 of 86 examples pass |
@@ -25,18 +26,18 @@ This repository is generated from the books, so changes made here are overwritte
 
 ```sh
 /plugin marketplace add rollingedition/agent-skills
-/plugin install business-intelligence-with-agents@rolling-edition
+/plugin install agent-harnesses@rolling-edition
 /plugin install rolling-edition@rolling-edition
 ```
 
-A new edition is a new version of its plugin. `claude plugin update business-intelligence-with-agents@rolling-edition` fetches it, or turn on auto-update for this catalog in `/plugin`.
+A new edition is a new version of its plugin. `claude plugin update agent-harnesses@rolling-edition` fetches it, or turn on auto-update for this catalog in `/plugin`.
 
 **Claude (chat and Cowork):** in Customize, Plugins, add this repository as a marketplace, and install `rolling-edition`.
 
 **Other agents** (Codex, Cursor, GitHub Copilot and more), with the [skills](https://skills.sh) CLI:
 
 ```sh
-npx skills add rollingedition/agent-skills --skill business-intelligence-with-agents
+npx skills add rollingedition/agent-skills --skill agent-harnesses
 ```
 
 Or from rollingedition.ai, which lists every skill for the same command:

@@ -1,0 +1,8 @@
+without the rule, ended: step_cap at step 16
+with the rule, ended: repeated_call at step 13
+repeated call: edit_file
+first of the identical calls: step 11
+identical calls in a row: 3
+last two steps:
+  step 12: edit_file: error: old text not found in unitcraft/format.py
+  step 13: edit_file: error: old text not found in unitcraft/format.py

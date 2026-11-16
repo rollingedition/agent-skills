@@ -1,0 +1,10 @@
+redirect 302 on loopback: the endpoint answered 302 with a redirect, and the adapter does not follow redirects
+redirect 307 on loopback: the endpoint answered 307 with a redirect, and the adapter does not follow redirects
+requests to the redirect target: 0
+loopback requests through the proxy: 0
+remote request through the proxy: http://remote-host.invalid/v1/chat/completions
+remote reply text: ok
+key over plain http to a remote host: the adapter sends an API key over https, or over http to a loopback host only
+key over https to a remote host: accepted, no request made
+key over http to loopback: accepted
+file URL: the scheme 'file' is not http or https

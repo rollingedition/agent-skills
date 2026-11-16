@@ -1,0 +1,9 @@
+call 1, not run, the JSON is not read: not JSON (Expecting ',' delimiter)
+call 2, read_file, v2: error: invalid arguments: path (missing): Field required
+call 2, read_file, v1: error: invalid arguments: path: Field required
+call 3, read_file, v2: error: invalid arguments: lines (extra_forbidden): Extra inputs are not permitted
+call 3, read_file, v1: error: invalid arguments: lines: Extra inputs are not permitted
+call 4, read_file, v2: error: invalid arguments: path (string_type): Input should be a valid string
+call 4, read_file, v1: error: invalid arguments: path: Input should be a valid string
+call 5, read_files, v2: error: invalid arguments: name (literal_error): Input should be 'list_files', 'read_file', 'run_tests', 'write_file', 'edit_file', 'ask_user' or 'finish'
+call 5, read_files, v1: error: unknown tool: read_files
