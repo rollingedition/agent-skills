@@ -3,12 +3,12 @@ title: "Time Series Forecasting"
 chapter: "Quantify forecast uncertainty"
 chapter_id: quantify-forecast-uncertainty
 book: time-series-forecasting
-edition: 2026.11.5
+edition: 2026.11.6
 verified: 2026-11-16
-edition_code: 9F3K-A6ZD
+edition_code: TSZ5-EP6C
 canonical: https://rollingedition.com/time-series-forecasting/quantify-forecast-uncertainty
 license: CC BY 4.0
-attribution: "“Quantify forecast uncertainty,” chapter 8 of Time Series Forecasting, Edition 2026.11.5, examples passed Nov 16, 2026. By Rolling Edition, https://rollingedition.com/time-series-forecasting/quantify-forecast-uncertainty. Text CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Quantify forecast uncertainty,” chapter 8 of Time Series Forecasting, Edition 2026.11.6, examples passed Nov 16, 2026. By Rolling Edition, https://rollingedition.com/time-series-forecasting/quantify-forecast-uncertainty. Text CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Quantify forecast uncertainty
 
@@ -43,7 +43,7 @@ The library that does this for the book's model is mlforecast, at version 1.1.0.
 
 To see what the library does with a short calibration history, run its class with three calibration windows. It scores the three standard cutoffs, Dec 29 to Dec 31, 2014, each at 00:00. Those are the held-out week's last three days, and the days this chapter scores. mlforecast refits the global model at each cutoff and calibrates each one on the three before it.
 
-Example `conformal-three-windows` (Python 3.13.16 · holidays 0.108 · lightgbm 4.7.0 · mlforecast 1.1.0 · numpy 2.5.4 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.5:
+Example `conformal-three-windows` (Python 3.13.16 · holidays 0.108 · lightgbm 4.7.0 · mlforecast 1.1.0 · numpy 2.5.4 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.6:
 
 ```python
 """mlforecast's own conformal intervals, with three calibration windows, refitted at each of the three standard cutoffs.
@@ -109,7 +109,7 @@ The output shows the failure before any fix: across the 2160 client-hours, the b
 
 The design sets a ceiling, and the 95 result sits on it. With three windows, each client and hour has three absolute residuals, and the band reaches no further than the largest of them. For exchangeable errors, the test error is the largest of four absolute errors one time in four, so the band misses it that often. The highest coverage three windows allow is 0.750, at any level. Under the same exchangeable assumption, the band's expected coverage is 0.656 at 80 and 0.732 at 95. The simulation draws normal errors, with the same construction. The measured figures are a little above those expected values, so the calibration windows did not have smaller errors than the scored days. Calm calibration windows would push coverage below the expected value, not above it. The shortfall is the construction's.
 
-The coverage by day shows where the shortfall sits. At the 80 level it is 0.756 on Dec 29, 0.676 on Dec 30 and 0.637 on Dec 31. The forecast errors on those days were 114.62, 94.42 and 163.37 kWh on average. Dec 31 has the largest errors, but it is not the day with the lowest coverage, and three days cannot separate day-to-day variation from the design.
+The coverage by day shows where the shortfall sits. At the 80 level it is 0.756 on Dec 29, 0.676 on Dec 30 and 0.637 on Dec 31. The forecast errors on those days were 114.62, 94.42 and 163.37 kWh on average. Dec 31 has the largest errors and the lowest coverage, and three days cannot separate day-to-day variation from the design.
 
 A second problem comes from the calibration. Each cutoff calibrates only on days before it: the bands for Dec 31 use Dec 28, 29 and 30. But Dec 29 and Dec 30 are scored days too. So the three scored windows are not independent, because one window's calibration contains the readings of another scored window. No band uses its own day's readings, and the rule is right for operation, where those readings are known. For a test it weakens the result. Fixing it would need a separate calibration fit for each cutoff, which is more than a one-argument change, so the chapter's own bands use a fixed calibration set instead, as [Calibrate on earlier windows](#calibrate-on-earlier-windows) shows.
 
@@ -123,7 +123,7 @@ Twelve windows with thirty clients give 360 residuals for each hour of the day. 
 
 Two choices in this design were made on the decision windows, not on the held-out evaluation. The decision windows are the four cutoffs from Nov 25 to Dec 3, 2014. Their calibration is Nov 9 to 20, 2014, twelve holiday-free days that end four days before the first decision cutoff, the same shape as the held-out design. The windows are scored on their own, and the held-out evaluation is not read. The choices are judged by the interval score and the lowest client's coverage. The interval score adds a band's width to a penalty for each reading that misses the band, the penalty growing with the distance of the miss and scaled by 2 over the miss rate ([Gneiting and Raftery (2007)](https://sites.stat.washington.edu/raftery/Research/PDF/Gneiting2007jasa.pdf), eq. 43). Those windows settle both choices, as the measurements below show.
 
-Example `conformal-decision-windows` (Python 3.13.16 · holidays 0.108 · lightgbm 4.7.0 · mlforecast 1.1.0 · numpy 2.5.4 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.5:
+Example `conformal-decision-windows` (Python 3.13.16 · holidays 0.108 · lightgbm 4.7.0 · mlforecast 1.1.0 · numpy 2.5.4 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.6:
 
 ```python
 """The two calibration choices, scaling each client's residuals and the finite-sample levels, decided on the four decision
@@ -208,7 +208,7 @@ The finite-sample levels stay out of the bands. Each new residual is one more am
 
 The held-out evaluation applies the same design to the standard cutoffs, which are the days the rest of the chapter scores.
 
-Example `conformal-earlier-windows` (Python 3.13.16 · holidays 0.108 · lightgbm 4.7.0 · mlforecast 1.1.0 · numpy 2.5.4 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.5:
+Example `conformal-earlier-windows` (Python 3.13.16 · holidays 0.108 · lightgbm 4.7.0 · mlforecast 1.1.0 · numpy 2.5.4 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.6:
 
 ```python
 """Conformal bands for every client, calibrated on twelve holiday-free days before the scored week, with each client's
@@ -307,7 +307,7 @@ The total's errors vary by day. The mean absolute error of the total was 2415.51
 
 The coverage does not follow the errors. Dec 29 has the lowest coverage with a middle-sized error, and Dec 31 has the largest error with a middle-sized coverage. Each day has 24 hours, and three days are too few to tell the two apart.
 
-The finite-sample levels would change the total's figure. On the scored days they give 0.736 at 80. The choice was made on the decision windows, where the correction widened the total's bands and lowered their interval score, so the bands do not use it. The decision windows also show that the direction of the gap is not fixed. There the total's 80 bands covered 0.948 of hours, more than their label, and the finite levels pushed that to 0.990.
+The finite-sample levels would change the total's figure. On the scored days they give 0.736 at 80. The choice was made on the decision windows, where the correction widened the total's bands and worsened their interval score, so the bands do not use it. The decision windows also show that the direction of the gap is not fixed. There the total's 80 bands covered 0.948 of hours, more than their label, and the finite levels pushed that to 0.990.
 
 [Angelopoulos and Bates (2022)](https://arxiv.org/pdf/2107.07511) show that split conformal prediction covers the test point with probability at least `1 - alpha` when the calibration and test points are independent and identically distributed, or more generally exchangeable. They also note that adjacent points in a time series are not exchangeable, using a temperature series as the example. The same holds for hourly load: each hour carries the one before it, and a day's hours share the weather and the calendar. [Barber and co-authors (2023)](https://arxiv.org/abs/2202.13415) call the loss in coverage when exchangeability fails a coverage gap. Their bound does not assume a particular joint distribution. It is small when recent calibration points are weighted in a way that matches the test point's distribution, as in slow drift. That result is theoretical, and this chapter does not test it. A 2026 preprint, [a survey of conformal methods for dependent series](https://arxiv.org/abs/2601.18509), states that temporal dependence violates the exchangeability assumption. It is not peer reviewed, and we cite it only for that point.
 
@@ -323,7 +323,7 @@ With the illustrative costs from [Why one number is not enough](#why-one-number-
 
 Does buying at the critical fractile cost less than buying at the median or higher, on days the bands never saw? Below, the purchase is set for each hour from these costs, and the scored days answer the question. The level 0.95 is not offered, as [Measure coverage on held-out days](#measure-coverage-on-held-out-days) explains.
 
-Example `buy-ahead-level-by-cost` (Python 3.13.16 · holidays 0.108 · lightgbm 4.7.0 · mlforecast 1.1.0 · numpy 2.5.4 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.5:
+Example `buy-ahead-level-by-cost` (Python 3.13.16 · holidays 0.108 · lightgbm 4.7.0 · mlforecast 1.1.0 · numpy 2.5.4 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.6:
 
 ```python
 """The buy level for the total, set from the two costs: the critical fractile, cu / (cu + co), is the quantile that minimises

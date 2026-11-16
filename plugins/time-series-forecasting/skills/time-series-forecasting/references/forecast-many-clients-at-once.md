@@ -3,12 +3,12 @@ title: "Time Series Forecasting"
 chapter: "Forecast many clients with one model"
 chapter_id: forecast-many-clients-at-once
 book: time-series-forecasting
-edition: 2026.11.5
+edition: 2026.11.6
 verified: 2026-11-16
-edition_code: 9F3K-A6ZD
+edition_code: TSZ5-EP6C
 canonical: https://rollingedition.com/time-series-forecasting/forecast-many-clients-at-once
 license: CC BY 4.0
-attribution: "“Forecast many clients with one model,” chapter 6 of Time Series Forecasting, Edition 2026.11.5, examples passed Nov 16, 2026. By Rolling Edition, https://rollingedition.com/time-series-forecasting/forecast-many-clients-at-once. Text CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Forecast many clients with one model,” chapter 6 of Time Series Forecasting, Edition 2026.11.6, examples passed Nov 16, 2026. By Rolling Edition, https://rollingedition.com/time-series-forecasting/forecast-many-clients-at-once. Text CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Forecast many clients with one model
 
@@ -38,11 +38,11 @@ The mean and deviation come from that client's history before the cutoff only, a
 
 Once the rows share one table, the model no longer knows which client a row belongs to, unless you tell it. Scaling removes each client's mean and spread, so what remains is mostly the shape of the day. An identifier puts the client in the table as a static categorical feature. The trees can then split on the client and learn that client's own habits. The cost is one more split to learn for each client, and a client with no history has nothing to learn from. A new client therefore needs a refit before the model can forecast it.
 
-The rule for keeping an identifier is the one [Chapter 5](#measure-what-each-feature-adds) sets for every feature: keep it only if it lowers the mean per-client MASE on decision windows that the standard cutoffs do not use. The held-out week runs from Dec 25 to Dec 31, 2014, and it has seven daily cutoffs. The three standard cutoffs, Dec 29 to Dec 31, 2014, are the reported scores, so the decision does not use them, and it does not use Dec 25 to Dec 28, 2014 either. The [decision windows](#choose-on-decision-windows) are four ordinary days before the held-out week: cutoffs on Nov 25, Nov 26, Dec 2 and Dec 3, all in 2014, each forecasting 24 hours. None of their scored hours falls on a Portuguese holiday. The one holiday of 2014 that falls in this stretch, Dec 8, 2014, is skipped. The calendar lists no holiday on Dec 1, 2014.
+The rule for keeping an identifier is the one [Chapter 5](#measure-what-each-feature-adds) sets for every feature: keep it only if it lowers the mean per-client MASE on decision windows that the standard cutoffs do not use. The held-out week runs from Dec 25 to Dec 31, 2014, and it has seven daily cutoffs. The three standard cutoffs, Dec 29 to Dec 31, 2014, are the reported scores, so the decision does not use them, and it does not use Dec 25 to Dec 28, 2014 either. The [decision windows](#choose-on-decision-windows) are four ordinary days before the held-out week: cutoffs on Nov 25, Nov 26, Dec 2 and Dec 3, all in 2014, each forecasting 24 hours. None of their scored hours falls on a Portuguese holiday. The one holiday of 2014 between these windows and the held-out week, Dec 8, 2014, is not among them. The calendar lists no holiday on Dec 1, 2014.
 
 Before the identifier goes into the model, test it on windows the reported scores never touch. The check fits the model twice on each decision cutoff, with and without the identifier, and refuses to start if a scored hour is a holiday or in the held-out week.
 
-Example `client-identifier-check` (Python 3.13.16 · holidays 0.108 · lightgbm 4.7.0 · mlforecast 1.1.0 · numpy 2.5.4 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.5:
+Example `client-identifier-check` (Python 3.13.16 · holidays 0.108 · lightgbm 4.7.0 · mlforecast 1.1.0 · numpy 2.5.4 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.6:
 
 ```python
 """Tests whether a client identifier lowers the global model's error on four ordinary decision windows, before the
@@ -132,7 +132,7 @@ The rule refuses a cutoff in two cases only: a client has no non-zero reading be
 
 The leak check asks whether the rule reads only the past and refuses the right cutoffs. It runs nine cutoffs, refused or not, and poisons each from the cutoff on, once with zeros and once with a value no meter could record. The history must not change, and every accepted cutoff must hold all thirty clients.
 
-Example `start-rule-leak-check` (Python 3.13.16 · holidays 0.108 · lightgbm 4.7.0 · mlforecast 1.1.0 · numpy 2.5.4 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.5:
+Example `start-rule-leak-check` (Python 3.13.16 · holidays 0.108 · lightgbm 4.7.0 · mlforecast 1.1.0 · numpy 2.5.4 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.6:
 
 ```python
 """Checks that the start rule reads only rows before each cutoff, refuses the cutoffs the data's flag predicts, and
@@ -199,7 +199,7 @@ The same checks run on a deliberately broken version, which reads each first rea
 
 The model runs with the start rule and without it, on the standard cutoffs and then the February cutoffs. The counts that differ, and each run's error, show what the rule does.
 
-Example `global-model-raw-starts` (Python 3.13.16 · holidays 0.108 · lightgbm 4.7.0 · mlforecast 1.1.0 · numpy 2.5.4 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.5:
+Example `global-model-raw-starts` (Python 3.13.16 · holidays 0.108 · lightgbm 4.7.0 · mlforecast 1.1.0 · numpy 2.5.4 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.6:
 
 ```python
 """Runs the global model with the start rule and without it, on the February cutoffs, where a late starter's zeros enter
@@ -320,7 +320,7 @@ On the standard cutoffs the same forecasts score a mean MASE of 1.01 with the sc
 
 The score below sets the global model beside seasonal naive on the three standard cutoffs.
 
-Example `global-model-thirty-clients` (Python 3.13.16 · holidays 0.108 · lightgbm 4.7.0 · mlforecast 1.1.0 · numpy 2.5.4 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.5:
+Example `global-model-thirty-clients` (Python 3.13.16 · holidays 0.108 · lightgbm 4.7.0 · mlforecast 1.1.0 · numpy 2.5.4 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.6:
 
 ```python
 """Scores one global LightGBM model, with the identifier that client-identifier-check kept, against seasonal naive on the
