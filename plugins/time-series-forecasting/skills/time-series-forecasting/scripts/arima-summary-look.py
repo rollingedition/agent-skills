@@ -1,4 +1,4 @@
-"""Fit the fixed seasonal ARIMA with statsmodels on the lead client's history before the first standard cutoff, and print its parameter names."""
+"""Fit the fixed seasonal ARIMA with statsmodels on the lead client's history before the first standard cutoff, and print its parameter names. The parameter lines are what the prose reads."""
 import pandas as pd
 from statsmodels.tsa.statespace.sarimax import SARIMAX
 
