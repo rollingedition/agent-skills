@@ -1,6 +1,6 @@
 backbone Linear layers: 210
 backbone Linear layers quantized to int8: 210
-score head quantized: False
+score head quantized: no
 score head weight dtype: torch.float32
 weights in backbone Linear layers: 106168320
 output rows in backbone Linear layers: 155520

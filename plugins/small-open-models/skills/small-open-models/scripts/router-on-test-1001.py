@@ -1,5 +1,6 @@
-"""The router and the stand-in on all 1,001 messages of test_1001, the committed test order. The stand-in's answers
-are recorded; the router runs live on 2 threads, and its first 200 messages are the test_200 sample."""
+"""The router and the stand-in on all 1,001 messages of test_1001, the committed test order. The prose rests on the
+lines for the router's wrong answers sent as answers and for the messages the stand-in gets right and the router wrong.
+The stand-in's answers are recorded; the router runs live on 2 threads, and its first 200 messages are the test_200 sample."""
 
 import os
 
@@ -13,6 +14,7 @@ torch.set_num_threads(2)
 import router_lib  # noqa: E402
 
 router_lib.setup_runtime()
+# Runs the router live on the sample and reads the stand-in's answers from its recording, then scores both.
 c = router_lib.compare_router_and_standin("test_1001")
 n = c["messages"]
 print(f"messages on test_1001: {n}")

@@ -1,5 +1,6 @@
 """Ask the 135M model for a team with the raw router prompt and no constraint, on the first 20 messages of test_40.
-The answers stay in this example and are never returned to a caller."""
+Look at the last printed line, which counts the answers that are exactly a team name. The answers stay in this file
+and are never returned to a caller."""
 
 import os
 
@@ -24,12 +25,16 @@ teams = set(router_lib.LABELS)
 answers = []
 with torch.no_grad():
     for i in sample:
+        # the raw prompt: no chat template and no grammar, so the model may write anything
         inputs = tokenizer(router_lib.router_prompt(rows[i][0]), return_tensors="pt")
+        # at most 10 new tokens, and greedy: the most likely token at each step
         out = model.generate(
             **inputs, max_new_tokens=10, do_sample=False, pad_token_id=tokenizer.eos_token_id
         )
+        # the output starts with the prompt, so skip its tokens and keep only the answer
         new_tokens = out[0, inputs["input_ids"].shape[1] :]
         answers.append(tokenizer.decode(new_tokens, skip_special_tokens=True).strip())
 
 print(f"messages: {len(answers)}")
+# an answer counts only when it is exactly a team name, with no extra words around it
 print(f"answers that are a team name: {sum(a in teams for a in answers)}/{len(answers)}")

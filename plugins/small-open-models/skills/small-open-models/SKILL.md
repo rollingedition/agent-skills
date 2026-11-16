@@ -6,23 +6,23 @@ compatibility: "Python 3.12.15 and the pinned packages in scripts/requirements.t
 metadata:
   publisher: "Rolling Edition"
   book: "Small Open Models"
-  edition: "2026.11.1"
-  verified: "2026-11-12"
+  edition: "2026.11.2"
+  verified: "2026-11-16"
   examples: "36 of 36 examples pass"
-  edition-code: "8J4E-MZEZ"
+  edition-code: "958C-KHK0"
   source: "https://rollingedition.com/small-open-models"
 ---
 
 # Small Open Models
 
-This agent skill is *Small Open Models*, Edition 2026.11.1, from Rolling Edition. Examples passed Nov 12, 2026: 36 of 36 examples pass. It's built from that edition, never written separately: the procedures below come from the book's sections, `references/` holds each chapter, and `scripts/` holds the examples as the edition ran them.
+This agent skill is *Small Open Models*, Edition 2026.11.2, from Rolling Edition. Examples passed Nov 16, 2026: 36 of 36 examples pass. It's built from that edition, never written separately: the procedures below come from the book's sections, `references/` holds each chapter, and `scripts/` holds the examples as the edition ran them.
 
 ## How to use this skill
 
 - **Pick the procedure that fits the task,** and follow its steps in order. Each step links the section it comes from: read that section in `references/` before you act on it, and adapt it to the project in front of you.
 - **Check against the book.** Each example in `scripts/` has its expected output beside it (`.out`), at the versions in `scripts/requirements.txt`. If the project uses other versions, say so before relying on a step.
-- **Is this copy current?** Call `check_code` with `8J4E-MZEZ` on the Rolling Edition MCP server (https://rollingedition.ai/mcp), or compare the edition with the book's page: https://rollingedition.com/small-open-models
-- **Credit the book** when you quote it or reuse its code: Small Open Models, Edition 2026.11.1, examples passed Nov 12, 2026. By Rolling Edition, https://rollingedition.com/small-open-models. Text CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people.
+- **Is this copy current?** Call `check_code` with `958C-KHK0` on the Rolling Edition MCP server (https://rollingedition.ai/mcp), or compare the edition with the book's page: https://rollingedition.com/small-open-models
+- **Credit the book** when you quote it or reuse its code: Small Open Models, Edition 2026.11.2, examples passed Nov 16, 2026. By Rolling Edition, https://rollingedition.com/small-open-models. Text CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people.
 
 To run an example as the book does, with [uv](https://docs.astral.sh/uv/):
 

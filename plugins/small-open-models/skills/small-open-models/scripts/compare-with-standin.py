@@ -1,5 +1,5 @@
-"""Compare the stand-in's recorded answers with the recorded adapter's live predictions on test_200.
-Both models score the same 200 messages. The stand-in's threshold is chapter 1's placeholder."""
+"""Set the stand-in's recorded answers beside the recorded adapter's live predictions on the same 200 test messages.
+The last two lines count where the models disagree."""
 
 import os
 
@@ -16,18 +16,18 @@ torch.set_num_threads(2)
 import router_lib  # noqa: E402
 
 router_lib.setup_runtime()
-STANDIN_THRESHOLD = 0.5  # Placeholder from chapter 1. Chapter 5 chooses the threshold on dev.
+STANDIN_THRESHOLD = 0.5  # chapter 1's placeholder; the stand-in's own threshold is never chosen on dev
 ADAPTER = router_lib.HERE / "data" / "recorded" / "lora-full"
 
 with open(router_lib.HERE / "data" / "recorded" / "standin-baseline" / "answers.jsonl") as f:
-    answers = {row["index"]: row for row in map(json.loads, f)}
+    answers = {row["index"]: row for row in map(json.loads, f)}  # keyed by the test-row index that read_sample returns
 threshold = json.loads((ADAPTER / "manifest.json").read_text())["handoff_threshold"]
 
 test = router_lib.read_rows("test")
 sample = router_lib.read_sample("test_200")
 golds = [test[i][1] for i in sample]
 standin_preds = [answers[i]["label"] for i in sample]
-standin_confs = [math.exp(answers[i]["logprob"]) for i in sample]
+standin_confs = [math.exp(answers[i]["logprob"]) for i in sample]  # the recording stores log-probabilities; exp turns one back into the probability its answer had
 
 tokenizer, model = router_lib.load_classifier(ADAPTER / "adapter")
 adapter_preds, adapter_confs = router_lib.classify(model, tokenizer, [test[i][0] for i in sample])

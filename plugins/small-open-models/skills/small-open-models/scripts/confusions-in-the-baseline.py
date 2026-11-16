@@ -1,4 +1,5 @@
-"""Count the stand-in's wrong answers, confusions and never-answered teams on test_1001. No model runs."""
+"""Count the stand-in's wrong answers, its three most frequent gold-to-answer pairs and the teams it never answers, on test_1001; no model runs. The point rests on the "pair" and "never answered" lines.
+"""
 
 import hashlib, json, os
 
@@ -26,11 +27,11 @@ test, LABELS = router_lib.read_rows("test"), router_lib.LABELS
 
 gold_totals = Counter(test[i][1] for i in sample)
 answered = Counter(r["label"] for r in records)
-pairs = Counter((test[r["index"]][1], r["label"]) for r in records if r["label"] != test[r["index"]][1])
+pairs = Counter((test[r["index"]][1], r["label"]) for r in records if r["label"] != test[r["index"]][1])  # (gold, answer); [1] is the gold label
 wrong = sum(pairs.values())
 # Ties break on the lower gold label index, then the lower answer index.
 top = sorted(pairs.items(), key=lambda kv: (-kv[1], kv[0][0], kv[0][1]))[:3]
-never = sorted(team for k, team in enumerate(LABELS) if answered[k] == 0)
+never = sorted(team for k, team in enumerate(LABELS) if answered[k] == 0)  # sorted by name, so uppercase names print first
 
 print(f"messages: {len(sample)}")
 print(f"wrong answers: {wrong}")
@@ -43,7 +44,7 @@ for rank, ((gold, answer), count) in enumerate(top, start=1):
 print(f"teams never answered: {len(never)}")
 for rank, team in enumerate(never, start=1):
     gold = LABELS.index(team)
-    count, answer = max(((c, a) for (g, a), c in pairs.items() if g == gold), key=lambda ca: (ca[0], -ca[1]))
+    count, answer = max(((c, a) for (g, a), c in pairs.items() if g == gold), key=lambda ca: (ca[0], -ca[1]))  # most frequent wrong answer; ties go to the lower answer index
     print(f"never answered {rank} team: {team}")
     print(f"never answered {rank} messages: {gold_totals[gold]}")
     print(f"never answered {rank} most often as: {LABELS[answer]}")

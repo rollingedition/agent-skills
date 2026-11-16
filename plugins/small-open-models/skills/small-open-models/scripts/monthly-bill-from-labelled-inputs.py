@@ -1,5 +1,6 @@
-"""The monthly bill for a hosted model and for the router on one machine. Token counts are live. The prices, volume,
-machine cost and utilisation are example values, not published prices; the router's rate is recorded on the machine."""
+"""The monthly bill for a hosted model and for the router on one machine, from inputs the reader sets. The hosted bill,
+the machine's bill and the cheaper-route line are the point the prose rests on. The prices, volume, machine cost
+and utilisation are example values, not published prices; the token counts are live and the router's rate is recorded."""
 
 import os
 
@@ -15,9 +16,11 @@ import router_lib  # noqa: E402
 router_lib.setup_runtime()
 inputs = router_lib.bill_inputs_recorded()
 test = router_lib.read_rows("test")
-messages = [test[i][0] for i in router_lib.read_sample("test_200")]
+messages = [test[i][0] for i in router_lib.read_sample("test_200")]  # index 0 is the text; the label is index 1
 
+# The hosted prompt, counted with the 135M model's tokenizer as a stand-in for the provider's.
 input_tokens = router_lib.router_prompt_tokens(messages)
+# Prices are per million tokens, hence the division at the end.
 per_message = (input_tokens * inputs["price_per_million_input_tokens"]
                + inputs["output_tokens_per_message"] * inputs["price_per_million_output_tokens"]) / 1_000_000
 hosted_month = inputs["messages_per_month"] * per_message
@@ -39,5 +42,5 @@ print(f"example hosted bill per month (example prices), USD: {hosted_month:.2f}"
 print(f"example machine bill per month (example cost per hour), USD: {machine_month:.2f}")
 print(f"machine capacity per month (recorded rate, example utilisation): {capacity:.0f}")
 print(f"example machine cost per message at capacity (example cost per hour), USD: {machine_month / capacity:.6f}")
-print(f"example volume within machine capacity: {'yes' if inputs['messages_per_month'] <= capacity else 'no'}")
+print(f"example volume within machine capacity: {'yes' if inputs['messages_per_month'] <= capacity else 'no'}")  # above capacity, one machine cannot carry the volume and this bill does not hold
 print(f"example values, cheaper route at the input volume: {'hosted' if hosted_month < machine_month else 'machine'}")

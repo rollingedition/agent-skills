@@ -1,7 +1,6 @@
-"""Decide whether to retrain, as a rule over the weekly hand-off counts from handoff-windows.
-
-The rule (the book's choice, not a sourced threshold): retrain when two consecutive weeks drift, that is, their
-hand-off rate is more than router_lib.DRIFT_POINTS from the dev baseline. Weeks 3 and 4 are a simulated replay."""
+"""Decide whether to retrain, as a rule over the weekly drift flags from handoff-windows. The rule is the book's choice,
+not a sourced threshold: retrain when two consecutive weeks drift, that is, their hand-off rate is more than
+router_lib.DRIFT_POINTS from the dev baseline. The point rests on the "retrain trigger" line."""
 
 import os
 
@@ -18,15 +17,17 @@ import router_lib  # noqa: E402
 
 router_lib.setup_runtime()
 RECORDED = router_lib.HERE / "data" / "recorded" / "lora-full"
+# the threshold is read from the manifest, not typed here
 threshold = json.loads((RECORDED / "manifest.json").read_text())["handoff_threshold"]
 tokenizer, model = router_lib.load_classifier(RECORDED / "adapter")
 handed_dev, n_dev = router_lib.dev_handed_off(model, tokenizer, threshold)
 base = 100 * handed_dev / n_dev
 
 drifting, run, longest = [], 0, 0
+# the default simulated=True: weeks 3 and 4 are the replay, the same four windows the watch reads
 for rows, _, confs in router_lib.watch_weeks(model, tokenizer, threshold):
     rate = 100 * sum(router_lib.handoff(c, threshold) for c in confs) / len(rows)
-    flag = abs(rate - base) > router_lib.DRIFT_POINTS
+    flag = abs(rate - base) > router_lib.DRIFT_POINTS  # two-sided, as in the watch
     drifting.append(flag)
     run = run + 1 if flag else 0
     longest = max(longest, run)

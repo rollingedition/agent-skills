@@ -1,5 +1,6 @@
-"""Record a model's team answers in the stand-in's JSONL shape, then check the demo against the recording.
-The demo's stand-in reads the recorded answers, so no model runs here."""
+"""Write a model's team answers in the stand-in's JSONL shape, then check record_answers against the stand-in's recording.
+The line to read is the last one printed, which counts the lines that match the recording. The stand-in here replays
+that recording, so no model runs."""
 
 import os
 
@@ -25,19 +26,19 @@ def record_answers(call_model, messages, path):
             team, logprob = call_model(text)
             if team not in router_lib.LABELS:
                 raise ValueError("the model returned a name that is not a team")
-            label = router_lib.LABELS.index(team)
+            label = router_lib.LABELS.index(team)  # stored as the label, the same encoding as the gold labels
             row = {"index": index, "label": label, "team": team, "logprob": logprob}
             out.write(json.dumps(row) + "\n")
 
 
 RECORDING = router_lib.HERE / "data" / "recorded" / "standin-baseline" / "answers.jsonl"
-rows = router_lib.read_rows("test")
+rows = router_lib.read_rows("test")  # each row is (text, gold label)
 sample = router_lib.read_sample("test_40")
-messages = [(i, rows[i][0]) for i in sample]
+messages = [(i, rows[i][0]) for i in sample]  # element 0 of a row is its text, which the model reads
 with open(RECORDING) as f:
     recording_lines = f.read().splitlines()
-recorded = {json.loads(line)["index"]: json.loads(line) for line in recording_lines}
-by_text = {rows[i][0]: (recorded[i]["team"], recorded[i]["logprob"]) for i in sample}
+recorded = {json.loads(line)["index"]: json.loads(line) for line in recording_lines}  # keyed by message index
+by_text = {rows[i][0]: (recorded[i]["team"], recorded[i]["logprob"]) for i in sample}  # keyed by text, not index
 
 
 def standin(text):
@@ -51,6 +52,6 @@ with tempfile.TemporaryDirectory() as folder:
     with open(path) as f:
         written = f.read().splitlines()
 
-matching = sum(line in recording_lines for line in written)
+matching = sum(line in recording_lines for line in written)  # a line matches when it equals a recorded line exactly
 print(f"messages written: {len(written)}")
 print(f"lines matching the recording: {matching}/{len(written)}")

@@ -1,5 +1,5 @@
-"""Group the dev messages by the recorded adapter's confidence into five bands. For each band it prints the count,
-the accuracy and the mean confidence, the two quantities Guo et al. (2017) compare for calibration. Dev only."""
+"""Group the dev messages into five bands by the adapter's confidence, and print each band's count, accuracy and mean confidence.
+Read the top band's mean confidence against its accuracy. Only dev is read."""
 
 import os
 
@@ -20,13 +20,13 @@ tokenizer, model = router_lib.load_classifier(RECORDED / "adapter")
 rows = router_lib.read_rows("train")
 dev = router_lib.read_sample("dev")
 golds = [rows[i][1] for i in dev]
-preds, confs = router_lib.classify_by_length(model, tokenizer, [rows[i][0] for i in dev])
+preds, confs = router_lib.classify_by_length(model, tokenizer, [rows[i][0] for i in dev])  # results come back in dev order, so index i matches golds[i]
 
 print(f"dev messages: {len(dev)}")
 counted = 0
 for lo, hi in BANDS:
     last = hi == 1.0
-    members = [i for i, c in enumerate(confs) if lo <= c < hi or (last and c == 1.0)]
+    members = [i for i, c in enumerate(confs) if lo <= c < hi or (last and c == 1.0)]  # lower edges are in, upper edges out; the top band also takes 1.0, so each message is counted once
     counted += len(members)
     name = f"band {lo:.1f}-{hi:.1f}"
     print(f"{name} messages: {len(members)}")

@@ -1,6 +1,4 @@
-"""Score the stand-in's recorded answers on test_1001 with the three measures. No model runs.
-
-The thresholds are chapter 1's placeholder and one above every confidence. The answers' hash is checked first.
+"""Score the stand-in's recorded answers on test_1001 with the three measures, at chapter 1's placeholder threshold and at one above every confidence; no model runs. The point rests on the accuracy and hand-off lines, and the answers' hash is checked first.
 """
 
 import hashlib, json, math, os
@@ -22,16 +20,16 @@ manifest = json.loads((RECORDED / "manifest.json").read_text())
 raw = (RECORDED / "answers.jsonl").read_bytes()
 assert hashlib.sha256(raw).hexdigest() == manifest["output_sha256"]["answers.jsonl"]
 
-answers = {row["index"]: row for row in map(json.loads, raw.decode().splitlines())}
+answers = {row["index"]: row for row in map(json.loads, raw.decode().splitlines())}  # keyed by test.csv row, not by sample position
 rows = router_lib.read_rows("test")
 sample = router_lib.read_sample("test_1001")
-golds = [rows[i][1] for i in sample]
+golds = [rows[i][1] for i in sample]  # in the sample's committed order, so position k of each list is one message
 preds = [answers[i]["label"] for i in sample]
 # Confidence is the probability llama-cpp-python returns for the constrained answer: exp of its log-probability.
 confs = [math.exp(answers[i]["logprob"]) for i in sample]
 
 n = len(sample)
-first = router_lib.metrics(preds, golds, confs, PLACEHOLDER)
+first = router_lib.metrics(preds, golds, confs, PLACEHOLDER)  # one call returns the counts and rates of all three measures
 high = router_lib.metrics(preds, golds, confs, ABOVE_ALL)
 print(f"messages: {n}")
 print(f"placeholder threshold: {PLACEHOLDER}")
@@ -41,7 +39,7 @@ m = first["not_handed_off"]
 print(f"accuracy on messages not handed off: {first['correct_not_handed_off']}/{m} ({first['accuracy_not_handed_off']:.1%})")
 print(f"threshold above every confidence: {ABOVE_ALL}")
 print(f"handed off at that threshold: {high['handed_off']}/{n} ({high['handoff_rate']:.1%})")
-if high["accuracy_not_handed_off"] is None:
+if high["accuracy_not_handed_off"] is None:  # None means no message is kept, so the measure has no denominator
     print("accuracy on messages not handed off at that threshold: not defined (0 messages not handed off)")
 else:
     print(f"accuracy on messages not handed off at that threshold: {high['correct_not_handed_off']}/{high['not_handed_off']}")

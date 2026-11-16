@@ -8,4 +8,4 @@ handed off, team is None: 8/8
 adapter: banking77-lora-v1
 version: v1
 status on an empty body: 422
-detail is a list: True
+detail is a list: yes
