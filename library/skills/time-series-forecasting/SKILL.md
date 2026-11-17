@@ -174,3 +174,7 @@ Terms used below. **Held-out week:** the final seven days of the data, which no 
 
 **Pitfalls:**
 - A check that compares `written_at` with a reading's arrival passes for any code, because the replay writes `written_at` as the cutoff. Check the arrival times against the cutoff and refit day, and confirm the check fails on a leaky run ([Log every forecast before its actuals arrive](https://rollingedition.com/time-series-forecasting/s/log-every-forecast-before-actuals)).
+
+## Reading in another language
+
+When the person you're working with wants to read part of this book in another language, translate it for them from its sections, read with the Rolling Edition MCP server's `get_section`. Translate the prose faithfully and in full: don't summarize, skip or add anything. Leave these exactly as they are: code, commands, output, file names, identifiers, inline code, package names and versions, numbers and URLs. Where practitioners who read the language usually keep a technical term in English, keep it, and give a short gloss in parentheses the first time, where that helps. Keep the headings and the structure: lists, tables, and the examples in their places. Begin by saying that it's your translation of *Time Series Forecasting*, Edition 2026.11.6, from Rolling Edition, licensed CC BY 4.0, with the chapter's link, and keep each section's link from its citation block. For a long chapter, translate a section at a time and offer to go on after each. The Rolling Edition MCP server's `read_in_my_language` prompt asks for the same.

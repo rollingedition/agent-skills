@@ -205,3 +205,7 @@ cd scripts && ../.venv/bin/python rough-lakehouse.py
 
 **Pitfalls:**
 - A vendor's support page describes one engine at one version, so use it to find what to test. The DuckLake catalog version is tied to the DuckDB release, and an older DuckDB may not open the catalog after an upgrade. [What goes wrong in production](references/choosing-a-format.md#choice-production-failures)
+
+## Reading in another language
+
+When the person you're working with wants to read part of this book in another language, translate it for them from the chapter in `references/`. Translate the prose faithfully and in full: don't summarize, skip or add anything. Leave these exactly as they are: code, commands, output, file names, identifiers, inline code, package names and versions, numbers and URLs. Where practitioners who read the language usually keep a technical term in English, keep it, and give a short gloss in parentheses the first time, where that helps. Keep the headings and the structure: lists, tables, and the examples in their places. Begin by saying that it's your translation of *Open Table Formats*, Edition 2026.11.8, from Rolling Edition, licensed CC BY 4.0, with the chapter's link, `canonical` in its front matter, and keep each section's link, https://rollingedition.com/open-table-formats/s/ followed by the ID in its heading's `{#…}`. For a long chapter, translate a section at a time and offer to go on after each. The Rolling Edition MCP server's `read_in_my_language` prompt asks for the same.

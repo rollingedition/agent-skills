@@ -198,3 +198,7 @@ cd scripts && ../.venv/bin/python catalog-the-learners.py
 **Pitfalls:**
 - A broken file can hide every other finding. Turn the crash into one finding that names the file, and run the other checks anyway.
 - A team whose pull request fails may remove the check or add a waiver. Make the platform team the code owner of the check settings, the waivers and CODEOWNERS.
+
+## Reading in another language
+
+When the person you're working with wants to read part of this book in another language, translate it for them from the chapter in `references/`. Translate the prose faithfully and in full: don't summarize, skip or add anything. Leave these exactly as they are: code, commands, output, file names, identifiers, inline code, package names and versions, numbers and URLs. Where practitioners who read the language usually keep a technical term in English, keep it, and give a short gloss in parentheses the first time, where that helps. Keep the headings and the structure: lists, tables, and the examples in their places. Begin by saying that it's your translation of *Data Governance as Code*, Edition 2026.11.28, from Rolling Edition, licensed CC BY 4.0, with the chapter's link, `canonical` in its front matter, and keep each section's link, https://rollingedition.com/data-governance-as-code/s/ followed by the ID in its heading's `{#…}`. For a long chapter, translate a section at a time and offer to go on after each. The Rolling Edition MCP server's `read_in_my_language` prompt asks for the same.

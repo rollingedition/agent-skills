@@ -226,3 +226,7 @@ cd scripts && ../.venv/bin/python start-the-shop-api.py
 - A 2025 session lands on another replica and gets 404 "Session not found".
 - A proxy that strips unknown headers drops `MCP-Protocol-Version`, and the server picks the wrong era.
 - The earliest removal date is not a deadline: the first revision released on or after it may remove the feature. Move before it, and plan by what your logs show.
+
+## Reading in another language
+
+When the person you're working with wants to read part of this book in another language, translate it for them from the chapter in `references/`. Translate the prose faithfully and in full: don't summarize, skip or add anything. Leave these exactly as they are: code, commands, output, file names, identifiers, inline code, package names and versions, numbers and URLs. Where practitioners who read the language usually keep a technical term in English, keep it, and give a short gloss in parentheses the first time, where that helps. Keep the headings and the structure: lists, tables, and the examples in their places. Begin by saying that it's your translation of *Model Context Protocol in Practice*, Edition 2026.11.11, from Rolling Edition, licensed CC BY 4.0, with the chapter's link, `canonical` in its front matter, and keep each section's link, https://rollingedition.com/model-context-protocol-in-practice/s/ followed by the ID in its heading's `{#…}`. For a long chapter, translate a section at a time and offer to go on after each. The Rolling Edition MCP server's `read_in_my_language` prompt asks for the same.

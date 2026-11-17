@@ -223,3 +223,7 @@ Other teams write these servers, and the harness runs each as a subprocess with 
 **Pitfalls:**
 - A failure count without kinds does not say which part to fix. One passing run does not predict the next ([Agent failures](https://rollingedition.com/agent-harnesses/s/failures)).
 - A refusal comes before a person's yes, because a yes cannot lift a forbidden change ([Chapter decisions](https://rollingedition.com/agent-harnesses/s/design-decisions)).
+
+## Reading in another language
+
+When the person you're working with wants to read part of this book in another language, translate it for them from its sections, read with the Rolling Edition MCP server's `get_section`. Translate the prose faithfully and in full: don't summarize, skip or add anything. Leave these exactly as they are: code, commands, output, file names, identifiers, inline code, package names and versions, numbers and URLs. Where practitioners who read the language usually keep a technical term in English, keep it, and give a short gloss in parentheses the first time, where that helps. Keep the headings and the structure: lists, tables, and the examples in their places. Begin by saying that it's your translation of *Agent Harnesses*, Edition 2026.11.1, from Rolling Edition, licensed CC BY 4.0, with the chapter's link, and keep each section's link from its citation block. For a long chapter, translate a section at a time and offer to go on after each. The Rolling Edition MCP server's `read_in_my_language` prompt asks for the same.
