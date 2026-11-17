@@ -3,12 +3,12 @@ title: "Small Open Models"
 chapter: "Measure the routing task before you choose a model"
 chapter_id: measure-the-routing-task
 book: small-open-models
-edition: 2026.11.4
+edition: 2026.11.5
 verified: 2026-11-17
-edition_code: PTNR-ZYMP
+edition_code: ZXR4-MYR9
 canonical: https://rollingedition.com/small-open-models/measure-the-routing-task
 license: CC BY 4.0
-attribution: "“Measure the routing task before you choose a model,” chapter 2 of Small Open Models, Edition 2026.11.4, examples passed Nov 17, 2026. By Rolling Edition, https://rollingedition.com/small-open-models/measure-the-routing-task. Text CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Measure the routing task before you choose a model,” chapter 2 of Small Open Models, Edition 2026.11.5, examples passed Nov 17, 2026. By Rolling Edition, https://rollingedition.com/small-open-models/measure-the-routing-task. Text CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Measure the routing task before you choose a model
 
@@ -44,7 +44,7 @@ The counts come from the committed samples, and the book quotes only those. The 
 
 The first thing to see is how big each split is and how unevenly the teams are spread across them. Counting needs no model, so the reader can run it first. It reads the training file, the test file and the dev sample, and counts each split:
 
-Example `count-the-splits` (Python 3.12.15 · torch 2.15.0+cpu · transformers 5.23.0), passing in Edition 2026.11.4:
+Example `count-the-splits` (Python 3.12.15 · torch 2.15.0+cpu · transformers 5.23.0), passing in Edition 2026.11.5:
 
 ```python
 """Count each BANKING77 split and its messages per team, and check the committed samples; no model runs.
@@ -165,7 +165,7 @@ The baseline is also not a ceiling. It is the score a candidate has to beat on t
 
 What does the placeholder threshold cost? Scored with the three measures on `test_1001`, the stand-in shows how many messages a threshold of 0.5 hands off, and how often it is right on the rest. Its confidence is the probability that llama-cpp-python returns for its constrained answer, which is exp of the recorded log-probability. That threshold is chapter 1's placeholder, so its hand-off rate is not the book's final one, and [chapter 5](fine-tune-with-lora#choose-the-threshold-on-dev) chooses the real threshold on dev. The example also applies a threshold above every confidence, which hands off every message.
 
-Example `baseline-measures` (Python 3.12.15 · torch 2.15.0+cpu · transformers 5.23.0), passing in Edition 2026.11.4:
+Example `baseline-measures` (Python 3.12.15 · torch 2.15.0+cpu · transformers 5.23.0), passing in Edition 2026.11.5:
 
 ```python
 """Score the stand-in's recorded answers on test_1001 with the three measures, at chapter 1's placeholder threshold and at one above every confidence; no model runs. The point rests on the accuracy and hand-off lines, and the answers' hash is checked first.
@@ -244,7 +244,7 @@ The [baseline's counts](#the-baseline-from-recorded-answers) say how often the s
 
 Counting the wrong answers needs the recording itself, so the next example reads it, checks it against the manifest, checks that it holds exactly the messages of `test_1001`, and then counts the wrong answers and the three gold-to-answer pairs that occur most often. Ties break on each team's position in the categories file, so the same pairs print in the same order on every run.
 
-Example `confusions-in-the-baseline` (Python 3.12.15 · torch 2.15.0+cpu · transformers 5.23.0), passing in Edition 2026.11.4:
+Example `confusions-in-the-baseline` (Python 3.12.15 · torch 2.15.0+cpu · transformers 5.23.0), passing in Edition 2026.11.5:
 
 ```python
 """Count the stand-in's wrong answers, its three most frequent gold-to-answer pairs and the teams it never answers, on test_1001; no model runs. The point rests on the "pair" and "never answered" lines.

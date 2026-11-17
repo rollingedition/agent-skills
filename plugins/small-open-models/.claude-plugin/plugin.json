@@ -1,7 +1,7 @@
 {
   "name": "small-open-models",
   "displayName": "Small Open Models",
-  "version": "2026.11.4",
+  "version": "2026.11.5",
   "description": "How to replace a hosted model with one you run for a single job, and when it is the wrong choice: measuring the task, choosing a base model, prompting, LoRA fine-tuning, distillation, quantization, CPU serving, versions and hand-offs to people, on a bank's support messages from BANKING77.",
   "author": {
     "name": "Rolling Edition",
