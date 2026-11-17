@@ -3,12 +3,12 @@ title: "Small Open Models"
 chapter: "Prompt a small model and constrain its answers to the teams"
 chapter_id: prompt-and-constrain
 book: small-open-models
-edition: 2026.11.3
-verified: 2026-11-16
-edition_code: R5RF-JBB0
+edition: 2026.11.4
+verified: 2026-11-17
+edition_code: PTNR-ZYMP
 canonical: https://rollingedition.com/small-open-models/prompt-and-constrain
 license: CC BY 4.0
-attribution: "“Prompt a small model and constrain its answers to the teams,” chapter 4 of Small Open Models, Edition 2026.11.3, examples passed Nov 16, 2026. By Rolling Edition, https://rollingedition.com/small-open-models/prompt-and-constrain. Text CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Prompt a small model and constrain its answers to the teams,” chapter 4 of Small Open Models, Edition 2026.11.4, examples passed Nov 17, 2026. By Rolling Edition, https://rollingedition.com/small-open-models/prompt-and-constrain. Text CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Prompt a small model and constrain its answers to the teams
 
@@ -26,7 +26,7 @@ The list of teams in the prompt is the same list the constraint uses. The trie i
 
 The raw form passes that text to the model as it stands. The chat form wraps the same text in the model's chat template, which adds a default system prompt. To see what the template changes, run the chat form on the same six messages:
 
-Example `constrained-decode-135m-chat` (Python 3.12.15 · torch 2.15.0+cpu · torchao 0.18.0+cpu · transformers 5.22.2), passing in Edition 2026.11.3:
+Example `constrained-decode-135m-chat` (Python 3.12.15 · torch 2.15.0+cpu · torchao 0.18.0+cpu · transformers 5.23.0), passing in Edition 2026.11.4:
 
 ```python
 """Route the first 6 messages of test_40 with the 135M model through its chat template, decoding only team names.
@@ -110,7 +110,7 @@ A model writes tokens, not words, and a team name is a short run of them. `build
 
 The decoder walks this tree as it writes. At the start, the allowed tokens are the first token of each team name. After each token, the allowed set narrows to the children of the node the decoder has reached. Where a path has ended on a team, the end-of-answer token joins the allowed set, so the answer can stop there. No one of the 77 names is the start of another, so every path ends at a leaf. The code would still handle a name that was: at that node the decoder could stop, or continue along the longer name. A walk of this kind cannot leave the list, because every token it may choose leads toward a team.
 
-Greedy decoding then takes the highest-scoring of the allowed tokens at each step. Transformers applies the rule through a callback, `prefix_allowed_tokens_fn`, which returns the allowed tokens for each position. The processor starts from a mask of minus infinity for every token, sets the allowed tokens' entries to zero, and adds the mask to the scores with `scores_processed = scores + mask`. Every token that is not allowed keeps minus infinity, so greedy decoding cannot pick it ([transformers 5.22.2, `src/transformers/generation/logits_process.py`](https://raw.githubusercontent.com/huggingface/transformers/v5.22.2/src/transformers/generation/logits_process.py)).
+Greedy decoding then takes the highest-scoring of the allowed tokens at each step. Transformers applies the rule through a callback, `prefix_allowed_tokens_fn`, which returns the allowed tokens for each position. The processor starts from a mask of minus infinity for every token, sets the allowed tokens' entries to zero, and adds the mask to the scores with `scores_processed = scores + mask`. Every token that is not allowed keeps minus infinity, so greedy decoding cannot pick it ([transformers 5.23.0, `src/transformers/generation/logits_process.py`](https://raw.githubusercontent.com/huggingface/transformers/v5.22.2/src/transformers/generation/logits_process.py)).
 
 Chapter 1's stand-in got the same guarantee from its library. `recordings/common.py` builds a grammar, `root ::= "card_arrival" | ...`, that lists the 77 names as literal strings, and the recordings applied it through the chat template. llama-cpp-python adds a grammar to its sampler before the greedy step. In `llama_cpp/llama.py` the line `sampler.add_grammar(self._model, grammar)` runs under `if grammar is not None:`, and `sampler.add_greedy()` runs after it, under `elif temp == 0.0:` ([llama-cpp-python v0.3.36, `llama_cpp/llama.py`](https://raw.githubusercontent.com/abetlen/llama-cpp-python/v0.3.36/llama_cpp/llama.py)). So the stand-in's answers were limited to the names by the library, where this chapter's callback does the same job in the decoder.
 
@@ -118,7 +118,7 @@ Two details of that code shape the callback. The processor calls it as `self._pr
 
 First, the 135M model with the trie, on those six messages.
 
-Example `constrained-decode-135m` (Python 3.12.15 · torch 2.15.0+cpu · torchao 0.18.0+cpu · transformers 5.22.2), passing in Edition 2026.11.3:
+Example `constrained-decode-135m` (Python 3.12.15 · torch 2.15.0+cpu · torchao 0.18.0+cpu · transformers 5.23.0), passing in Edition 2026.11.4:
 
 ```python
 """Route the first 6 messages of test_40 with the 135M model, decoding only team names, and count how many right answers that gives.
@@ -200,7 +200,7 @@ The [live examples](#a-token-trie-allows-only-team-names) cover six messages. Th
 
 The 360M run is the same program with the larger model.
 
-Example `constrained-decode-360m` (Python 3.12.15 · torch 2.15.0+cpu · torchao 0.18.0+cpu · transformers 5.22.2), passing in Edition 2026.11.3:
+Example `constrained-decode-360m` (Python 3.12.15 · torch 2.15.0+cpu · torchao 0.18.0+cpu · transformers 5.23.0), passing in Edition 2026.11.4:
 
 ```python
 """Decode team names for the first 6 messages of test_40 with the 360M model, and count how many of them are right.
@@ -270,7 +270,7 @@ For the comparison, each variant answered 200 messages. The recording's counts a
 
 This example reads the table's counts from the recording:
 
-Example `prompting-on-test-200` (Python 3.12.15 · torch 2.15.0+cpu · transformers 5.22.2), passing in Edition 2026.11.3:
+Example `prompting-on-test-200` (Python 3.12.15 · torch 2.15.0+cpu · transformers 5.23.0), passing in Edition 2026.11.4:
 
 ```python
 """Compare the three prompting variants on test_200, from the recording only. No model is loaded.
@@ -371,7 +371,7 @@ Constrained decoding returns one answer and no scores. Label scoring gives every
 
 Run it on three messages and read the top team of each:
 
-Example `label-scoring-prior` (Python 3.12.15 · torch 2.15.0+cpu · torchao 0.18.0+cpu · transformers 5.22.2), passing in Edition 2026.11.3:
+Example `label-scoring-prior` (Python 3.12.15 · torch 2.15.0+cpu · torchao 0.18.0+cpu · transformers 5.23.0), passing in Edition 2026.11.4:
 
 ```python
 """Score every team for the first 3 messages of test_40 with the 135M model, by the summed log-probability of its tokens.

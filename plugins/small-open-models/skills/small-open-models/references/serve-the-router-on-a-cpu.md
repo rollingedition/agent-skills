@@ -3,12 +3,12 @@ title: "Small Open Models"
 chapter: "Serve the router on a CPU, with the hand-off inside the route"
 chapter_id: serve-the-router-on-a-cpu
 book: small-open-models
-edition: 2026.11.3
-verified: 2026-11-16
-edition_code: R5RF-JBB0
+edition: 2026.11.4
+verified: 2026-11-17
+edition_code: PTNR-ZYMP
 canonical: https://rollingedition.com/small-open-models/serve-the-router-on-a-cpu
 license: CC BY 4.0
-attribution: "“Serve the router on a CPU, with the hand-off inside the route,” chapter 8 of Small Open Models, Edition 2026.11.3, examples passed Nov 16, 2026. By Rolling Edition, https://rollingedition.com/small-open-models/serve-the-router-on-a-cpu. Text CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Serve the router on a CPU, with the hand-off inside the route,” chapter 8 of Small Open Models, Edition 2026.11.4, examples passed Nov 17, 2026. By Rolling Edition, https://rollingedition.com/small-open-models/serve-the-router-on-a-cpu. Text CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Serve the router on a CPU, with the hand-off inside the route
 
@@ -30,7 +30,7 @@ The route calls the classifier once per request. One forward pass gives the team
 
 Each message of `test_40`, a [fixed sample](measure-the-routing-task#dev-test-and-fixed-samples) of 40 that the book uses for quick checks, goes to the route, and the test counts the flags and the teams. It prints counts and never the text of a message.
 
-Example `serve-route-testclient` (Python 3.12.15 · fastapi 0.162.7 · peft 0.21.3 · pydantic 2.14.3 · torch 2.15.0+cpu · torchao 0.18.0+cpu · transformers 5.22.2), passing in Edition 2026.11.3:
+Example `serve-route-testclient` (Python 3.12.15 · fastapi 0.162.7 · peft 0.21.3 · pydantic 2.14.3 · torch 2.15.0+cpu · torchao 0.18.0+cpu · transformers 5.23.0), passing in Edition 2026.11.4:
 
 ```python
 """Send the test_40 messages to the one POST /route through TestClient, in process, and print counts that tie the
@@ -121,7 +121,7 @@ The second kind of request is a message too long to read in full. The model read
 
 A shorter cut, at 64 tokens, is a common choice, and the count below shows what it would touch on the test sample of 200 messages, the sample that [chapter 5](fine-tune-with-lora) compared models on. The example prints how many of the 200 messages are longer than each cut. Only the tokenizer loads here, and no model runs.
 
-Example `truncation-count` (Python 3.12.15 · torch 2.15.0+cpu · transformers 5.22.2), passing in Edition 2026.11.3:
+Example `truncation-count` (Python 3.12.15 · torch 2.15.0+cpu · transformers 5.23.0), passing in Edition 2026.11.4:
 
 ```python
 """Count the test_200 messages over 64 tokens and over the 128 that classify() cuts at, then show the cut on one long
