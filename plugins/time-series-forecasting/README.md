@@ -8,4 +8,4 @@ Install it with `/plugin install time-series-forecasting@rolling-edition`. It ne
 
 Text CC BY-NC 4.0, with our added permission: [Reuse our books](https://rollingedition.com/policies/reuse). The scripts are the book's code examples, under MIT. The skill's `LICENSE.md` gives the credit to use.
 
-Rolling Edition, its logo and the edition stamp are trademarks of Distributed LLC. The licences cover our books' words and code, not our name or marks. You may say your work is based on a Rolling Edition book, but you may not use our name, logo or stamp to suggest that your work is ours, that we endorse it, or that we verified it.
+Rolling Edition, its logo and the edition stamp are trademarks of Distributed LLC. The licences cover our books' words and code, not our name or marks. You may say your work is based on a Rolling Edition book, but you may not use our name, logo or stamp to suggest that your work is ours, we endorse it, or verified it.

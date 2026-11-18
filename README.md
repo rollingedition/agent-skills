@@ -17,7 +17,7 @@ This repository is generated from the books, so changes made here are overwritte
 | [Model Context Protocol in Practice](https://rollingedition.com/model-context-protocol-in-practice) | `model-context-protocol-in-practice` | 2026.11.11 | 70 of 70 examples pass |
 | [Open Table Formats](https://rollingedition.com/open-table-formats) | `open-table-formats` | 2026.11.8 | 39 of 39 examples pass |
 | [A Primer on Search Relevance](https://rollingedition.com/primer-on-search-relevance) | `primer-on-search-relevance` | 2026.11.8 | 132 of 132 examples pass |
-| [Small Open Models](https://rollingedition.com/small-open-models) | `small-open-models` | 2026.11.5 | 36 of 36 examples pass |
+| [Small Open Models](https://rollingedition.com/small-open-models) | `small-open-models` | 2026.11.6 | 36 of 36 examples pass |
 | [Time Series Forecasting](https://rollingedition.com/time-series-forecasting) | `time-series-forecasting` | 2026.11.7 | 41 of 41 examples pass |
 
 ## Install
@@ -54,4 +54,4 @@ Each book's page on [rollingedition.ai](https://rollingedition.ai/) also has its
 
 ## Trademarks
 
-Rolling Edition, its logo and the edition stamp are trademarks of Distributed LLC. The licences cover our books' words and code, not our name or marks. You may say your work is based on a Rolling Edition book, but you may not use our name, logo or stamp to suggest that your work is ours, that we endorse it, or that we verified it.
+Rolling Edition, its logo and the edition stamp are trademarks of Distributed LLC. The licences cover our books' words and code, not our name or marks. You may say your work is based on a Rolling Edition book, but you may not use our name, logo or stamp to suggest that your work is ours, we endorse it, or verified it.
