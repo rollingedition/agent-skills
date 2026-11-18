@@ -8,8 +8,8 @@ verified: 2026-11-15
 edition_code: HYVJ-ADAD
 canonical: https://rollingedition.com/open-table-formats/snapshots-and-time-travel
 license: CC BY-NC 4.0
-more_permissions: https://rollingedition.com/reuse
-attribution: "“Read a table as it was at an earlier snapshot,” chapter 2 of Open Table Formats, Edition 2026.11.8, examples passed Nov 15, 2026. By Rolling Edition, https://rollingedition.com/open-table-formats/snapshots-and-time-travel. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+more_permissions: https://rollingedition.com/policies/reuse
+attribution: "“Read a table as it was at an earlier snapshot,” chapter 2 of Open Table Formats, Edition 2026.11.8, examples passed Nov 15, 2026. By Rolling Edition, https://rollingedition.com/open-table-formats/snapshots-and-time-travel. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Read a table as it was at an earlier snapshot
 

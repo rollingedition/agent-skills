@@ -10,7 +10,7 @@ fonttools==4.68.0
 formulaic==1.2.2
 fsspec==2026.9.0
 fugue==0.9.9
-holidays==0.108
+holidays==0.110.dev20261118063242
 interface-meta==2.0.1
 joblib==1.6.0
 kiwisolver==1.5.1
@@ -29,7 +29,7 @@ pillow==13.0.0
 prophet==1.5.0
 pyarrow==26.0.1
 pyparsing==3.3.3
-python-dateutil==2.9.0.post0
+python-dateutil==4.0.0
 pytz==2026.6
 pyyaml==6.0.3
 scikit-learn==1.9.1

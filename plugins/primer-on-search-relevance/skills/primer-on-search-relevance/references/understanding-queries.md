@@ -8,8 +8,8 @@ verified: 2026-11-13
 edition_code: W7B6-3VSA
 canonical: https://rollingedition.com/primer-on-search-relevance/understanding-queries
 license: CC BY-NC 4.0
-more_permissions: https://rollingedition.com/reuse
-attribution: "“Understanding queries,” chapter 8 of A Primer on Search Relevance, Edition 2026.11.8, examples passed Nov 13, 2026. By Rolling Edition, https://rollingedition.com/primer-on-search-relevance/understanding-queries. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+more_permissions: https://rollingedition.com/policies/reuse
+attribution: "“Understanding queries,” chapter 8 of A Primer on Search Relevance, Edition 2026.11.8, examples passed Nov 13, 2026. By Rolling Edition, https://rollingedition.com/primer-on-search-relevance/understanding-queries. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Understanding queries
 

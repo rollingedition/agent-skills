@@ -8,8 +8,8 @@ verified: 2026-11-14
 edition_code: GR11-MS4B
 canonical: https://rollingedition.com/data-governance-as-code/finding-personal-data
 license: CC BY-NC 4.0
-more_permissions: https://rollingedition.com/reuse
-attribution: "“Finding personal data,” chapter 3 of Data Governance as Code, Edition 2026.11.28, examples passed Nov 14, 2026. By Rolling Edition, https://rollingedition.com/data-governance-as-code/finding-personal-data. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+more_permissions: https://rollingedition.com/policies/reuse
+attribution: "“Finding personal data,” chapter 3 of Data Governance as Code, Edition 2026.11.28, examples passed Nov 14, 2026. By Rolling Edition, https://rollingedition.com/data-governance-as-code/finding-personal-data. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Finding personal data
 

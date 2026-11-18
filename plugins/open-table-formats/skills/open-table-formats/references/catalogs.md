@@ -8,8 +8,8 @@ verified: 2026-11-15
 edition_code: HYVJ-ADAD
 canonical: https://rollingedition.com/open-table-formats/catalogs
 license: CC BY-NC 4.0
-more_permissions: https://rollingedition.com/reuse
-attribution: "“Register tables in a catalog and query them from DuckDB,” chapter 8 of Open Table Formats, Edition 2026.11.8, examples passed Nov 15, 2026. By Rolling Edition, https://rollingedition.com/open-table-formats/catalogs. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+more_permissions: https://rollingedition.com/policies/reuse
+attribution: "“Register tables in a catalog and query them from DuckDB,” chapter 8 of Open Table Formats, Edition 2026.11.8, examples passed Nov 15, 2026. By Rolling Edition, https://rollingedition.com/open-table-formats/catalogs. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Register tables in a catalog and query them from DuckDB
 

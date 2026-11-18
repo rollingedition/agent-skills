@@ -8,8 +8,8 @@ verified: 2026-11-13
 edition_code: 3AH2-KGM3
 canonical: https://rollingedition.com/business-intelligence-with-agents/bi-agent-end-to-end
 license: CC BY-NC 4.0
-more_permissions: https://rollingedition.com/reuse
-attribution: "“A data agent end to end,” chapter 1 of Business Intelligence with Agents, Edition 2026.11.12, examples passed Nov 13, 2026. By Rolling Edition, https://rollingedition.com/business-intelligence-with-agents/bi-agent-end-to-end. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+more_permissions: https://rollingedition.com/policies/reuse
+attribution: "“A data agent end to end,” chapter 1 of Business Intelligence with Agents, Edition 2026.11.12, examples passed Nov 13, 2026. By Rolling Edition, https://rollingedition.com/business-intelligence-with-agents/bi-agent-end-to-end. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # A data agent end to end
 
