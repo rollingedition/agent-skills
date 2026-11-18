@@ -9,7 +9,7 @@
   },
   "homepage": "https://rollingedition.com/agent-harnesses",
   "repository": "https://github.com/rollingedition/agent-skills",
-  "license": "CC-BY-4.0",
+  "license": "CC-BY-NC-4.0 AND MIT",
   "keywords": [
     "ai-agents",
     "large-language-models",

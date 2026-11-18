@@ -50,4 +50,8 @@ Each book's page on [rollingedition.ai](https://rollingedition.ai/) also has its
 
 ## Licence
 
-[CC BY 4.0](LICENSE), as the books are. Each skill's `LICENSE.md` gives the credit to use.
+[CC BY-NC 4.0](LICENSE), as the books' text is, with our added permission: [Using our books at work and in teaching](https://rollingedition.com/reuse). Each book's scripts are its code examples, under MIT. Each skill's `LICENSE.md` gives the credit to use, and the scripts' notice.
+
+## Trademarks
+
+Rolling Edition, its logo and the edition stamp are trademarks of Distributed LLC. The licences cover our books' words and code, not our name or marks. You may say your work is based on a Rolling Edition book, but you may not use our name, logo or stamp to suggest that your work is ours, that we endorse it, or that we verified it.

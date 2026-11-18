@@ -7,8 +7,9 @@ edition: 2026.11.1
 verified: 2026-11-16
 edition_code: CBDA-H5E9
 canonical: https://rollingedition.com/agent-harnesses/stop-rules
-license: CC BY 4.0
-attribution: "“Stop the loop when it's done or stuck,” chapter 2 of Agent Harnesses, Edition 2026.11.1, examples passed Nov 16, 2026. By Rolling Edition, https://rollingedition.com/agent-harnesses/stop-rules. Text CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+license: CC BY-NC 4.0
+more_permissions: https://rollingedition.com/reuse
+attribution: "“Stop the loop when it's done or stuck,” chapter 2 of Agent Harnesses, Edition 2026.11.1, examples passed Nov 16, 2026. By Rolling Edition, https://rollingedition.com/agent-harnesses/stop-rules. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Stop the loop when it's done or stuck
 

@@ -9,7 +9,7 @@
   },
   "homepage": "https://rollingedition.com/data-governance-as-code",
   "repository": "https://github.com/rollingedition/agent-skills",
-  "license": "CC-BY-4.0",
+  "license": "CC-BY-NC-4.0 AND MIT",
   "keywords": [
     "data-governance",
     "data-warehousing",

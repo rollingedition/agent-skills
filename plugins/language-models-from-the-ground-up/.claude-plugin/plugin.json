@@ -9,7 +9,7 @@
   },
   "homepage": "https://rollingedition.com/language-models-from-the-ground-up",
   "repository": "https://github.com/rollingedition/agent-skills",
-  "license": "CC-BY-4.0",
+  "license": "CC-BY-NC-4.0 AND MIT",
   "keywords": [
     "large-language-models",
     "deep-learning",

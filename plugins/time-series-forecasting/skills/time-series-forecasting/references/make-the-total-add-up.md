@@ -7,8 +7,9 @@ edition: 2026.11.6
 verified: 2026-11-16
 edition_code: TSZ5-EP6C
 canonical: https://rollingedition.com/time-series-forecasting/make-the-total-add-up
-license: CC BY 4.0
-attribution: "“Make the total add up,” chapter 7 of Time Series Forecasting, Edition 2026.11.6, examples passed Nov 16, 2026. By Rolling Edition, https://rollingedition.com/time-series-forecasting/make-the-total-add-up. Text CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+license: CC BY-NC 4.0
+more_permissions: https://rollingedition.com/reuse
+attribution: "“Make the total add up,” chapter 7 of Time Series Forecasting, Edition 2026.11.6, examples passed Nov 16, 2026. By Rolling Edition, https://rollingedition.com/time-series-forecasting/make-the-total-add-up. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Make the total add up
 

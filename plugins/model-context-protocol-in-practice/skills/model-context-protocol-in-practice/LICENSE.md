@@ -1,7 +1,32 @@
 # Licence
 
-This agent skill is *Model Context Protocol in Practice*, Edition 2026.11.11, from Rolling Edition, under the Creative Commons Attribution 4.0 International licence (CC BY 4.0): https://creativecommons.org/licenses/by/4.0/
+This agent skill is *Model Context Protocol in Practice*, Edition 2026.11.11, from Rolling Edition, under the Creative Commons Attribution-NonCommercial 4.0 International licence (CC BY-NC 4.0): https://creativecommons.org/licenses/by-nc/4.0/
+
+Rolling Edition and the book's authors also give you permissions beyond that licence, such as using it at work and in teaching: Using our books at work and in teaching, https://rollingedition.com/reuse
 
 Give this credit when you share or adapt it, and say what you changed:
 
-> Model Context Protocol in Practice, Edition 2026.11.11, examples passed Nov 14, 2026. By Rolling Edition, https://rollingedition.com/model-context-protocol-in-practice. Text CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people.
+> Model Context Protocol in Practice, Edition 2026.11.11, examples passed Nov 14, 2026. By Rolling Edition, https://rollingedition.com/model-context-protocol-in-practice. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people.
+
+The scripts in `scripts/` are the book's code examples, under the MIT License:
+
+```text
+MIT License
+
+Copyright (c) Rolling Edition and contributors
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
+associated documentation files (the "Software"), to deal in the Software without restriction, including
+without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the
+following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial
+portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT
+LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO
+EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
+USE OR OTHER DEALINGS IN THE SOFTWARE.
+```

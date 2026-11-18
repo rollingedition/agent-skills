@@ -7,8 +7,9 @@ edition: 2026.11.12
 verified: 2026-11-13
 edition_code: 3AH2-KGM3
 canonical: https://rollingedition.com/business-intelligence-with-agents/semantic-layer
-license: CC BY 4.0
-attribution: "“Define metrics once in a semantic layer,” chapter 5 of Business Intelligence with Agents, Edition 2026.11.12, examples passed Nov 13, 2026. By Rolling Edition, https://rollingedition.com/business-intelligence-with-agents/semantic-layer. Text CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+license: CC BY-NC 4.0
+more_permissions: https://rollingedition.com/reuse
+attribution: "“Define metrics once in a semantic layer,” chapter 5 of Business Intelligence with Agents, Edition 2026.11.12, examples passed Nov 13, 2026. By Rolling Edition, https://rollingedition.com/business-intelligence-with-agents/semantic-layer. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Define metrics once in a semantic layer
 

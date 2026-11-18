@@ -7,8 +7,9 @@ edition: 2026.11.5
 verified: 2026-11-17
 edition_code: ZXR4-MYR9
 canonical: https://rollingedition.com/small-open-models/when-a-small-model-is-the-wrong-choice
-license: CC BY 4.0
-attribution: "“When a small model is the wrong choice,” chapter 10 of Small Open Models, Edition 2026.11.5, examples passed Nov 17, 2026. By Rolling Edition, https://rollingedition.com/small-open-models/when-a-small-model-is-the-wrong-choice. Text CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+license: CC BY-NC 4.0
+more_permissions: https://rollingedition.com/reuse
+attribution: "“When a small model is the wrong choice,” chapter 10 of Small Open Models, Edition 2026.11.5, examples passed Nov 17, 2026. By Rolling Edition, https://rollingedition.com/small-open-models/when-a-small-model-is-the-wrong-choice. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # When a small model is the wrong choice
 

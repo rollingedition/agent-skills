@@ -7,8 +7,9 @@ edition: 2026.11.5
 verified: 2026-11-17
 edition_code: ZXR4-MYR9
 canonical: https://rollingedition.com/small-open-models/measure-the-routing-task
-license: CC BY 4.0
-attribution: "“Measure the routing task before you choose a model,” chapter 2 of Small Open Models, Edition 2026.11.5, examples passed Nov 17, 2026. By Rolling Edition, https://rollingedition.com/small-open-models/measure-the-routing-task. Text CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+license: CC BY-NC 4.0
+more_permissions: https://rollingedition.com/reuse
+attribution: "“Measure the routing task before you choose a model,” chapter 2 of Small Open Models, Edition 2026.11.5, examples passed Nov 17, 2026. By Rolling Edition, https://rollingedition.com/small-open-models/measure-the-routing-task. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Measure the routing task before you choose a model
 

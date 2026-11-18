@@ -7,8 +7,9 @@ edition: 2026.11.11
 verified: 2026-11-14
 edition_code: 2VMD-DEEC
 canonical: https://rollingedition.com/model-context-protocol-in-practice/what-mcp-adds
-license: CC BY 4.0
-attribution: "“What MCP adds to an API,” chapter 2 of Model Context Protocol in Practice, Edition 2026.11.11, examples passed Nov 14, 2026. By Rolling Edition, https://rollingedition.com/model-context-protocol-in-practice/what-mcp-adds. Text CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+license: CC BY-NC 4.0
+more_permissions: https://rollingedition.com/reuse
+attribution: "“What MCP adds to an API,” chapter 2 of Model Context Protocol in Practice, Edition 2026.11.11, examples passed Nov 14, 2026. By Rolling Edition, https://rollingedition.com/model-context-protocol-in-practice/what-mcp-adds. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # What MCP adds to an API
 
