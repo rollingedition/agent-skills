@@ -9,7 +9,7 @@ httpcore2==2.16.0
 httpx2==2.16.0
 huggingface-hub==2.4.0
 idna==3.20
-numpy==2.5.4
+numpy==2.5.5
 packaging==26.3
 pandas==3.1.1
 python-dateutil==4.0.0
