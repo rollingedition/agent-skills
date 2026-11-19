@@ -3,13 +3,13 @@ title: "Time Series Forecasting"
 chapter: "Fit a statistical model for each client"
 chapter_id: fit-statistical-models-per-client
 book: time-series-forecasting
-edition: 2026.11.7
+edition: 2026.11.8
 verified: 2026-11-18
-edition_code: DW6V-RN1G
+edition_code: 7Y8E-YGXT
 canonical: https://rollingedition.com/time-series-forecasting/fit-statistical-models-per-client
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“Fit a statistical model for each client,” chapter 4 of Time Series Forecasting, Edition 2026.11.7, examples passed Nov 18, 2026. By Rolling Edition, https://rollingedition.com/time-series-forecasting/fit-statistical-models-per-client. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Fit a statistical model for each client,” chapter 4 of Time Series Forecasting, Edition 2026.11.8, examples passed Nov 18, 2026. By Rolling Edition, https://rollingedition.com/time-series-forecasting/fit-statistical-models-per-client. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Fit a statistical model for each client
 
@@ -37,7 +37,7 @@ AutoETS chooses the form for you. Its default criterion is AICc, the corrected A
 
 Which form does AutoETS pick for each client, and do its forecasts beat seasonal naive? The lines it prints answer both.
 
-Example `autoets-subset-backtest` (Python 3.13.16 · numpy 2.5.4 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.7:
+Example `autoets-subset-backtest` (Python 3.13.16 · numpy 2.5.4 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.8:
 
 ```python
 """Backtest AutoETS and seasonal naive for the eight clients of SUBSET8 over the three standard cutoffs, and score both.
@@ -137,7 +137,7 @@ The chosen form changes from client to client, and for some clients from one cut
 
 A flat form winning looks odd when the seasonal form contains it. ETS(A,N,N) is ETS(A,N,A) with the seasonal part switched off, so the best seasonal fit cannot have a lower likelihood than the flat fit on the same history. Fitting both forms on each of the 24 windows shows whether that happens.
 
-Example `flat-form-check` (Python 3.13.16 · numpy 2.5.4 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.7:
+Example `flat-form-check` (Python 3.13.16 · numpy 2.5.4 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.8:
 
 ```python
 """For each subset window, fit the flat form ETS(A,N,N) and the additive-season form ETS(A,N,A) on the same history, and count where the seasonal fit has the lower likelihood.
@@ -185,7 +185,7 @@ The seasonal fit loses on likelihood, not only on AICc. Its log-likelihood is lo
 
 [Chapter 1](#forecast-with-a-statistical-model) forced an additive season on the lead client, with `model="ZZA"`, and seasonal naive still had the lower error there. Does that hold across all eight? The forced run covers the same eight clients, beside the default.
 
-Example `autoets-forced-season-backtest` (Python 3.13.16 · numpy 2.5.4 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.7:
+Example `autoets-forced-season-backtest` (Python 3.13.16 · numpy 2.5.4 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.8:
 
 ```python
 """Backtest AutoETS with the season forced to additive (model ZZA) and seasonal naive, for the eight clients of SUBSET8 over the three standard cutoffs.
@@ -294,7 +294,7 @@ The term `(1 - B^24)` replaces each reading with its change from the same hour y
 
 We fix the order rather than search for it, and [the section on automatic search](#why-the-book-avoids-autoarima) explains why. Before the order goes into a backtest, fit it once with statsmodels 0.15.0 on the lead client's history before the first standard cutoff, and print the names of the fitted parameters. That shows whether the model has the terms you wrote down.
 
-Example `arima-summary-look` (Python 3.13.16 · numpy 2.5.4 · pandas 2.3.3 · statsmodels 0.15.0 · utilsforecast 0.2.17), passing in Edition 2026.11.7:
+Example `arima-summary-look` (Python 3.13.16 · numpy 2.5.4 · pandas 2.3.3 · statsmodels 0.15.0 · utilsforecast 0.2.17), passing in Edition 2026.11.8:
 
 ```python
 """Fit the fixed seasonal ARIMA with statsmodels on the lead client's history before the first standard cutoff, and print its parameter names. The parameter lines are what the prose reads."""
@@ -334,7 +334,7 @@ Four forecasts now cover the same 24 hours at the same three cutoffs, from the s
 
 One score is still missing: the fixed ARIMA's, on the same windows and measures.
 
-Example `arima-subset-backtest` (Python 3.13.16 · numpy 2.5.4 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.7:
+Example `arima-subset-backtest` (Python 3.13.16 · numpy 2.5.4 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.8:
 
 ```python
 """Backtest the fixed seasonal ARIMA(1,0,0)(1,1,0)[24] and seasonal naive for the eight clients of SUBSET8 over the three standard cutoffs.
@@ -422,7 +422,7 @@ Start with the raw history, the eight weeks before each February cutoff with its
 
 Starting the history at the first reading may fix it. Fitting AutoETS twice at each February cutoff, once on the raw eight weeks and once on the start history, which begins at `MT_115`'s first reading, shows whether it does, scored on the 24 hours from each cutoff.
 
-Example `late-starter-trim` (Python 3.13.16 · numpy 2.5.4 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.7:
+Example `late-starter-trim` (Python 3.13.16 · numpy 2.5.4 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.8:
 
 ```python
 """Backtest AutoETS for MT_115, a late starter, on three February cutoffs: once on its raw eight weeks and once on its history from its first reading.

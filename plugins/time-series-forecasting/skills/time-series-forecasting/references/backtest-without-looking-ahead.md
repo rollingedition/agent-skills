@@ -3,13 +3,13 @@ title: "Time Series Forecasting"
 chapter: "Backtest without looking ahead"
 chapter_id: backtest-without-looking-ahead
 book: time-series-forecasting
-edition: 2026.11.7
+edition: 2026.11.8
 verified: 2026-11-18
-edition_code: DW6V-RN1G
+edition_code: 7Y8E-YGXT
 canonical: https://rollingedition.com/time-series-forecasting/backtest-without-looking-ahead
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“Backtest without looking ahead,” chapter 3 of Time Series Forecasting, Edition 2026.11.7, examples passed Nov 18, 2026. By Rolling Edition, https://rollingedition.com/time-series-forecasting/backtest-without-looking-ahead. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Backtest without looking ahead,” chapter 3 of Time Series Forecasting, Edition 2026.11.8, examples passed Nov 18, 2026. By Rolling Edition, https://rollingedition.com/time-series-forecasting/backtest-without-looking-ahead. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Backtest without looking ahead
 
@@ -33,7 +33,7 @@ In words, each window's targets are the 24 hours from its cutoff, and its histor
 
 The Sunday sample runs seasonal naive over every Sunday of 2014, from Jan 5 to Dec 28, 2014. The EU puts every clock change on the last Sunday of March and of October ([Directive 2000/84/EC](https://eur-lex.europa.eu/eli/dir/2000/84/oj), Articles 2 and 3), and both changes of 2014, on Mar 30 and Oct 26, are in the sample. The sample uses [`SUBSET8`](#the-case-and-its-data), the book's eight-client subset. Here the year is scored on those eight clients, window by window:
 
-Example `backtest-sundays-2014` (Python 3.13.16 · holidays 0.110.dev20261118063242 · numpy 2.5.4 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.7:
+Example `backtest-sundays-2014` (Python 3.13.16 · holidays 0.110.dev20261118063242 · numpy 2.5.4 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.8:
 
 ```python
 """Seasonal naive over the 52 Sunday cutoffs of 2014, for eight clients, with no clock-change rule: how much history each
@@ -109,7 +109,7 @@ One rule closes the history path. Each window's history is the readings whose ti
 
 The window's own first hour is the cutoff, so a cut that is one hour too generous passes the first target reading into the history, and nothing in a forecast shows it. A row count can catch it, and the example below counts the rows.
 
-Example `history-cut-check` (Python 3.13.16 · numpy 2.5.4 · pandas 2.3.3 · utilsforecast 0.2.17), passing in Edition 2026.11.7:
+Example `history-cut-check` (Python 3.13.16 · numpy 2.5.4 · pandas 2.3.3 · utilsforecast 0.2.17), passing in Edition 2026.11.8:
 
 ```python
 """One window's history, cut by its cutoff: its first and last timestamps, and what a cut that keeps the cutoff hour adds.
@@ -159,7 +159,7 @@ The book reads the file under one stated assumption, which every later chapter r
 
 On Mar 30, 2014, the 01:00 label reads zero for 5 of the eight clients in the subset. The others read a small amount, not an hour of demand. The census covers all thirty clients.
 
-Example `clock-change-census` (Python 3.13.16 · numpy 2.5.4 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.7:
+Example `clock-change-census` (Python 3.13.16 · numpy 2.5.4 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.8:
 
 ```python
 """The clock-change hours of all thirty clients, each against its neighbours. The point that the March hours read near zero
@@ -204,7 +204,7 @@ Seasonal naive copies the last day's values forward, so the forecast for 01:00 o
 
 Make a guess before the next run. The cutoff of Mar 31 looks back over 24 hours, and those hours include the zero. How large is the error at 01:00 on Mar 31 compared with an ordinary hour? The run covers the 15 daily cutoffs from Mar 23 to Apr 6, 2014, first with no rule and then with the rule from the next section:
 
-Example `clock-gap-daily-cutoffs` (Python 3.13.16 · numpy 2.5.4 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.7:
+Example `clock-gap-daily-cutoffs` (Python 3.13.16 · numpy 2.5.4 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.8:
 
 ```python
 """Seasonal naive around the March clock change, for eight clients: the raw failure, then the rule. The prose's claims rest
@@ -276,7 +276,7 @@ The failure is the reverse of the March one. On the change day, seasonal naive f
 
 The same comparison runs over the 15 daily cutoffs from Oct 19 to Nov 2, 2014:
 
-Example `clock-repeat-daily-cutoffs` (Python 3.13.16 · numpy 2.5.4 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.7:
+Example `clock-repeat-daily-cutoffs` (Python 3.13.16 · numpy 2.5.4 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.8:
 
 ```python
 """Seasonal naive around the October clock change, for eight clients: the raw failure, then the rule. The prose's claims rest
@@ -344,7 +344,7 @@ With the fill, the next-day error at that hour falls from 2393.01 to 274.41 kWh 
 
 The year of Sunday cutoffs is a different test, because it applies the mask to the scores and the fill plays no part. Scoring the year twice, plain and masked, shows how much the two hours moved the headline.
 
-Example `clock-masked-backtest` (Python 3.13.16 · numpy 2.5.4 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.7:
+Example `clock-masked-backtest` (Python 3.13.16 · numpy 2.5.4 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.8:
 
 ```python
 """The Sunday backtest of 2014 for eight clients, scored twice: as the readings stand, and with the clock-change rule, which
@@ -399,7 +399,7 @@ Every window in a backtest should be built from data available at its cutoff, so
 
 The test has two halves, and each catches what the other misses. Take the lead client, `MT_014`, and three features over its hourly readings. The first is a trailing mean: the average of the 24 hours up to and including each hour, which reads nothing after its hour. The second is the same mean shifted one hour forward, so each value is the average of a window that ends one hour later, and it reads the first hour after the cutoff. The third is a lag of one hour, the most common day-ahead leak. The history half compares each feature on the rows of the eight weeks before each of the three evaluation cutoffs, Dec 29 to Dec 31, 2014. The target half compares the 24 hours that each cutoff forecasts, computed from the readings before the cutoff only. Both versions start from the same first reading, so the warm-up of a rolling mean matches on both sides. Computed from different starts, the warm-up and floating-point rounding would show as false differences, which is why the check compares with a tolerance:
 
-Example `leakage-shift-check` (Python 3.13.16 · numpy 2.5.4 · pandas 2.3.3), passing in Edition 2026.11.7:
+Example `leakage-shift-check` (Python 3.13.16 · numpy 2.5.4 · pandas 2.3.3), passing in Edition 2026.11.8:
 
 ```python
 """Shift test: a feature must read nothing from its cutoff on, on the history rows and on the target hours. The prose's
