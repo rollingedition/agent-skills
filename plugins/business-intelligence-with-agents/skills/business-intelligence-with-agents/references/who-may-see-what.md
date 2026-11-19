@@ -3,13 +3,13 @@ title: "Business Intelligence with Agents"
 chapter: "Keep the agent inside who may see what"
 chapter_id: who-may-see-what
 book: business-intelligence-with-agents
-edition: 2026.11.12
-verified: 2026-11-13
-edition_code: 3AH2-KGM3
+edition: 2026.11.13
+verified: 2026-11-19
+edition_code: TW8P-2G9D
 canonical: https://rollingedition.com/business-intelligence-with-agents/who-may-see-what
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“Keep the agent inside who may see what,” chapter 9 of Business Intelligence with Agents, Edition 2026.11.12, examples passed Nov 13, 2026. By Rolling Edition, https://rollingedition.com/business-intelligence-with-agents/who-may-see-what. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Keep the agent inside who may see what,” chapter 9 of Business Intelligence with Agents, Edition 2026.11.13, examples passed Nov 19, 2026. By Rolling Edition, https://rollingedition.com/business-intelligence-with-agents/who-may-see-what. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Keep the agent inside who may see what
 
@@ -27,7 +27,7 @@ The first place most teams put an access rule is the prompt: a sentence naming t
 
 The replies to the probes show whether a rule in the prompt holds. We gave [chapter 6](#metrics-not-tables)'s metrics-first agent, with its whole catalog of metrics, one sentence more. `REGION_RULE` in `lib/prompts.py` says that the person asking is APAC's regional lead and that the agent must call `cannot_answer` for any other region or for the whole shop. We then asked probe questions, kept in `examples/data/shop/access_probes.toml`, each reaching outside APAC in a different way: by naming another region, with a reason, by claiming an exception, or by asking for a comparison, a total, a country elsewhere, a ranking or no region at all. The recording `prompt-rule-runs` holds the replies of the pinned model, Qwen3-4B-Instruct-2507 in a 4-bit file, chosen as [chapter 1](#ask-for-sql) explains: one sample per probe, at temperature 0.7. We replay each run, then send the model's request through this chapter's policy for APAC's lead, so each answer under the prompt rule sits beside the policy's.
 
-Example `prompt-rule-bypassed` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.12:
+Example `prompt-rule-bypassed` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.13:
 
 ```python
 """Eight probes that reach outside APAC, each answered by the prompt rule and then sent through APAC's lead's policy.
@@ -106,7 +106,7 @@ On the SQL path, the rewrite is not the boundary. `PolicyGuard` runs on the role
 
 The same question goes down both paths: `gq-017` for EMEA's lead, first as chapter 6's recorded metric run through the layer, then as chapter 4's layered SQL with chapter 7's recorded repair, through each guard.
 
-Example `regional-lead-revenue` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.12:
+Example `regional-lead-revenue` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.13:
 
 ```python
 """gq-017 for EMEA's regional lead, answered on the metric path and on the guarded SQL path, each without the policy and then with it.
@@ -207,7 +207,7 @@ A row filter decides which rows a role sees. A column mask decides what it sees 
 
 On the metrics path, a mask is never needed: [chapter 5](#entities-measures-dimensions) left names, emails and phone digits out of the customers' semantic model on purpose. Masks matter on the guarded SQL path, where the agent writes SQL over `analytics.dim_customers`. After a finance read that selects the masked columns, we try 6 reads that use the email without selecting it, under the analyst's guard and under finance's. The address is synthetic, on the reserved domain `example.com`.
 
-Example `masked-emails` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.12:
+Example `masked-emails` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.13:
 
 ```python
 """Reads that use the email without selecting it, each run under the analyst's guard and under finance's, then support's and marketing's refusals.
@@ -305,7 +305,7 @@ For each metric in a request, `PolicyLayer` compiles a second query with the sam
 
 Marketing asks for net revenue and orders in APAC in June 2026 by channel and country, a breakdown a campaign review might request.
 
-Example `small-group-suppressed` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.12:
+Example `small-group-suppressed` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.13:
 
 ```python
 """Marketing's answer to the June breakdown by channel and country, with every group behind fewer than the minimum held back.
@@ -366,7 +366,7 @@ Suppression protects each answer on its own, and it can't see the answers the sa
 
 Marketing asks two questions about APAC in June 2026: net revenue by channel, then net revenue in total. Before you run the example, predict whether the policy lets the second answer through, and what subtracting the first answer from it gives.
 
-Example `difference-two-answers` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.12:
+Example `difference-two-answers` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.13:
 
 ```python
 """Two answers marketing may see, each passing the policy, and the subtraction that recovers the group the first one held back.
@@ -430,7 +430,7 @@ This is a limit of suppressing each answer, not a bug. The SDC Handbook warns th
 
 `lib/untrusted.py` builds a temporary copy of the warehouse in which one of June 2026's five best-selling products, the `Granite 60 pack`, carries a sentence addressed to the model, as a catalogue feed might load it. We read the top five as finance, through `PolicyLayer`, before the model sees a value, because finance may see units sold and marketing may not. We try two names: one tells the model to report the product's units in dozens, multiplied by twelve, and one tells it to say that June's sales are still being loaded. Each result goes to the model with two summary prompts from `lib/prompts.py`: `ANSWER_SUMMARY`, with the result pasted in, and `ANSWER_SUMMARY_DELIMITED`, which puts it between `<result>` tags and says that text inside them is data. The recording `injected-values` holds the 6 replies, one sample each from the same pinned model, and code checks each reply against the result.
 
-Example `injected-product-name` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.12:
+Example `injected-product-name` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.13:
 
 ```python
 """A product name carrying an instruction, read by the model that writes the answer in words, and checked by code before anything is shown.
@@ -515,7 +515,7 @@ The sections so far tested each rule on chosen cases. The [golden questions](#co
 
 We run chapter 6's metrics-first agent on every golden question twice: as [chapter 6](#measure-metrics-first) ran it, with the whole catalog and no policy, and as the asker's role sees the layer, through `PolicyLayer` and `PolicyToolbox`, chapter 6's metric tools over that layer, which end the run with a decline whose reason starts with "forbidden" when the policy refuses a request. Where a role's catalog is chapter 6's, its recording `metric-agent-runs` replays the run. Marketing and support lose metrics, so their prompts differ, and this chapter's recording `policy-agent-runs` holds those runs, dev in its first part and test in its second. No rule in `roles.toml` names a golden question.
 
-Example `role-scope-score` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.12:
+Example `role-scope-score` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.13:
 
 ```python
 """Metrics-first on every golden question, as chapter 6 ran it and under each asker's policy, on both splits.
@@ -604,7 +604,7 @@ The score hides how each forbidden question was declined. The regional leads' qu
 
 `AuditLog` in `lib/policies.py` records for each question the principal, meaning whoever your sign-in system says is asking, with their role and region; the question and the path; the agent's request or SQL; the filters that applied; the SQL that ran after the policy, with a short hash as its key; the tables read and the columns masked; and the outcome, with rows, suppressed groups, any decline's reason and, for metric answers, the data's freshness. A reviewer needs exactly that. The code writes three entries, one for each case the log must tell apart: EMEA's lead asking `gq-017`, APAC's lead asking `gq-024` for EMEA's revenue, and someone in finance whose SQL filters on masked emails. The principals are made-up IDs.
 
-Example `audit-entries` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.12:
+Example `audit-entries` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.13:
 
 ```python
 """One audit entry per question, written by code: who asked, as which role, what the agent asked for, what ran and what came back.

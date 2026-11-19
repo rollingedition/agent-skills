@@ -3,13 +3,13 @@ title: "Model Context Protocol in Practice"
 chapter: "What MCP adds to an API"
 chapter_id: what-mcp-adds
 book: model-context-protocol-in-practice
-edition: 2026.11.11
-verified: 2026-11-14
-edition_code: 2VMD-DEEC
+edition: 2026.11.12
+verified: 2026-11-19
+edition_code: WM6T-Q38W
 canonical: https://rollingedition.com/model-context-protocol-in-practice/what-mcp-adds
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“What MCP adds to an API,” chapter 2 of Model Context Protocol in Practice, Edition 2026.11.11, examples passed Nov 14, 2026. By Rolling Edition, https://rollingedition.com/model-context-protocol-in-practice/what-mcp-adds. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“What MCP adds to an API,” chapter 2 of Model Context Protocol in Practice, Edition 2026.11.12, examples passed Nov 19, 2026. By Rolling Edition, https://rollingedition.com/model-context-protocol-in-practice/what-mcp-adds. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # What MCP adds to an API
 
@@ -29,7 +29,7 @@ The support team's host plays the host role and runs the book's host loop. Each 
 
 The first thing a client does is ask the server what it offers. A **capability** is something a client or server declares it supports, such as a server that offers tools or a client that can answer a request for input. At the pinned revision that takes one request, `server/discover`, whose answer holds the versions the server supports, its capabilities and its name, so a client can show everything a server supports from that one answer ([discovery](https://modelcontextprotocol.io/specification/2026-07-28/server/discover)). The client then lists each kind of capability with `tools/list`, `resources/list` and `prompts/list`. In its default auto mode, `mcp.Client` sends `server/discover` when it opens, and keeps the answer as `client.session.discover_result` (`mcp/client/session.py`).
 
-Example `list-what-the-server-offers` (Python 3.12.15 · cryptography 50.0.2 · httpx2 2.16.0 · mcp 2.3.0 · mcp-types 2.3.0 · pydantic 2.14.3 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.11:
+Example `list-what-the-server-offers` (Python 3.12.15 · cryptography 50.0.2 · httpx2 2.16.2 · mcp 2.3.0 · mcp-types 2.3.0 · pydantic 2.14.3 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.12:
 
 ```python
 """shop-support, the chapter 2 server, offers one tool, one resource and one prompt. Run bare, the file starts it as a
@@ -115,7 +115,7 @@ The `shop-support` server from [the previous section](#host-client-server) offer
 
 The [tools](https://modelcontextprotocol.io/specification/2026-07-28/server/tools) page mandates no particular interface for a tool. The [resources](https://modelcontextprotocol.io/specification/2026-07-28/server/resources) and [prompts](https://modelcontextprotocol.io/specification/2026-07-28/server/prompts) pages do the same for their primitives. A host can show them however it likes, but one that respects the control model gives each to the party the table names. The next script uses each of `shop-support`'s three once, the way a host would.
 
-Example `three-primitives-side-by-side` (Python 3.12.15 · cryptography 50.0.2 · httpx2 2.16.0 · mcp 2.3.0 · mcp-types 2.3.0 · pydantic 2.14.3 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.11:
+Example `three-primitives-side-by-side` (Python 3.12.15 · cryptography 50.0.2 · httpx2 2.16.2 · mcp 2.3.0 · mcp-types 2.3.0 · pydantic 2.14.3 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.12:
 
 ```python
 """Use each of shop-support's three primitives once, as a host would: the tool for the model, the resource for the
@@ -210,7 +210,7 @@ Three rules on the same page shape how the shop's server uses these fields:
 
 To see the envelope, the client calls `get_order_status` through `lib.wire`, which logs every line between the client and the server. It passes one key of the shop's own, a request ID that support staff can quote. It then sends a `tools/list` request without the client's capabilities, through a second small module, `lib.raw_stdio`, which starts a stdio server and writes JSON-RPC lines by hand. The code needs that because `mcp.Client` never sends a malformed request.
 
-Example `request-meta-on-the-wire` (Python 3.12.15 · cryptography 50.0.2 · httpx2 2.16.0 · mcp 2.3.0 · mcp-types 2.3.0 · pydantic 2.14.3 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.11:
+Example `request-meta-on-the-wire` (Python 3.12.15 · cryptography 50.0.2 · httpx2 2.16.2 · mcp 2.3.0 · mcp-types 2.3.0 · pydantic 2.14.3 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.12:
 
 ```python
 """Show the _meta that every request and result carries, add one key of the shop's own, and send a request without
@@ -288,7 +288,7 @@ Every request in [Carry the version and capabilities on every request](#request-
 
 The shop meets this when a host built for a later revision connects to `shop-support`. Showing the error means sending a version the server doesn't know, and the obvious way fails first: `mcp.Client` accepts as its `mode` only `"auto"`, `"legacy"` or one of the SDK's per-request revisions, such as `2026-07-28`, and raises before it sends anything (`mcp/client/client.py`). So the script tries that first, then uses `lib.raw_stdio` from [the previous section](#request-meta) to write the request by hand. It asks for `2099-01-01`, a made-up revision that stands for any the server lacks, then retries with a version from the server's list.
 
-Example `unsupported-version-error` (Python 3.12.15 · cryptography 50.0.2 · httpx2 2.16.0 · mcp 2.3.0 · mcp-types 2.3.0 · pydantic 2.14.3 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.11:
+Example `unsupported-version-error` (Python 3.12.15 · cryptography 50.0.2 · httpx2 2.16.2 · mcp 2.3.0 · mcp-types 2.3.0 · pydantic 2.14.3 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.12:
 
 ```python
 """Ask shop-support for a revision it doesn't implement, read its -32022 error, and retry with the newest revision both
@@ -358,7 +358,7 @@ Caching a tool list works only if the list is stable. The specification says a s
 
 In the SDK, a server's hints default to `ttl_ms=0` and `"private"`, so nothing is reused unless the server opts in. `shop-support` opts in for its tool list with `cache_hints={"tools/list": CacheHint(ttl_ms=300_000, scope="public")}`, five minutes and shareable (`mcp/server/caching.py`). On the other side, `mcp.Client` caches by default, in memory, by the server's hints, and each list call takes a `cache_mode` of `"use"`, `"refresh"` or `"bypass"`. A call that passes its own `meta` always reaches the server, and the client caps any TTL at 24 hours (`mcp/client/caching.py`). To count what caching saves, list the tools twice from chapter 1's server, which sets no hint, then twice from `shop-support`, and count on the wire, with `lib.wire`, how many `tools/list` requests reached each server.
 
-Example `cache-the-tool-list` (Python 3.12.15 · cryptography 50.0.2 · httpx2 2.16.0 · mcp 2.3.0 · mcp-types 2.3.0 · pydantic 2.14.3 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.11:
+Example `cache-the-tool-list` (Python 3.12.15 · cryptography 50.0.2 · httpx2 2.16.2 · mcp 2.3.0 · mcp-types 2.3.0 · pydantic 2.14.3 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.12:
 
 ```python
 """Call list_tools() twice on each of two servers, one that sets no cache hint and one with a five-minute public hint,
@@ -429,7 +429,7 @@ We recommend MCP where a model or a user's host chooses among capabilities at ru
 
 This run prices the adapter, so the trade-off rests on numbers. The script fetches order O-2476 twice: once from the shop's API, with `GET /orders/O-2476`, and once through `shop-support`'s `get_order_status` tool over Streamable HTTP, the transport [Move the server from stdio to HTTP](#stdio-to-http) teaches. `lib.byte_meter`, a small module for this measurement, puts a TCP relay in front of each server and counts every byte both ways, headers included, and counts the HTTP requests each server handles. Everything runs in one process on 127.0.0.1, over HTTP/1.1 without TLS. On the MCP side, the count covers a host's setup on opening a client, including the tool listing, but not the tool call. That setup is measured twice: in the default auto mode, which first probes the server with `server/discover`, and with the version pinned. The tool call itself is made with the version pinned. No times are measured, because times on one machine's loopback say little about a network.
 
-Example `api-call-versus-tool-call` (Python 3.12.15 · cryptography 50.0.2 · httpx2 2.16.0 · mcp 2.3.0 · mcp-types 2.3.0 · pydantic 2.14.3 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.11:
+Example `api-call-versus-tool-call` (Python 3.12.15 · cryptography 50.0.2 · httpx2 2.16.2 · mcp 2.3.0 · mcp-types 2.3.0 · pydantic 2.14.3 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.12:
 
 ```python
 """Fetch order O-2476 from the shop's API, then through shop-support's tool over Streamable HTTP, and count the cost.
