@@ -3,13 +3,13 @@ title: "A Primer on Search Relevance"
 chapter: "Understanding queries"
 chapter_id: understanding-queries
 book: primer-on-search-relevance
-edition: 2026.11.9
+edition: 2026.11.10
 verified: 2026-11-19
-edition_code: Y76B-VHFX
+edition_code: ANXY-CR00
 canonical: https://rollingedition.com/primer-on-search-relevance/understanding-queries
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“Understanding queries,” chapter 8 of A Primer on Search Relevance, Edition 2026.11.9, examples passed Nov 19, 2026. By Rolling Edition, https://rollingedition.com/primer-on-search-relevance/understanding-queries. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Understanding queries,” chapter 8 of A Primer on Search Relevance, Edition 2026.11.10, examples passed Nov 19, 2026. By Rolling Edition, https://rollingedition.com/primer-on-search-relevance/understanding-queries. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Understanding queries
 
@@ -43,7 +43,7 @@ The **lexicon**, the list of words that count as correct, decides what gets corr
 
 The corrector here uses the crudest error model: a word in the lexicon stays, one edit beats two, and P(c), how common each candidate is, breaks ties between candidates the same number of edits away. Run it on all 80 queries, and see which ones it changes:
 
-Example `catalog-spelling-corrector` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1 · scikit-learn 1.9.1 · scipy 1.18.1), passing in Edition 2026.11.9:
+Example `catalog-spelling-corrector` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1 · scikit-learn 1.9.1 · scipy 1.18.1), passing in Edition 2026.11.10:
 
 ```python
 """A spelling corrector built from the catalog's word counts, run on every query and checked against
@@ -116,9 +116,9 @@ The catalog uses 19,680 distinct words, and the corrector changes 4 queries. Of 
 
 The corrector leaves the brands alone, because the catalog uses them: `kohler` 71 times and `whitehaven` 60. Some words it keeps are rare, such as `malachi`, used 5 times, and `luau`, used 4. A lexicon that left out rare words would treat both as typos.
 
-The corrector's failures are in test queries. `tye dye duvet cover` becomes `the dye duvet cover`: `tye` is one edit from `tie` (45 times in the catalog) and from `the` (20389), and P(c) picks the common word. And `refrigerator with ice an water in door` keeps its `an`. That is a **real-word error**: every word is spelled right, as in "flew form Heathrow" ([Manning et al., 2008](https://nlp.stanford.edu/IR-book/html/htmledition/context-sensitive-spelling-correction-1.html)). Both need context. For `tye` and for `an`, count how often each catalog word within one edit of it comes right before the next word of the query, `dye` or `water`:
+The corrector's failures are in test queries. `tye dye duvet cover` becomes `the dye duvet cover`: `tye` is one edit from `tie` (45 times in the catalog) and from `the` (20389), and P(c) picks the common word. And `refrigerator with ice an water in door` keeps its `an`. That `an` is a **real-word error**, a typo in which every word is spelled right, as in "flew form Heathrow" ([Manning et al., 2008](https://nlp.stanford.edu/IR-book/html/htmledition/context-sensitive-spelling-correction-1.html)). Both need context. For `tye` and for `an`, count how often each catalog word within one edit of it comes right before the next word of the query, `dye` or `water`:
 
-Example `spelling-context-counts` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1 · scikit-learn 1.9.1 · scipy 1.18.1), passing in Edition 2026.11.9:
+Example `spelling-context-counts` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1 · scikit-learn 1.9.1 · scipy 1.18.1), passing in Edition 2026.11.10:
 
 ```python
 """For the misspelled word in two test queries, `tye` and the real-word error `an`, counts how often each nearby catalog word comes before the query's next
@@ -163,7 +163,7 @@ catalog count of an water, the corrector's choice: 0
 
 Before `dye`, the catalog's text has `tie` 18 times, and the corrector's choice, `the`, 0. Before `water`, `and` comes 59 times, ahead of `a` at 20, while `an`, the corrector's choice, has 0. For these two queries, a corrector that scored each candidate with its neighbouring word would pick `tie` and `and`. Each corrected query can now be scored against its own judgments, which shows whether the change helps:
 
-Example `measure-spelling-corrections` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pandas 3.1.1 · scikit-learn 1.9.1 · scipy 1.18.1), passing in Edition 2026.11.9:
+Example `measure-spelling-corrections` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pandas 3.1.1 · scikit-learn 1.9.1 · scipy 1.18.1), passing in Edition 2026.11.10:
 
 ```python
 """Scores each typo query, and the variant spelling tye dye, with BM25, and with recorded embeddings where the corrected
@@ -248,7 +248,7 @@ A typo has one right spelling; a size, as in `7qt slow cooker`, often has severa
 
 A rule written from the queries would cover `qt`, `in`, `inch` and `"`. Before you trust it, count how the catalog writes inches. We count them first, print the terms the tokenizer makes of a few normalized texts, and build BM25 three times: over the text as written, normalized by that first rule, and normalized by `normalize_units`, which also handles the catalog's two apostrophes, `''`, for inches. We score every query, train or test, that gives a number with a unit:
 
-Example `normalize-units-both-sides` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pandas 3.1.1 · pystemmer 3.1.0 · scikit-learn 1.9.1 · scipy 1.18.1), passing in Edition 2026.11.9:
+Example `normalize-units-both-sides` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pandas 3.1.1 · pystemmer 3.1.0 · scikit-learn 1.9.1 · scipy 1.18.1), passing in Edition 2026.11.10:
 
 ```python
 """Counts how the catalog writes inches, prints the terms the tokenizer makes of normalized texts, and scores BM25 on
@@ -338,11 +338,11 @@ The other train query, `48 in entry table with side by side drawer`, scores 0.56
 
 ## Expand queries with a synonym list {#expand-with-synonyms}
 
-Some gaps are neither typos nor units but different words for one thing, as when the exact products for `midcentury tv unit` say `stand`. **Query expansion** adds terms to a query so that it can match products that use other words for the same thing. Expansion generally increases recall, the share of the relevant products that a search finds ([Manning et al., 2008](https://nlp.stanford.edu/IR-book/html/htmledition/query-expansion-1.html)). It can also significantly decrease precision, the share of found products that are relevant, particularly when the query contains ambiguous terms ([Manning et al., 2008](https://nlp.stanford.edu/IR-book/html/htmledition/automatic-thesaurus-generation-1.html)). An added word can match products the shopper didn't ask for, and move the query away from its meaning, which is called **query drift**. Expansion terms can come from a hand-built list of synonyms, or from the results. **Pseudo-relevance feedback** assumes the top results are relevant and adds their terms to the query, which makes drift its known risk ([Manning et al., 2008](https://nlp.stanford.edu/IR-book/html/htmledition/pseudo-relevance-feedback-1.html)).
+Some gaps are neither typos nor units but different words for one thing, as when the exact products for `midcentury tv unit` say `stand`. **Query expansion** adds terms to a query so that it can match products that use other words for the same thing. Expansion generally increases recall, the share of the relevant products that a search finds ([Manning et al., 2008](https://nlp.stanford.edu/IR-book/html/htmledition/query-expansion-1.html)). It can also significantly decrease precision, the share of found products that are relevant, particularly when the query contains ambiguous terms ([Manning et al., 2008](https://nlp.stanford.edu/IR-book/html/htmledition/automatic-thesaurus-generation-1.html)). A word that expansion adds can match products the shopper didn't ask for, and move the query away from its meaning, which is called **query drift**. Expansion terms can come from a hand-built list of synonyms, or from the results. **Pseudo-relevance feedback** assumes the top results are relevant and adds their terms to the query, which makes drift its known risk ([Manning et al., 2008](https://nlp.stanford.edu/IR-book/html/htmledition/pseudo-relevance-feedback-1.html)).
 
 Here `lib.queries.SYNONYMS` holds 14 groups of interchangeable words, such as `stand` and `unit`, written by reading the train queries whose exact products miss a query word. When a query contains a word or phrase from a group, `expand` appends the group's other members, and BM25 searches the result. Measure it on the train queries, then make the first of the chapter's [planned comparisons](#understanding-queries) on the test queries:
 
-Example `synonym-expansion-train-and-test` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pandas 3.1.1 · scikit-learn 1.9.1 · scipy 1.18.1), passing in Edition 2026.11.9:
+Example `synonym-expansion-train-and-test` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pandas 3.1.1 · scikit-learn 1.9.1 · scipy 1.18.1), passing in Edition 2026.11.10:
 
 ```python
 """Expands each query with the synonym list, scores BM25 on the train and test queries as typed and expanded, and
@@ -444,7 +444,7 @@ Instead of changing a query's words, a system can predict what kind of product t
 
 The store goes further and uses no labelled queries, because it has none. WANDS gives each query a `query_class`, "category to which the query falls under" ([WANDS](https://github.com/wayfair/WANDS)), but [chapter 2](#intent-in-product-search) shows that it is a prediction, and some values are wrong. And the book's sample of WANDS holds at most one query per class (`examples/data/wands/README.md`), so no class has two queries to learn from. So train on the products, which carry `product_class`, and apply the classifier to the queries.
 
-A **naive Bayes** classifier can learn classes from product text in a few lines. In words: a class is likely for a query when the class is common among products, and when the query's words are common in that class's product text. It treats words as independent, which is the "naive" part. Each count gets 1 added, so that a word never seen in a class doesn't rule the class out:
+A **naive Bayes** classifier can learn classes from product text in a few lines. In words, naive Bayes finds a class likely for a query when the class is common among products, and when the query's words are common in that class's product text. It treats words as independent, which is the "naive" part. Each count gets 1 added, so that a word never seen in a class doesn't rule the class out:
 
 ```text
 predicted class = argmax over classes c of  log P(c) + sum over the query's words w of  log P(w | c)
@@ -453,7 +453,7 @@ P(w | c)        = (count of w in class c's text + 1) / (number of words in class
 
 We build it by hand from word counts of the product text, check it against scikit-learn's `MultinomialNB` at 1.9.1, then compare its predictions with `query_class` and with the classes of each query's exact products:
 
-Example `query-classes-by-hand` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1 · scikit-learn 1.9.1 · scipy 1.18.1), passing in Edition 2026.11.9:
+Example `query-classes-by-hand` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1 · scikit-learn 1.9.1 · scipy 1.18.1), passing in Edition 2026.11.10:
 
 ```python
 """A naive Bayes query classifier built by hand from product text, checked against scikit-learn's MultinomialNB and
@@ -529,11 +529,11 @@ The sample's design limits what this check can show. Each class is tested by at 
 
 ## Boost the predicted class instead of filtering {#boost-predicted-class}
 
-Here the predicted class comes from [the naive Bayes classifier](#classify-queries-from-products) trained on product text. A predicted class can act on retrieval in two ways. A **filter** keeps only products in the class. A **boost** adds a fixed amount to their scores, so that they move up without anything else being removed. A filter is only as good as the classifier: every relevant product outside the predicted class disappears.
+Here the predicted class comes from [the naive Bayes classifier](#classify-queries-from-products) trained on product text. A predicted class can act on retrieval in two ways. A **filter** keeps only products in the predicted class. A **boost** adds a fixed amount to the scores of products in the predicted class, so that they move up without anything else being removed. A filter is only as good as the classifier: every relevant product outside the predicted class disappears.
 
 The store's train judgments show how much a filter would cost: for the train queries, 501 of 1937 exact products lie outside their query's predicted class. We add a boost to the similarities of semantic retrieval, the store's best ranker and so its [ranker to beat](#compare-runs-in-a-harness), and try five boost weights and a filter on the train queries. We take the best boost to the test queries for the second of the chapter's [planned comparisons](#understanding-queries):
 
-Example `class-boost-train-and-test` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1 · scikit-learn 1.9.1 · scipy 1.18.1), passing in Edition 2026.11.9:
+Example `class-boost-train-and-test` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1 · scikit-learn 1.9.1 · scipy 1.18.1), passing in Edition 2026.11.10:
 
 ```python
 """Counts the exact train products outside each query's predicted class, scores a class filter and several boosts on
@@ -624,7 +624,7 @@ On the test queries, judged@10 is 0.990 without the boost and 0.993 with it, and
 
 The rewrites that the examples read were recorded with the store's LLM, the open model named in [the chapter's opening](#understanding-queries), run locally on each query alone. The prompt's instruction is: "Rewrite this search query from an online furniture and home-goods store so that a search engine finds what the shopper wants. Fix spelling, expand abbreviations and add common synonyms for the product type, but keep every requirement the shopper stated and add none of your own. Return a single line." The rest of the prompt gives the query and asks for JSON, and the recording's manifest holds it in full. The recording script embedded each rewrite as a query, with the same embedding model as the products. BM25 searches the rewrite's text, and semantic retrieval its embedding. The train queries come first, to see what the rewrites change before any test:
 
-Example `llm-rewrites-on-train` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.9:
+Example `llm-rewrites-on-train` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.10:
 
 ```python
 """Prints the store's recorded LLM rewrites for a few train queries, then scores BM25 and semantic retrieval on the
@@ -703,7 +703,7 @@ The losses aren't one bad query: the numbers of queries that score better and wo
 
 These train numbers shape expectations and prove nothing. The third and fourth of the chapter's 5 [planned comparisons](#understanding-queries) were fixed in advance, so they go to the test queries whatever the train queries show, and each counts as established if p is below 0.01. Before the test numbers arrive, pick one: does the rewrite help BM25, the weaker retriever, hurt semantic retrieval, the stronger one, or do neither?
 
-Example `llm-rewrites-on-test` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pandas 3.1.1 · scikit-learn 1.9.1 · scipy 1.18.1), passing in Edition 2026.11.9:
+Example `llm-rewrites-on-test` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pandas 3.1.1 · scikit-learn 1.9.1 · scipy 1.18.1), passing in Edition 2026.11.10:
 
 ```python
 """Scores BM25 and semantic retrieval on the test queries, as typed and rewritten, as the chapter's planned comparisons,
@@ -795,7 +795,7 @@ The rewrite didn't help BM25: it moved the other way from what Weller et al. and
 
 The queries that move most show what a rewrite does. Read them with the number of unjudged products in each rewritten top 10, which the metric counts as irrelevant:
 
-Example `rewrite-largest-changes` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pandas 3.1.1 · scikit-learn 1.9.1 · scipy 1.18.1), passing in Edition 2026.11.9:
+Example `rewrite-largest-changes` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pandas 3.1.1 · scikit-learn 1.9.1 · scipy 1.18.1), passing in Edition 2026.11.10:
 
 ```python
 """For each retriever, finds the test queries whose nDCG@10 moves most under the rewrite, and counts the unjudged
@@ -868,7 +868,7 @@ BM25's largest gain, +0.159 for `refrigerator with ice an water in door`, comes 
 
 ## Search with a hypothetical product (HyDE) {#hyde-hypothetical-products}
 
-Where a [rewrite](#rewrite-queries-with-llm) asks the LLM for a better query, HyDE, short for hypothetical document embeddings, asks it for the document it imagines would answer the query. An encoder embeds that **hypothetical document**, and the vector lands in a neighborhood of the corpus embedding space where real documents lie ([Gao et al., 2023](https://aclanthology.org/2023.acl-long.99/)). The made-up details needn't be true: the authors argue that the encoder's dense bottleneck filters out hallucinated details, which is their argument, not a measurement. Their main results use InstructGPT (text-davinci-003), sampling at temperature 0.7. On TREC DL19, a passage-ranking benchmark, HyDE raised the nDCG@10 of Contriever, an embedding model trained without relevance labels, from 44.5 to 61.3 on a 0 to 100 scale (Gao et al., Table 1). With a Contriever fine-tuned on labels, the result depended on the LLM. The smaller ones lowered nDCG@10 slightly, since weaker instruction models can hurt the fine-tuned retriever's overall performance, while InstructGPT raised it, most on DL19, from 62.1 to 67.4 (Table 4).
+Where a [rewrite](#rewrite-queries-with-llm) asks the LLM for a better query, HyDE, short for hypothetical document embeddings, asks it for the document it imagines would answer the query. An encoder embeds the **hypothetical document**, written by an LLM to answer the query, and the vector lands in a neighborhood of the corpus embedding space where real documents lie ([Gao et al., 2023](https://aclanthology.org/2023.acl-long.99/)). The made-up details needn't be true: the authors argue that the encoder's dense bottleneck filters out hallucinated details, which is their argument, not a measurement. Their main results use InstructGPT (text-davinci-003), sampling at temperature 0.7. On TREC DL19, a passage-ranking benchmark, HyDE raised the nDCG@10 of Contriever, an embedding model trained without relevance labels, from 44.5 to 61.3 on a 0 to 100 scale (Gao et al., Table 1). With a Contriever fine-tuned on labels, the result depended on the LLM. The smaller ones lowered nDCG@10 slightly, since weaker instruction models can hurt the fine-tuned retriever's overall performance, while InstructGPT raised it, most on DL19, from 62.1 to 67.4 (Table 4).
 
 Several expansion methods keep the original query in the mix. HyDE averages the embeddings of the hypothetical documents together with the query's own (Gao et al., section 3.2). **Relevance feedback** improves a query from judgments of its first results, and Rocchio's version moves the query vector toward the results judged relevant while keeping the original vector in its sum ([Manning et al., 2008](https://nlp.stanford.edu/IR-book/html/htmledition/the-rocchio71-algorithm-1.html)). For BM25, query2doc repeats the query five times before the generated passage, so that the original terms keep their weight ([Wang et al., 2023](https://arxiv.org/abs/2303.07678)).
 
@@ -880,7 +880,7 @@ hyde(query) = (embedding(hypothetical product) + embedding(query)) / 2,  then sc
 
 On the train queries, we also try the hypothetical product's embedding alone, and, for BM25, the hypothetical product's text alone and with the query repeated five times before it, as query2doc weights it. Then we run the last of the chapter's [planned comparisons](#understanding-queries):
 
-Example `hyde-train-and-test` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pandas 3.1.1 · scikit-learn 1.9.1 · scipy 1.18.1), passing in Edition 2026.11.9:
+Example `hyde-train-and-test` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pandas 3.1.1 · scikit-learn 1.9.1 · scipy 1.18.1), passing in Edition 2026.11.10:
 
 ```python
 """Scores HyDE, its parts and their combinations with BM25 and semantic retrieval on the train queries, then runs HyDE
@@ -975,11 +975,11 @@ On the test queries, judged@10 goes from 0.990 to 0.970, and HyDE shows no estab
 
 ## Turn a follow-up into a standalone query {#standalone-follow-ups}
 
-The last gap from [the chapter's opening](#understanding-queries) comes from conversation: a shopper's next message often depends on the last one, as `in white` refines a search for a desk. Retrieval sees one text, so the follow-up has to become a **standalone query**, one that keeps what the shopper still wants. Conversational query rewriting turns a context-dependent question into a self-contained one with the same answer, and the CANARD dataset holds 40,527 such rewrites ([Elgohary et al., 2019](https://aclanthology.org/D19-1605/)). In TREC CAsT 2019, a conversational search evaluation, people's rewrites beat the best automatic system by 35% in relative terms ([Dalton et al., 2020](https://arxiv.org/abs/2003.13624)). Later work with prompted LLMs found that "informative query rewrites can yield substantially improved retrieval performance compared to human rewrites, especially with sparse retrievers" ([Ye et al., 2023](https://arxiv.org/abs/2310.09716)), and in TREC iKAT 2025, CAsT's successor, most runs used LLMs in their pipelines, for single or multiple query rewriting ([TREC iKAT 2025 overview](https://trec.nist.gov/pubs/trec34/papers/Overview_ikat.pdf)).
+The last gap from [the chapter's opening](#understanding-queries) comes from conversation: a shopper's next message often depends on the last one, as `in white` refines a search for a desk. Retrieval sees one text, so a follow-up has to become a **standalone query**, one that reads without the earlier turns and keeps what the shopper still wants. Conversational query rewriting turns a context-dependent question into a self-contained one with the same answer, and the CANARD dataset holds 40,527 such rewrites ([Elgohary et al., 2019](https://aclanthology.org/D19-1605/)). In TREC CAsT 2019, a conversational search evaluation, people's rewrites beat the best automatic system by 35% in relative terms ([Dalton et al., 2020](https://arxiv.org/abs/2003.13624)). Later work with prompted LLMs found that "informative query rewrites can yield substantially improved retrieval performance compared to human rewrites, especially with sparse retrievers" ([Ye et al., 2023](https://arxiv.org/abs/2310.09716)), and in TREC iKAT 2025, CAsT's successor, most runs used LLMs in their pipelines, for single or multiple query rewriting ([TREC iKAT 2025 overview](https://trec.nist.gov/pubs/trec34/papers/Overview_ikat.pdf)).
 
 WANDS has no conversations, so we wrote the store's conversations for the book: 12 follow-ups, each refining a test query by one attribute, a color, shape, size or finish. The store's LLM, which saw only the two turns, rewrote each to stand alone. For example, after `coat rack for bedroom` comes `something in black`, rewritten as `black coat rack for bedroom`. The judgments grade products for the first query, not for the refined one, so nDCG can't score the follow-up. Instead, count three kinds of product in each top 10: those that keep the refinement, because their `attributes` or text contain the value, such as `black` (the example also prints the count from `attributes` alone); those of the right kind, which the judges graded [exact or partial](#store-data) for the first query; and those that are both. We set the follow-up alone against the two turns joined and against the standalone query, each embedded as a query, with the first query as a baseline. We add a filter on the standalone query's top 100 that keeps products stating the value, taking the value from the recorded conversation; a live system would have to extract it from the follow-up.
 
-Example `follow-up-refinements` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1 · scikit-learn 1.9.1 · scipy 1.18.1), passing in Edition 2026.11.9:
+Example `follow-up-refinements` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1 · scikit-learn 1.9.1 · scipy 1.18.1), passing in Edition 2026.11.10:
 
 ```python
 """Counts, in each conversation's top 10, the products that keep the refinement and the products of the right kind, for

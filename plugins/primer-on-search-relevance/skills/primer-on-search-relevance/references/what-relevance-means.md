@@ -3,13 +3,13 @@ title: "A Primer on Search Relevance"
 chapter: "What relevance means"
 chapter_id: what-relevance-means
 book: primer-on-search-relevance
-edition: 2026.11.9
+edition: 2026.11.10
 verified: 2026-11-19
-edition_code: Y76B-VHFX
+edition_code: ANXY-CR00
 canonical: https://rollingedition.com/primer-on-search-relevance/what-relevance-means
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“What relevance means,” chapter 2 of A Primer on Search Relevance, Edition 2026.11.9, examples passed Nov 19, 2026. By Rolling Edition, https://rollingedition.com/primer-on-search-relevance/what-relevance-means. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“What relevance means,” chapter 2 of A Primer on Search Relevance, Edition 2026.11.10, examples passed Nov 19, 2026. By Rolling Edition, https://rollingedition.com/primer-on-search-relevance/what-relevance-means. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # What relevance means
 
@@ -29,7 +29,7 @@ If matching words were the same as relevance, a product whose text holds every w
 
 Of the judged pairs whose text holds every query word, what share did the judges call exact? Hold a number in mind.
 
-Example `word-match-versus-judgment` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1), passing in Edition 2026.11.9:
+Example `word-match-versus-judgment` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1), passing in Edition 2026.11.10:
 
 ```python
 """Checks whether a full word match makes a judged pair exact, and how many exact pairs have a text that misses a
@@ -94,7 +94,7 @@ A full word match is a strong signal, but it doesn't settle the question. Of the
 
 The other direction is more striking. Most exact pairs, 2,337 of the 3,252, have a product text that misses at least one query word. Adding the attributes still leaves 2,251 of those missing a word, so attributes explain few misses overall.
 
-Some misses are word forms and spelling, such as `chairs` against `chair` ([chapter 1](#search-end-to-end-in-production)) or the query `ligth bulb`. [Chapter 5](#stem-word-forms) and [chapter 8](#correct-spelling-from-catalog) take those up. Others are attributes the text doesn't state. WANDS records attributes such as color, material and size apart from the text ([Chen et al., 2022, Table 1](https://easychair.org/publications/preprint/wm4R)), and the store keeps a few of them in an `attributes` column, for example `color: clear; material: vinyl` ([data card](https://github.com/rollingedition/book-primer-on-search-relevance/blob/84a609e86e4bbf1e0b7338f68ec314c02b3111eb/examples/data/wands/README.md)). The text the store's search reads, `lib.store.product_text`, leaves that column out.
+Some misses are word forms and spelling, such as `chairs` against `chair` ([chapter 1](#search-end-to-end-in-production)) or the query `ligth bulb`. [Chapter 5](#stem-word-forms) and [chapter 8](#correct-spelling-from-catalog) take those up. Others are attributes the text doesn't state. WANDS records attributes such as color, material and size apart from the text ([Chen et al., 2022, Table 1](https://easychair.org/publications/preprint/wm4R)), and the store keeps a few of them in an `attributes` column, for example `color: clear; material: vinyl` ([data card](https://github.com/rollingedition/book-primer-on-search-relevance/blob/67880c1fa437fcb912ca77d75451f3169c432ea6/examples/data/wands/README.md)). The text the store's search reads, `lib.store.product_text`, leaves that column out.
 
 For some queries, though, the attributes hold the answer. For `clear shower curtain`, 8 of the 12 exact products never say `clear` in their text, and 4 of those carry `clear` in their attributes, where the store's text search never looks. [Chapter 5](#index-attributes-as-a-field) tests adding attributes to lexical search. The rest of those curtains say `clear` nowhere, in their text or their attributes.
 
@@ -108,7 +108,7 @@ Two people can reach different verdicts. Each WANDS label is already the majorit
 
 WANDS's file lists some of the store's pairs more than once, each row a majority vote, and for a few the votes differ. The store's sample keeps one row per pair, graded 2 for exact, 1 for partial and 0 for irrelevant, and where the rows differ it keeps the lower grade ([Load the store's data](#store-data)). Here are the pairs whose rows differ, with the grade the sample kept:
 
-Example `conflicting-judgments` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1), passing in Edition 2026.11.9:
+Example `conflicting-judgments` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1), passing in Edition 2026.11.10:
 
 ```python
 """Lists the pairs WANDS labelled two ways, with the label the sample kept, and counts the conflicts by kind. The
@@ -165,11 +165,11 @@ Of the judged pairs, 7 conflict: 5 are exact against partial and 2 partial again
 
 Every judgment starts from a reading of what the query asks for. A shopper's **intent** is what they want to do. A widely cited taxonomy of web search sorts intent into navigational (reach a particular site), informational (find information) and transactional (do something on the web), and its author makes no assumption that intent can be inferred from the query with any certainty ([Broder, 2002](https://sigir.org/files/forum/F2002/broder.pdf)). Product search reshapes those kinds. Tsagkias et al. describe navigational product queries as ones that name a serial number or a product, and informational ones as usually mapping to a leaf in the inventory taxonomy or asking about specific attributes. They add that "there is no single taxonomy for eCommerce customer intent", because it depends on the store's business and inventory ([Tsagkias et al., 2020, section 2](https://sigir.org/wp-content/uploads/2020/06/p04.pdf)).
 
-WANDS writes intent into its labels. A query names a **target entity**, the kind of product, plus **modifiers**, the attributes the shopper asked for. Exact satisfies both. Partial matches only the target entity and fails the modifiers ([Chen et al., 2022, section 3.2](https://easychair.org/publications/preprint/wm4R)). The guidelines' worked example is a query for a kids' chair: a product that is a chair but not for kids is partial ([guidelines](https://github.com/wayfair/WANDS/raw/3b74dcf4ba29ab8ff3e6a50b5b09fc627cb882b5/Product%20Search%20Relevance%20Annotation%20Guidelines.pdf)). Even with that rule, a broad query can be hard to judge. The authors' own example is a shopper who wants an induction cooktop and types `cooktop` ([section 1](https://easychair.org/publications/preprint/wm4R)).
+WANDS writes intent into its labels. A query names a **target entity**, the kind of product, and the query's **modifiers** are the attributes the shopper asked for. Exact satisfies both. Partial matches only the target entity and fails the modifiers ([Chen et al., 2022, section 3.2](https://easychair.org/publications/preprint/wm4R)). The guidelines' worked example is a query for a kids' chair: a product that is a chair but not for kids is partial ([guidelines](https://github.com/wayfair/WANDS/raw/3b74dcf4ba29ab8ff3e6a50b5b09fc627cb882b5/Product%20Search%20Relevance%20Annotation%20Guidelines.pdf)). Even with that rule, a broad query can be hard to judge. The authors' own example is a shopper who wants an induction cooktop and types `cooktop` ([section 1](https://easychair.org/publications/preprint/wm4R)).
 
 The store's queries cover the range. `ines shag rug w003096809` and `kohler whitehaven farmhouse kitchen sink` name a product line or a model, which makes them navigational. `outdoor light fixtures` names a category. `clear shower curtain` and `48 inch kitchen hood` add a modifier to an entity. The store's queries also carry `query_class`, WANDS's *predicted* class for each query ([Table 1](https://easychair.org/publications/preprint/wm4R)). It is a guess at the entity, says nothing about modifiers, and isn't a judgment. Check how often it agrees with the products the judges called exact:
 
-Example `predicted-class-check` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1), passing in Edition 2026.11.9:
+Example `predicted-class-check` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1), passing in Edition 2026.11.10:
 
 ```python
 """For each query, measures how many of its exact products carry the predicted class, and lists the queries where none
@@ -230,7 +230,7 @@ A binary label says relevant or not. A graded label, such as WANDS's exact, part
 
 The store's query `clear shower curtain` shows both failures. Build three top-10 rankings from its judgments: ten exact products, ten shower curtains judged partial, and ten shower curtain hooks judged irrelevant. Then score each with nDCG@10 ([Score one ranking](#score-one-ranking)) under three labelings: binary with exact as relevant, binary with exact or partial as relevant, and the book's grades, 2 for exact, 1 for partial and 0 for irrelevant, used as gains. A **gain** is what a result at a given position adds to the score before the position discount.
 
-Example `binary-labels-hide-partial` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1), passing in Edition 2026.11.9:
+Example `binary-labels-hide-partial` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1), passing in Edition 2026.11.10:
 
 ```python
 """Scores three rankings of one query's judged products under three labelings, to show what each labeling counts as
@@ -291,7 +291,7 @@ Grades are labels. Gains are what each label is worth in a metric, and that is a
 
 Score the store's two test runs from chapter 1, [BM25](#rank-with-bm25)'s and semantic retrieval's rankings for every test query, under each of these schemes: the two binary labelings from [Grade relevance instead of yes or no](#graded-relevance), the book's grades, and a partial gain of 0.1 in the spirit of ESCI. The example also runs chapter 3's [permutation test](#permutation-test-on-queries) and [paired t-test](#paired-t-test-on-queries) on semantic retrieval's lead under each scheme, and prints both p-values. Both leads are [descriptive](#when-a-difference-is-established), like every test here. The semantic run reads the recorded embeddings of the open model `Snowflake/snowflake-arctic-embed-m-v1.5` ([Search by meaning](#search-by-meaning)).
 
-Example `gain-choice-changes-ndcg` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.9:
+Example `gain-choice-changes-ndcg` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.10:
 
 ```python
 """Scores BM25 and semantic retrieval on the test queries under four gain schemes, with exploratory paired tests on
@@ -376,9 +376,9 @@ Exact-or-partial labels also saturate, separating rankers on fewer queries. 19 t
 
 Gains set what each grade is worth, but not how many grades of each kind a query has. A judgment set isn't one population: each query has its own pool of judged products and its own mix of grades, and the mix decides what a perfect ranking looks like for that query. A broad query, one that names a category many products satisfy, has many exact products. A specific query, one with several modifiers, may have only a handful. An average over queries mixes these different problems, so read the mix before you average anything.
 
-The store's queries aren't a random draw from WANDS. Each was chosen to have 60 to 300 judged products, at least 3 exact and 20 partial judgments, and a predicted class no other chosen query has ([data card](https://github.com/rollingedition/book-primer-on-search-relevance/blob/84a609e86e4bbf1e0b7338f68ec314c02b3111eb/examples/data/wands/README.md)). The counts describe the sample, not WANDS as a whole, because queries outside the limits never reach the store. Count the labels for each of the 80 queries, and group the queries by their share of exact products:
+The store's queries aren't a random draw from WANDS. Each was chosen to have 60 to 300 judged products, at least 3 exact and 20 partial judgments, and a predicted class no other chosen query has ([data card](https://github.com/rollingedition/book-primer-on-search-relevance/blob/67880c1fa437fcb912ca77d75451f3169c432ea6/examples/data/wands/README.md)). The counts describe the sample, not WANDS as a whole, because queries outside the limits never reach the store. Count the labels for each of the 80 queries, and group the queries by their share of exact products:
 
-Example `count-labels-per-query` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1), passing in Edition 2026.11.9:
+Example `count-labels-per-query` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1), passing in Edition 2026.11.10:
 
 ```python
 """Counts each query's judgments by label, and groups the queries by their share of exact products. The prose's point
@@ -462,13 +462,13 @@ The evidence on how clicks mislead comes from web search. Joachims et al. tracke
 
 The first bias is **position bias**: people click higher-ranked results more, partly because they trust the ranking. Joachims et al. call the effect a "trust bias," which draws clicks to highly ranked links even when other abstracts the user viewed are more relevant. The authors also found that relative preferences, such as a clicked result over a skipped one above it, are reasonably accurate on average.
 
-In a large experiment on a web search engine, Craswell et al. found that a **cascade model** explained position bias best in the top ranks. In that model, users read results from top to bottom and leave at the first worthwhile document ([Craswell et al., 2008](https://www.microsoft.com/en-us/research/?p=156688)).
+In a large experiment on a web search engine, Craswell et al. found that a **cascade model** explained position bias best in the top ranks. In the cascade model, users read results from top to bottom and leave at the first worthwhile document ([Craswell et al., 2008](https://www.microsoft.com/en-us/research/?p=156688)).
 
-**Presentation bias** goes beyond position. On a portion of Google's web search traffic, results with more attractive titles, meaning more of the query's words in bold, drew more clicks, even after controlling for position and for relevance as people judged it ([Yue et al., 2010](https://archives.iw3c2.org/www2010/proceedings/www/p1011.pdf)). In a store, images and prices are the nearest analogue to titles. That is our inference, not a measured result.
+**Presentation bias** goes beyond position: clicks depend on how a result is shown, not only on where. On a portion of Google's web search traffic, results with more attractive titles, meaning more of the query's words in bold, drew more clicks, even after controlling for position and for relevance as people judged it ([Yue et al., 2010](https://archives.iw3c2.org/www2010/proceedings/www/p1011.pdf)). In a store, images and prices are the nearest analogue to titles. That is our inference, not a measured result.
 
 WANDS has no click data, so the store can't measure these biases. You can still see what a click log would record. Take the store's judgments for `clear shower curtain`, and apply the cascade model in its strictest form: a shopper reads from the top, clicks the first exact product and leaves. This thought experiment uses one fixed rule, not a model of real shoppers. [Chapter 11](#simulate-interleaving-with-clicks) simulates clicks with probabilities. Run the thought experiment on BM25's ranking and on semantic retrieval's, and read the two click logs side by side:
 
-Example `cascade-clicks` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.9:
+Example `cascade-clicks` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.10:
 
 ```python
 """Reads the top 10 of BM25 and of semantic retrieval for `clear shower curtain` as a cascade of clicks, which stops at
@@ -520,13 +520,13 @@ Correcting clicks for bias is a field of its own, unbiased learning to rank. On 
 
 ## Know where the judgments came from {#pooled-judgments}
 
-Nobody judges every product for every query, so test collections judge a **pool** instead. In TREC, the Text REtrieval Conference's shared evaluations, a topic's pool is the union of the top-ranked documents each participant retrieved, usually the top 100, and every document outside the pool counts as not relevant. Voorhees argues that systems can still be compared fairly when every unjudged document counts as not relevant, because pools hold enough of the relevant documents. The same article notes that pooling can't produce reusable test collections for arbitrarily large document sets ([Voorhees, 2007](https://cs.uwaterloo.ca/~brecht/courses/854-Experimental-Performance-Evaluation-2017/readings/trec-cacm-2007.pdf)). Zobel tested the fairness claim. With pooled judgments, the relative performance of systems looks reliable, but recall is overestimated, since many relevant documents have probably never been found ([Zobel, 1998](https://www.cs.cornell.edu/courses/cs574/2002fa/assignments.org/zobel-sigir98.pdf)).
+Nobody judges every product for every query, so test collections judge a **pool** instead, a set of candidates gathered for each query. In TREC, the Text REtrieval Conference's shared evaluations, a topic's pool is the union of the top-ranked documents each participant retrieved, usually the top 100, and every document outside the pool counts as not relevant. Voorhees argues that systems can still be compared fairly when every unjudged document counts as not relevant, because pools hold enough of the relevant documents. The same article notes that pooling can't produce reusable test collections for arbitrarily large document sets ([Voorhees, 2007](https://cs.uwaterloo.ca/~brecht/courses/854-Experimental-Performance-Evaluation-2017/readings/trec-cacm-2007.pdf)). Zobel tested the fairness claim. With pooled judgments, the relative performance of systems looks reliable, but recall is overestimated, since many relevant documents have probably never been found ([Zobel, 1998](https://www.cs.cornell.edu/courses/cs574/2002fa/assignments.org/zobel-sigir98.pdf)).
 
 WANDS built its pool in two steps ([Chen et al., 2022, sections 4.2 and 4.3](https://easychair.org/publications/preprint/wm4R)). The first took the products shoppers had clicked or added to their carts, plus the results of an open-source lexical search engine, Solr, and of a neural retrieval system. The second mined the whole catalog again with the same two systems, and added every product in the class that a query classification model predicted for the query. That second step produced most of WANDS's labels, and mostly near misses: 4.12% of its labels were exact and 63.99% partial ([Table 5](https://easychair.org/publications/preprint/wm4R)). Partial is the commonest label in the store's sample too ([Read the label mix of each query](#label-mix-per-query)). The authors argue that completeness matters for product search, because "incompleteness in Product Search dataset does negatively impact the discriminative power of the evaluation" ([section 3.1](https://easychair.org/publications/preprint/wm4R)).
 
 A pool belongs to a query. A product without a judgment for a query is **unjudged** for it, and a product judged for one query can be unjudged for a similar one. Two of the store's queries show this: the train query `trundle daybed` and the test query `full bed with trundle`. Count the products judged exact for the first that have no judgment for the second, and see how the judges graded the ones that do:
 
-Example `trundle-daybeds-unjudged` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1), passing in Edition 2026.11.9:
+Example `trundle-daybeds-unjudged` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1), passing in Edition 2026.11.10:
 
 ```python
 """Counts the products judged exact for the train query `trundle daybed` that have no judgment for the test query `full
@@ -587,13 +587,13 @@ A product nobody judged for a query is [unjudged](#pooled-judgments): its grade 
 judged@k = (number of the top k products that have a judgment for the query) / k
 ```
 
-The second diagnostic drops the unjudged products before scoring, so the judged ones move up. ir-measures offers it as the `judged_only` option, and we call the result a **condensed** list. Buckley and Voorhees's bpref measure works in the same spirit: it uses judged documents only, and they found it more robust to incomplete judgments.
+The second diagnostic is the **condensed** list, a ranking with its unjudged products dropped before scoring, so the judged ones move up. ir-measures offers it as the `judged_only` option. Buckley and Voorhees's bpref measure works in the same spirit: it uses judged documents only, and they found it more robust to incomplete judgments.
 
 In [chapter 1](#score-every-test-query), [BM25](#rank-with-bm25)'s mean judged@10 on the test queries is 0.927. The mean for [semantic retrieval](#search-by-meaning) is 0.990. One property of the store's data keeps those numbers high. Its catalog is almost all judged: 11,917 of 12,000 products have a judgment for at least one query ([Load the store's data](#store-data)). Expect a full catalog to put more unjudged products in the top 10s.
 
 Build judged@10 by hand, check it against `lib.metrics`, and list where BM25's unjudged products are:
 
-Example `unjudged-in-bm25-top-10` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.9:
+Example `unjudged-in-bm25-top-10` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.10:
 
 ```python
 """Builds judged@10 by hand for BM25's test rankings, checks it against lib.metrics, and lists where BM25's unjudged
@@ -663,7 +663,7 @@ The hand-built judged@10 equals `lib.metrics` on 30 of 30 test queries, with a m
 
 Score both rankers with condensed lists, which drop the unjudged products, to see how far the scores move:
 
-Example `condensed-ndcg` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.9:
+Example `condensed-ndcg` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.10:
 
 ```python
 """Scores BM25 and semantic retrieval on the test queries with standard and condensed nDCG@10, and runs exploratory

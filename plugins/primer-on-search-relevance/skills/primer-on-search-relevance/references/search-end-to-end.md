@@ -3,13 +3,13 @@ title: "A Primer on Search Relevance"
 chapter: "Search, end to end"
 chapter_id: search-end-to-end
 book: primer-on-search-relevance
-edition: 2026.11.9
+edition: 2026.11.10
 verified: 2026-11-19
-edition_code: Y76B-VHFX
+edition_code: ANXY-CR00
 canonical: https://rollingedition.com/primer-on-search-relevance/search-end-to-end
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“Search, end to end,” chapter 1 of A Primer on Search Relevance, Edition 2026.11.9, examples passed Nov 19, 2026. By Rolling Edition, https://rollingedition.com/primer-on-search-relevance/search-end-to-end. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Search, end to end,” chapter 1 of A Primer on Search Relevance, Edition 2026.11.10, examples passed Nov 19, 2026. By Rolling Edition, https://rollingedition.com/primer-on-search-relevance/search-end-to-end. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Search, end to end
 
@@ -21,11 +21,11 @@ The store has what it needs to answer them: a catalog, a set of real queries, an
 
 ## Load the store's data {#store-data}
 
-Before you can improve a search system, you need three things: the items it searches, the queries people type, and judgments that say which items match which query. Search engines call the items documents. In this book they are products. A **judgment** is a person's label for one pair of a query and a product, and a **grade** is the number that stands for the label. Without judgments, you can look at results and form opinions, but you can't tell a fix from a regression.
+Before you can improve a search system, you need three things: the items it searches, the queries people type, and judgments that say which items match which query. Search engines call the items documents. In this book they are products. A **judgment** is a person's label for one pair of a query and a product, and a **grade** is the number that stands for a judgment's label. Without judgments, you can look at results and form opinions, but you can't tell a fix from a regression.
 
 The store's data, which the book's examples search and score, is real. It is a sample of WANDS, a public product-search dataset that Wayfair published with a paper at ECIR 2022 ([Chen et al., 2022](https://easychair.org/publications/preprint/wm4R)), under the MIT licence ([licence](https://github.com/wayfair/WANDS/blob/main/LICENSE)). The full dataset has 42,994 products, 480 queries and 233,448 judgments ([repository](https://github.com/wayfair/WANDS)). The queries are a stratified sample of real shopper queries from a quarter's search log in 2021, and each label is the majority vote of up to three trained annotators (Chen et al., sections 4.1 and 5). The script `prep/wands_sample.py` draws the book's sample, and the sample's data card, `examples/data/wands/README.md`, says how. Setup code that many examples need lives in the book's shared modules, short files in `examples/lib/` that you can open and read. `lib.store`, one of those modules, loads the sample, and the next example prints what comes back:
 
-Example `load-the-store` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1), passing in Edition 2026.11.9:
+Example `load-the-store` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1), passing in Edition 2026.11.10:
 
 ```python
 """Loads the store's sample and prints its size, how its queries split, and how its judgments are labelled. The prose quotes the split from the `train queries` and `test queries` lines."""
@@ -78,15 +78,15 @@ The sample has 12,000 products and 80 queries. It splits the queries once, befor
 
 WANDS judged some pairs more than once. The sample keeps one row per pair, 13,077 in all. When a pair's labels differ, it keeps the lower grade and lists the pair in `label_conflicts.csv`, which holds 7 pairs. Code that scores a ranking reads the judgments through `lib.store.qrels`, which returns them as `{query_id: {product_id: grade}}`. [Chapter 2](#what-relevance-means) reads the judgments closely.
 
-Each judgment is one of three labels, defined by the dataset's authors (Chen et al., section 3.2). Exact means the product fully matches the search query. Partial means it "only matches the target entity of the query, but does not satisfy the modifiers for the query." Irrelevant means the product is not relevant to the query. The book's grades are 2, 1 and 0. Of the judged pairs, 3,252 are exact, 7,972 partial and 1,853 irrelevant. In this book, **relevant** means exact unless a sentence says otherwise.
+Each judgment is one of three labels, defined by the dataset's authors (Chen et al., section 3.2). Exact means the product fully matches the search query. Partial means it "only matches the target entity of the query, but does not satisfy the modifiers for the query." Irrelevant means the product is not relevant to the query. The book's grades are 2, 1 and 0. Of the judged pairs, 3,252 are exact, 7,972 partial and 1,853 irrelevant. In this book, a **relevant** product is one judged exact for the query, unless a sentence says otherwise.
 
-Three warnings come with the store's data. First, each query's `query_class` is WANDS's predicted class for it, not a judgment (Chen et al., Table 1): `foutains with brick look` is classed as `Wallpaper`. Treat it as a hint. Second, nobody judged every product for every query. That would have taken about 60 million judgments, so WANDS judged candidates gathered from products shoppers clicked or added to their carts and from several search systems, and stopped when few new exact matches turned up (Chen et al., sections 4.2 and 4.3). A product without a judgment for a query is **unjudged**: unknown, not irrelevant. Third, nearly every product in the sample, 11,917 of 12,000, is judged for at least one of its queries, so the sample holds fewer distractors than a full catalog would: products that compete for a query's top places without matching it.
+Three warnings come with the store's data. First, each query's `query_class` is WANDS's predicted class for it, not a judgment (Chen et al., Table 1): `foutains with brick look` is classed as `Wallpaper`. Treat it as a hint. Second, nobody judged every product for every query. That would have taken about 60 million judgments, so WANDS judged candidates gathered from products shoppers clicked or added to their carts and from several search systems, and stopped when few new exact matches turned up (Chen et al., sections 4.2 and 4.3). A product without a judgment for a query is [**unjudged**](#pooled-judgments): unknown, not irrelevant. Third, nearly every product in the sample, 11,917 of 12,000, is judged for at least one of its queries, so the sample holds fewer distractors than a full catalog would: products that compete for a query's top places without matching it.
 
 **Working rule:** Split your queries into train and test before you change anything. Read test results to understand a ranker, but choose and tune every change on train queries, and report on test. Treat unjudged products as unknown. If you have no judgments yet, collect some before you change the ranking.
 
 ## Rank products with BM25 {#rank-with-bm25}
 
-Searching the store's catalog takes two jobs. **Retrieval** finds the products that might match a query, out of the whole catalog. **Ranking** puts them in order, best first. The lexical approach does both by comparing the words of the query with the words of each product's text, and scoring the overlap.
+Searching the store's catalog takes two jobs. **Retrieval** finds the products that might match a query, out of the whole catalog. **Ranking** puts the retrieved products in order, best first. The lexical approach does both by comparing the words of the query with the words of each product's text, and scoring the overlap.
 
 BM25 is a lexical scoring function with three parts. A product scores higher when it contains the query's words, and more so for rare words, because a word that appears in few products says more about them. Repeating a word adds less and less, up to a cap, which the BM25 literature calls saturation. And a long text is discounted against a short one, so it can't win by containing more words; the parameter `b` sets how much, from 0 (no discount) to 1 (full) ([Robertson and Zaragoza, 2009](https://www.staff.city.ac.uk/~sbrp622/papers/foundations_bm25_review.pdf)). [Chapter 5](#bm25-from-scratch) builds the formula by hand.
 
@@ -94,7 +94,7 @@ The book's BM25 runs on bm25s 0.3.16, a Python library for BM25. By default it s
 
 The store's test query `clear shower curtain` shows BM25 at work. A shopper who types it wants a transparent curtain, and the catalog holds many curtains that aren't clear, plus accessories that share the words. Here are BM25's top 10:
 
-Example `first-bm25-search` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.9:
+Example `first-bm25-search` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.10:
 
 ```python
 """Searches the store's catalog with BM25 for one test query and prints the top 10 products. The prose's point that BM25 matches words rather than things rests on the names at the bottom of the list."""
@@ -140,7 +140,7 @@ A ranking means little until you know what the shopper wanted. Judgments supply 
 
 Next, set each of BM25's top 10 products for `clear shower curtain` beside its judgment. A product nobody judged for this query shows as `unjudged`:
 
-Example `judge-first-results` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.9:
+Example `judge-first-results` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.10:
 
 ```python
 """Puts BM25's top 10 for `clear shower curtain` beside each product's judgment, and counts the labels. The prose's reading of the top 10 rests on the labelled rows and the `in the top 10` lines after them."""
@@ -203,7 +203,7 @@ Reading results this way shows the kind of mistake a ranker makes. Here, BM25 ma
 
 ## Score one ranking with nDCG@10 {#score-one-ranking}
 
-To compare rankings, you need one number per ranking. It should reward matching products, and exact ones more than partial ones, and count a product near the top more than one near the bottom, because shoppers read from the top. **Normalized discounted cumulative gain at 10**, nDCG@10, does all three.
+To compare rankings, you need one number per ranking. It should reward matching products, and exact ones more than partial ones, and count a product near the top more than one near the bottom, because shoppers read from the top. [**Normalized discounted cumulative gain at 10**](#build-ndcg-from-dcg), nDCG@10, does all three.
 
 In words: each of the top 10 results earns a gain equal to its [grade](#store-data): 2 for exact, 1 for partial, 0 for irrelevant. The gain is divided by a discount that grows with position: log2 of the position plus one, so the first result counts in full and the third counts half. Adding up the discounted gains gives the discounted cumulative gain, DCG. Dividing by the DCG of the best possible top 10 for that query, the ideal DCG, puts the score between 0 and 1, where 1 means no better top 10 exists. An unjudged product earns 0.
 
@@ -216,7 +216,7 @@ The WANDS paper scores search with nDCG@10 too, with gains of 1.0, 0.5 and 0 for
 
 Take [BM25's ranking of `clear shower curtain`](#check-against-judgments): a partial product first, then exact and partial curtains, then three irrelevant hooks. Compute DCG, the ideal DCG and their ratio by hand, then compare with `lib.metrics`, the shared module of the book's metrics:
 
-Example `ndcg-for-one-query` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.9:
+Example `ndcg-for-one-query` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.10:
 
 ```python
 """Computes nDCG@10 for one test query step by step, then checks it against `lib.metrics`. The prose's point rests on the `ndcg@10` line and on the library line that prints the same value."""
@@ -266,11 +266,11 @@ That one number sums up what the judgments showed: a ranking that found the righ
 
 One query is an anecdote. To judge a ranker, score it on a fixed set of queries and average: in this book, the test queries. The rankings for every query in a set form a **run**, written as `{query_id: [product_id, ...]}`, best first. `lib.metrics.evaluate` scores a run against the judgments and returns one row per query.
 
-Next to nDCG@10, `evaluate` reports **judged@10**: the share of the top 10 that has any judgment for the query. Because unjudged products count as grade 0, a low judged@10 means the score is partly a guess. It can't tell an irrelevant product from a relevant one that nobody judged.
+Next to nDCG@10, `evaluate` reports [**judged@10**](#unjudged-results): the share of the top 10 that has any judgment for the query. Because unjudged products count as grade 0, a low judged@10 means the score is partly a guess. It can't tell an irrelevant product from a relevant one that nobody judged.
 
 Now run [BM25](#rank-with-bm25) on every test query, keep its top 100 products for each, and score the run:
 
-Example `bm25-test-scores` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.9:
+Example `bm25-test-scores` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.10:
 
 ```python
 """Scores BM25 on every test query, keeping each query's top 100, and prints the averages and the spread. The prose's point rests on the mean and judged@10 lines and on the three lowest queries printed after them."""
@@ -344,7 +344,7 @@ The lowest-scoring query, `beach blue headboard`, has a judged@10 of 0.500. Anot
 
 ## Search by meaning with embeddings {#search-by-meaning}
 
-Lexical retrieval fails when the shopper's words and the product's words differ, or when shared words mean different things, as with [the hooks that BM25 ranks](#rank-with-bm25) for `clear shower curtain`. **Semantic retrieval** compares meanings instead. It rests on embeddings. An **embedding** is a list of numbers, a vector, that a neural network computes for a piece of text. The network is trained so that texts with similar meanings get vectors pointing in similar directions. You embed every product once, ahead of time. At search time, you embed the query and return the products whose vectors are closest to it. With every vector scaled to length 1, closeness is the dot product of two vectors, which equals the cosine of the angle between them.
+Lexical retrieval fails when the shopper's words and the product's words differ, or when shared words mean different things, as with [the hooks that BM25 ranks](#rank-with-bm25) for `clear shower curtain`. **Semantic retrieval** compares the meanings of the query and the product instead of their words. It rests on embeddings. An **embedding** is a list of numbers, a vector, that a neural network computes for a piece of text. The network is trained so that texts with similar meanings get vectors pointing in similar directions. You embed every product once, ahead of time. At search time, you embed the query and return the products whose vectors are closest to it. With every vector scaled to length 1, closeness is the dot product of two vectors, which equals the cosine of the angle between them.
 
 Embedding the products ahead of time is what makes this fast. In the paper that introduced Sentence-BERT, finding the most similar pair among 10,000 sentences took about 65 hours on a V100 GPU when BERT read every pair. Embedding each sentence once and comparing the embeddings took about 5 seconds, almost all of it spent computing the embeddings: the comparison itself took about 0.01 seconds ([Reimers and Gurevych, 2019](https://arxiv.org/abs/1908.10084)).
 
@@ -352,7 +352,7 @@ The store's embeddings come from the open model `Snowflake/snowflake-arctic-embe
 
 Every product is a vector of 768 numbers, and semantic retrieval compares the query's vector with each one; here are the ten closest, with their judgments:
 
-Example `first-semantic-search` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1), passing in Edition 2026.11.9:
+Example `first-semantic-search` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1), passing in Edition 2026.11.10:
 
 ```python
 """Ranks the store's products for `clear shower curtain` by the similarity of their recorded embeddings to the query's, and prints the top 10 with each judgment. The prose's point rests on the top 10 counts and the similarity spread line."""
@@ -416,7 +416,7 @@ On this query, semantic retrieval does better than BM25. Its top 10 holds 5 exac
 
 One query can mislead, so compare the two rankers on every test query:
 
-Example `compare-lexical-semantic` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.9:
+Example `compare-lexical-semantic` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.10:
 
 ```python
 """Scores BM25 and semantic retrieval on every test query and counts the queries each one is better on. The prose's point that the test set is too small to show a pattern rests on the `better` and `size in inches` lines."""
@@ -482,7 +482,7 @@ A theoretical result shows where single vectors fall short. Weller et al. prove 
 
 ## Fuse two rankings with reciprocal rank fusion {#fuse-with-rrf}
 
-Because lexical and semantic retrieval fail in different places, **hybrid retrieval** combines a ranking from each, here BM25's and semantic retrieval's, hoping to keep the strengths of both. Their scores can't be added directly, because they sit on different scales (chapter 7 shows why). Reciprocal rank fusion (RRF) avoids the problem by using ranks only. Each product scores, for every ranking that contains it, 1 divided by the sum of a constant and its rank, and the scores add up:
+Because lexical and semantic retrieval fail in different places, [**hybrid retrieval**](#queries-each-retriever-wins) combines a ranking from each, here BM25's and semantic retrieval's, hoping to keep the strengths of both. Their scores can't be added directly, because they sit on different scales (chapter 7 shows why). Reciprocal rank fusion (RRF) avoids the problem by using ranks only. Each product scores, for every ranking that contains it, 1 divided by the sum of a constant and its rank, and the scores add up:
 
 ```text
 RRF(product) = sum over rankings r of  1 / (k + rank of product in r),   with k = 60
@@ -494,7 +494,7 @@ RRF is short enough to write by hand, as two functions: `rrf_scores` scores one 
 
 [BM25 scores 0.725 and semantic retrieval 0.830](#search-by-meaning), so the weaker ranker gets an equal vote. Will its vote drag the fused run down, or will the two cover each other's misses well enough to beat semantic retrieval? Settle on one of three answers before you read the output: above semantic retrieval, between the two, or below BM25.
 
-Example `hybrid-rrf` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.9:
+Example `hybrid-rrf` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.10:
 
 ```python
 """Fuses BM25 and semantic retrieval with reciprocal rank fusion, by hand for one query and then for every test query. The prose's point rests on the hybrid's `ndcg@10` line and on the two scores printed for the first product, which agree."""
@@ -582,13 +582,13 @@ If you chose above semantic retrieval, the lesson is that combining two rankings
 
 Every stage so far has been retrieval, which has to score every product in the catalog for every query and so must be cheap. **Reranking** reorders a short list from retrieval with a slower model, one that can afford to look at the query and each product together because it only sees a few dozen products.
 
-One kind of reranking model is a **cross-encoder**. It reads the query and the product text together, as one input, and outputs one relevance score for the pair, scoring each pair independently ([Nogueira and Cho, 2019](https://arxiv.org/abs/1901.04085)). An embedding model reads the product alone, so its vectors can be computed ahead of time. A cross-encoder needs the query, so it can't compute anything ahead of time, and running it on every pair costs time: the slow side of [the Sentence-BERT comparison](#search-by-meaning) was BERT reading every pair of sentences as a cross-encoder. So a cross-encoder reranks a shortlist that a cheaper first stage retrieves (Nogueira and Cho, section 2; [Retrieve & Re-Rank](https://sbert.net/examples/sentence_transformer/applications/retrieve_rerank/README.html)). In return for that cost, it can relate every word of the query to every word of the product through attention, the part of the model that lets each word draw on the others in its input. [Reimers and Gurevych (2019, section 4.3)](https://arxiv.org/abs/1908.10084) note that BERT can use attention to compare the two sentences directly. In 2019, on the MS MARCO passage benchmark, reranking BM25's top 1,000 passages this way improved MRR@10, a measure of how high the first relevant passage lands, by 27% relative to the best earlier result (Nogueira and Cho).
+One kind of reranking model is a **cross-encoder**, which reads the query and the product text together, as one input, and outputs one relevance score for the pair, scoring each pair independently ([Nogueira and Cho, 2019](https://arxiv.org/abs/1901.04085)). An embedding model reads the product alone, so its vectors can be computed ahead of time. A cross-encoder needs the query, so it can't compute anything ahead of time, and running it on every pair costs time: the slow side of [the Sentence-BERT comparison](#search-by-meaning) was BERT reading every pair of sentences as a cross-encoder. So a cross-encoder reranks a shortlist that a cheaper first stage retrieves (Nogueira and Cho, section 2; [Retrieve & Re-Rank](https://sbert.net/examples/sentence_transformer/applications/retrieve_rerank/README.html)). In return for that cost, it can relate every word of the query to every word of the product through attention, the part of the model that lets each word draw on the others in its input. [Reimers and Gurevych (2019, section 4.3)](https://arxiv.org/abs/1908.10084) note that BERT can use attention to compare the two sentences directly. In 2019, on the MS MARCO passage benchmark, reranking BM25's top 1,000 passages this way improved MRR@10, a measure of how high the first relevant passage lands, by 27% relative to the best earlier result (Nogueira and Cho).
 
 A cross-encoder is a language model, but not a **large language model (LLM)**. An LLM is a model trained on large amounts of text to generate text in response to a prompt. Later chapters use LLMs to judge, rewrite and rerank. A cross-encoder generates nothing: it outputs one number.
 
 The store's cross-encoder is the open model `Alibaba-NLP/gte-reranker-modernbert-base`, chosen for the same reason as [the embedding model](#search-by-meaning): it is open and under the Apache 2.0 licence, so anyone can rerun the recording. Its recording, `recordings/cross_encoder.py`, saves the model's scores once, for every product in the union of BM25's and semantic retrieval's top 100 for each query, so every product in the hybrid's top 50 has a score. The rerank step reorders the top 50 of [the hybrid run](#fuse-with-rrf), BM25 and semantic retrieval fused with RRF, by those scores, keeps the rest in place, and scores the result, which the book calls the reranked hybrid:
 
-Example `cross-encoder-rerank` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.9:
+Example `cross-encoder-rerank` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.10:
 
 ```python
 """Reorders the top 50 of the hybrid run by cross-encoder score, keeps the rest in place, and scores the result. The prose's point rests on the reranked nDCG@10 line, set beside the hybrid's score, and on the better and worse counts."""
@@ -645,7 +645,7 @@ Here the reranker doesn't help. It scores 0.798 against 0.812 for the hybrid run
 
 One query it made worse, `refrigerator with ice an water in door`, shows how a reranker loses ground:
 
-Example `rerank-one-query` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.9:
+Example `rerank-one-query` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.10:
 
 ```python
 """Shows the hybrid and reranked top 5 for one query whose nDCG@10 the reranker lowered, with each product's cross-encoder score and judgment. The prose's point rests on the two rank lines and the two nDCG@10 lines."""
@@ -726,7 +726,7 @@ The judges marked that refrigerator exact, so by the dataset's definition it ful
 
 **The tokenizer drops words without telling you.** bm25s's default tokenizer keeps only tokens of two or more characters and doesn't stem words ([bm25s tokenizer](https://raw.githubusercontent.com/xhluca/bm25s/0.3.15/bm25s/tokenization.py)). Run it on a train query and a test query, and count the products it can't match:
 
-Example `tokenizer-drops-terms` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.9:
+Example `tokenizer-drops-terms` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.10:
 
 ```python
 """Tokenizes one train query, one test query and the products' text with bm25s, and counts the products that have `chairs` or only `chair`. The prose's points rest on the printed token lists and on the two product counts."""

@@ -3,13 +3,13 @@ title: "A Primer on Search Relevance"
 chapter: "Hybrid retrieval"
 chapter_id: hybrid-retrieval
 book: primer-on-search-relevance
-edition: 2026.11.9
+edition: 2026.11.10
 verified: 2026-11-19
-edition_code: Y76B-VHFX
+edition_code: ANXY-CR00
 canonical: https://rollingedition.com/primer-on-search-relevance/hybrid-retrieval
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“Hybrid retrieval,” chapter 7 of A Primer on Search Relevance, Edition 2026.11.9, examples passed Nov 19, 2026. By Rolling Edition, https://rollingedition.com/primer-on-search-relevance/hybrid-retrieval. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Hybrid retrieval,” chapter 7 of A Primer on Search Relevance, Edition 2026.11.10, examples passed Nov 19, 2026. By Rolling Edition, https://rollingedition.com/primer-on-search-relevance/hybrid-retrieval. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Hybrid retrieval
 
@@ -21,7 +21,7 @@ So this chapter first asks whether [BM25](#rank-with-bm25), the book's unstemmed
 
 Industry search systems commonly pair the two. One semantic product-search model was built "to complement a lexical search engine in ad hoc product retrieval" ([Nigam et al., 2019](https://arxiv.org/abs/1907.00937)), and a social network's search engine uses embedding retrieval and keyword matching together to score documents ([Huang et al., 2020](https://arxiv.org/abs/2006.11632)).
 
-The store has 50 train queries for tuning and 30 test queries for reporting. This chapter finds the queries each retriever wins and checks each alone. It then builds two **blends**, ways to fuse the rankings with a weight that sets how much each counts, and tunes that weight. Every analysis and every tuning step runs on the train queries. The chapter plans two comparisons on the test queries, made once, at the end: each tuned blend, the [weighted sum](#normalize-scores-before-adding) and [weighted reciprocal rank fusion](#tune-blend-on-train), against semantic retrieval.
+The store has 50 train queries for tuning and 30 test queries for reporting. This chapter finds the queries each retriever wins and checks each alone. It then builds two **blends**, ways to fuse a lexical and a semantic ranking with a weight that sets how much each counts, and tunes that weight. Every analysis and every tuning step runs on the train queries. The chapter plans two comparisons on the test queries, made once, at the end: each tuned blend, the [weighted sum](#normalize-scores-before-adding) and [weighted reciprocal rank fusion](#tune-blend-on-train), against semantic retrieval.
 
 ## Find the queries each retriever wins {#queries-each-retriever-wins}
 
@@ -29,7 +29,7 @@ The store has 50 train queries for tuning and 30 test queries for reporting. Thi
 
 Score both of the store's retrievers by [nDCG@10](#score-one-ranking) on every [train query](#store-data), keeping each one's top 100.
 
-Example `bm25-semantic-wins-by-query` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.9:
+Example `bm25-semantic-wins-by-query` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.10:
 
 ```python
 """Scores BM25 and semantic retrieval on each train query and counts the queries each one wins, ties included.
@@ -92,7 +92,7 @@ If you could choose the better of the two for each query, the mean would be 0.80
 
 Next, see whether the two lists hold different products, and what share of each query's **exact** products (those the judges graded as fully matching) each list finds:
 
-Example `overlap-and-union-recall` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.9:
+Example `overlap-and-union-recall` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.10:
 
 ```python
 """Measures how much BM25's and semantic retrieval's top 10s overlap, and the share of each query's exact products
@@ -151,7 +151,7 @@ The two top 10s share 3.7 products on average, so most of each is missing from t
 
 Two train queries show the kinds of failure:
 
-Example `two-queries-two-winners` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.9:
+Example `two-queries-two-winners` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.10:
 
 ```python
 """Prints the top 5 products of BM25 and semantic retrieval for two train queries, with their judgments, and counts
@@ -228,11 +228,11 @@ Those are single queries: they show a kind of failure, not its frequency. [The p
 
 ## Check each retriever before you fuse {#check-each-retriever-before-fusing}
 
-Knowing [where each retriever wins](#queries-each-retriever-wins) isn't enough: fusion gives each input a say in the final ranking, a weak input included. A study of hybrid search over 11 datasets found a “weakest link” effect: one weak retriever can substantially drag down the fused result's accuracy, so each should be checked before fusion ([Wang et al., PVLDB 2026](https://arxiv.org/abs/2508.01405)). So compare the retrievers' mean nDCG@10, with [judged@10](#unjudged-results) beside it. Then compare them query by query with a **paired test**: how likely is a mean difference this large if the two were equally good? The book's test is the [permutation test](#permutation-test-on-queries), with the [paired t-test](#paired-t-test-on-queries) beside it.
+Knowing [where each retriever wins](#queries-each-retriever-wins) isn't enough: fusion gives each input a say in the final ranking, a weak input included. A study of hybrid search over 11 datasets found a “weakest link” effect: one weak retriever can substantially drag down the fused result's accuracy, so each should be checked before fusion ([Wang et al., PVLDB 2026](https://arxiv.org/abs/2508.01405)). So compare the retrievers' mean nDCG@10, with [judged@10](#unjudged-results) beside it. Then compare them query by query with a [**paired test**](#permutation-test-on-queries): how likely is a mean difference this large if the two were equally good? The book's test is the [permutation test](#permutation-test-on-queries), with the [paired t-test](#paired-t-test-on-queries) beside it.
 
 Fuse BM25 and semantic retrieval as [chapter 1](#fuse-with-rrf) did, with reciprocal rank fusion (RRF): each product scores 1 / (60 + its rank) in each ranking, summed over the two, so each ranking gets an equal vote. Then split the train queries by winner and compare fusion with semantic retrieval alone:
 
-Example `fusion-gain-by-winning-retriever` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.9:
+Example `fusion-gain-by-winning-retriever` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.10:
 
 ```python
 """Compares BM25, semantic retrieval and their RRF fusion on the train queries, then splits the queries by which
@@ -310,18 +310,18 @@ The split uses the judgments to decide which retriever wins, so it diagnoses the
 
 ## Normalize scores before you add them {#normalize-scores-before-adding}
 
-The most direct way to give the weaker retriever, BM25 in the store, [a smaller say](#check-each-retriever-before-fusing) is to add the two retrievers' scores with a weight: α times the semantic score plus (1 − α) times the BM25 score. A sum whose weights add up to 1 is a **convex combination**, or weighted sum. It only works if the scores are on comparable scales, and here they aren't: a [BM25](#rank-with-bm25) score has no fixed range and grows with the number and rarity of the query's words, while semantic retrieval's score, a cosine similarity, lies between −1 and 1. **Score normalization** rescales each retriever's scores for each query before adding them. Per-query min-max scaling maps the lowest score among the query's ranked products to 0 and the highest to 1. A study of fusion functions calls it "the de facto method in the literature" and tests two alternatives ([Bruch et al., 2023](https://arxiv.org/abs/2210.11934)). **Theoretical min-max** uses each score's lowest possible value instead of the lowest one seen: 0 for BM25 and −1 for cosine. The **z-score** subtracts the mean and divides by the standard deviation. The examples' shared module `lib/blend.py` writes each in a few lines.
+The most direct way to give the weaker retriever, BM25 in the store, [a smaller say](#check-each-retriever-before-fusing) is to add the two retrievers' scores with a weight: α times the semantic score plus (1 − α) times the BM25 score. A sum whose weights add up to 1 is a **convex combination**, or weighted sum. It only works if the scores are on comparable scales, and here they aren't: a [BM25](#rank-with-bm25) score has no fixed range and grows with the number and rarity of the query's words, while semantic retrieval's score, a cosine similarity, lies between −1 and 1. **Score normalization** rescales each retriever's scores for each query before adding them. Per-query min-max scaling maps the lowest score among the query's ranked products to 0 and the highest to 1. A study of fusion functions calls it "the de facto method in the literature" and tests two alternatives ([Bruch et al., 2023](https://arxiv.org/abs/2210.11934)). **Theoretical min-max** uses each score's lowest possible value instead of the lowest one seen: 0 for BM25 and −1 for cosine. The **z-score** subtracts the mean of a query's scores and divides by their standard deviation. The examples' shared module `lib/blend.py` writes each in a few lines.
 
 ```text
 min-max(s) = (s − lowest score among the query's candidates) / (highest − lowest)
 blend      = α · min-max(similarity) + (1 − α) · min-max(BM25)
 ```
 
-A sum needs both scores for every product it ranks. The **candidate set** for a query is the union of both retrievers' top 100, and `lib.blend.candidates` looks up both scores for every product in it: the BM25 score, 0 when the product shares no word with the query, and the cosine similarity.
+A sum needs both scores for every product it ranks. The **candidate set** for a query is the union of BM25's top 100 and semantic retrieval's top 100, and `lib.blend.candidates` looks up both scores for every product in it: the BM25 score, 0 when the product shares no word with the query, and the cosine similarity.
 
 Start with the store's raw scores, added with α = 0.5 on the train queries, then do the same after min-max scaling, written out in the example and checked against `lib.blend.weighted_sum`:
 
-Example `raw-scores-versus-min-max` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.9:
+Example `raw-scores-versus-min-max` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.10:
 
 ```python
 """Adds BM25 and cosine scores with equal weights, raw and after min-max scaling, and checks the scaled sum against
@@ -411,7 +411,7 @@ The depth of each list matters too. A product in one retriever's top 20 but not 
 
 Try six values of k on the train queries, fusing lists 100 deep. One check is planned before running: does the best k beat the default, k = 60?
 
-Example `rrf-k-on-train` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.9:
+Example `rrf-k-on-train` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.10:
 
 ```python
 """Fuses BM25 and semantic retrieval with six values of k on the train queries, and tests the best k against the
@@ -477,7 +477,7 @@ The two settings' rankings differ on only a handful of queries (wins, losses and
 
 The chapter's two [blends](#hybrid-retrieval) each take one weight, α, the share given to semantic retrieval. In the [weighted sum](#normalize-scores-before-adding), α multiplies the normalized similarity and 1 − α the normalized BM25 score. In **weighted RRF**, a product scores (1 − α) / (k + its BM25 rank) plus α / (k + its semantic rank). For both, α = 0 is BM25 alone and α = 1 is semantic retrieval alone. For RRF, α = 0.5 is [chapter 1's unweighted fusion](#fuse-with-rrf) with every score halved. Here is the arithmetic for one train query's top product, with an illustrative α = 0.75:
 
-Example `weighted-rrf-one-product` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.9:
+Example `weighted-rrf-one-product` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.10:
 
 ```python
 """Scores every candidate for one train query by weighted RRF, by hand, and checks the ranking against
@@ -533,7 +533,7 @@ Tuning tries a grid of α values on train queries and keeps the one with the bes
 
 Tune α over 0, 0.1, … 1 for the weighted sum under each of [the three normalizations](#normalize-scores-before-adding), and for weighted RRF with k = 60. Then, as tuning checks, test each normalization against min-max, and test the two blends bound for the test queries against semantic retrieval:
 
-Example `tune-blend-weights-on-train` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.9:
+Example `tune-blend-weights-on-train` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.10:
 
 ```python
 """Tunes α on the train queries for the weighted sum under three normalizations and for weighted RRF, then compares
@@ -617,11 +617,11 @@ Every tuned blend scores at least as well as semantic retrieval on the train que
 
 ## Check that the tuned weight is stable {#tuned-weight-stability}
 
-The [tuned weights](#tune-blend-on-train) come from a few dozen queries, so they may depend on which queries you had. The **bootstrap** shows how much: resample the train queries, tune α on each sample, and repeat many times. If the chosen α jumps around, the tuned value reflects the sample more than the store. [Chapter 3](#report-the-size-of-a-gap) uses the same resampling to put intervals around scores.
+The [tuned weights](#tune-blend-on-train) come from a few dozen queries, so they may depend on which queries you had. The [**bootstrap**](#report-the-size-of-a-gap) shows how much: resample the train queries, tune α on each sample, and repeat many times. If the chosen α jumps around, the tuned value reflects the sample more than the store. [Chapter 3](#report-the-size-of-a-gap) uses the same resampling to put intervals around scores.
 
 Resample the train queries 1000 times with a fixed seed, and count how often each α wins for both tuned blends, the weighted sum of min-max scores and weighted RRF, on the same resamples:
 
-Example `blend-weight-bootstrap` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.9:
+Example `blend-weight-bootstrap` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.10:
 
 ```python
 """Resamples the train queries with a fixed seed and counts which α wins each resample, for the weighted sum and for
@@ -683,7 +683,7 @@ Both weights stay on the side of the grid that favours semantic retrieval, apart
 
 Resampling isn't the only check. Products with equal BM25 scores need some order, and `lib.lexical` lists them by `product_id`, an order that carries no information. Descending `product_id` carries none either. The weighted sum gives tied products the same BM25 term, so their order hardly matters to it, but RRF gives them consecutive ranks, and so different scores. List BM25's ties by descending `product_id`, and tune the [best RRF k](#rrf-settings-on-train) and both weights again on the train queries:
 
-Example `tuning-with-ties-reversed` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.9:
+Example `tuning-with-ties-reversed` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.10:
 
 ```python
 """Tunes RRF's k and both blends' α again with BM25's equal scores listed in descending product_id order, to test
@@ -756,7 +756,7 @@ Only held-out queries show whether a tuned setting helps beyond the queries that
 
 On the store's train queries, the [tuned blends](#tune-blend-on-train) gained 0.013 and 0.015 over semantic retrieval, neither of them a gain the permutation test could tell from chance. Predict first: on the test queries, will the weighted sum at α = 0.7 and weighted RRF at α = 0.6 score above semantic retrieval, level with it, or below it?
 
-Example `tuned-blends-on-test` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.9:
+Example `tuned-blends-on-test` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.10:
 
 ```python
 """Chooses each blend's α on the train queries, runs both once on the test queries, and compares each with semantic
@@ -842,17 +842,17 @@ Calling it "above" would have trusted a train gain that the permutation test cou
 
 ## Learn sparse term weights with SPLADE {#learned-sparse-splade}
 
-Instead of fusing two retrievers, you can change one so that it misses less. BM25 only matches words that appear in a product's text. **Learned sparse retrieval** keeps BM25's machinery, an [inverted index](#build-an-inverted-index) of terms, but has a neural model choose each product's terms and their weights. SPLADE is one such model ([Formal et al., 2021](https://arxiv.org/abs/2107.05720)). A language model of the BERT family, a transformer that reads text as subword tokens, reads the product's text and, at each token i, gives every term j in its vocabulary a raw score w_ij. ReLU sets the negative scores to 0, and the original paper sums a logarithm of what's left over the text's tokens:
+Instead of fusing two retrievers, you can change one so that it misses less. BM25 only matches words that appear in a product's text. **Learned sparse retrieval** keeps BM25's machinery, an [inverted index](#build-an-inverted-index) of terms, but has a neural model choose each product's terms and their weights. SPLADE is one learned sparse retrieval model ([Formal et al., 2021](https://arxiv.org/abs/2107.05720)). A language model of the BERT family, a transformer that reads text as subword tokens, reads the product's text and, at each token i, gives every term j in its vocabulary a raw score w_ij. ReLU sets the negative scores to 0, and the original paper sums a logarithm of what's left over the text's tokens:
 
 ```text
 weight of term j = sum over the text's tokens i of  log(1 + ReLU(w_ij))
 ```
 
-The logarithm is a saturation, like BM25's: in the authors' words, it "prevents some terms to dominate and naturally ensures sparsity in representations". SPLADE v2 replaced the sum with the maximum over the tokens, and the authors made max pooling their default ([Formal et al., 2021, SPLADE v2](https://arxiv.org/abs/2109.10086)). A SPLADE vector has one dimension per vocabulary entry, 30,522 for a BERT vocabulary, and typically more than 99% of them are zero ([Sentence Transformers](https://sbert.net/docs/sparse_encoder/usage/usage.html)). The nonzero terms include **expansion terms**: words the text doesn't contain but the model weights anyway, so a product can match a query word it never uses.
+The logarithm is a saturation, like BM25's: in the authors' words, it "prevents some terms to dominate and naturally ensures sparsity in representations". SPLADE v2 replaced the sum with the maximum over the tokens, and the authors made max pooling their default ([Formal et al., 2021, SPLADE v2](https://arxiv.org/abs/2109.10086)). A SPLADE vector has one dimension per vocabulary entry, 30,522 for a BERT vocabulary, and typically more than 99% of them are zero ([Sentence Transformers](https://sbert.net/docs/sparse_encoder/usage/usage.html)). The nonzero terms of a SPLADE vector include **expansion terms**: words the text doesn't contain but the model weights anyway, so a product can match a query word it never uses.
 
 Expansion terms target one of BM25's failures in the store. Count, on the train queries, how many [exact](#queries-each-retriever-wins) products lack at least one of the query's words, as BM25's tokenizer sees them:
 
-Example `exact-products-missing-query-words` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.9:
+Example `exact-products-missing-query-words` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.10:
 
 ```python
 """Counts the exact train pairs whose product lacks a word of its query, as BM25's tokenizer sees them, and counts the
@@ -920,7 +920,7 @@ The SPLADE authors' own technical report gives SPLADE-v3 an MRR@10 above 0.40 on
 
 ## Match token by token with ColBERT {#late-interaction-colbert}
 
-Where [SPLADE](#learned-sparse-splade) changes lexical retrieval, late interaction changes semantic retrieval. The store's semantic retrieval is **single-vector**: one embedding per product and one per query, compared once. **Late interaction** keeps one vector per token instead, so it is also called **multi-vector** retrieval. ColBERT encodes the query and the product separately, as an embedding model does, and compares them only at the end. For each query token it finds the most similar product token, and it sums those maxima, an operation called MaxSim ([Khattab and Zaharia, 2020](https://arxiv.org/abs/2004.12832)):
+Where [SPLADE](#learned-sparse-splade) changes lexical retrieval, late interaction changes semantic retrieval. The store's semantic retrieval is **single-vector**: one embedding per product and one per query, compared once. **Late interaction** keeps one vector per token instead of one per text, so it is also called **multi-vector** retrieval. ColBERT encodes the query and the product separately, as an embedding model does, and compares them only at the end. For each query token ColBERT finds the most similar product token, and it sums those maxima, an operation called MaxSim ([Khattab and Zaharia, 2020](https://arxiv.org/abs/2004.12832)):
 
 ```text
 score(query, product) = sum over query tokens q of  max over product tokens d of  cosine(q, d)

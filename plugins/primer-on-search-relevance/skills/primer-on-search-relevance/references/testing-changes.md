@@ -3,13 +3,13 @@ title: "A Primer on Search Relevance"
 chapter: "Testing changes"
 chapter_id: testing-changes
 book: primer-on-search-relevance
-edition: 2026.11.9
+edition: 2026.11.10
 verified: 2026-11-19
-edition_code: Y76B-VHFX
+edition_code: ANXY-CR00
 canonical: https://rollingedition.com/primer-on-search-relevance/testing-changes
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“Testing changes,” chapter 11 of A Primer on Search Relevance, Edition 2026.11.9, examples passed Nov 19, 2026. By Rolling Edition, https://rollingedition.com/primer-on-search-relevance/testing-changes. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Testing changes,” chapter 11 of A Primer on Search Relevance, Edition 2026.11.10, examples passed Nov 19, 2026. By Rolling Edition, https://rollingedition.com/primer-on-search-relevance/testing-changes. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Testing changes
 
@@ -21,11 +21,11 @@ The chapter plans one comparison on the test queries: semantic retrieval against
 
 ## Diff two runs query by query {#diff-runs-per-query}
 
-The first two questions, whether the average went up and which queries got worse, are answered on a **regression set**: fixed queries, with judgments, that every change runs against before it ships. The ranker the store runs today is the **baseline**, and the change is the **candidate** ranker. Each produces a [run](#score-every-test-query), its rankings for every query in the set. Comparing the runs' means isn't enough, because a change can raise the average and still make some queries worse. TREC, the Text REtrieval Conference's shared evaluations of search systems, built a task around that risk in its 2013 Web track, scoring each system's wins and losses per query against a baseline ([Collins-Thompson et al., 2014](https://trec.nist.gov/pubs/trec22/papers/WEB.OVERVIEW.pdf)). So diff the two runs: one row per query, with the baseline's score, the candidate's score and the change. Then count the wins, losses and ties, and read the losses.
+The first two questions, whether the average went up and which queries got worse, are answered on a **regression set**: fixed queries, with judgments, that every change runs against before it ships. The ranker the store runs today is the **baseline**, and the ranker with the change is the **candidate** ranker. Each produces a [run](#score-every-test-query), its rankings for every query in the set. Comparing the runs' means isn't enough, because a change can raise the average and still make some queries worse. TREC, the Text REtrieval Conference's shared evaluations of search systems, built a task around that risk in its 2013 Web track, scoring each system's wins and losses per query against a baseline ([Collins-Thompson et al., 2014](https://trec.nist.gov/pubs/trec22/papers/WEB.OVERVIEW.pdf)). So diff the two runs: one row per query, with the baseline's score, the candidate's score and the change. Then count the wins, losses and ties, and read the losses.
 
 The baseline is BM25 and the candidate is semantic retrieval, both scored with [nDCG@10](#score-one-ranking) on the test queries. The example builds the diff with pandas, and its tests come from `lib.significance`, which [chapter 3](#compare-runs-in-a-harness) builds by hand. Those tests are a [permutation test](#permutation-test-on-queries) and a [paired t-test](#paired-t-test-on-queries). A [bootstrap interval](#report-the-size-of-a-gap) sits beside them, at the confidence level that matches the threshold. The bootstrap and the permutation test resample at random, so `lib.significance` seeds SciPy with `rng` ([chapter 3](#permutation-test-on-queries)).
 
-Example `diff-semantic-against-bm25` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.9:
+Example `diff-semantic-against-bm25` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.10:
 
 ```python
 """Scores each test query under BM25 and semantic retrieval, then runs the chapter's one planned comparison on the difference. The verdict rests on the 'permutation test p' and 'established' lines, read against 'threshold'."""
@@ -112,7 +112,7 @@ The track describes this as "weighting losses α + 1 times as heavily as success
 
 Compare two candidates against BM25. The first is full semantic retrieval, with all 768 numbers of each [embedding](#search-by-meaning) from `Snowflake/snowflake-arctic-embed-m-v1.5`. The second keeps only the first 128 numbers, a sixth of the memory. That is below the 256 dimensions the model's card documents, and [chapter 6](#truncate-dimensions-test-loss) rejected 128 on the train queries. We use it because on the test queries it trades gains on some queries for losses on others, which is what URisk is for. Chosen for how it behaves on test, it is exploratory, not a planned comparison. URisk takes a few lines; run it on both candidates:
 
-Example `urisk-of-two-candidates` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.9:
+Example `urisk-of-two-candidates` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.10:
 
 ```python
 """URisk for full semantic retrieval and for the 128-number version, each against BM25, with every loss counted alpha + 1 times. The prose's point rests on the 'semantic 128 urisk with alpha 1' line, read against its mean change."""
@@ -192,11 +192,11 @@ URisk describes risk without testing it. Dinçer et al. define a related measure
 
 A new ranker's losses, such as the cheaper ranker's in [the URisk example](#weigh-losses-with-urisk), may come from gaps in the judgments, covering only the products that earlier systems found. WANDS, the source of the store's judgments, judged only what earlier systems found ([chapter 2](#pooled-judgments)). A ranker that differs from them surfaces products nobody judged, and the metrics give each one [grade](#store-data) 0, so its score may be too low, or exactly right. You can't tell which until someone judges them. The WANDS authors warn that gaps like these weaken an evaluation "incompleteness in Product Search dataset does negatively impact the discriminative power of the evaluation" ([Chen et al., 2022](https://easychair.org/publications/preprint/wm4R)).
 
-[Chapter 2](#unjudged-results) counts unjudged products with judged@10. For testing a change, one more step helps: a sensitivity check. Rescore both runs under two scenarios, one favouring each side. In one, every unjudged product in the baseline's top 10s is exact; in the other, every unjudged product in the candidate's. Both runs are scored with the same judgments in each scenario, because nDCG's ideal ranking is built from every judgment for the query: a product judged exact raises the ideal, and so lowers the score of every run that doesn't show it. The scenarios aren't bounds, since the true judgments could mix the two. If the leader changes between them, the judgments can't decide yet.
+[Chapter 2](#unjudged-results) counts unjudged products with judged@10. For testing a change, one more step helps: a sensitivity check, which rescores both runs under two scenarios, one favouring each side. In one, every unjudged product in the baseline's top 10s is exact; in the other, every unjudged product in the candidate's. Both runs are scored with the same judgments in each scenario, because nDCG's ideal ranking is built from every judgment for the query: a product judged exact raises the ideal, and so lowers the score of every run that doesn't show it. The scenarios aren't bounds, since the true judgments could mix the two. If the leader changes between them, the judgments can't decide yet.
 
 The cheaper semantic retrieval from [the URisk example](#weigh-losses-with-urisk), which keeps 128 of each embedding's 768 numbers, lost 13 of the store's test queries against BM25. Before you read anything into those losses, run the check:
 
-Example `unjudged-score-range` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.9:
+Example `unjudged-score-range` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.10:
 
 ```python
 """Mean nDCG@10 for BM25, the cheaper ranker and full semantic retrieval, when each run's unjudged top-10 products are judged exact in turn. The prose's point rests on the 'leader changes' line for semantic 128 against BM25, read against the scores printed before it."""
@@ -279,7 +279,7 @@ The test queries in [the regression set](#diff-runs-per-query) are held out, and
 
 The change is a blend of BM25 and semantic retrieval with one weight, the share given to semantic retrieval. [Chapter 7](#tune-blend-on-train) calls it α, a different α from URisk's, and tunes it on the train queries with weighted reciprocal rank fusion, over 0, 0.1, … 1. Choose the semantic weight both ways, the right way on train queries and the wrong way on test queries, and report each choice on the test queries. These test scores show the bias; they are exploratory, not a planned comparison. Then measure how much choosing on the reported queries inflates their score, without touching the test queries again: split the train queries at random, 1,000 times, into 30 to choose on and 20 to report on, and compare the 20 reported queries' score when the weight is chosen on the 30 with their score when it is chosen on the 20 themselves.
 
-Example `tuning-on-test-inflates` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.9:
+Example `tuning-on-test-inflates` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.10:
 
 ```python
 """Chooses the blend's semantic weight on train queries and on test queries, then measures how much choosing on the queries you report inflates their score. The prose's point rests on the 'average inflation' line, read against the two 'test ndcg@10' lines."""
@@ -343,7 +343,7 @@ The random splits put a number on the bias. On report sets of 20 queries, choosi
 
 ## Run an A/B test {#run-an-ab-test}
 
-Offline tests measure rankings against judgments, but the store earns from shoppers. An **A/B test**, or controlled experiment, assigns users at random to the current system, the **control**, or to the change, the **treatment**, and compares a metric chosen before the test starts ([Kohavi et al., 2009](https://exp-platform.com/Documents/controlledExperimentDMKD.pdf)).
+Offline tests measure rankings against judgments, but the store earns from shoppers. An **A/B test**, or controlled experiment, assigns users at random to the current system or to the change, and compares a metric chosen before the test starts ([Kohavi et al., 2009](https://exp-platform.com/Documents/controlledExperimentDMKD.pdf)). The current system is the **control**, and the changed system is the **treatment**.
 
 Three checks make the result trustworthy. First, an **A/A test**, in which both groups get the same system, should reject the null hypothesis about 5% of the time at a 95% confidence level (Kohavi et al., 2009). Far more than 5% points to a broken setup. Second, read the result once, at the size you planned. Stopping a test the moment it looks significant, called **peeking**, inflates the type-I error rate considerably ([Kohavi et al., 2022](https://exp-platform.com/abtestingintuitionbusters/)). Third, check that the groups came out the size you planned. A **sample ratio mismatch** (SRM) means users went missing from one group or were added to it unevenly, and "Ignoring the SRM without knowing the root cause may result in a bad product modification appearing to be good" ([Fabijan et al., 2019](https://www.microsoft.com/en-us/research/?p=651990)).
 
@@ -355,7 +355,7 @@ z = (p_B − p_A) / sqrt( p̄ × (1 − p̄) × 2 / n ),   p-value = 2 × P(Z > 
 
 Simulate 2,000 A/A tests under stated assumptions, to see what peeking does: 2,000 shoppers a day in each group, 5% buying, each test planned for 14 days. Read each one at its planned end, and also every day, stopping at the first p-value below 0.05. Then check one split for a mismatch.
 
-Example `aa-tests-with-peeking` (Python 3.12.15 · numpy 2.5.5 · scipy 1.18.1), passing in Edition 2026.11.9:
+Example `aa-tests-with-peeking` (Python 3.12.15 · numpy 2.5.5 · scipy 1.18.1), passing in Edition 2026.11.10:
 
 ```python
 """Simulates A/A tests, where both groups get the same search, read at the planned end and every day, and checks one split for a mismatch. The prose's point rests on the 'significant at the planned end' and 'significant on some day' lines, and on the sample ratio mismatch line."""
@@ -416,7 +416,7 @@ users per group ≈ 16 × σ² / Δ²
 
 The 16 comes from the normal distribution: 2 × (z for 97.5% + z for 80%)², about 2 × (1.96 + 0.84)². For 90% power, they replace 16 with 21. SciPy computes the coefficient, and the code checks the rule against their two worked examples: revenue per user with a mean of $3.75 and a standard deviation of $30, and a conversion rate of 5%, each with a 5% relative change to detect. The store's data, from WANDS, has no sales figures, so the code assumes the store converts at 5% too.
 
-Example `sample-size-from-power` (Python 3.12.15 · scipy 1.18.1), passing in Edition 2026.11.9:
+Example `sample-size-from-power` (Python 3.12.15 · scipy 1.18.1), passing in Edition 2026.11.10:
 
 ```python
 """Kohavi et al.'s rule of thumb for users per group, its coefficient, and the users the store would need for smaller changes, assuming its 5% conversion rate. The prose's point rests on the two 'users per group for a change' lines, read against the coefficient line."""
@@ -460,7 +460,7 @@ The coefficient is 15.7, and the revenue and conversion examples need 409,600 an
 
 The same arithmetic says what the [regression set](#diff-runs-per-query) can detect. Both rankers score the same queries, so the test works on one sample of per-query differences instead of two groups, and the coefficient halves, to 7.8. Take σ as the spread of those differences between two close rankers: semantic retrieval and the [hybrid run](#fuse-with-rrf) that fuses it with BM25.
 
-Example `queries-needed-for-power` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.9:
+Example `queries-needed-for-power` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.10:
 
 ```python
 """The smallest change the regression set detects with 80% power, from the spread of per-query changes, and a simulation that checks the power formula. The prose's point rests on the 'smallest change 30 queries detect' line and the simulated power lines."""
@@ -520,13 +520,13 @@ The per-query changes have a spread of 0.062, so with 30 test queries the regres
 
 ## Interleave two rankings with team draft {#team-draft-interleaving}
 
-An [A/B test](#run-an-ab-test) shows each group a different ranking, so differences between shoppers add noise. **Interleaving** shows each shopper one list that mixes the two rankers' results. Joachims designed it so that "the combined ranking gives (almost) equal presentation bias to both search engines" ([Joachims, 2003](https://cs.cornell.edu/~tj/publications/joachims_02b.pdf)): neither ranker's products sit systematically higher. The ranker whose products draw more clicks wins that search. Interleaving answers a narrower question than an A/B test: which of two rankings users prefer, not an absolute number for either ([Hofmann et al., 2016](https://www.microsoft.com/en-us/research/publication/online-evaluation-information-retrieval/)).
+An [A/B test](#run-an-ab-test) shows each group a different ranking, so differences between shoppers add noise. **Interleaving** shows each shopper one list that mixes two rankers' results. Joachims designed it so that "the combined ranking gives (almost) equal presentation bias to both search engines" ([Joachims, 2003](https://cs.cornell.edu/~tj/publications/joachims_02b.pdf)): neither ranker's products sit systematically higher. The ranker whose products draw more clicks wins that search. Interleaving answers a narrower question than an A/B test: which of two rankings users prefer, not an absolute number for either ([Hofmann et al., 2016](https://www.microsoft.com/en-us/research/publication/online-evaluation-information-retrieval/)).
 
-**Team draft** mixes the lists like picking teams for a game ([Radlinski et al., 2008](https://cs.cornell.edu/~tj/publications/radlinski_etal_08b.pdf), Algorithm 2). The team with fewer picks goes next, and a coin flip decides when both have the same number. Each pick is the team's highest-ranked product that isn't shown yet. A click counts for the team that picked the product. Radlinski et al. show that under team draft, "a randomly clicking user will always produce equally many preferences for A as for B in expectation", which an earlier method didn't guarantee.
+**Team draft** interleaves two rankers' lists like picking teams for a game ([Radlinski et al., 2008](https://cs.cornell.edu/~tj/publications/radlinski_etal_08b.pdf), Algorithm 2). The team with fewer picks goes next, and a coin flip decides when both have the same number. Each pick is the team's highest-ranked product that isn't shown yet. A click counts for the team that picked the product. Radlinski et al. show that under team draft, "a randomly clicking user will always produce equally many preferences for A as for B in expectation", which an earlier method didn't guarantee.
 
 Interleave the store's semantic retrieval and BM25 for the test query `clear shower curtain`. Team draft fits in a few lines, with a seeded generator for its coin flips, and the code checks that `lib.experiments` returns the same list:
 
-Example `team-draft-one-query` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.9:
+Example `team-draft-one-query` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.10:
 
 ```python
 """Team draft over one query's semantic and BM25 rankings: the interleaved list, and the team that picked each place. The prose's point rests on the BM25 pick at the bottom of the list, and on the 'same list' line that checks lib.experiments."""
@@ -603,7 +603,7 @@ The probabilities are assumptions. Oosterhuis and de Rijke's Table 2 gives a "na
 
 Send one such shopper down the team-draft list for `clear shower curtain`, by hand:
 
-Example `one-simulated-shopper` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.9:
+Example `one-simulated-shopper` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.10:
 
 ```python
 """One simulated navigational shopper walks the team-draft list for clear shower curtain, clicking and leaving by the cascade model. The prose's point rests on the two 'clicks for' lines and the verdict line, and on the 'same clicks' line that checks lib.experiments."""
@@ -658,7 +658,7 @@ same clicks from lib.experiments: yes
 
 The shopper's clicks count 1 for semantic retrieval and 1 for BM25, so the verdict for this search is neither, a tie. Simulate 10,000 interleaved searches, with a fixed seed, for two pairs: semantic retrieval against BM25, and the [hybrid run](#fuse-with-rrf) against semantic retrieval. A sign test asks whether wins outnumber losses by more than chance; [Radlinski et al.](https://cs.cornell.edu/~tj/publications/radlinski_etal_08b.pdf) use "a binomial sign test", leaving ties out. Read the verdict at 100, 1,000 and 10,000 searches:
 
-Example `simulated-interleaving-verdict` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.9:
+Example `simulated-interleaving-verdict` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.10:
 
 ```python
 """Sign tests on simulated interleaved searches, at 100, 1,000 and 10,000 searches, for two pairs of rankers and a third pair with BM25's ties reversed. The prose's point rests on the 'verdict changes' line and the 100-search lines for the hybrid against semantic retrieval."""
@@ -743,7 +743,7 @@ Disagreements have causes you can check. The judgments may miss products the onl
 
 The store can simulate an A/B test with the navigational shopper from [the interleaving rehearsal](#simulate-interleaving-with-clicks): 5,000 searches on BM25 as the control and 5,000 on semantic retrieval as the treatment, all on test queries. Measure clicks per search, and the share of searches with a click on an exact product. Then repeat with Table 2's "perfect" user, the perfect shopper, mapped the same way, who reads all ten results, clicks every exact product and never leaves early. Which ranker do you expect to win more clicks per search, and would every shopper agree?
 
-Example `clicks-per-search-misleads` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.9:
+Example `clicks-per-search-misleads` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.10:
 
 ```python
 """Clicks per search and the share of searches with an exact click, for BM25 and semantic retrieval run as simulated A/B arms, for the navigational and the perfect shopper. The prose's point rests on the two 'reverses between shoppers' lines, read with the means and p-values printed before them."""

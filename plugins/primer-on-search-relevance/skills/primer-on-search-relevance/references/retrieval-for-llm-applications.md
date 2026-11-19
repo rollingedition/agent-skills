@@ -3,13 +3,13 @@ title: "A Primer on Search Relevance"
 chapter: "Retrieval for LLM applications"
 chapter_id: retrieval-for-llm-applications
 book: primer-on-search-relevance
-edition: 2026.11.9
+edition: 2026.11.10
 verified: 2026-11-19
-edition_code: Y76B-VHFX
+edition_code: ANXY-CR00
 canonical: https://rollingedition.com/primer-on-search-relevance/retrieval-for-llm-applications
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“Retrieval for LLM applications,” chapter 10 of A Primer on Search Relevance, Edition 2026.11.9, examples passed Nov 19, 2026. By Rolling Edition, https://rollingedition.com/primer-on-search-relevance/retrieval-for-llm-applications. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Retrieval for LLM applications,” chapter 10 of A Primer on Search Relevance, Edition 2026.11.10, examples passed Nov 19, 2026. By Rolling Edition, https://rollingedition.com/primer-on-search-relevance/retrieval-for-llm-applications. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Retrieval for LLM applications
 
@@ -28,7 +28,7 @@ The 2 planned comparisons split [the book's 0.05](#when-a-difference-is-establis
 
 ## Put retrieved products in the prompt {#put-retrieved-products-in-the-prompt}
 
-**Retrieval-augmented generation** (RAG), the design behind a shopping assistant, pairs an LLM with a retriever. For each request, the retriever finds a few texts in an index, and the LLM writes its answer from them. Lewis et al.'s RAG models keep their non-parametric memory as a dense vector index of Wikipedia, which a pretrained neural retriever searches. Those authors also call two problems of language models on their own open research problems: giving provenance for their decisions, and updating their world knowledge ([Lewis et al., 2020](https://arxiv.org/abs/2005.11401)). A store has both problems: its catalog changes, and an answer should say which products it recommends. The retrieved text goes into the **prompt**, the input the model reads, and that text is the **context**. A model reads at most a fixed number of [tokens](#turn-text-into-embeddings), the word pieces of its own vocabulary. That limit is its **context window**.
+**Retrieval-augmented generation** (RAG), the design behind a shopping assistant, pairs an LLM with a retriever. For each request, the retriever finds a few texts in an index, and the LLM writes its answer from them. Lewis et al.'s RAG models keep their non-parametric memory as a dense vector index of Wikipedia, which a pretrained neural retriever searches. Those authors also call two problems of language models on their own open research problems: giving provenance for their decisions, and updating their world knowledge ([Lewis et al., 2020](https://arxiv.org/abs/2005.11401)). A store has both problems: its catalog changes, and an answer should say which products it recommends. The retrieved text goes into the **prompt**, the input the model reads, and the retrieved text in a prompt is the **context**. A model's **context window** is the most [tokens](#turn-text-into-embeddings) it can read, a fixed number of the word pieces in its own vocabulary.
 
 Why not put the whole catalog in the prompt and skip retrieval? It has to fit, and even when it fits, models don't read a long prompt evenly. Liu et al. found that models often do best when the relevant information sits at the start or end of the input, and that performance degrades significantly when it sits in the middle of a long context ([Liu et al., 2024](https://aclanthology.org/2024.tacl-1.9/)). A later study calls this the lost-in-the-middle (LiM) effect. It finds the effect strongest when inputs occupy up to 50% of a model's context window, and near the limit it gives way to a bias toward the end ([Veseli et al., 2025](https://arxiv.org/abs/2508.07479)). More passages aren't always better either. As Jin et al. gave long-context LLMs more retrieved passages, output quality first improved and then declined, and they count retrieved hard negatives, passages that look relevant but aren't, as a key contributor to the decline ([Jin et al., 2024](https://arxiv.org/abs/2410.05983)). One vendor's engineering post suggests the opposite for small collections: put all of a knowledge base in the prompt when it holds under 200,000 tokens, about 500 pages of material ([Anthropic, 2024](https://www.anthropic.com/news/contextual-retrieval)). That is a vendor's rule of thumb, not a measurement.
 
@@ -36,7 +36,7 @@ The store's LLM is the open model `gemma4:12b-it-q4_K_M`. Its **recordings**, `r
 
 The store's recorded answers ([Score each answer](#retrieval-bounds-the-answer)) put five products in each prompt, after these instructions: "You help shoppers at an online furniture and home-goods store. Using only the products listed below, answer the shopper. Recommend up to three products that fit, cite each one by its ID, and say plainly if none of them fit. Don't mention products that aren't listed." How many prompts' worth is the catalog? Counting its words as the LLM reads them answers that.
 
-Example `catalog-against-the-context` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.9:
+Example `catalog-against-the-context` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.10:
 
 ```python
 """Counts the catalog's words as the LLM reads each product, then sets them against a median prompt of the
@@ -85,7 +85,7 @@ the catalog against the recording's window, at one token per word: 133 times
 the catalog against 200,000 tokens, at one token per word: 5.5 times
 ```
 
-Even with the book's sample cutting descriptions to about 400 characters ([data card](https://github.com/rollingedition/book-primer-on-search-relevance/blob/84a609e86e4bbf1e0b7338f68ec314c02b3111eb/examples/data/wands/README.md)), the catalog holds 1,091,544 words, and a prompt with five products holds a median of 536 words. The catalog is 2,035 times larger than one prompt.
+Even with the book's sample cutting descriptions to about 400 characters ([data card](https://github.com/rollingedition/book-primer-on-search-relevance/blob/67880c1fa437fcb912ca77d75451f3169c432ea6/examples/data/wands/README.md)), the catalog holds 1,091,544 words, and a prompt with five products holds a median of 536 words. The catalog is 2,035 times larger than one prompt.
 
 Without a tokenizer for this model, the counts are of words. The recording set a context window of 8192 tokens. If every word were a single token, the catalog would fill that window 133 times over, and the vendor's 200,000 tokens 5.5 times over. The store has to retrieve.
 
@@ -107,7 +107,7 @@ The store's recording answered each test query three times, with the query follo
 
 How many answers will recommend nothing, given five random products and a prompt that tells the LLM to say plainly if none of them fit?
 
-Example `rag-answers-by-context` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.9:
+Example `rag-answers-by-context` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.10:
 
 ```python
 """Scores the recorded answers on the human grades, context by context, and makes the first planned comparison. The
@@ -238,7 +238,7 @@ Check citations at two levels, cheapest first. The first is exact and needs no m
 
 The recording's schema asked for the cited IDs as a list of integers in a field of their own (`schemas` in the manifest). The schema describes the field's form; it says nothing about which IDs go in it, or how many. The check reads each [recorded answer](#retrieval-bounds-the-answer) against its context, and compares the field with the context IDs the answer's text writes out. The text can't reveal an ID from outside the context, which would look like any other number an answer writes, such as a size. That is why the IDs belong in a field:
 
-Example `citations-inside-the-context` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.9:
+Example `citations-inside-the-context` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.10:
 
 ```python
 """Checks every recorded answer's cited IDs against its context, and its text against its cited field. The point
@@ -289,7 +289,7 @@ Support isn't relevance. A citation can be faithful to the product's text and st
 
 Start with one of the store's answers by hand, the one for the test query `medium size chandelier` from the semantic context. Then count the human grades of every product cited in the [recorded answers](#retrieval-bounds-the-answer) from the semantic and BM25 contexts.
 
-Example `faithful-but-partial` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.9:
+Example `faithful-but-partial` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.10:
 
 ```python
 """Reads one recorded answer by hand, checking its claim against the cited product's text and the judges' label,
@@ -349,18 +349,18 @@ Across both retrievers' answers, the 153 cited products break down as 112 exact,
 
 ## Measure the context, then the answer {#measure-the-context}
 
-A RAG system can fail at retrieval or at generation, so measure the context as well as [the answers](#retrieval-bounds-the-answer). Ragas, a framework for evaluating RAG, scores several measures without reference answers: how well retrieval identifies relevant and focused context passages, faithfulness, and the answer's relevance. Its context recall needs a reference ([Es et al., 2024](https://aclanthology.org/2024.eacl-demo.16/)). Its context measures carry [chapter 3's metrics](#count-relevant-in-top-k) over, with an LLM as the judge. Of these, **context precision** is the rank-aware one, since Ragas takes the mean of precision@k over the positions that hold a relevant chunk ([Ragas documentation](https://docs.ragas.io/en/stable/concepts/metrics/available_metrics/context_precision/)). The other, **context recall**, is the share of a reference answer's claims that the context supports, and an ID-based variant compares the retrieved IDs with reference IDs ([Ragas documentation](https://docs.ragas.io/en/stable/concepts/metrics/available_metrics/context_recall/)). With judgments in hand, the reference is the set of exact products, and the ID-based context recall is [recall@k](#count-relevant-in-top-k).
+A RAG system can fail at retrieval or at generation, so measure the context as well as [the answers](#retrieval-bounds-the-answer). Ragas, a framework for evaluating RAG, scores several measures without reference answers: how well retrieval identifies relevant and focused context passages, faithfulness, and the answer's relevance. Its context recall needs a reference ([Es et al., 2024](https://aclanthology.org/2024.eacl-demo.16/)). Its context measures carry [chapter 3's metrics](#count-relevant-in-top-k) over, with an LLM as the judge. Ragas's **context precision** is the rank-aware one of its context measures, the mean of precision@k over the positions that hold a relevant chunk ([Ragas documentation](https://docs.ragas.io/en/stable/concepts/metrics/available_metrics/context_precision/)). Its **context recall** is the share of a reference answer's claims that the context supports, and an ID-based variant compares the retrieved IDs with reference IDs ([Ragas documentation](https://docs.ragas.io/en/stable/concepts/metrics/available_metrics/context_recall/)). With judgments in hand, the reference is the set of exact products, and the ID-based context recall is [recall@k](#count-relevant-in-top-k).
 
 ```text
 context recall@k    = (exact products in the top k) / (exact products judged for the query)
 context precision@k = mean of precision@i over the positions i ≤ k that hold an exact product
 ```
 
-Which measure tracks the answers? Salemi and Zamani found that relevance labels correlate only weakly with a RAG system's downstream performance, and they score each retrieved passage by the answer the LLM gives from it instead ([Salemi and Zamani, 2024](https://arxiv.org/abs/2404.13781)). **Spearman's rank correlation** answers the question for one recording: it is the correlation between two measures' ranks rather than their values, 1 when they order the cases the same way and near 0 when the orders are unrelated.
+Which measure tracks the answers? Salemi and Zamani found that relevance labels correlate only weakly with a RAG system's downstream performance, and they score each retrieved passage by the answer the LLM gives from it instead ([Salemi and Zamani, 2024](https://arxiv.org/abs/2404.13781)). **Spearman's rank correlation** is the correlation between two measures' ranks rather than their values, 1 when they order the cases the same way and near 0 when the orders are unrelated, and it answers the question for one recording.
 
 We measure every context a retriever built for the [recorded answers](#retrieval-bounds-the-answer), a semantic and a BM25 one per test query. This example builds context recall and context precision by hand, checks them against `lib.metrics.recall_at_k` and the copies in `lib.generation`, and works through one context:
 
-Example `context-measures-by-hand` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.9:
+Example `context-measures-by-hand` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.10:
 
 ```python
 """Builds context precision and context recall by hand and checks each against the library's version, then works
@@ -427,7 +427,7 @@ For the semantic context of `door jewelry organizer`, the grades in order are 1 
 
 Correlating each measure with the answer's [exact share](#retrieval-bounds-the-answer) answers that question. This example computes Spearman's correlation as Pearson's correlation of the ranks and checks it against SciPy's `spearmanr`:
 
-Example `context-measures-against-answers` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.9:
+Example `context-measures-against-answers` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.10:
 
 ```python
 """Correlates three context measures with the exact share of each recorded answer, computing Spearman's correlation
@@ -482,11 +482,11 @@ Read these correlations as a description of one recording, not a test. Both side
 
 ## Choose the retrievable unit {#choose-the-retrievable-unit}
 
-A **retrievable unit** is the piece of text that retrieval scores and returns, and that a [context](#measure-the-context) holds: a whole document, a passage or a sentence. A long document gets cut into **chunks**, and **chunking** is the rule that cuts it, such as a fixed number of tokens, sentences, paragraphs, or breaks chosen by meaning. Chen et al. call the retrieval unit an often-overlooked design choice, and in their study, indexing propositions, short self-contained statements, beat indexing passages ([Chen et al., 2023](https://arxiv.org/abs/2312.06648)). Beyond that, the studies disagree. One finds that the best size depends on the questions and the embedding model: 64 to 128 tokens for datasets with concise, fact-based answers, and 512 to 1,024 tokens for questions that need broader context ([Bhat et al., 2025](https://arxiv.org/abs/2505.21700)). Another finds that the computational costs of semantic chunking aren't justified by consistent performance gains ([Qu et al., 2024](https://arxiv.org/abs/2410.13070)). A comparison of 36 methods ranks chunking by groups of paragraphs first, and finds that simple fixed-size character chunks performed poorly as baselines ([Shaukat et al., 2026](https://arxiv.org/abs/2603.06976)).
+A **retrievable unit** is the piece of text that retrieval scores and returns, and that a [context](#measure-the-context) holds: a whole document, a passage or a sentence. A long document gets cut into **chunks**, and **chunking** is the rule that cuts a document, such as a fixed number of tokens, sentences, paragraphs, or breaks chosen by meaning. Chen et al. call the retrieval unit an often-overlooked design choice, and in their study, indexing propositions, short self-contained statements, beat indexing passages ([Chen et al., 2023](https://arxiv.org/abs/2312.06648)). Beyond that, the studies disagree. One finds that the best size depends on the questions and the embedding model: 64 to 128 tokens for datasets with concise, fact-based answers, and 512 to 1,024 tokens for questions that need broader context ([Bhat et al., 2025](https://arxiv.org/abs/2505.21700)). Another finds that the computational costs of semantic chunking aren't justified by consistent performance gains ([Qu et al., 2024](https://arxiv.org/abs/2410.13070)). A comparison of 36 methods ranks chunking by groups of paragraphs first, and finds that simple fixed-size character chunks performed poorly as baselines ([Shaukat et al., 2026](https://arxiv.org/abs/2603.06976)).
 
 A small unit can also lose what it is about. A vendor's engineering post reports that adding chunk-specific context to each chunk before embedding it cut the top-20-chunk retrieval failure rate by 35%. That is the vendor's claim about its own method ([Anthropic, 2024](https://www.anthropic.com/news/contextual-retrieval)).
 
-The store's products are short, partly because the book's sample cuts every description to about 400 characters ([data card](https://github.com/rollingedition/book-primer-on-search-relevance/blob/84a609e86e4bbf1e0b7338f68ec314c02b3111eb/examples/data/wands/README.md)). Of the descriptions, 5,933 end in that cut, and 1,568 products have none.
+The store's products are short, partly because the book's sample cuts every description to about 400 characters ([data card](https://github.com/rollingedition/book-primer-on-search-relevance/blob/67880c1fa437fcb912ca77d75451f3169c432ea6/examples/data/wands/README.md)). Of the descriptions, 5,933 end in that cut, and 1,568 products have none.
 
 Non-empty descriptions run to a median of 68 words, and the whole text that search reads runs to at most 140 words per product. The store's full product pages would be longer.
 
@@ -494,7 +494,7 @@ Even so, each product is a short text about one thing, so cutting it into chunks
 
 The recorded embeddings cover each product's whole text, so we try the units with BM25 only, on the 50 train queries, because choosing a unit is tuning. We index five units: the whole product (the text `lib.lexical` indexes), the name alone, the description alone, each of the 35,061 description sentences on its own, and each sentence with the product's name, class and category in front, a simple form of adding context to each chunk. The last sentence of a cut description is a fragment. The sentences with the other fields keep every field the whole product has, and a product with no description gets one unit of those fields, the same as its whole text, so the two units differ only in cutting the description. `UnitSearch` in `lib.generation` ranks each product by its best-scoring unit, so each run still lists products. We report the precision@5 and recall@5 a five-product context would have, with judged@5, the share of the top 5 with a judgment. `UnitSearch` orders equal scores by `product_id`, so the code also reverses that rule and counts the train queries whose top 5 changes:
 
-Example `retrievable-unit-on-train` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.9:
+Example `retrievable-unit-on-train` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.10:
 
 ```python
 """Compares five ways of cutting products into retrievable units under BM25 on the train queries, by precision@5,
@@ -598,7 +598,7 @@ The other units also drop fields. The description alone can never return the pro
 
 ## Read an agent's searches from its trace {#read-agent-searches}
 
-Unlike the [recorded answers](#retrieval-bounds-the-answer), an agent searches for itself: it is an LLM that runs in a loop and acts. A **tool** is a function the program offers the model, described by a name, a description and its parameters. A **tool call** is the model's request to run a tool with arguments. The program runs it, sends back the result, and the model decides what to do next. That is the **agent loop**. In Ollama, which ran the store's model, an agent loop lets the model decide when to invoke tools and fold their results into its replies ([Ollama documentation](https://docs.ollama.com/capabilities/tool-calling)). `recordings/agent_trace.py` is such a loop. ReAct agents interleave reasoning traces with task-specific actions. On question answering (HotpotQA) and fact verification (Fever), with a Wikipedia API as the tool, they overcome the hallucination and error propagation that are common in chain-of-thought reasoning ([Yao et al., 2023](https://arxiv.org/abs/2210.03629)). The **trace** is the record of every call and its result.
+Unlike the [recorded answers](#retrieval-bounds-the-answer), an agent searches for itself: it is an LLM that runs in a loop and acts. A **tool** is a function the program offers the model, described by a name, a description and its parameters. A **tool call** is the model's request to run a tool with arguments. In the **agent loop**, the program runs each tool call, sends back the result, and the model decides what to do next. In Ollama, which ran the store's model, an agent loop lets the model decide when to invoke tools and fold their results into its replies ([Ollama documentation](https://docs.ollama.com/capabilities/tool-calling)). `recordings/agent_trace.py` is such a loop. ReAct agents interleave reasoning traces with task-specific actions. On question answering (HotpotQA) and fact verification (Fever), with a Wikipedia API as the tool, they overcome the hallucination and error propagation that are common in chain-of-thought reasoning ([Yao et al., 2023](https://arxiv.org/abs/2210.03629)). The **trace** is the record of every tool call and its result.
 
 An agent's searches are queries, and they need not look like a shopper's. In a log of 14 million agent search requests, more than 90% of multi-turn sessions contain at most ten steps, and on average 54% of the query terms a search adds already appear in the accumulated evidence ([Ning et al., 2026](https://arxiv.org/abs/2601.17617)). The agent picks up words from what it has read.
 
@@ -606,7 +606,7 @@ The recording gave the agent each test query as the shopper's request, with one 
 
 The recording ran twice, with the same model and prompt: once with BM25 behind the tool, and once with semantic retrieval, which embedded the agent's search text with the same embedding model as the products. The traces store each BM25 search's results in bm25s's own tie order, as [the answers' contexts](#retrieval-bounds-the-answer) do, so 7 of the 32 BM25 searches get results that differ from what `lib.lexical` returns, 6 of them only in order. Here is what the agent actually searched for:
 
-Example `agent-searches-in-traces` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.9:
+Example `agent-searches-in-traces` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.10:
 
 ```python
 """Reads the recorded agent traces for both tools: each agent's first search, how many searches each tool took, and
@@ -679,7 +679,7 @@ The agent rarely looks again. With BM25 it makes 32 searches in all, and 29 trac
 
 Where do the words of a later search come from? To find out, set each later search against the words already searched, and against the names, classes and attributes the tool had shown:
 
-Example `agent-later-searches` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.9:
+Example `agent-later-searches` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.10:
 
 ```python
 """Counts the words each later search adds to the agent's query so far, and how many of those the tool had already
@@ -730,7 +730,7 @@ An agent told to pick from its search results should pick only what they return,
 
 The store's [recorded agent](#read-agent-searches) searches the catalog up to 3 times with one tool, then picks three products. Scoring those picks under each tool, by [precision@3](#count-relevant-in-top-k), is the second of the chapter's [planned comparisons](#retrieval-for-llm-applications), established if its permutation p-value is below 0.025. Precision@3 is exact picks divided by 3, so a missing pick counts as a miss. First, count where picks went missing, for each tool: picks the tool never returned, picks nobody judged, traces with fewer than three picks, traces whose searches returned no exact product, and traces that saw an exact product and picked none. Then compare the picks with the tool's own top 3 for the first search, an exploratory check:
 
-Example `agent-picks-by-tool` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.9:
+Example `agent-picks-by-tool` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.10:
 
 ```python
 """Scores each tool's agent picks with precision@3 and counts how the traces went, with an exploratory check

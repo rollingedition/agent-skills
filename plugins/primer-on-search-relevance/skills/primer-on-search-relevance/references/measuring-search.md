@@ -3,13 +3,13 @@ title: "A Primer on Search Relevance"
 chapter: "Measuring search"
 chapter_id: measuring-search
 book: primer-on-search-relevance
-edition: 2026.11.9
+edition: 2026.11.10
 verified: 2026-11-19
-edition_code: Y76B-VHFX
+edition_code: ANXY-CR00
 canonical: https://rollingedition.com/primer-on-search-relevance/measuring-search
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“Measuring search,” chapter 3 of A Primer on Search Relevance, Edition 2026.11.9, examples passed Nov 19, 2026. By Rolling Edition, https://rollingedition.com/primer-on-search-relevance/measuring-search. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Measuring search,” chapter 3 of A Primer on Search Relevance, Edition 2026.11.10, examples passed Nov 19, 2026. By Rolling Edition, https://rollingedition.com/primer-on-search-relevance/measuring-search. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Measuring search
 
@@ -23,7 +23,7 @@ Most ranking metrics start from one question: how many of the results a shopper 
 
 [BM25](#rank-with-bm25)'s top 10 for the store's test query `clear shower curtain` mixes clear curtains, curtains that aren't clear, and [shower curtain hooks](#check-against-judgments). How many of those ten are exact, and what is the most any test query could score? The example answers both by hand and checks the count against `lib.metrics`:
 
-Example `precision-recall-by-hand` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.9:
+Example `precision-recall-by-hand` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.10:
 
 ```python
 """Counts the exact products in BM25's top 10 for one query, computes precision and recall by hand, and checks them against lib.metrics, then finds the best score each test query could reach. The prose's point rests on the "exact in the top 10" and "exact products judged" lines, and on the ceiling lines after the blank line."""
@@ -97,13 +97,13 @@ Recall has a second problem, because its denominator counts only the exact produ
 
 ## Score the first relevant result with reciprocal rank {#score-the-first-relevant-result}
 
-Precision counts a whole page, but some shoppers want one product: a replacement part, or a model they already know. For them, what matters is how far down the first good result sits. **Reciprocal rank** (RR) scores a query as 1 divided by the position of the first relevant result, or 0 if there is none, and its mean over queries is the **mean reciprocal rank** (MRR). TREC, the Text REtrieval Conference, runs shared evaluations of search systems. MRR was the official measure of its question-answering track at TREC-8, where each question scored the reciprocal of the rank of the first correct answer, or 0 when none of the five answers was correct. The track chose it partly because it stays between 0 and 1 and averages well ([Voorhees, 1999](https://trec.nist.gov/pubs/trec8/papers/qa_report.ps)).
+Precision counts a whole page, but some shoppers want one product: a replacement part, or a model they already know. For them, what matters is how far down the first good result sits. **Reciprocal rank** (RR) scores a query as 1 divided by the position of the first relevant result, or 0 if there is none, and the mean of RR over queries is the **mean reciprocal rank** (MRR). TREC, the Text REtrieval Conference, runs shared evaluations of search systems. MRR was the official measure of its question-answering track at TREC-8, where each question scored the reciprocal of the rank of the first correct answer, or 0 when none of the five answers was correct. The track chose it partly because it stays between 0 and 1 and averages well ([Voorhees, 1999](https://trec.nist.gov/pubs/trec8/papers/qa_report.ps)).
 
 Averaging RR is disputed. Fuhr points out that under RR "the difference between ranks 1 and 2 is the same as that between ranks 2 and ∞", so RR isn't an interval scale, one on which equal steps mean equal differences, and he argues that its mean shouldn't be computed ([Fuhr, 2017, section 2.1](https://sigir.org/wp-content/uploads/2018/01/p032.pdf)). Sakai sees no reason to forbid it ([Sakai, 2020](https://sigir.org/wp-content/uploads/2020/06/p14.pdf)). Moffat argues that such metrics are more meaningful in their current form than in the intervalized versions proposed for them ([Moffat, 2022](https://arxiv.org/abs/2207.03103)). We use MRR with that caveat: it is a coarse summary.
 
 RR depends on where you draw the line for relevant, so score [BM25](#rank-with-bm25)'s ranking for `clear shower curtain` twice: once counting only exact products, once counting partial ones too. Then compute MRR for BM25 and [semantic retrieval](#search-by-meaning) over the test queries:
 
-Example `reciprocal-rank-by-hand` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.9:
+Example `reciprocal-rank-by-hand` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.10:
 
 ```python
 """Writes reciprocal rank by hand for one query under two grade thresholds, then computes MRR for BM25 and semantic retrieval and checks it against lib.metrics. The prose's point rests on the two rr lines for clear shower curtain and the two MRR lines."""
@@ -162,7 +162,7 @@ RR has a blind spot. It is 1 for 22 test queries under semantic retrieval and fo
 
 ## Build nDCG from discounted gains {#build-ndcg-from-dcg}
 
-Unlike precision and RR, nDCG@10, which [chapter 1](#score-one-ranking) used to score one ranking, reads the grades. Each result contributes its grade as a gain, shrunk by a discount that grows with its position, and the sum is the **discounted cumulative gain** (DCG). **Normalized DCG** (nDCG) divides that by the DCG of the ideal ranking. Two of its parts come in several versions that change the number. The first is the ideal ranking. Järvelin and Kekäläinen, who introduced DCG, base it on "the recall base of the search topic rather than on the result of some IR technique" ([Järvelin and Kekäläinen, 2002](https://doi.org/10.1145/582415.582418)). In practice that means the best order of every product judged for the query, not only of the products a ranker returned. The second is the discount: they proposed dividing a document's score by the log of its rank, and versions differ in which log, and from which rank.
+Unlike precision and RR, nDCG@10, which [chapter 1](#score-one-ranking) used to score one ranking, reads the grades. Each result contributes its grade as a gain, shrunk by a discount that grows with its position, and the sum is the **discounted cumulative gain** (DCG). **Normalized DCG** (nDCG) divides a ranking's DCG by the DCG of the ideal ranking. Two of its parts come in several versions that change the number. The first is the ideal ranking. Järvelin and Kekäläinen, who introduced DCG, base it on "the recall base of the search topic rather than on the result of some IR technique" ([Järvelin and Kekäläinen, 2002](https://doi.org/10.1145/582415.582418)). In practice that means the best order of every product judged for the query, not only of the products a ranker returned. The second is the discount: they proposed dividing a document's score by the log of its rank, and versions differ in which log, and from which rank.
 
 The formula in `lib.metrics`, where grade(i) is the grade of the product at position i:
 
@@ -175,7 +175,7 @@ This isn't the only version in use. Järvelin and Kekäläinen left the ranks be
 
 Write DCG and nDCG from scratch, and check them against `lib.metrics` on chapter 1's BM25, semantic and [hybrid](#fuse-with-rrf) runs. One score among them looks too good to be true:
 
-Example `ndcg-from-scratch` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.9:
+Example `ndcg-from-scratch` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.10:
 
 ```python
 """Writes DCG and nDCG from scratch and checks them against lib.metrics on every test query of three runs, then prints one query's grades beside its best possible grades. The prose's point rests on the largest-difference line and on the ndcg@10 line for luau string lights, read with the grade lines above it."""
@@ -252,7 +252,7 @@ Check a metric against a library that computes it independently. At scikit-learn
 
 The naive call comes first: `ndcg_score` gets the grades of BM25's top 10 for `clear shower curtain`, with scores that put them in BM25's order. Then build each query's row the way `lib.metrics` sees the query, and compare all three runs:
 
-Example `ndcg-matches-scikit-learn` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pandas 3.1.1 · scikit-learn 1.9.1 · scipy 1.18.1), passing in Edition 2026.11.9:
+Example `ndcg-matches-scikit-learn` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pandas 3.1.1 · scikit-learn 1.9.1 · scipy 1.18.1), passing in Edition 2026.11.10:
 
 ```python
 """Compares scikit-learn's ndcg_score with lib.metrics for one query, first with only the top 10 passed and then with every judged product in the row, and then on every test query of three runs. The prose's point rests on the ndcg@10 lines for clear shower curtain and on the 5-product lines."""
@@ -322,7 +322,7 @@ Every metric is a model of a shopper. Precision@10 assumes the shopper looks at 
 
 Take semantic retrieval, the ranker to beat, and the hybrid, which [chapter 1](#fuse-with-rrf) couldn't separate from it. Choosing a metric is part of tuning the evaluation, so make the choice on the 50 train queries and keep the test queries for reporting. Score both rankers four ways:
 
-Example `metric-choice-on-train` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.9:
+Example `metric-choice-on-train` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.10:
 
 ```python
 """Scores semantic retrieval and the hybrid four ways on the train queries and names the higher scorer for each metric. The prose's point rests on the "higher" lines, the count of metrics each ranker wins, and the largest gap."""
@@ -392,7 +392,7 @@ A mean of the headline metric over queries is a summary for the store, but a sho
 
 On average, the store's hybrid run from [chapter 1](#fuse-with-rrf) scores well above BM25. Compare the two query by query on nDCG@10:
 
-Example `per-query-hybrid-versus-bm25` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.9:
+Example `per-query-hybrid-versus-bm25` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.10:
 
 ```python
 """Compares the hybrid and BM25 query by query on nDCG@10, then lists the three largest losses and the largest gain with its judged@10. The prose's point rests on the mean and median difference lines and on the largest-gain lines."""
@@ -472,13 +472,13 @@ Report the difference as an absolute number. The relative gain of the means is 0
 
 ## Test a gap with a permutation test {#permutation-test-on-queries}
 
-A gap between two means on a few dozen queries can come from chance alone: another sample of queries would give a different gap. Shallow metrics make this worse: Buckley and Voorhees found that with a measure such as precision at 10, researchers need many more than 50 queries to tell systems apart reliably ([Buckley and Voorhees, 2000](https://nist.gov/publications/evaluating-evaluation-measure-stability)). A **significance test** asks how surprising the gap would be if the two rankers were equally good, an assumption called the **null hypothesis**. Its answer is the **p-value**: the probability, under the null hypothesis, of a gap at least as large as the one you measured. By convention, a p-value below 0.05 counts as evidence of a real difference, and [the book's rule](#when-a-difference-is-established) tightens that when a chapter makes several comparisons.
+A gap between two means on a few dozen queries can come from chance alone: another sample of queries would give a different gap. Shallow metrics make this worse: Buckley and Voorhees found that with a measure such as precision at 10, researchers need many more than 50 queries to tell systems apart reliably ([Buckley and Voorhees, 2000](https://nist.gov/publications/evaluating-evaluation-measure-stability)). A **significance test** asks how surprising a gap between two rankers would be under the **null hypothesis**, the assumption that the rankers are equally good. Its answer is the **p-value**: the probability, under the null hypothesis, of a gap at least as large as the one you measured. By convention, a p-value below 0.05 counts as evidence of a real difference, and [the book's rule](#when-a-difference-is-established) tightens that when a chapter makes several comparisons.
 
 The tests in this book are **paired**: both rankers are scored on the same queries, so each test works on the [per-query differences](#read-per-query-differences), and a hard query's low scores cancel out. A **permutation test** builds the gaps you'd see under the null hypothesis directly. If the two rankers were interchangeable, each query's difference would be as likely to have the opposite sign. So flip each sign at random, recompute the mean, repeat thousands of times, and count how often the flipped mean lands at least as far from 0 as the real one. For n queries there are 2^n sign patterns, 1,073,741,824 for the test queries, so the test samples 9,999 of them, and its p-value is an estimate.
 
 The hybrid trails semantic retrieval on the test queries, and [chapter 1](#fuse-with-rrf) left open whether that gap is real. Against semantic retrieval, the hybrid's wins, losses and ties over the test queries are 9 / 14 / 7. Will the test find the hybrid's deficit larger than chance? Settle on an answer, then run it.
 
-Example `permutation-test-by-hand` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.9:
+Example `permutation-test-by-hand` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.10:
 
 ```python
 """Estimates the p-value of the hybrid's deficit against semantic retrieval by flipping each query's sign at random, once by hand and once with SciPy's permutation_test. The prose's point rests on the observed mean, the two p-value lines, and the line that compares the p-value with 0.05."""
@@ -550,7 +550,7 @@ Per-query nDCG differences are bounded between −1 and 1 and have outliers, suc
 
 Do the formula and the resampling agree on chapter 1's gaps? Take two of them, [semantic retrieval against BM25](#search-by-meaning) and [the hybrid against semantic retrieval](#fuse-with-rrf). The formula's t, worked out by hand, should match SciPy's `ttest_rel`:
 
-Example `paired-t-test-by-hand` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.9:
+Example `paired-t-test-by-hand` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.10:
 
 ```python
 """Computes the paired t statistic and its p-value by hand for two gaps, and checks each p-value against SciPy's ttest_rel. The prose's point rests on the t and p lines printed for each gap."""
@@ -606,11 +606,11 @@ For the hybrid against semantic retrieval, t = -1.590 and the p-value is 0.123. 
 
 A p-value says how surprising a gap is, not how big it is. On a large sample, nearly any modification produces a significant but tiny difference ([Fuhr, 2017, section 2.8](https://sigir.org/wp-content/uploads/2018/01/p032.pdf)). Sakai recommends reporting an effect size and a confidence interval with every p-value ([Sakai, 2014](https://sigir.org/files/forum/2014J/2014J_sigirforum_Article_TetsuyaSakai.pdf)). A **confidence interval** is a range of plausible values for the true mean difference: the mean over all queries like these, scored with these judgments, not over the store's search traffic. A 95% interval comes from a procedure meant to cover that value 95% of the time.
 
-The **bootstrap** builds one by resampling. Draw as many queries as you have from the queries you have, with replacement, so that some appear twice and others not at all. Compute the mean difference, repeat thousands of times, and take the middle 95% of those means: that's the **percentile interval**. The **effect size** of a paired comparison is the mean difference divided by the standard deviation of the differences ([Sakai, 2014, section 3.1.2](https://sigir.org/files/forum/2014J/2014J_sigirforum_Article_TetsuyaSakai.pdf)). It is how large the gap is next to how much it varies from query to query. It isn't Cohen's d, the effect size for unpaired samples, and Sakai warns against comparing the two directly.
+The **bootstrap** builds a confidence interval by resampling. Draw as many queries as you have from the queries you have, with replacement, so that some appear twice and others not at all. Compute the mean difference, and repeat thousands of times. The **percentile interval** is the middle 95% of the resampled means. The **effect size** of a paired comparison is the mean difference divided by the standard deviation of the differences ([Sakai, 2014, section 3.1.2](https://sigir.org/files/forum/2014J/2014J_sigirforum_Article_TetsuyaSakai.pdf)). It is how large the gap is next to how much it varies from query to query. It isn't Cohen's d, the effect size for unpaired samples, and Sakai warns against comparing the two directly.
 
 Can a hand-built percentile interval match SciPy's `bootstrap` with `method="percentile"`? Build one by hand for semantic retrieval against BM25 and for the hybrid against semantic retrieval, check each against SciPy, then run SciPy's default method:
 
-Example `bootstrap-interval-by-hand` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.9:
+Example `bootstrap-interval-by-hand` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.10:
 
 ```python
 """Builds a 95% percentile interval by hand from 9,999 resampled means, checks it against SciPy's percentile method, then reads SciPy's default BCa interval and the effect size for each gap. The prose's point rests on the BCa low and high lines and on the line that says whether each interval includes 0."""
@@ -675,7 +675,7 @@ For the hybrid against semantic retrieval, the interval runs from -0.042 to 0.00
 
 A bootstrap interval only approximates its level, and on a few dozen queries it falls short. To check, treat the hybrid's 30 per-query differences against semantic retrieval as if they were every query there is, so the true gap is known. Then draw 1000 new sets of the same size from them, build an interval on each, and count how often it covers the true gap:
 
-Example `interval-coverage-check` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.9:
+Example `interval-coverage-check` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.10:
 
 ```python
 """Draws new samples from the test queries' differences and counts how often a BCa or a t interval covers the known gap, at two levels. The prose's point rests on the four coverage lines and the standard-error line."""
@@ -755,7 +755,7 @@ The book applies [that rule](#when-a-difference-is-established) in an **evaluati
 
 So run chapter 1's four rankers through it, then make the 3 planned comparisons and the exploratory one:
 
-Example `compare-chapter-one-rankers` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.9:
+Example `compare-chapter-one-rankers` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.10:
 
 ```python
 """Runs chapter 1's four rankers through the harness and applies the Bonferroni threshold to the three planned comparisons and one exploratory comparison. The prose's point rests on the judged@10 lines, the established lines, and the exploratory comparison's p-value and agreement lines."""
@@ -901,7 +901,7 @@ Chapter 1's decision stands, by a rule that doesn't depend on which ranker score
 
 **One sample of queries can mislead.** Results on test queries depend on which queries landed there. Fuhr argues that the simple holdout method is unreliable, because its results may depend heavily on the split, and he asks for cross-validation instead ([Fuhr, 2017, section 2.5](https://sigir.org/wp-content/uploads/2018/01/p032.pdf)). Sakai agrees that "different training/validation/test splits may yield different results" ([Sakai, 2020](https://sigir.org/wp-content/uploads/2020/06/p14.pdf)). The book keeps one fixed split so that every chapter reports on the same test queries. To see how far a gap can move, run the exploratory comparison from [the harness](#compare-runs-in-a-harness) on the train queries as well. Treat that as an illustration, not evidence, since train queries are for tuning, as [the rule](#when-a-difference-is-established) sets out:
 
-Example `split-changes-the-verdict` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.9:
+Example `split-changes-the-verdict` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.10:
 
 ```python
 """Runs the reranked-minus-semantic comparison on the test queries and on the train queries, so the verdict can be compared across the two samples. The prose's point rests on the two gap lines and the higher-scoring-run lines."""
