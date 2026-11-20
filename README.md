@@ -10,8 +10,8 @@ This repository is generated from the books, so changes made here are overwritte
 
 | Book | Skill | Edition | Examples |
 | --- | --- | --- | --- |
-| [Agent Harnesses](https://rollingedition.com/agent-harnesses) | `agent-harnesses` | 2026.11.1 | 64 of 64 examples pass |
-| [Business Intelligence with Agents](https://rollingedition.com/business-intelligence-with-agents) | `business-intelligence-with-agents` | 2026.11.13 | 78 of 78 examples pass |
+| [Agent Harnesses](https://rollingedition.com/agent-harnesses) | `agent-harnesses` | 2026.11.2 | 64 of 64 examples pass |
+| [Business Intelligence with Agents](https://rollingedition.com/business-intelligence-with-agents) | `business-intelligence-with-agents` | 2026.11.14 | 78 of 78 examples pass |
 | [Data Governance as Code](https://rollingedition.com/data-governance-as-code) | `data-governance-as-code` | 2026.11.29 | 108 of 108 examples pass |
 | [Language Models from the Ground Up](https://rollingedition.com/language-models-from-the-ground-up) | `language-models-from-the-ground-up` | 2026.11.14 | 86 of 86 examples pass |
 | [Model Context Protocol in Practice](https://rollingedition.com/model-context-protocol-in-practice) | `model-context-protocol-in-practice` | 2026.11.12 | 70 of 70 examples pass |

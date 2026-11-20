@@ -3,13 +3,13 @@ title: "Business Intelligence with Agents"
 chapter: "Define metrics once in a semantic layer"
 chapter_id: semantic-layer
 book: business-intelligence-with-agents
-edition: 2026.11.13
+edition: 2026.11.14
 verified: 2026-11-19
-edition_code: TW8P-2G9D
+edition_code: 8Q6T-45MG
 canonical: https://rollingedition.com/business-intelligence-with-agents/semantic-layer
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“Define metrics once in a semantic layer,” chapter 5 of Business Intelligence with Agents, Edition 2026.11.13, examples passed Nov 19, 2026. By Rolling Edition, https://rollingedition.com/business-intelligence-with-agents/semantic-layer. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Define metrics once in a semantic layer,” chapter 5 of Business Intelligence with Agents, Edition 2026.11.14, examples passed Nov 19, 2026. By Rolling Edition, https://rollingedition.com/business-intelligence-with-agents/semantic-layer. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Define metrics once in a semantic layer
 
@@ -66,7 +66,7 @@ The orders model's time dimension is `order_date_local`, the order's local busin
 
 Parsing won't reveal a wrong declaration, so the code loads the layer and checks its definitions against the warehouse: every expression must run, and every primary entity must be unique in its table. It repeats the check on a copy with one mistake, in which the order lines declare `order` as their primary entity.
 
-Example `load-semantic-models` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.13:
+Example `load-semantic-models` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.14:
 
 ```python
 """Load the shop's semantic layer from YAML, list what each semantic model declares, and check it against the warehouse."""
@@ -132,7 +132,7 @@ Dimension names follow MetricFlow's convention, so a request reads the same in e
 
 Chapter 1's question is the first test: golden question `gq-002` asks, "What was net revenue in each region in March 2026?" As a request, it is `net_revenue` grouped by `order__region` and filtered to March 2026. The code prints the request and its SQL, runs it, and checks the answer against the golden result. Then it sends a filter value holding SQL of its own, and asks for a dimension the layer doesn't define.
 
-Example `compile-net-revenue` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.13:
+Example `compile-net-revenue` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.14:
 
 ```python
 """Compile one metric request to SQL with the book's semantic layer, run it, and check it against the golden answer. The printed `matches golden: yes` line is the fact the prose states."""
@@ -208,7 +208,7 @@ The [compiled request](#compile-a-metric-request) read one table. Many questions
 
 The shop's case is a category manager's question: net revenue by product category in 2025. Net revenue is summed per order, in `analytics.fct_orders`, and a product's category is reached through the order lines, several per order. The layer refuses `net_revenue` by `product__category`. A hand-written join runs beside that refusal, since it returns a number without error, and the line-level metric is asked for instead.
 
-Example `entity-join-no-fanout` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.13:
+Example `entity-join-no-fanout` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.14:
 
 ```python
 """Ask for net revenue by product category: the layer refuses the fan-out join and points to a line-level metric. The printed `inflated by` and `difference from net revenue` lines are the facts the prose states."""
@@ -295,7 +295,7 @@ The shop's finance team defines the refund rate in golden question `gq-028`: ref
 
 The tempting version is why this example matters: averaging each order's refund rate per region looks right and isn't. Beside it sits the layer's rate for fiscal 2026, which the example compiles.
 
-Example `refund-rate-metric` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.13:
+Example `refund-rate-metric` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.14:
 
 ```python
 """A ratio metric divides two separately aggregated sums, and averaging per-order ratios gives a different number. The printed `matches golden: yes` lines are the facts the prose states."""
@@ -403,7 +403,7 @@ The shop's fiscal year starts on February 1 and is named for the year it ends in
 
 Grouping net revenue by fiscal and calendar quarter shows how far apart the two calendars sit when a year starts in February. Two golden questions about first fiscal quarters close the check.
 
-Example `fiscal-quarter-grain` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.13:
+Example `fiscal-quarter-grain` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.14:
 
 ```python
 """Group net revenue by fiscal quarter, a custom grain from the time spine, and by calendar quarter, a standard one. The printed `matches golden: yes` lines are the facts the prose states."""
@@ -483,7 +483,7 @@ The [shop's YAML](#entities-measures-dimensions) is portable only if a productio
 
 The two compilers should return the same rows, so the example checks 8 requests: simple, ratio and derived metrics, a two-hop join, the fiscal grains and two time dimensions on one table. Each pair runs on the shop's warehouse and its rows are compared. The run also prints MetricFlow's SQL for chapter 1's question, and its refusal of the [join section's](#join-through-entities) request.
 
-Example `metricflow-agrees` (Python 3.12.15 · duckdb 2.0.0 · metricflow 0.214.0 · pydantic 2.14.3 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.13:
+Example `metricflow-agrees` (Python 3.12.15 · duckdb 2.0.0 · metricflow 0.214.0 · pydantic 2.14.3 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.14:
 
 ```python
 """Compile the same requests with MetricFlow and with the book's compiler, run both, and compare the results. The printed `requests that agree` line is the fact the prose states."""
@@ -583,7 +583,7 @@ MetricFlow's SQL is longer, with a comment naming each step, and reaches the sam
 
 MetricFlow also asks more of the YAML than the book's compiler does: every semantic model that a simple metric counts on needs a time dimension of its own. The next code builds the engine twice. The copy points `order_lines` at `analytics.fct_order_lines`, the analytics table, which has no order day, and drops the model's time dimension.
 
-Example `metricflow-needs-a-date` (Python 3.12.15 · duckdb 2.0.0 · metricflow 0.214.0 · pydantic 2.14.3 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.13:
+Example `metricflow-needs-a-date` (Python 3.12.15 · duckdb 2.0.0 · metricflow 0.214.0 · pydantic 2.14.3 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.14:
 
 ```python
 """Show that MetricFlow won't build its engine when a fact's semantic model has no date of its own."""
@@ -634,7 +634,7 @@ The shop's YAML builds a `MetricFlowEngine`. The copy doesn't: MetricFlow raises
 
 A layer that compiles to an expression tree, as [the book's compiler does](#compile-a-metric-request), can write that tree for another warehouse. sqlglot 30.31.0 calls itself "a transpiler, not a validator", warns that some queries can't be translated between some dialects, and by default makes a best-effort translation unless `unsupported_level` is set to raise ([PyPI](https://pypi.org/project/sqlglot/30.27.0/)). Each dialect's refund rate by calendar quarter differs in two lines, the quarter and the division, so the example prints those two for each dialect. It also prints BigQuery's quarter as sqlglot writes it from an uncast column.
 
-Example `transpile-metric-sql` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.13:
+Example `transpile-metric-sql` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.14:
 
 ```python
 """Write one compiled metric request in six warehouses' dialects, and show what transpiling doesn't check. The printed quarter and ratio lines per dialect, and the `bigquery without the cast` line, are the facts the prose states."""

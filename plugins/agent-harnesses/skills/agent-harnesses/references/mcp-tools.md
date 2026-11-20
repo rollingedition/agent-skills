@@ -3,13 +3,13 @@ title: "Agent Harnesses"
 chapter: "Connect the harness to MCP servers"
 chapter_id: mcp-tools
 book: agent-harnesses
-edition: 2026.11.1
-verified: 2026-11-16
-edition_code: CBDA-H5E9
+edition: 2026.11.2
+verified: 2026-11-20
+edition_code: ZZGV-NEGC
 canonical: https://rollingedition.com/agent-harnesses/mcp-tools
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“Connect the harness to MCP servers,” chapter 9 of Agent Harnesses, Edition 2026.11.1, examples passed Nov 16, 2026. By Rolling Edition, https://rollingedition.com/agent-harnesses/mcp-tools. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Connect the harness to MCP servers,” chapter 9 of Agent Harnesses, Edition 2026.11.2, examples passed Nov 20, 2026. By Rolling Edition, https://rollingedition.com/agent-harnesses/mcp-tools. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Connect the harness to MCP servers
 
@@ -35,7 +35,7 @@ Revision 2026-07-28 changes how a client and a server start and what they keep b
 
 The harness has to know what each server offers before the model can be offered anything. Before the model sees anything, the harness starts each server, lists its tools and keeps the connection open for the run. Each server runs as a subprocess of the same Python interpreter in isolated mode (`-I`, dash capital I), so nothing in the current folder is imported by the server. The tools are sorted by the server's own name, so the offer is the same from one run to the next, which the first run depends on. The harness's own tools are synchronous and the SDK's client is asynchronous, so each connection runs on a thread with an event loop of its own. A synchronous call hands its request to that loop and waits for the answer. The connection closes when the block that opened it ends, even after an error. Nothing in this step reaches the model.
 
-Example `list-server-tools` (Python 3.12.15 · mcp 2.3.0 · pydantic 2.14.3), passing in Edition 2026.11.1:
+Example `list-server-tools` (Python 3.12.15 · mcp 2.3.0 · pydantic 2.14.3), passing in Edition 2026.11.2:
 
 ```python
 """Opens the two example servers over stdio and prints the protocol revision the SDK negotiates with each, with the
@@ -83,7 +83,7 @@ The gate looks a tool's name up in `POLICY`, and then in the table of chapter 6'
 
 So the harness gives each server's tools a prefix: `server__tool`, with a double underscore as the separator. The prefix is the one the 2026-07-28 revision recommends, and the server part is the harness's own name for the server, from `SERVERS`, not the name in the server's `serverInfo`, which that revision says not to rely on. The rule that makes the separator safe is in `harness_name`. A server name must match `[a-z][a-z0-9]*`, so it has no underscore, and a tool name may not start with one. The first `__` therefore always ends the server name. Two server tools that would share a harness name are refused when the servers connect. The harness routes each call by the tool object it built, not by splitting the name. The SDK's name check, in `mcp/shared/tool_name_validation.py`, accepts letters, digits, underscores, dashes and dots. It warns when a server registers a name it rejects, and the client checks no names, so that check does not fix the separator. The sibling book joins its names with a dot. Under this book's rule either separator works, and the double underscore is this book's own choice. The constant lives in `lib/mcp_tools.py` and nowhere else.
 
-Example `namespace-clash` (Python 3.12.15 · mcp 2.3.0 · pydantic 2.14.3), passing in Edition 2026.11.1:
+Example `namespace-clash` (Python 3.12.15 · mcp 2.3.0 · pydantic 2.14.3), passing in Edition 2026.11.2:
 
 ```python
 """Two servers and the harness's own tool set each offer a read_file. Each gets its own name, each call reaches the
@@ -140,7 +140,7 @@ An MCP tool that changes a file has to wait for a person's yes, like any other c
 
 A server can describe its tools with annotations, such as `readOnlyHint` and `destructiveHint`, and a client receives them in the server's list. The 2026-07-28 specification says clients MUST consider tool annotations to be untrusted unless they come from trusted servers (lines 305 to 306). An annotation is the server's own description of its tool, and a server that is wrong, or compromised, sets the same field as one that is right. So the harness reads an annotation as a claim, and the class in `POLICY` decides what happens to a call. The specification also says that "there SHOULD always be a human in the loop with the ability to deny tool invocations" (lines 33 to 34), which is why the gate asks a person and does not rely on the server's hint. The hints are defined in the 2026-07-28 schema, `schema.ts`, in `ToolAnnotations` at lines 1923 and 1933.
 
-Example `annotation-is-a-hint` (Python 3.12.15 · mcp 2.3.0 · pydantic 2.14.3), passing in Edition 2026.11.1:
+Example `annotation-is-a-hint` (Python 3.12.15 · mcp 2.3.0 · pydantic 2.14.3), passing in Edition 2026.11.2:
 
 ```python
 """The docs server marks delete_page read-only. The harness still classes it as a change, so each call asks first.
@@ -209,7 +209,7 @@ The threat is indirect prompt injection: text that an application retrieves from
 
 What the harness does is put a label and a fence around each server result before the model reads it. The label says that the text comes from another party, that it is to be read as data, and that it cannot change the stop rules, the allowed commands or an approval, because the harness enforces those whatever the text says. The model reads the label first and the text second. The fence is an opening tag that names the tool, and a closing tag. Before the text goes in, the harness writes every `<`, `>` and `&` as a numeric reference, and so does every character that folds to one of them under Unicode NFKC, such as a fullwidth bracket. The text then holds no tag at all, so the only closing tag the model sees is the harness's own. The harness does not try to find the injected sentence and remove it. A filter that looks for instructions can miss them, and the book does not rely on one. A server's own error is labelled the same way, with the word error in place of output, so the model can tell a failed call from an answer.
 
-Example `fence-cannot-be-closed` (Python 3.12.15 · mcp 2.3.0 · pydantic 2.14.3), passing in Edition 2026.11.1:
+Example `fence-cannot-be-closed` (Python 3.12.15 · mcp 2.3.0 · pydantic 2.14.3), passing in Edition 2026.11.2:
 
 ```python
 """A result's text tries to close its own fence, in case, space, look-alike and entity spellings. Each try fails: the
@@ -240,7 +240,7 @@ The fence check tries eight spellings of the closing tag: the exact tag, upper c
 
 The guarantee is narrow. The text holds no tag, so the harness's closing tag is the only one that can end the fence. The guarantee does not stop the model from reading the text or acting on it. A sentence that asks for a call reads the same after escaping, so the model can still ask for that call, and the gate decides whether it runs. That is why the label and the fence are not the defence.
 
-Example `untrusted-output` (Python 3.12.15 · mcp 2.3.0 · pydantic 2.14.3), passing in Edition 2026.11.1:
+Example `untrusted-output` (Python 3.12.15 · mcp 2.3.0 · pydantic 2.14.3), passing in Edition 2026.11.2:
 
 ```python
 """A scripted run reads issue 7, whose text tells the agent to delete a test. The text reaches the model marked as data,

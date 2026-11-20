@@ -3,13 +3,13 @@ title: "Business Intelligence with Agents"
 chapter: "Serve the semantic layer over MCP"
 chapter_id: serve-over-mcp
 book: business-intelligence-with-agents
-edition: 2026.11.13
+edition: 2026.11.14
 verified: 2026-11-19
-edition_code: TW8P-2G9D
+edition_code: 8Q6T-45MG
 canonical: https://rollingedition.com/business-intelligence-with-agents/serve-over-mcp
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“Serve the semantic layer over MCP,” chapter 11 of Business Intelligence with Agents, Edition 2026.11.13, examples passed Nov 19, 2026. By Rolling Edition, https://rollingedition.com/business-intelligence-with-agents/serve-over-mcp. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Serve the semantic layer over MCP,” chapter 11 of Business Intelligence with Agents, Edition 2026.11.14, examples passed Nov 19, 2026. By Rolling Edition, https://rollingedition.com/business-intelligence-with-agents/serve-over-mcp. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Serve the semantic layer over MCP
 
@@ -27,7 +27,7 @@ We recommend offering the tools the agent already has. [Chapter 6](#metrics-not-
 
 What a role changes is easiest to see side by side: a server for the analyst, who sees everything, and one for the support team, who may see no revenue. The code lists each server's tools and compares its `list_metrics` catalog with the one the in-process agent puts in its prompt.
 
-Example `list-metric-tools` (Python 3.12.15 · anyio 4.16.0 · duckdb 2.0.0 · mcp 2.3.0 · pydantic 2.14.3 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.13:
+Example `list-metric-tools` (Python 3.12.15 · anyio 4.16.0 · duckdb 2.0.0 · mcp 2.3.0 · pydantic 2.14.3 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.14:
 
 ```python
 """The semantic layer as an MCP server: the tools it lists, what query_metric takes, and each role's catalog.
@@ -103,7 +103,7 @@ A server that enforces [chapter 9's access rules](#row-filters-in-compiler) has 
 
 The tempting third place is a tool argument: give `query_metric` a `role` parameter and let the host fill it in. Then the role is whatever the caller sends, and the caller is a model that reads questions and, as [chapter 9](#text-in-data-is-data) showed, text inside the data. Three servers answer one request. Each receives `gq-017`, net revenue in each of "our countries" in 2025, asked by EMEA's regional lead, with `"role": "analyst"` added to the arguments. The first server takes the role as an argument. The second is the semantic server, built for EMEA's lead with `build_server("regional_lead", "EMEA")`. The third is built by `server_from_environment()`, which reads `SHOP_ROLE` and `SHOP_REGION` as a host would set them when it launches the server for one person. Last, the request runs once more on that third server's database, through the plain semantic layer with no policy, as the paragraph after the results explains.
 
-Example `role-bound-at-build` (Python 3.12.15 · anyio 4.16.0 · duckdb 2.0.0 · mcp 2.3.0 · pydantic 2.14.3 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.13:
+Example `role-bound-at-build` (Python 3.12.15 · anyio 4.16.0 · duckdb 2.0.0 · mcp 2.3.0 · pydantic 2.14.3 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.14:
 
 ```python
 """gq-017 from EMEA's regional lead, sent with role "analyst": a server that takes the role as an argument obeys it,
@@ -183,7 +183,7 @@ With the role bound, the server's answers are right for the person asking. The h
 
 Every tool of the semantic server returns a `ToolReply`, a pydantic model with two fields: `text`, the text the in-process tool shows the model, and `answer`, the answer with its rows and provenance, or nothing when the result doesn't end the run. Failures take two routes. The specification reports a tool execution error as a result with `isError` set, with "actionable feedback that language models can use to self-correct" ([tools](https://modelcontextprotocol.io/specification/2026-07-28/server/tools)). A request with a misspelt dimension is that kind of failure, so the server raises the SDK's `ToolError` with [chapter 6's validation](#validate-the-request) message. A request the role may not make isn't, and the server returns it as an answer that declines, with a reason that starts "forbidden", as `PolicyToolbox` does in process. Each route is worth seeing from the host's side: the finance team's refund rate by region for fiscal 2026, the same with `order_region` for `order__region`, and the support team's net revenue for 2025.
 
-Example `tool-result-with-provenance` (Python 3.12.15 · anyio 4.16.0 · duckdb 2.0.0 · mcp 2.3.0 · pydantic 2.14.3 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.13:
+Example `tool-result-with-provenance` (Python 3.12.15 · anyio 4.16.0 · duckdb 2.0.0 · mcp 2.3.0 · pydantic 2.14.3 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.14:
 
 ```python
 """What a host receives from query_metric: an answer with its provenance as structured content, a request the model
@@ -266,7 +266,7 @@ The semantic server's [structured answers](#return-provenance) make it testable 
 
 Each of the server's tests builds a server for one role, calls one tool through an in-memory client, and asserts on the structured content. The tests cover the rules that [chapter 9](#measure-access) measured, and the database under them: EMEA's lead gets the golden result for `gq-017`; EMEA's lead asking for APAC is declined as forbidden; the lead's server's own database, queried directly with no policy in the way, holds no other region's orders; support's catalog hides every metric that reads revenue, and only those; marketing's small groups are suppressed; and a misspelt dimension is a tool error that suggests the right one. The book pins no test runner, so the file uses a small helper in `lib/semantic_server.py`; under pytest, each would be an ordinary async test.
 
-Example `semantic-server-tests` (Python 3.12.15 · anyio 4.16.0 · duckdb 2.0.0 · mcp 2.3.0 · pydantic 2.14.3 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.13:
+Example `semantic-server-tests` (Python 3.12.15 · anyio 4.16.0 · duckdb 2.0.0 · mcp 2.3.0 · pydantic 2.14.3 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.14:
 
 ```python
 """In-memory tests of the semantic server, one role per server, and one check that a test can fail. The prose's
@@ -356,7 +356,7 @@ The only new piece is `ServerToolbox` in `lib/semantic_server.py`. It has the `c
 
 Replay needs the model to see exactly what it saw when it was recorded, and over MCP it mostly does: the catalog and the prompt are the same, and so is every successful tool result's text. A tool error is the exception. Its text carries [the SDK's prefix](#return-provenance), so the model's next call has a prompt that no earlier recording holds. The recording `mcp-host-runs`, made with `recordings/record_mcp_host.py`, holds the replies to those calls only, from the same pinned model and settings. Every golden question runs twice, in process as chapter 9 measured it and through a server built for the question's role, and the example compares the two outcomes question by question.
 
-Example `host-asks-the-server` (Python 3.12.15 · anyio 4.16.0 · duckdb 2.0.0 · mcp 2.3.0 · pydantic 2.14.3 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.13:
+Example `host-asks-the-server` (Python 3.12.15 · anyio 4.16.0 · duckdb 2.0.0 · mcp 2.3.0 · pydantic 2.14.3 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.14:
 
 ```python
 """The book's agent as an MCP host on every golden question, each tool on the asker's server, against chapter 9.
