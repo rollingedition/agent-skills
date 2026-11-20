@@ -3,13 +3,13 @@ title: "Model Context Protocol in Practice"
 chapter: "Test a server and watch it run"
 chapter_id: test-and-observe
 book: model-context-protocol-in-practice
-edition: 2026.11.12
+edition: 2026.11.13
 verified: 2026-11-19
-edition_code: WM6T-Q38W
+edition_code: P21J-Z4WN
 canonical: https://rollingedition.com/model-context-protocol-in-practice/test-and-observe
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“Test a server and watch it run,” chapter 11 of Model Context Protocol in Practice, Edition 2026.11.12, examples passed Nov 19, 2026. By Rolling Edition, https://rollingedition.com/model-context-protocol-in-practice/test-and-observe. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Test a server and watch it run,” chapter 11 of Model Context Protocol in Practice, Edition 2026.11.13, examples passed Nov 19, 2026. By Rolling Edition, https://rollingedition.com/model-context-protocol-in-practice/test-and-observe. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Test a server and watch it run
 
@@ -31,7 +31,7 @@ What the in-memory path skips matters as much as what it covers. With no HTTP la
 
 The shop's tests run against chapter 3's server, `lib.shop_tools`, from [Design tools a model can use](#design-tools), with the shop's API on loopback for each test, served by the fixture `shop_api_env` from `lib.testing`. Three tests run in memory: an order's status comes back as structured fields, an unknown order comes back as a [tool execution error](#tool-errors) that names `find_orders`, and an order ID in the wrong form is refused before the tool runs. The fourth serves the same tools over Streamable HTTP on loopback and sends a `tools/call` whose `Mcp-Name` header names a different tool from its body: a request the SDK's client never sends, and one an in-memory client can't express. Run as a script, the file runs its own tests with pytest 9.2.0.
 
-Example `test-tools-in-memory` (Python 3.12.15 · cryptography 50.0.2 · httpx2 2.16.2 · jsonschema 4.26.0 · mcp 2.3.0 · mcp-types 2.3.0 · pydantic 2.14.3 · pytest 9.2.0 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.12:
+Example `test-tools-in-memory` (Python 3.12.15 · cryptography 50.0.2 · httpx2 2.16.2 · jsonschema 4.26.0 · mcp 2.3.0 · mcp-types 2.3.0 · pydantic 2.14.3 · pytest 9.2.0 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.13:
 
 ```python
 """Four pytest tests of the shop's tools: three through the SDK's in-process client, and one over Streamable HTTP on
@@ -107,7 +107,7 @@ The Python SDK's client does validate, and it validates against its own copy. It
 
 In the shop's case, release 2 of the server renames the per-warehouse `on_hand` field of `check_stock` to `count`. To see the break, a client connects to release 1 in memory and lists the tools. It keeps its connection while the server swaps `check_stock` for release 2's version, as a rolling deploy would. Then the client calls the tool, lists again and calls once more. Last, a contract test runs the two checks it makes before a release ships: `lib.contract.breaking_changes`, a diff of the two releases' schemas, and a validation of release 2's real result against release 1's published output schema with `jsonschema`, the library the client uses.
 
-Example `schema-change-breaks-a-client` (Python 3.12.15 · cryptography 50.0.2 · httpx2 2.16.2 · jsonschema 4.26.0 · mcp 2.3.0 · mcp-types 2.3.0 · pydantic 2.14.3 · pytest 9.2.0 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.12:
+Example `schema-change-breaks-a-client` (Python 3.12.15 · cryptography 50.0.2 · httpx2 2.16.2 · jsonschema 4.26.0 · mcp 2.3.0 · mcp-types 2.3.0 · pydantic 2.14.3 · pytest 9.2.0 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.13:
 
 ```python
 """What a client connected before a release sees when the release renames check_stock's on_hand to count, and what
@@ -196,7 +196,7 @@ The replay also gives the queue's results a second reading. [Work through the ti
 
 `queue_replay.replay_queue` replays the whole queue, with the support host set up exactly as chapter 10's `work-the-ticket-queue` sets it up. The run prints one ticket's tool sequence, counts the refunds and the replies that promise one, and replays the first ticket after one sentence has been added to `quote_refund`'s description.
 
-Example `replay-ticket-runs` (Python 3.12.15 · cryptography 50.0.2 · httpx2 2.16.2 · jsonschema 4.26.0 · mcp 2.3.0 · mcp-types 2.3.0 · pydantic 2.14.3 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.12:
+Example `replay-ticket-runs` (Python 3.12.15 · cryptography 50.0.2 · httpx2 2.16.2 · jsonschema 4.26.0 · mcp 2.3.0 · mcp-types 2.3.0 · pydantic 2.14.3 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.13:
 
 ```python
 """Replay chapter 10's queue run, the recording ticket-runs, through the support host, and check each reply's promise
@@ -272,7 +272,7 @@ The Python SDK traces with no setup in your server's code. Every server installs
 
 The shop wants a trace for each tool call, findable by tool name and showing whether it failed. The script installs OpenTelemetry's SDK, `opentelemetry-sdk` 1.45.2, with an `InMemorySpanExporter`, which keeps finished spans in a list that a test can read (`opentelemetry/sdk/trace/export/in_memory_span_exporter.py`). The script serves chapter 3's tools from [Design tools a model can use](#design-tools) over Streamable HTTP on loopback in the same process, so the client's and the server's spans land in the same list. It calls `find_orders` and then `quote_refund` for an order that doesn't exist. Then it makes the same `find_orders` call in memory twice, the second time inside a span of the test's own.
 
-Example `trace-a-tool-call` (Python 3.12.15 · cryptography 50.0.2 · httpx2 2.16.2 · jsonschema 4.26.0 · mcp 2.3.0 · mcp-types 2.3.0 · opentelemetry-api 1.45.2 · opentelemetry-sdk 1.45.2 · opentelemetry-semantic-conventions 0.66b2 · pydantic 2.14.3 · pytest 9.2.0 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.12:
+Example `trace-a-tool-call` (Python 3.12.15 · cryptography 50.0.2 · httpx2 2.16.2 · jsonschema 4.26.0 · mcp 2.3.0 · mcp-types 2.3.0 · opentelemetry-api 1.45.2 · opentelemetry-sdk 1.45.2 · opentelemetry-semantic-conventions 0.66b2 · pydantic 2.14.3 · pytest 9.2.0 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.13:
 
 ```python
 """The OpenTelemetry spans the SDK emits for the shop's tool calls, over Streamable HTTP on loopback and in memory.
@@ -372,7 +372,7 @@ It is one draw from that setup, and the groups are small: the smallest has 8 tic
 
 To score the replay, the script takes each ticket's first tool call and prints the accuracy overall, per expected tool and for each confusion. For the right calls that name an order, it also scores the `order_id` argument two ways: against the ID as the ticket wrote it, and against the order the customer meant. The two differ for the 5 tickets where a customer mistyped the number.
 
-Example `tool-choice-accuracy` (Python 3.12.15 · cryptography 50.0.2 · httpx2 2.16.2 · jsonschema 4.26.0 · mcp 2.3.0 · mcp-types 2.3.0 · pydantic 2.14.3 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.12:
+Example `tool-choice-accuracy` (Python 3.12.15 · cryptography 50.0.2 · httpx2 2.16.2 · jsonschema 4.26.0 · mcp 2.3.0 · mcp-types 2.3.0 · pydantic 2.14.3 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.13:
 
 ```python
 """Score the first tool call of every ticket in chapter 10's queue run against the tool each ticket is tagged with,
@@ -465,7 +465,7 @@ There are three such parts. A client asks for tool list changes with `subscripti
 
 The shop is replacing `find_orders` with `find_orders_v2`, which can also filter by SKU. To walk through the three releases, the script serves chapter 3's tools from [Design tools a model can use](#design-tools) over Streamable HTTP on loopback, with a TTL of one minute on the tool list, and connects two clients: one that listens for list changes, and one that only caches. Release 2 adds `find_orders_v2` and rewords `find_orders`, and the server publishes the change. Release 3 replaces `find_orders` with a function that raises `ToolError`. An in-memory client wouldn't do here, because the in-process path doesn't deliver list changes ([Test tools in memory](#in-memory-tests)).
 
-Example `deprecate-a-tool` (Python 3.12.15 · cryptography 50.0.2 · httpx2 2.16.2 · jsonschema 4.26.0 · mcp 2.3.0 · mcp-types 2.3.0 · pydantic 2.14.3 · pytest 9.2.0 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.12:
+Example `deprecate-a-tool` (Python 3.12.15 · cryptography 50.0.2 · httpx2 2.16.2 · jsonschema 4.26.0 · mcp 2.3.0 · mcp-types 2.3.0 · pydantic 2.14.3 · pytest 9.2.0 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.13:
 
 ```python
 """Retire find_orders in favour of find_orders_v2 over three releases, watched by a listening client and a caching

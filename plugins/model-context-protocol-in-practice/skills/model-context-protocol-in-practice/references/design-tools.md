@@ -3,13 +3,13 @@ title: "Model Context Protocol in Practice"
 chapter: "Design tools a model can use"
 chapter_id: design-tools
 book: model-context-protocol-in-practice
-edition: 2026.11.12
+edition: 2026.11.13
 verified: 2026-11-19
-edition_code: WM6T-Q38W
+edition_code: P21J-Z4WN
 canonical: https://rollingedition.com/model-context-protocol-in-practice/design-tools
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“Design tools a model can use,” chapter 3 of Model Context Protocol in Practice, Edition 2026.11.12, examples passed Nov 19, 2026. By Rolling Edition, https://rollingedition.com/model-context-protocol-in-practice/design-tools. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Design tools a model can use,” chapter 3 of Model Context Protocol in Practice, Edition 2026.11.13, examples passed Nov 19, 2026. By Rolling Edition, https://rollingedition.com/model-context-protocol-in-practice/design-tools. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Design tools a model can use
 
@@ -37,7 +37,7 @@ This chapter rebuilds `shop-support` in `lib.shop_tools`, a shared module, so th
 
 The module also holds `endpoint_tools()`, the list a one-tool-per-endpoint generator writes for the same API, so the two shapes can be compared. Both lists print with each tool's required arguments. Then ticket T-0024, "please refund the aluminium muffin tray on o2415", runs both ways.
 
-Example `tools-from-endpoints` (Python 3.12.15 · cryptography 50.0.2 · httpx2 2.16.2 · jsonschema 4.26.0 · mcp 2.3.0 · mcp-types 2.3.0 · pydantic 2.14.3 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.12:
+Example `tools-from-endpoints` (Python 3.12.15 · cryptography 50.0.2 · httpx2 2.16.2 · jsonschema 4.26.0 · mcp 2.3.0 · mcp-types 2.3.0 · pydantic 2.14.3 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.13:
 
 ```python
 """Two tool lists for the same API, one tool per endpoint as a generator writes them and the shop's five task tools, then
@@ -126,7 +126,7 @@ The eight were picked by hand from the shop's ticket queue, not sampled: two ask
 
 The model is the one every recording in this book uses: Qwen3-4B-Instruct-2507, run on the CPU with llama.cpp, as [Let a model choose the tool](#let-a-model-choose) set it up. The script `recordings/description_choices.py` made this recording, `description-choices`, sampling one reply per ticket and set at temperature 0.7 with one fixed seed. Scoring looks only at the first tool the model calls, not at its arguments. A ticket's right first tool is the one the shop's data tags it with, with one change: `issue_refund` needs a `quote_id`, so a refund request starts with `quote_refund`.
 
-Example `vague-description-wrong-tool` (Python 3.12.15 · cryptography 50.0.2 · httpx2 2.16.2 · mcp 2.3.0 · mcp-types 2.3.0 · pydantic 2.14.3 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.12:
+Example `vague-description-wrong-tool` (Python 3.12.15 · cryptography 50.0.2 · httpx2 2.16.2 · mcp 2.3.0 · mcp-types 2.3.0 · pydantic 2.14.3 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.13:
 
 ```python
 """Predict, then run: eight of the shop's tickets and the same five tools, shown to the model with three sets of
@@ -231,7 +231,7 @@ The schema does two jobs. It shows the model the shape of a valid call, and it l
 
 The Python SDK builds the schema from the function's type hints, and pydantic's `Annotated[..., Field(...)]` adds constraints to them ([tools](https://py.sdk.modelcontextprotocol.io/v2/servers/tools/)). The shop's server defines its ID types once. `OrderId` is a string with `pattern=r"^O-\d{4}$"`, and `CustomerId` and `Sku` work the same way. `find_orders` takes `status` as a `Literal` of the five order statuses, `placed_since` as a `date`, and `limit` as an integer with `ge=1, le=50`. The schema the SDK built from those hints prints first. Then `find_orders` is called three ways: with three bad arguments at once, with a number sent as a string, and with the date the recorded model sent for ticket T-0013 in [Write descriptions the model reads](#write-tool-descriptions). That ticket asked for orders "since 12 Jun".
 
-Example `reject-bad-arguments` (Python 3.12.15 · cryptography 50.0.2 · httpx2 2.16.2 · jsonschema 4.26.0 · mcp 2.3.0 · mcp-types 2.3.0 · pydantic 2.14.3 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.12:
+Example `reject-bad-arguments` (Python 3.12.15 · cryptography 50.0.2 · httpx2 2.16.2 · jsonschema 4.26.0 · mcp 2.3.0 · mcp-types 2.3.0 · pydantic 2.14.3 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.13:
 
 ```python
 """find_orders' typed inputs: the JSON Schema the SDK builds from them, one result that names three rejected arguments,
@@ -318,7 +318,7 @@ The output schema serves the host's code more than the model. Code can branch on
 
 The Python SDK builds the output schema from the function's return type. Primitive types, `None`, lists and unions are wrapped in `{"result": ...}`. Pydantic models, `TypedDict`s, dataclasses and `dict[str, ...]` aren't ([structured output](https://py.sdk.modelcontextprotocol.io/v2/servers/structured-output/); `mcp/server/mcpserver/utilities/func_metadata.py`). `quote_refund` returns `RefundQuote`, a pydantic model with the quote's ID, the order, the SKU, the amount, the policy limit, `within_limit` and the quote's lifetime in seconds. Quoting order O-2289 for ticket T-0006 with no SKU, so the quote covers the whole order, shows the structured result. A second server then has one tool that returns the same amount as a bare string, to show the wrapper.
 
-Example `refund-quote-structured` (Python 3.12.15 · cryptography 50.0.2 · httpx2 2.16.2 · jsonschema 4.26.0 · mcp 2.3.0 · mcp-types 2.3.0 · pydantic 2.14.3 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.12:
+Example `refund-quote-structured` (Python 3.12.15 · cryptography 50.0.2 · httpx2 2.16.2 · jsonschema 4.26.0 · mcp 2.3.0 · mcp-types 2.3.0 · pydantic 2.14.3 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.13:
 
 ```python
 """quote_refund returns a pydantic model, so the SDK publishes its output schema and returns structuredContent; a tool
@@ -405,7 +405,7 @@ The shop's server follows that test. A missing order, an order that isn't refund
 4. a call to a server started with the wrong key;
 5. a call after the shop's API has stopped.
 
-Example `tool-error-versus-protocol-error` (Python 3.12.15 · cryptography 50.0.2 · httpx2 2.16.2 · mcp 2.3.0 · mcp-types 2.3.0 · pydantic 2.14.3 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.12:
+Example `tool-error-versus-protocol-error` (Python 3.12.15 · cryptography 50.0.2 · httpx2 2.16.2 · mcp 2.3.0 · mcp-types 2.3.0 · pydantic 2.14.3 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.13:
 
 ```python
 """Five failures and the path each takes: three tool execution errors the model reads (isError results), a crash the
@@ -492,7 +492,7 @@ The shop's four reading tools carry `read_only_hint=True` and `open_world_hint=F
 
 The code works out what a host should assume about each tool, filling in the default wherever a hint is missing, and applies a consent rule to the result. It includes the endpoint tool `post_refunds`, which has no annotations. Then it calls `issue_refund` twice with one quote, and `POST /refunds` twice with one amount.
 
-Example `annotate-the-refund-tool` (Python 3.12.15 · cryptography 50.0.2 · httpx2 2.16.2 · jsonschema 4.26.0 · mcp 2.3.0 · mcp-types 2.3.0 · pydantic 2.14.3 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.12:
+Example `annotate-the-refund-tool` (Python 3.12.15 · cryptography 50.0.2 · httpx2 2.16.2 · jsonschema 4.26.0 · mcp 2.3.0 · mcp-types 2.3.0 · pydantic 2.14.3 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.13:
 
 ```python
 """What each tool's annotations tell a host, with the specification's defaults filled in where a hint is missing, and
@@ -583,7 +583,7 @@ The host puts every tool from [the previous sections](#tool-annotations), with i
 
 The cost is easier to measure than to guess. When the recording script ran, it also counted, with the recording model's tokenizer, how many tokens each tool takes in the host's prompt. The check adds up those counts for the revised tools, the vague ones from [Write descriptions the model reads](#write-tool-descriptions) and the endpoint tools, and measures their bytes. It refuses to run if a tool has changed since its tokens were counted.
 
-Example `tool-list-size` (Python 3.12.15 · cryptography 50.0.2 · httpx2 2.16.2 · mcp 2.3.0 · mcp-types 2.3.0 · pydantic 2.14.3 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.12:
+Example `tool-list-size` (Python 3.12.15 · cryptography 50.0.2 · httpx2 2.16.2 · mcp 2.3.0 · mcp-types 2.3.0 · pydantic 2.14.3 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.13:
 
 ```python
 """What the shop's tool list costs in the host's prompt: bytes, and tokens counted with the recording model's tokenizer

@@ -3,13 +3,13 @@ title: "Model Context Protocol in Practice"
 chapter: "Ask the user in the middle of a call"
 chapter_id: multi-round-trip-requests
 book: model-context-protocol-in-practice
-edition: 2026.11.12
+edition: 2026.11.13
 verified: 2026-11-19
-edition_code: WM6T-Q38W
+edition_code: P21J-Z4WN
 canonical: https://rollingedition.com/model-context-protocol-in-practice/multi-round-trip-requests
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“Ask the user in the middle of a call,” chapter 5 of Model Context Protocol in Practice, Edition 2026.11.12, examples passed Nov 19, 2026. By Rolling Edition, https://rollingedition.com/model-context-protocol-in-practice/multi-round-trip-requests. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Ask the user in the middle of a call,” chapter 5 of Model Context Protocol in Practice, Edition 2026.11.13, examples passed Nov 19, 2026. By Rolling Edition, https://rollingedition.com/model-context-protocol-in-practice/multi-round-trip-requests. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Ask the user in the middle of a call
 
@@ -31,7 +31,7 @@ The Python SDK still offers the old call. `ctx.elicit()` sends `elicitation/crea
 
 The first attempt at a confirmation is written that way. Its server takes chapter 3's tools from a shared module, `lib.confirmations`, which holds what this chapter's servers have in common: those tools, the key that protects round-trip state, and a record of answers already used. Its `issue_refund` calls chapter 3's version, which posts the refund to the shop's API. If the API holds the refund, the tool calls `ctx.elicit()` and waits. The client has an elicitation callback that plays a scripted user, who would release the refund if asked. The client quotes order O-2289, whose whole refund is above the limit, and calls `issue_refund`.
 
-Example `refund-needs-confirmation` (Python 3.12.15 · cryptography 50.0.2 · httpx2 2.16.2 · jsonschema 4.26.0 · mcp 2.3.0 · mcp-types 2.3.0 · pydantic 2.14.3 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.12:
+Example `refund-needs-confirmation` (Python 3.12.15 · cryptography 50.0.2 · httpx2 2.16.2 · jsonschema 4.26.0 · mcp 2.3.0 · mcp-types 2.3.0 · pydantic 2.14.3 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.13:
 
 ```python
 """The 2025 way to confirm a refund, which fails at revision 2026-07-28: issue_refund calls ctx.elicit() and waits,
@@ -111,7 +111,7 @@ Three rules limit what a server may ask, and when. Only `tools/call`, `prompts/g
 
 The server passes `request_state_security=` to `MCPServer`, with the policy that `confirmations.state_security()` builds, so that several replicas can later share one key. In these examples that policy is the SDK's default, a key made when the process starts. A client declares elicitation by passing a callback, and calls the tool through `client.session.call_tool(..., allow_input_required=True)`, which hands back the input request instead of answering it.
 
-Example `refund-asks-to-confirm` (Python 3.12.15 · cryptography 50.0.2 · httpx2 2.16.2 · jsonschema 4.26.0 · mcp 2.3.0 · mcp-types 2.3.0 · pydantic 2.14.3 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.12:
+Example `refund-asks-to-confirm` (Python 3.12.15 · cryptography 50.0.2 · httpx2 2.16.2 · jsonschema 4.26.0 · mcp 2.3.0 · mcp-types 2.3.0 · pydantic 2.14.3 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.13:
 
 ```python
 """issue_refund answers a held refund with an input request instead of a result, which asks a person to confirm it.
@@ -196,7 +196,7 @@ The second round is where a lead's yes becomes a refund. The tool from [the prev
 
 The loop runs twice, once by hand and once through the SDK. The file launches the server through `lib.wire`, the book's relay that records every JSON-RPC message, and plays the lead with a scripted answer. For order O-2289 it drives the loop by hand: one call, then one retry carrying the answer and the state. For order O-1145 it calls `Client.call_tool`, with an elicitation callback that prints the question and answers yes.
 
-Example `refund-confirmed-round-trip` (Python 3.12.15 · cryptography 50.0.2 · httpx2 2.16.2 · jsonschema 4.26.0 · mcp 2.3.0 · mcp-types 2.3.0 · pydantic 2.14.3 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.12:
+Example `refund-confirmed-round-trip` (Python 3.12.15 · cryptography 50.0.2 · httpx2 2.16.2 · jsonschema 4.26.0 · mcp 2.3.0 · mcp-types 2.3.0 · pydantic 2.14.3 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.13:
 
 ```python
 """Finish the refund that refund-asks-to-confirm asks about, by retrying with the answer and the echoed requestState:
@@ -279,7 +279,7 @@ The SDK offers a shorter route. A tool parameter declared as `Annotated[T, Resol
 
 Only the person who opens a returned parcel knows whether the item inside arrived damaged or wrong, and whether it can go back on sale. The policy's reason also decides whether shipping is refunded. The tool `record_return` asks with a resolver, for the line of KG-1043 on order O-1145. The form has three fields: `reason`, one of the refund policy's five reasons; `restock`, a boolean; and an optional free-text `note` of at most 200 characters. A scripted user accepts, declines, then cancels, and a client without a callback calls last.
 
-Example `elicit-a-refund-reason` (Python 3.12.15 · mcp 2.3.0 · pydantic 2.14.3), passing in Edition 2026.11.12:
+Example `elicit-a-refund-reason` (Python 3.12.15 · mcp 2.3.0 · pydantic 2.14.3), passing in Edition 2026.11.13:
 
 ```python
 """record_return asks the person who opened a returned parcel what they found, through a form that a resolver builds
@@ -369,7 +369,7 @@ URL mode isn't how a client gets authorized to an MCP server; [Find the authoriz
 
 Paying out comes after a release. `pay_refund` pays a released refund, one with status `requested`, back to the order's card, and the provider pays only under a lead's own account, signed in on the provider's page. The tool makes a random ID for the flow, puts it in `requestState`, and sends the lead to `https://pay.fernhill.example/connect/` followed by that ID, on a reserved domain that never resolves. An in-memory set stands in for the provider's record of finished flows, and the example adds this flow before the third call.
 
-Example `elicit-by-url` (Python 3.12.15 · cryptography 50.0.2 · httpx2 2.16.2 · jsonschema 4.26.0 · mcp 2.3.0 · mcp-types 2.3.0 · pydantic 2.14.3 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.12:
+Example `elicit-by-url` (Python 3.12.15 · cryptography 50.0.2 · httpx2 2.16.2 · jsonschema 4.26.0 · mcp 2.3.0 · mcp-types 2.3.0 · pydantic 2.14.3 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.13:
 
 ```python
 """pay_refund sends the support lead to the payment provider's page to connect an account, through URL mode, so the
@@ -450,7 +450,7 @@ A replayed confirmation would mean a second release of money, so the tool has to
 4. as an honest retry;
 5. as the same honest retry, sent a second time.
 
-Example `tampered-round-trip-state` (Python 3.12.15 · cryptography 50.0.2 · httpx2 2.16.2 · jsonschema 4.26.0 · mcp 2.3.0 · mcp-types 2.3.0 · pydantic 2.14.3 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.12:
+Example `tampered-round-trip-state` (Python 3.12.15 · cryptography 50.0.2 · httpx2 2.16.2 · jsonschema 4.26.0 · mcp 2.3.0 · mcp-types 2.3.0 · pydantic 2.14.3 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.13:
 
 ```python
 """Send issue_refund's retry wrongly, then rightly, then again: a changed requestState, an answer with no state, and a
