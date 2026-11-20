@@ -1,0 +1,20 @@
+comparisons (m): 3
+share of the 5% for each comparison, 0.05 / m: 0.0167
+level of each interval, 1 - 0.05 / m: 98.33%
+resamples beyond each end of an interval: 16.7
+unreadable verdicts, baseline: 0
+unreadable verdicts, prompt-b: 0
+prompt-b minus baseline, difference: +10.0 points
+prompt-b minus baseline, 98.33% interval: [+0.0, +22.5] points
+prompt-b minus baseline, n: 40
+prompt-b minus baseline, reading: no difference detected at n = 40
+unreadable verdicts, k5: 0
+k5 minus baseline, difference: +2.5 points
+k5 minus baseline, 98.33% interval: [-12.5, +18.4] points
+k5 minus baseline, n: 40
+k5 minus baseline, reading: no difference detected at n = 40
+unreadable verdicts, unfiltered: 0
+unfiltered minus baseline, difference: -10.0 points
+unfiltered minus baseline, 98.33% interval: [-27.5, +8.4] points
+unfiltered minus baseline, n: 40
+unfiltered minus baseline, reading: no difference detected at n = 40

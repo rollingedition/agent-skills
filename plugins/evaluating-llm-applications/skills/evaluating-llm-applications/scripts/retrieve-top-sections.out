@@ -1,0 +1,6 @@
+question q-0007 (version 1.1): In 1.1, will an ignore entry of docs/**/*.tmp catch a file two folders down, like docs/x/y/a.tmp?
+words kept for matching: ignore entry docs tmp catch file two folders down like docs tmp
+words kept from the text 'a 3.5mm jack': 5mm jack
+rank 1: ignore-recursive | score 9.156
+rank 2: sync-create-dirs | score 3.386
+rank 3: ignore-syntax | score 3.348

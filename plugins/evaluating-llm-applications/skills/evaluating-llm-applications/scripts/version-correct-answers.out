@@ -1,0 +1,23 @@
+baseline dev version-dependent items: 17
+baseline dev declined replies, counted in the denominator: 4
+baseline dev judged correct for the asked version: 64.7% (11 of 17)
+baseline dev citing a wrong-version section: 0.0% (0 of 17)
+baseline held-out version-dependent items: 8
+baseline held-out declined replies, counted in the denominator: 2
+baseline held-out judged correct for the asked version: 75.0% (6 of 8)
+baseline held-out citing a wrong-version section: 0.0% (0 of 8)
+baseline all version-dependent items citing a wrong-version section: 0.0% (0 of 25)
+unfiltered dev version-dependent items: 17
+unfiltered dev declined replies, counted in the denominator: 5
+unfiltered dev judged correct for the asked version: 52.9% (9 of 17)
+unfiltered dev citing a wrong-version section: 0.0% (0 of 17)
+unfiltered held-out version-dependent items: 8
+unfiltered held-out declined replies, counted in the denominator: 2
+unfiltered held-out judged correct for the asked version: 75.0% (6 of 8)
+unfiltered held-out citing a wrong-version section: 0.0% (0 of 8)
+unfiltered all version-dependent items citing a wrong-version section: 0.0% (0 of 25)
+items with a readable verdict in both variants: 25
+items where the verdicts differ: 6
+  q-0003, q-0021, q-0022, q-0033, q-0082, q-0085
+items where the wrong-version flag differs: 0
+  none

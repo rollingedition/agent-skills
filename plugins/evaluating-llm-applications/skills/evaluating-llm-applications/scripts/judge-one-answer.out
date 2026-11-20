@@ -1,0 +1,5 @@
+question q-0005 (version 2.0, answerable, planted: near-miss-term): Does sablefile 2.0 still read sablefile.lock in my project root?
+reference answer: Only as a fallback. If the new file is missing and an old sablefile.lock is present, a 2.0 command reads the old file but warns you about it. Once the new file exists, 2.0 reads only that one, and sablefile never deletes the old file.
+assistant reply: No, sablefile 2.0 does not read `sablefile.lock` in the project root. Version 2.0 moves the lock file to a new place. The first 2.0 command that reads an older lock file handles it as described in lock-migration. [sec:install-upgrade]
+judge verdict: FAIL
+judge reason: The response incorrectly states that sablefile 2.0 "does not read `sablefile.lock`" and that it "moves the lock file to a new place," which contradicts the reference answer that says sablefile 2.0 reads the old lock file as a fallback and only reads the new file once it exists. The reference explicitly states that it reads the old file as a fallback and warns users, not that it moves or stops reading it.

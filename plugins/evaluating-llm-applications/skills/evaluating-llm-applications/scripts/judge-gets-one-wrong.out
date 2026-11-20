@@ -1,0 +1,12 @@
+question q-0019 (version 2.0, ambiguous, planted: ambiguous-target): If I edit the file and then run check, will it fail?
+reference answer: Reading 1: if you edited a generated file (a target), check prints DRIFT and the path for it and exits with status 1, because its hash no longer matches the lock.
+Reading 2: if you edited a template, check prints nothing and exits with status 0, since a template change is not drift.
+P2 reply: Quote: "Run `sablefile check` after a sync. If no output appears, no generated file has drifted since the last sync. To see what drift looks like, open a generated file, change one line, and run the check again. The check prints `DRIFT` and the path of the file." [sec:quickstart-check]
+Answer: Yes, if you edit the file and then run check, it will print `DRIFT` and the path of the file, indicating a drift [sec:quickstart-check].
+judge verdict on P2's reply: PASS
+judge reason: The response correctly identifies that editing a generated file and running check will result in a DRIFT message and path output, aligning with Reading 1 of the reference. It does not contradict or omit any part of the reference.
+judge verdict on P1's reply to the same item: FAIL
+hand verdict on P2's reply, under rule 3: FAIL
+rule it breaks: 3. If the reference has several readings, the response must answer every reading. A partial answer is incorrect.
+P2 passes, as judged: 17 of 20
+P2 passes, with q-0019 read by hand: 16 of 20

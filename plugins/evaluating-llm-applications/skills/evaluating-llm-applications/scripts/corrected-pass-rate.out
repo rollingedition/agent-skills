@@ -1,0 +1,10 @@
+unreadable verdicts: 1 (q-0043, "VERDICT: PARTIAL")
+observed pass rate, readable items: 76.5% (91 of 119)
+TPR, dev: 80.4% (37 of 46)
+TNR, dev: 61.4% (27 of 44)
+crossover point, dev: 66.4% (TPR 80.4%, TNR 61.4%)
+corrected pass rate: 90.5%
+calibration set, judge PASS rate: 61.7% (111 of 180)
+calibration set, corrected judge PASS rate: 51.1%
+calibration set, human PASS rate: 51.1% (92 of 180)
+crossover point, calibration set: 68.9% (TPR 81.5%, TNR 59.1%)

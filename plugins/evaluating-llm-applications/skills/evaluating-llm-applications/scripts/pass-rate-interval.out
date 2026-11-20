@@ -1,0 +1,7 @@
+items: 20
+pass rate: 85.0% (17 of 20)
+95% interval of the pass rate: [70.0%, 100.0%]
+pass rate, answerable: 90.0% (9 of 10)
+pass rate, unanswerable: 100.0% (4 of 4)
+pass rate, version-dependent: 75.0% (3 of 4)
+pass rate, ambiguous: 50.0% (1 of 2)

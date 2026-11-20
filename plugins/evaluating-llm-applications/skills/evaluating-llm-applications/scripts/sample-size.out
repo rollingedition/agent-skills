@@ -1,0 +1,16 @@
+share of discordant items, P2 and P1 disagree: 10.1% (8 of 79)
+assumption, the next change disagrees with the baseline on about as many items as prompt-b did (10.1% of items)
+floor, sampling noise only: dev items with five readable verdicts (n): 79
+floor, sampling noise only: mean within-item variance of one verdict: 0.0051
+main estimate, variance of one item's paired difference: 0.1006
+main estimate, items needed for a 5-point difference: 316
+main estimate, items needed for a 10-point difference: 79
+main estimate, smallest difference that 20 items detect, 80% power and 95% confidence: 19.9 points
+floor, sampling noise only, variance of one item's paired difference: 0.0101
+floor, sampling noise only, items needed for a 5-point difference: 32
+floor, sampling noise only, items needed for a 10-point difference: 8
+floor, sampling noise only, smallest difference that 20 items detect, 80% power and 95% confidence: 6.3 points
+chapter 1 set, share of items where the two verdicts differ: 10.0% (2 of 20)
+chapter 1 set, 95% interval width: 30.0 points
+main estimate, 95% width at 20 items: 27.8 points
+reading: with 20 items and a change that disagrees with the baseline on 10.1% of items, as prompt-b did, the smallest difference detected with 80% power at 95% confidence is 19.9 points

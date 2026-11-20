@@ -1,0 +1,15 @@
+baseline citations on dev items: 60
+baseline supported: 93.3% (56 of 60)
+baseline unlisted: 6.7% (4 of 60)
+baseline wrong-version: 0.0% (0 of 60)
+baseline missing: 0.0% (0 of 60)
+unfiltered citations on dev items: 59
+unfiltered supported: 84.7% (50 of 59)
+unfiltered unlisted: 15.3% (9 of 59)
+unfiltered wrong-version: 0.0% (0 of 59)
+unfiltered missing: 0.0% (0 of 59)
+prompt-b citations on dev items: 117
+prompt-b supported: 93.2% (109 of 117)
+prompt-b unlisted: 6.8% (8 of 117)
+prompt-b wrong-version: 0.0% (0 of 117)
+prompt-b missing: 0.0% (0 of 117)

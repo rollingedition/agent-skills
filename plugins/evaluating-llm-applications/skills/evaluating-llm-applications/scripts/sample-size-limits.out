@@ -1,0 +1,10 @@
+z sum squared, 95% confidence and 80% power: 7.85
+var(d), variance of one item paired difference: 0.1006
+delta squared, a five-point difference: 0.0025
+n for five points: 7.85 x 0.1006 / 0.0025 = 315.9, rounded up to 316
+discordant share, 95% interval: [3.8%, 17.7%]
+items needed for 5 points, low end of the share: 118
+items needed for 5 points, high end of the share: 555
+items needed for 5 points at 98.33% confidence: 422
+held-out items (n): 40
+smallest difference 40 held-out items detect at 98.33% and 80% power: 16.2 points

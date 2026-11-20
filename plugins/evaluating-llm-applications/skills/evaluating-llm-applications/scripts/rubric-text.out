@@ -1,0 +1,15 @@
+answer judge, reference-guided: 10 lines
+  sha256 of system text and template: 4c409dcd59d0926646c3f8f5683da5de589e1586007dcfcf79d71a6b49e7e227
+  first line: You check an AI assistant's answer about the sablefile tool against the written reference answer for the question.
+HelpSteer2 calibration rubric, reference-free: 20 lines
+  sha256 of system text and template: 56d617ac94b9fa5c4f0b2ce1eee17b7e0ce42c7e6b6c617edcb55a7b48d472e6
+  first line: You check the correctness of an AI assistant's response to a user's request.
+HelpSteer2 rubric B, second wording: 17 lines
+  sha256 of system text and template: 7f512725080e8e78437603f7445a0480caaa0d2a344aa51d58d5475cba2ac384
+  first line: You grade whether an AI assistant's reply to a user is right.
+pairwise rubric: 13 lines
+  sha256 of system text and template: 24a735e79373f7fa0b8bf1210c3e516964d93164508c666b8d333b93c27de992
+  first line: You compare two AI assistant responses to the same request and say which one is better.
+faithfulness rubric: 15 lines
+  sha256 of system text and template: a584b8d56f63c212497fa67602f2fbd2add41823ca5895ba2bad541389970555
+  first line: You check whether an answer about the sablefile tool is supported by the documentation sections it was given.

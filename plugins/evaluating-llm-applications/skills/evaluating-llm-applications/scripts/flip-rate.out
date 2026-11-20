@@ -1,0 +1,12 @@
+unreadable, q-0043: samples 1, 4 (left out, not counted as FAIL)
+left out of the flip rate (unreadable verdict): 1
+variance items compared (n): 79
+flip rate: 2.5% (2 of 79)
+items with 0 of 5 PASS: 16
+items with 1 of 5 PASS: 1
+items with 2 of 5 PASS: 0
+items with 3 of 5 PASS: 0
+items with 4 of 5 PASS: 1
+items with 5 of 5 PASS: 61
+mean per-item pass rate across samples: 78.5% (310 of 395)
+baseline pass rate, same items (temperature 0): 78.5% (62 of 79)

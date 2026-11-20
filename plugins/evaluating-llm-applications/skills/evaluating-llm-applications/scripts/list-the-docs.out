@@ -1,0 +1,5 @@
+sections in version 1.0: 35
+sections in version 1.1: 36
+sections in version 2.0: 40
+section IDs in all 3 versions: 35
+section IDs in 2.0 but in neither 1.0 nor 1.1: 4

@@ -1,0 +1,10 @@
+file names, exact match: False
+file names, ratio: 0.765
+file names, ratio with the reply first: 0.765
+flag, exact match: False
+flag, ratio: 0.933
+flag, ratio with the reply first: 0.933
+long answer, exact match: False
+long answer, ratio: 0.480
+long answer, ratio with the reply first: 0.861
+long answer, ratio with autojunk off: 0.861

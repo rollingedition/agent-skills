@@ -1,0 +1,12 @@
+judge: judge-4b, uncalibrated (no human ratings in this book)
+dev answered items: 57
+dev unreadable verdicts: 0
+dev faithfulness rate: 94.7% (54 of 57)
+dev 95% interval of the faithfulness rate: [87.7%, 100.0%]
+dev unfaithful items, first five: q-0013, q-0029, q-0055
+held-out answered items: 25
+held-out unreadable verdicts: 0
+held-out faithfulness rate: 100.0% (25 of 25)
+held-out 95% interval of the faithfulness rate: [100.0%, 100.0%]
+held-out bootstrap interval is degenerate: all 25 readable verdicts are the same
+held-out exact 95% lower bound for 25 of 25: 86.3%

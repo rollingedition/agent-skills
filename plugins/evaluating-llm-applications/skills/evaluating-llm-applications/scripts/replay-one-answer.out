@@ -1,0 +1,8 @@
+question q-0006 (version 2.0, answerable): Is there a way to make check exit with status 0 even when a file has drifted in 2.0?
+section in context, rank 1: check-exit-status
+section in context, rank 2: no-fail-flag
+section in context, rank 3: quickstart-check
+recorded reply:
+Yes, there is a way to make `check` exit with status 0 even when a file has drifted in 2.0. Use the `--no-fail` flag with `sablefile check`. This flag ensures that the check exits with status 0 even when files have drifted, without changing which files are reported. [sec:no-fail-flag]
+citations, in order: no-fail-flag
+format problems: none

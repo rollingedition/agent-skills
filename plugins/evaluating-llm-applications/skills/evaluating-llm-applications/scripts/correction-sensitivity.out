@@ -1,0 +1,7 @@
+corrected pass rate, 95% interval: [62.1%, 100.0%]
+resamples at the 100% cap: 29.5% (590 of 2000)
+resamples refused, TPR + TNR - 1 below 0.1: 0.1% (2 of 2000)
+corrected, TPR one row higher: 86.0%
+corrected, TPR one row lower: 95.5%
+corrected, TNR one row higher: 91.0%
+corrected, TNR one row lower: 90.0%

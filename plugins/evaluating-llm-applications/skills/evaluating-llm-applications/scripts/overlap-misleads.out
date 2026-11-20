@@ -1,0 +1,16 @@
+pair 1 (hand-written), question: In version 2.0, what does a plain sablefile sync do to your files?
+pair 1, wrong answer, ROUGE-1 F1: 0.815
+pair 1, wrong answer, BLEU: 0.540
+pair 1, right answer, ROUGE-1 F1: 0.167
+pair 1, right answer, BLEU: 0.000
+pair 2 (hand-written), question: In version 2.0, when does sync create a target's missing folder?
+pair 2, wrong answer, ROUGE-1 F1: 0.720
+pair 2, wrong answer, BLEU: 0.484
+pair 2, right answer, ROUGE-1 F1: 0.211
+pair 2, right answer, BLEU: 0.000
+pair 3 (hand-written), question: Where does version 2.0 keep its lock file?
+pair 3, wrong answer, ROUGE-1 F1: 0.952
+pair 3, wrong answer, BLEU: 0.905
+pair 3, right answer, ROUGE-1 F1: 0.286
+pair 3, right answer, BLEU: 0.000
+pairs where the wrong answer has the higher ROUGE-1 F1: 3 of 3

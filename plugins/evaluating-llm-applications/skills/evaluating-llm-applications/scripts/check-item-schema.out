@@ -1,0 +1,9 @@
+items: 120
+problems: 0
+kind answerable: 60
+kind unanswerable: 20
+kind version-dependent: 25
+kind ambiguous: 15
+split dev: 80
+split held-out: 40
+planted: 24

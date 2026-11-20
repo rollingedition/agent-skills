@@ -1,0 +1,22 @@
+unreadable, rubric B: 0 of 90 replies
+agreement, rubric A, dev: 71.1% (64 of 90)
+kappa, rubric A, dev: 0.42
+TPR, rubric A, dev: 80.4% (37 of 46)
+TNR, rubric A, dev: 61.4% (27 of 44)
+judge PASS rate, rubric A, dev: 60.0% (54 of 90)
+human PASS rate, rubric A, dev: 51.1% (46 of 90)
+agreement, rubric B, dev: 74.4% (67 of 90)
+kappa, rubric B, dev: 0.49
+TPR, rubric B, dev: 84.8% (39 of 46)
+TNR, rubric B, dev: 63.6% (28 of 44)
+judge PASS rate, rubric B, dev: 61.1% (55 of 90)
+human PASS rate, rubric B, dev: 51.1% (46 of 90)
+agreement, rubric A, held-out: 70.0% (63 of 90)
+kappa, rubric A, held-out: 0.40
+TPR, rubric A, held-out: 82.6% (38 of 46)
+TNR, rubric A, held-out: 56.8% (25 of 44)
+judge PASS rate, rubric A, held-out: 63.3% (57 of 90)
+human PASS rate, rubric A, held-out: 51.1% (46 of 90)
+rubric B, held-out: no readable replies recorded
+paired difference, dev: +3.3 points, 95% interval [-1.1, +7.8] points, n = 90
+paired difference, dev, reading: no difference detected at n = 90

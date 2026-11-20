@@ -1,0 +1,16 @@
+tests by module (passed, failed):
+  test_bench: 11 passed, 0 failed
+  test_bias: 14 passed, 0 failed
+  test_both_orders: 14 passed, 0 failed
+  test_calibration: 9 passed, 0 failed
+  test_calibration_bootstrap: 8 passed, 0 failed
+  test_contract: 5 passed, 0 failed
+  test_gate: 11 passed, 0 failed
+  test_guard: 4 passed, 0 failed
+  test_judging: 3 passed, 0 failed
+  test_stats: 10 passed, 0 failed
+  test_support_verdict: 5 passed, 0 failed
+  test_testset: 5 passed, 0 failed
+  test_variance: 15 passed, 0 failed
+total: 114 passed, 0 failed
+pytest exit code: 0

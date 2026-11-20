@@ -1,0 +1,12 @@
+top k: 3
+dev items: 80
+dev items with no supporting section of the asked version, left out: 13
+unreadable verdict, left out: q-0043 ("VERDICT: PARTIAL")
+items in the table: 66
+declined items in the table, counted in their cells: 10
+right section in the top 3, PASS: 49
+right section in the top 3, FAIL: 10
+right section not in the top 3, PASS: 0
+right section not in the top 3, FAIL: 7
+passed without the right section retrieved: none
+failed with the right section retrieved: q-0019, q-0023, q-0025, q-0029, q-0033, q-0045, q-0046, q-0048, q-0063, q-0074

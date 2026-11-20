@@ -28,6 +28,13 @@
       "homepage": "https://rollingedition.com/data-governance-as-code"
     },
     {
+      "name": "evaluating-llm-applications",
+      "source": "./plugins/evaluating-llm-applications",
+      "description": "Know whether an LLM application works, and whether a change made it better: test sets, checks, judges you can trust and statistics that hold up, on a documentation assistant for a small command-line tool.",
+      "category": "learning",
+      "homepage": "https://rollingedition.com/evaluating-llm-applications"
+    },
+    {
       "name": "language-models-from-the-ground-up",
       "source": "./plugins/language-models-from-the-ground-up",
       "description": "How a language model works, built one part at a time: next-word prediction, tokens, embeddings, a neural model, attention and the transformer, training a small model on a CPU, choosing words, what an open model holds inside, and how instruction tuning changes it.",

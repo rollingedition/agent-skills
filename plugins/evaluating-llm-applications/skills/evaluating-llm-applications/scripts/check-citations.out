@@ -1,0 +1,11 @@
+items: 20
+items with a format problem: 0.0% (0 of 20)
+items with problem answered-declined-expected: 0
+items with problem declined-with-text: 0
+items with problem empty: 0
+items with problem no-citation: 0
+items with problem unknown-section: 0
+answered items: 15
+answered items with no citation: 0.0% (0 of 15)
+citations: 16
+citations to a section not in the prompt: 0.0% (0 of 16)

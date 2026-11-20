@@ -1,0 +1,12 @@
+consistent, dev: 80.0% (60 of 75)
+flipped, dev: 20.0% (15 of 75)
+tie, dev: 0.0% (0 of 75)
+unreadable, dev: 0.0% (0 of 75)
+consistent, held-out: 74.7% (56 of 75)
+flipped, held-out: 25.3% (19 of 75)
+tie, held-out: 0.0% (0 of 75)
+unreadable, held-out: 0.0% (0 of 75)
+examples, consistent: hs2-pref-0001, hs2-pref-0002, hs2-pref-0005
+examples, flipped: hs2-pref-0003, hs2-pref-0004, hs2-pref-0012
+examples, tie: none
+examples, unreadable: none

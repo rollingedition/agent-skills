@@ -1,0 +1,18 @@
+verdict first, PASS: PASS
+verdict first, FAIL: FAIL
+emphasis around the line: FAIL
+backticks around the line: PASS
+blank lines before the verdict: PASS
+no space after the colon: PASS
+two verdict lines, first one read: FAIL
+lower case: refused
+title case: refused
+PARTIAL: refused
+verdict after a reason: refused
+full stop after the verdict: refused
+words after the verdict: refused
+bullet before the verdict: refused
+pairwise letter: refused
+bare word: refused
+empty reply: refused
+blank lines only: refused

@@ -1,0 +1,21 @@
+unfiltered answered-declined-expected: 2 of 80 (q-0018, q-0039)
+unfiltered declined-with-text: 1 of 80 (q-0080)
+unfiltered empty: 0 of 80
+unfiltered no-citation: 0 of 80
+unfiltered unknown-section: 1 of 80 (q-0019)
+unfiltered citation-first: 0 of 80
+unfiltered stray-line: 0 of 80
+second-model answered-declined-expected: 2 of 80 (q-0034, q-0036)
+second-model declined-with-text: 1 of 80 (q-0001)
+second-model empty: 0 of 80
+second-model no-citation: 9 of 80 (q-0001, q-0007, q-0047, q-0058, q-0060, q-0063, q-0065, q-0071, q-0080)
+second-model unknown-section: 0 of 80
+second-model citation-first: 1 of 80 (q-0030)
+second-model stray-line: 2 of 80 (q-0007, q-0030)
+fixture empty: fired
+fixture declined-with-text: fired
+fixture no-citation: fired
+fixture unknown-section: fired
+fixture answered-declined-expected: fired
+fixture citation-first: fired
+fixture stray-line: fired

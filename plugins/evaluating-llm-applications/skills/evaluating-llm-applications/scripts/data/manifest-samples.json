@@ -1,0 +1,128 @@
+{
+  "balance": {
+    "pairs_preferred": {
+      "a": 67,
+      "b": 83
+    },
+    "ratings_pass_fail": {
+      "FAIL": 88,
+      "PASS": 92
+    }
+  },
+  "dropped_before_sampling": {
+    "gsm8k: phone": 4,
+    "pairs: not ASCII-printable": 114,
+    "pairs: over word limit": 71,
+    "pairs: tie": 96,
+    "ratings: email": 1,
+    "ratings: not ASCII-printable": 289,
+    "ratings: over word limit": 158,
+    "ratings: prompt already used": 258
+  },
+  "files": [
+    {
+      "bytes": 63081,
+      "path": "examples/data/gsm8k/sample.jsonl",
+      "rows": 100,
+      "sha256": "54a203ccdaf1eb0665886ea0d7805027974f827cb9bdd8f208622d040ea2e2c5"
+    },
+    {
+      "bytes": 399718,
+      "path": "examples/data/helpsteer2/preferences.jsonl",
+      "rows": 150,
+      "sha256": "1ac7e9da7438784a14915292c1be9649d68429fe7efe7758b5548eb83590358f"
+    },
+    {
+      "bytes": 291028,
+      "path": "examples/data/helpsteer2/ratings.jsonl",
+      "rows": 180,
+      "sha256": "bc031e14fca6657b246e6843fb2c6260d488d99ea09486a98c65323b60beb862"
+    },
+    {
+      "bytes": 40352,
+      "path": "examples/data/truthfulqa/mc1.jsonl",
+      "rows": 100,
+      "sha256": "3767909700e718889c44d4e0e857842547f28183f2522f136cdbeba2085904e9"
+    }
+  ],
+  "filters": {
+    "ascii_printable": "prompts and responses: tab, newline, carriage return and 0x20-0x7E only",
+    "max_prompt_words": 300,
+    "max_response_words": 400,
+    "personal_data": "email, phone, card number (Luhn), IBAN (mod 97), national id (NNN-NN-NNNN)",
+    "unique_prompts": "first occurrence kept, so no prompt appears twice in a file"
+  },
+  "generator": {
+    "numpy": "2.5.4",
+    "pyarrow": "26.0.1",
+    "read_date": "2026-11-20",
+    "sampling": "numpy.random.default_rng(SEED) per file; pools in source order; rng.choice without replacement",
+    "script": "recordings/make_samples.py",
+    "seed": 0
+  },
+  "sources": {
+    "gsm8k": {
+      "card_licence": "mit",
+      "card_sha256": "a17e882503578c9e324560630e31017617714ee025c87cf4fea6fd916895f3c1",
+      "card_url": "https://huggingface.co/datasets/openai/gsm8k/blob/740312add88f781978c0658806c59bc2815b9866/README.md",
+      "commit": "740312add88f781978c0658806c59bc2815b9866",
+      "files": [
+        {
+          "bytes": 419088,
+          "path": "main/test-00000-of-00001.parquet",
+          "sha256": "ee7b8da9e381df27b9e3f7758a159ab2bdaa4dbaa910546cbbc47e0cb44e4f59",
+          "url": "https://huggingface.co/datasets/openai/gsm8k/resolve/740312add88f781978c0658806c59bc2815b9866/main/test-00000-of-00001.parquet"
+        }
+      ],
+      "repo": "openai/gsm8k",
+      "shipped": true
+    },
+    "helpsteer2": {
+      "card_licence": "cc-by-4.0",
+      "card_sha256": "835effb9e7d9cd0e8b7b8c1816d1d97a8961a036543108e4a0b6a5e22712ff7b",
+      "card_url": "https://huggingface.co/datasets/nvidia/HelpSteer2/blob/990b2711a36180dd19d9c94b8627844866f8982a/README.md",
+      "commit": "990b2711a36180dd19d9c94b8627844866f8982a",
+      "files": [
+        {
+          "bytes": 581833,
+          "path": "validation.jsonl.gz",
+          "sha256": "610eeb5289494d613c4c0f70aade2df8df0b499f3a24e76d232f74e6909d010a",
+          "url": "https://huggingface.co/datasets/nvidia/HelpSteer2/resolve/990b2711a36180dd19d9c94b8627844866f8982a/validation.jsonl.gz"
+        },
+        {
+          "bytes": 15339272,
+          "path": "preference/preference.jsonl.gz",
+          "sha256": "a5cd48600fb7a330cf0ccc8f59051e24e8f236907c379f42eff1ba18da55204b",
+          "url": "https://huggingface.co/datasets/nvidia/HelpSteer2/resolve/990b2711a36180dd19d9c94b8627844866f8982a/preference/preference.jsonl.gz"
+        }
+      ],
+      "repo": "nvidia/HelpSteer2",
+      "shipped": true
+    },
+    "mt_bench_human_judgments": {
+      "card_licence": "cc-by-4.0",
+      "card_sha256": "4ef7507ea4d9b7b9e85db9c31742e5295c2f6d1b8c712d392705fd641c348fc4",
+      "card_url": "https://huggingface.co/datasets/lmsys/mt_bench_human_judgments/blob/f7d2896d2cc5d80f8b55c2bbc722613555233c25/README.md",
+      "commit": "f7d2896d2cc5d80f8b55c2bbc722613555233c25",
+      "files": [],
+      "repo": "lmsys/mt_bench_human_judgments",
+      "shipped": false
+    },
+    "truthfulqa": {
+      "card_licence": "apache-2.0",
+      "card_sha256": "9e06075e7a580802a227e31cc456b37bdf5a174637f22e142b7609d709dd5f95",
+      "card_url": "https://huggingface.co/datasets/truthfulqa/truthful_qa/blob/741b8276f2d1982aa3d5b832d3ee81ed3b896490/README.md",
+      "commit": "741b8276f2d1982aa3d5b832d3ee81ed3b896490",
+      "files": [
+        {
+          "bytes": 271033,
+          "path": "multiple_choice/validation-00000-of-00001.parquet",
+          "sha256": "23f08e230ca4ed66babf3a72419af7cbde1f3d734dd396ac4cf6d088bd162afd",
+          "url": "https://huggingface.co/datasets/truthfulqa/truthful_qa/resolve/741b8276f2d1982aa3d5b832d3ee81ed3b896490/multiple_choice/validation-00000-of-00001.parquet"
+        }
+      ],
+      "repo": "truthfulqa/truthful_qa",
+      "shipped": true
+    }
+  }
+}

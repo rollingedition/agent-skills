@@ -1,0 +1,16 @@
+readable, shuffled options: 99 of 100
+accuracy, shuffled options: 67.7% (67 of 99)
+accuracy interval, shuffled options: [58.6%, 76.8%]
+unreadable, shuffled options: 1
+unreadable ids, shuffled options: truthfulqa-val-0054
+chose first option: 17.2% (17 of 99)
+chance first option: 22.6% (expected 22.4 of 99)
+correct option first after shuffling: 22.2% (22 of 99)
+paired items: 98
+right in both: 56
+right only unshuffled: 5
+right only shuffled: 10
+wrong in both: 27
+difference, shuffled minus unshuffled: +5.1 points
+95% interval of the difference: [-3.1, +12.2] points
+shuffle seed: 1729

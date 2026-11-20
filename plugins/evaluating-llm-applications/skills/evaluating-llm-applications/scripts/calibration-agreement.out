@@ -1,0 +1,9 @@
+agreement, all: 70.6% (127 of 180)
+chance agreement, all: 50.3%
+kappa, all: 0.41
+agreement, dev: 71.1% (64 of 90)
+chance agreement, dev: 50.2%
+kappa, dev: 0.42
+agreement, held-out: 70.0% (63 of 90)
+chance agreement, held-out: 50.3%
+kappa, held-out: 0.40

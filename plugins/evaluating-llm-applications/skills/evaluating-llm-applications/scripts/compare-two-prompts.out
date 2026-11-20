@@ -1,0 +1,8 @@
+P1 (baseline) pass rate: 85.0% (17 of 20)
+P2 (prompt-b) pass rate: 85.0% (17 of 20)
+items that P2 passes and P1 fails: 1
+items that P1 passes and P2 fails: 1
+paired items (n): 20
+difference, P2 minus P1: +0.0 points
+95% interval of the difference: [-15.0, +15.0] points
+reading: no difference detected at n = 20

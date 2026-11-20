@@ -1,0 +1,14 @@
+consistent, dev: 60 of 75 pairs
+flipped, dev: 15 of 75 pairs
+tie, dev: 0 of 75 pairs
+unreadable, dev: 0 of 75 pairs
+consistent, held-out: 56 of 75 pairs
+flipped, held-out: 19 of 75 pairs
+tie, held-out: 0 of 75 pairs
+unreadable, held-out: 0 of 75 pairs
+flipped, first position won both orders, dev: 20.0% (3 of 15)
+flipped, first position won both orders, held-out: 26.3% (5 of 19)
+flipped, first position won both orders, both splits: 23.5% (8 of 34)
+first-position share interval, both splits: [8.8%, 38.2%]
+consistent pairs agreeing with the human, dev: 81.7% (49 of 60)
+consistent pairs agreeing with the human, held-out: 83.9% (47 of 56)

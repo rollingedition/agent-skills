@@ -1,0 +1,54 @@
+# The examples' runtime: CPython 3.12.15, pinned exactly, every example run offline (W-17, D-128).
+# Compiled for x86_64-manylinux_2_36 from the direct pins (the earlier ones plus torch, transformers, safetensors,
+# huggingface_hub), with unsafe-best-match across PyPI and PyTorch's CPU index (D-120, D-128).
+# Torch's +cpu build comes only from the index on the next line, which is the one extra index allowed.
+# Licences of the added packages (from installed metadata, read Nov 20, 2026): torch and transformers Apache-2.0,
+# tokenizers and safetensors Apache-2.0, huggingface-hub Apache-2.0, sympy, networkx, jinja2, fsspec, click, idna,
+# markupsafe, mpmath, httpx2 and httpcore2 BSD-3-Clause or BSD, filelock, pyyaml, anyio, h11, rich, typer and
+# others MIT, shellingham ISC, tqdm MPL-2.0 AND MIT, regex Apache-2.0 AND CNRI-Python.
+--extra-index-url https://download.pytorch.org/whl/cpu
+annotated-doc==0.0.7
+annotated-types==0.8.0
+anyio==4.16.0
+bm25s==0.3.16
+click==8.5.1
+filelock==4.2.12
+fsspec==2026.9.0
+h11==0.16.0
+hf-xet==1.8.0
+httpcore2==2.16.2
+httpx2==2.16.2
+huggingface-hub==2.4.0
+idna==3.20
+iniconfig==2.3.1
+jinja2==3.1.6
+markdown-it-py==4.3.0
+markupsafe==3.0.4
+mdurl==0.1.2
+mpmath==1.3.0
+networkx==3.7
+numpy==2.5.4
+packaging==26.3
+pandas==3.1.1
+pluggy==1.7.0
+pydantic==2.14.3
+pydantic-core==2.50.4
+pygments==2.21.0
+pytest==9.2.0
+python-dateutil==4.0.0
+pyyaml==6.0.3
+regex==2026.11.19
+rich==15.0.0
+safetensors==0.8.0
+setuptools==84.2.1
+shellingham==1.5.4
+sympy==1.14.0
+tokenizers==0.23.3
+torch==2.15.0+cpu
+tqdm==4.70.1
+transformers==5.23.0
+truststore==0.10.5
+typer==0.29.2
+typing-extensions==4.16.0
+typing-inspection==0.4.5
+tzdata==2026.6

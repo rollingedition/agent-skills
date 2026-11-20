@@ -1,0 +1,44 @@
+baseline dev false refusal rate (answerable declined): 10.0% (4 of 40)
+baseline dev false refusals: q-0052, q-0060, q-0063, q-0079
+baseline dev false answer rate (unanswerable answered): 0.0% (0 of 13)
+baseline dev false answers: none
+baseline dev declined, not counted (version-dependent and ambiguous): 6
+baseline held-out false refusal rate (answerable declined): 30.0% (6 of 20)
+baseline held-out false refusals: q-0101, q-0102, q-0103, q-0105, q-0111, q-0118
+baseline held-out false answer rate (unanswerable answered): 0.0% (0 of 7)
+baseline held-out false answers: none
+baseline held-out declined, not counted (version-dependent and ambiguous): 2
+unfiltered dev false refusal rate (answerable declined): 12.5% (5 of 40)
+unfiltered dev false refusals: q-0005, q-0052, q-0058, q-0060, q-0079
+unfiltered dev false answer rate (unanswerable answered): 15.4% (2 of 13)
+unfiltered dev false answers: q-0018, q-0039
+unfiltered dev reply to q-0018 cites: remote-retries
+unfiltered dev reply to q-0018 text: Yes, sablefile 1.1 can fetch a remote template from a private URL that needs a login token, as long as the token is included in the request. The retry behavior for such fetches is up to 5 times before giving up, and this applies to `sync` and `diff` operations [sec:remote-retries]. The `check` command does not fetch anything and thus does not apply to such scenarios.
+unfiltered dev reply to q-0039 cites: check-exit-status
+unfiltered dev reply to q-0039 text: When check finds a drifted file, it prints `DRIFT` and the path, and exits with status 1. [sec:check-exit-status]
+unfiltered dev declined, not counted (version-dependent and ambiguous): 9
+unfiltered held-out false refusal rate (answerable declined): 45.0% (9 of 20)
+unfiltered held-out false refusals: q-0101, q-0102, q-0103, q-0105, q-0106, q-0111, q-0115, q-0116, q-0117
+unfiltered held-out false answer rate (unanswerable answered): 0.0% (0 of 7)
+unfiltered held-out false answers: none
+unfiltered held-out declined, not counted (version-dependent and ambiguous): 3
+prompt-b dev false refusal rate (answerable declined): 7.5% (3 of 40)
+prompt-b dev false refusals: q-0052, q-0063, q-0079
+prompt-b dev false answer rate (unanswerable answered): 0.0% (0 of 13)
+prompt-b dev false answers: none
+prompt-b dev declined, not counted (version-dependent and ambiguous): 4
+prompt-b held-out false refusal rate (answerable declined): 25.0% (5 of 20)
+prompt-b held-out false refusals: q-0101, q-0102, q-0103, q-0105, q-0111
+prompt-b held-out false answer rate (unanswerable answered): 0.0% (0 of 7)
+prompt-b held-out false answers: none
+prompt-b held-out declined, not counted (version-dependent and ambiguous): 0
+k5 dev false refusal rate (answerable declined): 7.5% (3 of 40)
+k5 dev false refusals: q-0052, q-0062, q-0079
+k5 dev false answer rate (unanswerable answered): 0.0% (0 of 13)
+k5 dev false answers: none
+k5 dev declined, not counted (version-dependent and ambiguous): 5
+k5 held-out false refusal rate (answerable declined): 30.0% (6 of 20)
+k5 held-out false refusals: q-0102, q-0103, q-0105, q-0106, q-0111, q-0116
+k5 held-out false answer rate (unanswerable answered): 0.0% (0 of 7)
+k5 held-out false answers: none
+k5 held-out declined, not counted (version-dependent and ambiguous): 2

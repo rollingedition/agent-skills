@@ -1,0 +1,26 @@
+q-0001 | version 1.1 | version-dependent | not planted | twin q-0002 | In sablefile 1.1, if I run sync with no flags, are the target files written straight away?
+q-0002 | version 2.0 | version-dependent | not planted | twin q-0001 | In sablefile 2.0, if I run sync with no flags, are the target files written?
+q-0003 | version 1.0 | version-dependent | planted (version-swap) | twin q-0004 | In sablefile 1.0, is ${project} the right way to insert the project name into a template?
+q-0004 | version 2.0 | version-dependent | not planted | twin q-0003 | In sablefile 2.0, is ${project} the right way to insert the project name into a template?
+q-0005 | version 2.0 | answerable | planted (near-miss-term) | twin none | Does sablefile 2.0 still read sablefile.lock in my project root?
+q-0006 | version 2.0 | answerable | not planted | twin none | Is there a way to make check exit with status 0 even when a file has drifted in 2.0?
+q-0007 | version 1.1 | answerable | not planted | twin none | In 1.1, will an ignore entry of docs/**/*.tmp catch a file two folders down, like docs/x/y/a.tmp?
+q-0008 | version 2.0 | answerable | not planted | twin none | In 2.0, is there a way to re-include something that an earlier ignore line had excluded?
+q-0009 | version 1.0 | answerable | not planted | twin none | What does one line of the 1.0 lock file hold?
+q-0010 | version 2.0 | answerable | not planted | twin none | Will syncing the same content twice in 2.0 produce a different lock file each time?
+q-0011 | version 1.1 | answerable | not planted | twin none | How many times does 1.1 retry a remote template fetch that keeps failing, and can a flag change that?
+q-0012 | version 2.0 | answerable | not planted | twin none | I want sync to retry a slow remote template only twice in 2.0. What do I pass?
+q-0013 | version 1.0 | answerable | not planted | twin none | In 1.0, which table in sablefile.toml holds the values a placeholder can name?
+q-0014 | version 1.1 | answerable | not planted | twin none | What does sablefile init put into a new sablefile.toml in 1.1?
+q-0015 | version 1.0 | unanswerable | planted (false-premise) | twin none | In sablefile 1.0, what does the --dry-run flag on sync print?
+q-0016 | version 2.0 | unanswerable | not planted | twin none | Does sablefile 2.0 run on Windows?
+q-0017 | version 2.0 | unanswerable | not planted | twin none | How fast is sablefile check on a project with several thousand generated files?
+q-0018 | version 1.1 | unanswerable | not planted | twin none | Can sablefile 1.1 fetch a remote template from a private URL that needs a login token?
+q-0019 | version 2.0 | ambiguous | planted (ambiguous-target) | twin none | If I edit the file and then run check, will it fail?
+q-0020 | version 2.0 | ambiguous | not planted | twin none | Does sync change the lock file?
+items of kind answerable: 10
+items of kind unanswerable: 4
+items of kind version-dependent: 4
+items of kind ambiguous: 2
+planted items: 4
+items in the dev split: 20

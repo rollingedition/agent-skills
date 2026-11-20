@@ -1,0 +1,18 @@
+dev declined items, left out: 23
+dev answered items: 57
+dev answered items citing a supporting section of the asked version: 94.7% (54 of 57)
+dev answered items with no supported citation: 3
+  q-0005, q-0057, q-0058
+dev citations: 60
+dev citations that are supported: 93.3% (56 of 60)
+dev citations that are unlisted: 6.7% (4 of 60)
+dev citations that are wrong-version or missing: 0.0% (0 of 60)
+held-out declined items, left out: 15
+held-out answered items: 25
+held-out answered items citing a supporting section of the asked version: 96.0% (24 of 25)
+held-out answered items with no supported citation: 1
+  q-0090
+held-out citations: 33
+held-out citations that are supported: 93.9% (31 of 33)
+held-out citations that are unlisted: 6.1% (2 of 33)
+held-out citations that are wrong-version or missing: 0.0% (0 of 33)

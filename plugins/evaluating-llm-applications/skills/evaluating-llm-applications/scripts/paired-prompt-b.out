@@ -1,0 +1,12 @@
+unreadable verdicts, P1 (baseline): 1 (q-0043, "VERDICT: PARTIAL")
+unreadable verdicts, P2 (prompt-b): 0
+P1 (baseline) pass rate: 78.5% (62 of 79)
+P2 (prompt-b) pass rate: 81.0% (64 of 79)
+difference, P2 minus P1: +2.5 points
+95% interval of the difference: [-3.8, +10.1] points
+paired items (n): 79
+items only P1 passes: 3
+items only P2 passes: 5
+items both pass: 59
+items neither passes: 12
+reading: no difference detected at n = 79

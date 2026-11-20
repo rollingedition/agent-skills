@@ -1,0 +1,1462 @@
+{
+  "labelled": "coded by the drafting model (one coder; not human labels)",
+  "split": "dev",
+  "method": "One note per reply, written by the drafting model, then the notes grouped into the modes below. Each reply gets one mode, its main defect; 'ok' means none.",
+  "variants": [
+    "baseline",
+    "unfiltered",
+    "second-model"
+  ],
+  "modes": {
+    "ok": "The reply does what the item asks: the right answer with a supporting citation, or the right decline.",
+    "over-declining": "Declines an item the docs answer, with the decline phrase or in its own words.",
+    "wrong-version-answer": "Gives another version's behaviour as the answer for the version the item asks about.",
+    "wrong-answer": "Gives an answer the asked version's docs contradict, does not answer the question, or states a detail the docs do not give. A flat answer that is wrong for one reading of an ambiguous item counts here.",
+    "missed-refusal": "Answers an unanswerable item instead of declining, with content the docs do not hold.",
+    "incomplete-answer": "Gets part of the answer right and leaves out a required number, step or reading.",
+    "citation-problem": "The answer is right, but the citation is missing or names a section that does not support it.",
+    "malformed-reply": "The reply is out of order or garbled, although its answer is right."
+  },
+  "codes": [
+    {
+      "item": "q-0001",
+      "variant": "baseline",
+      "mode": "ok",
+      "note": "answers yes, plain sync writes at once; cites the 1.1 section"
+    },
+    {
+      "item": "q-0001",
+      "variant": "unfiltered",
+      "mode": "ok",
+      "note": "answers yes for 1.1; cites sync-default"
+    },
+    {
+      "item": "q-0001",
+      "variant": "second-model",
+      "mode": "over-declining",
+      "note": "declines a 1.1 item the docs answer; decline phrase repeated twice"
+    },
+    {
+      "item": "q-0002",
+      "variant": "baseline",
+      "mode": "ok",
+      "note": "No, the plan is printed and nothing is written; cites 2.0 sync-default"
+    },
+    {
+      "item": "q-0002",
+      "variant": "unfiltered",
+      "mode": "ok",
+      "note": "No, and names --apply; cites apply-flag"
+    },
+    {
+      "item": "q-0002",
+      "variant": "second-model",
+      "mode": "over-declining",
+      "note": "declines a 2.0 item the docs answer"
+    },
+    {
+      "item": "q-0003",
+      "variant": "baseline",
+      "mode": "ok",
+      "note": "says ${project} is wrong for 1.0 and gives {{project}}"
+    },
+    {
+      "item": "q-0003",
+      "variant": "unfiltered",
+      "mode": "over-declining",
+      "note": "declines a 1.0 version-swap item the docs answer"
+    },
+    {
+      "item": "q-0003",
+      "variant": "second-model",
+      "mode": "over-declining",
+      "note": "declines a 1.0 version-swap item the docs answer"
+    },
+    {
+      "item": "q-0004",
+      "variant": "baseline",
+      "mode": "over-declining",
+      "note": "declines a 2.0 ${project} item the docs answer"
+    },
+    {
+      "item": "q-0004",
+      "variant": "unfiltered",
+      "mode": "over-declining",
+      "note": "declines a 2.0 ${project} item the docs answer"
+    },
+    {
+      "item": "q-0004",
+      "variant": "second-model",
+      "mode": "over-declining",
+      "note": "declines a 2.0 ${project} item the docs answer"
+    },
+    {
+      "item": "q-0005",
+      "variant": "baseline",
+      "mode": "wrong-answer",
+      "note": "says 2.0 never reads sablefile.lock; reference says it falls back to it with a warning; cites install-upgrade"
+    },
+    {
+      "item": "q-0005",
+      "variant": "unfiltered",
+      "mode": "over-declining",
+      "note": "declines a 2.0 near-miss item the docs answer"
+    },
+    {
+      "item": "q-0005",
+      "variant": "second-model",
+      "mode": "over-declining",
+      "note": "declines a 2.0 near-miss item the docs answer"
+    },
+    {
+      "item": "q-0006",
+      "variant": "baseline",
+      "mode": "ok",
+      "note": "says yes and cites no-fail-flag"
+    },
+    {
+      "item": "q-0006",
+      "variant": "unfiltered",
+      "mode": "ok",
+      "note": "says yes and cites no-fail-flag"
+    },
+    {
+      "item": "q-0006",
+      "variant": "second-model",
+      "mode": "ok",
+      "note": "describes --no-fail and cites no-fail-flag; no yes/no opener"
+    },
+    {
+      "item": "q-0007",
+      "variant": "baseline",
+      "mode": "ok",
+      "note": "yes, double-star matches two folders down; cites ignore-recursive"
+    },
+    {
+      "item": "q-0007",
+      "variant": "unfiltered",
+      "mode": "ok",
+      "note": "yes for 1.1; cites ignore-recursive"
+    },
+    {
+      "item": "q-0007",
+      "variant": "second-model",
+      "mode": "wrong-answer",
+      "note": "says no for 1.1, against the double-star rule; cites nothing"
+    },
+    {
+      "item": "q-0008",
+      "variant": "baseline",
+      "mode": "ok",
+      "note": "yes, leading ! re-includes; cites ignore-syntax"
+    },
+    {
+      "item": "q-0008",
+      "variant": "unfiltered",
+      "mode": "ok",
+      "note": "yes, leading ! re-includes; cites ignore-syntax"
+    },
+    {
+      "item": "q-0008",
+      "variant": "second-model",
+      "mode": "over-declining",
+      "note": "declines a 2.0 item the docs answer"
+    },
+    {
+      "item": "q-0009",
+      "variant": "baseline",
+      "mode": "ok",
+      "note": "hash, two spaces, path for 1.0; cites 1.0 lockfile"
+    },
+    {
+      "item": "q-0009",
+      "variant": "unfiltered",
+      "mode": "wrong-version-answer",
+      "note": "gives the 1.1 lock layout (with a mode field) for a 1.0 question; context holds 1.1 lockfile"
+    },
+    {
+      "item": "q-0009",
+      "variant": "second-model",
+      "mode": "ok",
+      "note": "hash, two spaces, path; cites 1.0 lockfile"
+    },
+    {
+      "item": "q-0010",
+      "variant": "baseline",
+      "mode": "ok",
+      "note": "No, same content gives an identical lock file; cites 2.0 lockfile"
+    },
+    {
+      "item": "q-0010",
+      "variant": "unfiltered",
+      "mode": "ok",
+      "note": "No, identical lock file; cites 2.0 lockfile"
+    },
+    {
+      "item": "q-0010",
+      "variant": "second-model",
+      "mode": "over-declining",
+      "note": "declines a 2.0 item the docs answer"
+    },
+    {
+      "item": "q-0011",
+      "variant": "baseline",
+      "mode": "incomplete-answer",
+      "note": "says the count is fixed and no flag changes it, but never gives five"
+    },
+    {
+      "item": "q-0011",
+      "variant": "unfiltered",
+      "mode": "ok",
+      "note": "five retries, fixed; cites remote-retries"
+    },
+    {
+      "item": "q-0011",
+      "variant": "second-model",
+      "mode": "incomplete-answer",
+      "note": "same as baseline: fixed count, no number given"
+    },
+    {
+      "item": "q-0012",
+      "variant": "baseline",
+      "mode": "ok",
+      "note": "pass --retries 2; cites retries-flag"
+    },
+    {
+      "item": "q-0012",
+      "variant": "unfiltered",
+      "mode": "ok",
+      "note": "pass --retries 2; cites retries-flag"
+    },
+    {
+      "item": "q-0012",
+      "variant": "second-model",
+      "mode": "ok",
+      "note": "--retries 2 named, in terse form; cites retries-flag"
+    },
+    {
+      "item": "q-0013",
+      "variant": "baseline",
+      "mode": "ok",
+      "note": "names the [values] table; cites config-values"
+    },
+    {
+      "item": "q-0013",
+      "variant": "unfiltered",
+      "mode": "ok",
+      "note": "names the [values] table; cites config-values"
+    },
+    {
+      "item": "q-0013",
+      "variant": "second-model",
+      "mode": "ok",
+      "note": "names the values table; cites config-values, no brackets"
+    },
+    {
+      "item": "q-0014",
+      "variant": "baseline",
+      "mode": "ok",
+      "note": "init writes [values] with project and no files; cites init-command"
+    },
+    {
+      "item": "q-0014",
+      "variant": "unfiltered",
+      "mode": "ok",
+      "note": "init writes [values] with project and no files; cites init-command"
+    },
+    {
+      "item": "q-0014",
+      "variant": "second-model",
+      "mode": "over-declining",
+      "note": "declines a 1.1 item the docs answer"
+    },
+    {
+      "item": "q-0015",
+      "variant": "baseline",
+      "mode": "ok",
+      "note": "declines a false-premise flag, as the item requires"
+    },
+    {
+      "item": "q-0015",
+      "variant": "unfiltered",
+      "mode": "ok",
+      "note": "declines a false-premise flag, as the item requires"
+    },
+    {
+      "item": "q-0015",
+      "variant": "second-model",
+      "mode": "ok",
+      "note": "declines a false-premise flag, as the item requires"
+    },
+    {
+      "item": "q-0016",
+      "variant": "baseline",
+      "mode": "ok",
+      "note": "declines the Windows question"
+    },
+    {
+      "item": "q-0016",
+      "variant": "unfiltered",
+      "mode": "ok",
+      "note": "declines the Windows question"
+    },
+    {
+      "item": "q-0016",
+      "variant": "second-model",
+      "mode": "ok",
+      "note": "declines the Windows question"
+    },
+    {
+      "item": "q-0017",
+      "variant": "baseline",
+      "mode": "ok",
+      "note": "declines a speed question the docs do not answer"
+    },
+    {
+      "item": "q-0017",
+      "variant": "unfiltered",
+      "mode": "ok",
+      "note": "declines a speed question the docs do not answer"
+    },
+    {
+      "item": "q-0017",
+      "variant": "second-model",
+      "mode": "ok",
+      "note": "declines a speed question the docs do not answer"
+    },
+    {
+      "item": "q-0018",
+      "variant": "baseline",
+      "mode": "ok",
+      "note": "declines the private-URL question"
+    },
+    {
+      "item": "q-0018",
+      "variant": "unfiltered",
+      "mode": "missed-refusal",
+      "note": "says yes, a login token can be sent; the docs do not say so; cites an unrelated retry section"
+    },
+    {
+      "item": "q-0018",
+      "variant": "second-model",
+      "mode": "ok",
+      "note": "declines the private-URL question"
+    },
+    {
+      "item": "q-0019",
+      "variant": "baseline",
+      "mode": "incomplete-answer",
+      "note": "ambiguous item: gives reading 1 (edited target shows DRIFT, exit 1) and not reading 2"
+    },
+    {
+      "item": "q-0019",
+      "variant": "unfiltered",
+      "mode": "incomplete-answer",
+      "note": "ambiguous item: gives reading 1 only"
+    },
+    {
+      "item": "q-0019",
+      "variant": "second-model",
+      "mode": "incomplete-answer",
+      "note": "ambiguous item: gives reading 1 only"
+    },
+    {
+      "item": "q-0020",
+      "variant": "baseline",
+      "mode": "incomplete-answer",
+      "note": "ambiguous item: says sync changes the lock only with --apply; never says a plain sync leaves it alone"
+    },
+    {
+      "item": "q-0020",
+      "variant": "unfiltered",
+      "mode": "wrong-answer",
+      "note": "flatly says No, which is wrong for reading 2; cites diff-command, not a supporting section"
+    },
+    {
+      "item": "q-0020",
+      "variant": "second-model",
+      "mode": "wrong-answer",
+      "note": "does not answer whether sync changes the lock file; cites sync-lock-update"
+    },
+    {
+      "item": "q-0021",
+      "variant": "baseline",
+      "mode": "ok",
+      "note": "No, check exits 0 on drift in 1.0; cites the 1.0 section"
+    },
+    {
+      "item": "q-0021",
+      "variant": "unfiltered",
+      "mode": "wrong-version-answer",
+      "note": "says yes, status 1 on drift: the 2.0 rule, given for 1.0"
+    },
+    {
+      "item": "q-0021",
+      "variant": "second-model",
+      "mode": "ok",
+      "note": "exits 0 on drift in 1.0; reads the printed lines instead"
+    },
+    {
+      "item": "q-0022",
+      "variant": "baseline",
+      "mode": "ok",
+      "note": "yes, status 1 on drift in 2.0"
+    },
+    {
+      "item": "q-0022",
+      "variant": "unfiltered",
+      "mode": "wrong-answer",
+      "note": "opens with No; its own body says the default exits 1, so the reply contradicts itself"
+    },
+    {
+      "item": "q-0022",
+      "variant": "second-model",
+      "mode": "ok",
+      "note": "yes, nonzero exit on drift in 2.0"
+    },
+    {
+      "item": "q-0023",
+      "variant": "baseline",
+      "mode": "wrong-version-answer",
+      "note": "says yes, the 2.0 gitignore result, cited to the 1.0 section"
+    },
+    {
+      "item": "q-0023",
+      "variant": "unfiltered",
+      "mode": "wrong-version-answer",
+      "note": "says yes, the 2.0 gitignore result, under a 1.0 question"
+    },
+    {
+      "item": "q-0023",
+      "variant": "second-model",
+      "mode": "ok",
+      "note": "No, the 1.0 glob does not skip docs/build.log; wording is awkward"
+    },
+    {
+      "item": "q-0024",
+      "variant": "baseline",
+      "mode": "ok",
+      "note": "yes, *.log matches at depth in 2.0"
+    },
+    {
+      "item": "q-0024",
+      "variant": "unfiltered",
+      "mode": "ok",
+      "note": "yes, *.log matches at depth in 2.0"
+    },
+    {
+      "item": "q-0024",
+      "variant": "second-model",
+      "mode": "over-declining",
+      "note": "declines a 2.0 item the docs answer"
+    },
+    {
+      "item": "q-0025",
+      "variant": "baseline",
+      "mode": "over-declining",
+      "note": "declines a 1.0 item the docs answer (no mode field)"
+    },
+    {
+      "item": "q-0025",
+      "variant": "unfiltered",
+      "mode": "over-declining",
+      "note": "declines a 1.0 item the docs answer"
+    },
+    {
+      "item": "q-0025",
+      "variant": "second-model",
+      "mode": "over-declining",
+      "note": "declines a 1.0 item the docs answer"
+    },
+    {
+      "item": "q-0026",
+      "variant": "baseline",
+      "mode": "ok",
+      "note": "yes, the 1.1 lock records the mode; cites lock-mode"
+    },
+    {
+      "item": "q-0026",
+      "variant": "unfiltered",
+      "mode": "ok",
+      "note": "yes, the 1.1 lock records the mode"
+    },
+    {
+      "item": "q-0026",
+      "variant": "second-model",
+      "mode": "ok",
+      "note": "yes, the 1.1 lock records the mode"
+    },
+    {
+      "item": "q-0027",
+      "variant": "baseline",
+      "mode": "ok",
+      "note": "three times, cites the 1.0 section"
+    },
+    {
+      "item": "q-0027",
+      "variant": "unfiltered",
+      "mode": "ok",
+      "note": "up to 3 times, cites the 1.0 section"
+    },
+    {
+      "item": "q-0027",
+      "variant": "second-model",
+      "mode": "incomplete-answer",
+      "note": "says the count is fixed; never gives three"
+    },
+    {
+      "item": "q-0028",
+      "variant": "baseline",
+      "mode": "ok",
+      "note": "five times, cites the 1.1 section"
+    },
+    {
+      "item": "q-0028",
+      "variant": "unfiltered",
+      "mode": "ok",
+      "note": "five times, cites the 1.1 section"
+    },
+    {
+      "item": "q-0028",
+      "variant": "second-model",
+      "mode": "incomplete-answer",
+      "note": "says the count is fixed; never gives five"
+    },
+    {
+      "item": "q-0029",
+      "variant": "baseline",
+      "mode": "wrong-version-answer",
+      "note": "says yes, --apply creates the folder: a 2.0 behaviour, and 1.0 has no --apply"
+    },
+    {
+      "item": "q-0029",
+      "variant": "unfiltered",
+      "mode": "over-declining",
+      "note": "declines a 1.0 version-swap item the docs answer"
+    },
+    {
+      "item": "q-0029",
+      "variant": "second-model",
+      "mode": "over-declining",
+      "note": "declines a 1.0 version-swap item the docs answer"
+    },
+    {
+      "item": "q-0030",
+      "variant": "baseline",
+      "mode": "ok",
+      "note": "yes with --apply; cites sync-create-dirs"
+    },
+    {
+      "item": "q-0030",
+      "variant": "unfiltered",
+      "mode": "ok",
+      "note": "yes with --apply; cites apply-flag"
+    },
+    {
+      "item": "q-0030",
+      "variant": "second-model",
+      "mode": "malformed-reply",
+      "note": "right answer, but the citation comes first and the text is garbled"
+    },
+    {
+      "item": "q-0031",
+      "variant": "baseline",
+      "mode": "over-declining",
+      "note": "declines a 1.1 version-swap item the docs answer"
+    },
+    {
+      "item": "q-0031",
+      "variant": "unfiltered",
+      "mode": "over-declining",
+      "note": "declines a 1.1 version-swap item the docs answer"
+    },
+    {
+      "item": "q-0031",
+      "variant": "second-model",
+      "mode": "over-declining",
+      "note": "declines a 1.1 version-swap item the docs answer"
+    },
+    {
+      "item": "q-0032",
+      "variant": "baseline",
+      "mode": "ok",
+      "note": ".sablefile/lock.json for 2.0; cites lock-migration, a supporting section"
+    },
+    {
+      "item": "q-0032",
+      "variant": "unfiltered",
+      "mode": "ok",
+      "note": ".sablefile/lock.json for 2.0"
+    },
+    {
+      "item": "q-0032",
+      "variant": "second-model",
+      "mode": "citation-problem",
+      "note": "right answer; cites lock-mode, not a supporting section"
+    },
+    {
+      "item": "q-0033",
+      "variant": "baseline",
+      "mode": "over-declining",
+      "note": "declines a 2.0 item the docs answer (unchanged)"
+    },
+    {
+      "item": "q-0033",
+      "variant": "unfiltered",
+      "mode": "ok",
+      "note": "prints unchanged for a matching target; cites apply-flag"
+    },
+    {
+      "item": "q-0033",
+      "variant": "second-model",
+      "mode": "over-declining",
+      "note": "declines a 2.0 item the docs answer"
+    },
+    {
+      "item": "q-0034",
+      "variant": "baseline",
+      "mode": "ok",
+      "note": "declines a false premise (no --apply in 1.1)"
+    },
+    {
+      "item": "q-0034",
+      "variant": "unfiltered",
+      "mode": "ok",
+      "note": "declines a false premise (no --apply in 1.1)"
+    },
+    {
+      "item": "q-0034",
+      "variant": "second-model",
+      "mode": "missed-refusal",
+      "note": "answers a false-premise question with an unrelated lock tip; cites sync-lock-update"
+    },
+    {
+      "item": "q-0035",
+      "variant": "baseline",
+      "mode": "ok",
+      "note": "declines the false-premise --no-fail question for 1.0"
+    },
+    {
+      "item": "q-0035",
+      "variant": "unfiltered",
+      "mode": "ok",
+      "note": "declines the false-premise --no-fail question for 1.0"
+    },
+    {
+      "item": "q-0035",
+      "variant": "second-model",
+      "mode": "ok",
+      "note": "declines the false-premise --no-fail question for 1.0"
+    },
+    {
+      "item": "q-0036",
+      "variant": "baseline",
+      "mode": "ok",
+      "note": "declines the false-premise --quiet question"
+    },
+    {
+      "item": "q-0036",
+      "variant": "unfiltered",
+      "mode": "ok",
+      "note": "declines the false-premise --quiet question"
+    },
+    {
+      "item": "q-0036",
+      "variant": "second-model",
+      "mode": "missed-refusal",
+      "note": "invents what --quiet does; cites sync-default, which does not mention it"
+    },
+    {
+      "item": "q-0037",
+      "variant": "baseline",
+      "mode": "ok",
+      "note": "declines a question the docs do not answer"
+    },
+    {
+      "item": "q-0037",
+      "variant": "unfiltered",
+      "mode": "ok",
+      "note": "declines a question the docs do not answer"
+    },
+    {
+      "item": "q-0037",
+      "variant": "second-model",
+      "mode": "ok",
+      "note": "declines a question the docs do not answer"
+    },
+    {
+      "item": "q-0038",
+      "variant": "baseline",
+      "mode": "ok",
+      "note": "declines the template-limit question"
+    },
+    {
+      "item": "q-0038",
+      "variant": "unfiltered",
+      "mode": "ok",
+      "note": "declines the template-limit question"
+    },
+    {
+      "item": "q-0038",
+      "variant": "second-model",
+      "mode": "ok",
+      "note": "declines the template-limit question"
+    },
+    {
+      "item": "q-0039",
+      "variant": "baseline",
+      "mode": "ok",
+      "note": "declines the diff exit-status question"
+    },
+    {
+      "item": "q-0039",
+      "variant": "unfiltered",
+      "mode": "missed-refusal",
+      "note": "answers about check, not diff; cites check-exit-status"
+    },
+    {
+      "item": "q-0039",
+      "variant": "second-model",
+      "mode": "ok",
+      "note": "declines the diff exit-status question"
+    },
+    {
+      "item": "q-0040",
+      "variant": "baseline",
+      "mode": "ok",
+      "note": "declines the missing-file question"
+    },
+    {
+      "item": "q-0040",
+      "variant": "unfiltered",
+      "mode": "ok",
+      "note": "declines the missing-file question"
+    },
+    {
+      "item": "q-0040",
+      "variant": "second-model",
+      "mode": "ok",
+      "note": "declines the missing-file question"
+    },
+    {
+      "item": "q-0041",
+      "variant": "baseline",
+      "mode": "ok",
+      "note": "declines the value-length question"
+    },
+    {
+      "item": "q-0041",
+      "variant": "unfiltered",
+      "mode": "ok",
+      "note": "declines the value-length question"
+    },
+    {
+      "item": "q-0041",
+      "variant": "second-model",
+      "mode": "ok",
+      "note": "declines the value-length question"
+    },
+    {
+      "item": "q-0042",
+      "variant": "baseline",
+      "mode": "ok",
+      "note": "declines the color-key question"
+    },
+    {
+      "item": "q-0042",
+      "variant": "unfiltered",
+      "mode": "ok",
+      "note": "declines the color-key question"
+    },
+    {
+      "item": "q-0042",
+      "variant": "second-model",
+      "mode": "ok",
+      "note": "declines the color-key question"
+    },
+    {
+      "item": "q-0043",
+      "variant": "baseline",
+      "mode": "incomplete-answer",
+      "note": "ambiguous item: says a template change is not drift (reading 1); never addresses a hand-edited target"
+    },
+    {
+      "item": "q-0043",
+      "variant": "unfiltered",
+      "mode": "over-declining",
+      "note": "declines an ambiguous item the docs answer under each reading"
+    },
+    {
+      "item": "q-0043",
+      "variant": "second-model",
+      "mode": "over-declining",
+      "note": "declines an ambiguous item the docs answer under each reading"
+    },
+    {
+      "item": "q-0044",
+      "variant": "baseline",
+      "mode": "incomplete-answer",
+      "note": "ambiguous item: says yes with --apply; does not say a plain sync creates no folder"
+    },
+    {
+      "item": "q-0044",
+      "variant": "unfiltered",
+      "mode": "over-declining",
+      "note": "declines an ambiguous item the docs answer under each reading"
+    },
+    {
+      "item": "q-0044",
+      "variant": "second-model",
+      "mode": "wrong-answer",
+      "note": "flat yes; false for a plain sync, which creates no folder; cites sync-create-dirs"
+    },
+    {
+      "item": "q-0045",
+      "variant": "baseline",
+      "mode": "incomplete-answer",
+      "note": "ambiguous item: flat yes for the command; never says check does not retry"
+    },
+    {
+      "item": "q-0045",
+      "variant": "unfiltered",
+      "mode": "incomplete-answer",
+      "note": "ambiguous item: gives sync and diff only; check is left out"
+    },
+    {
+      "item": "q-0045",
+      "variant": "second-model",
+      "mode": "incomplete-answer",
+      "note": "ambiguous item: gives the sync reading only"
+    },
+    {
+      "item": "q-0046",
+      "variant": "baseline",
+      "mode": "over-declining",
+      "note": "declines an ambiguous item the docs answer under each reading"
+    },
+    {
+      "item": "q-0046",
+      "variant": "unfiltered",
+      "mode": "over-declining",
+      "note": "declines an ambiguous item the docs answer under each reading"
+    },
+    {
+      "item": "q-0046",
+      "variant": "second-model",
+      "mode": "over-declining",
+      "note": "declines an ambiguous item the docs answer under each reading"
+    },
+    {
+      "item": "q-0047",
+      "variant": "baseline",
+      "mode": "ok",
+      "note": "gives both readings: a read-only command warns; a writing command also writes lock.json; cites lock-migration"
+    },
+    {
+      "item": "q-0047",
+      "variant": "unfiltered",
+      "mode": "ok",
+      "note": "gives both readings; cites lock-migration"
+    },
+    {
+      "item": "q-0047",
+      "variant": "second-model",
+      "mode": "citation-problem",
+      "note": "right content for both readings, but no [sec:] citation at all"
+    },
+    {
+      "item": "q-0048",
+      "variant": "baseline",
+      "mode": "over-declining",
+      "note": "declines an ambiguous item the docs answer under each reading"
+    },
+    {
+      "item": "q-0048",
+      "variant": "unfiltered",
+      "mode": "wrong-answer",
+      "note": "flat yes; wrong for a template, which check does not report"
+    },
+    {
+      "item": "q-0048",
+      "variant": "second-model",
+      "mode": "wrong-answer",
+      "note": "flat no; wrong for a generated target that was edited, which check does report"
+    },
+    {
+      "item": "q-0049",
+      "variant": "baseline",
+      "mode": "incomplete-answer",
+      "note": "says No via the stops-with-error rule; reading 2 (other files) never addressed"
+    },
+    {
+      "item": "q-0049",
+      "variant": "unfiltered",
+      "mode": "over-declining",
+      "note": "declines an ambiguous item the docs answer under each reading"
+    },
+    {
+      "item": "q-0049",
+      "variant": "second-model",
+      "mode": "incomplete-answer",
+      "note": "says No via the stops-with-error rule; other-file reading not addressed"
+    },
+    {
+      "item": "q-0050",
+      "variant": "baseline",
+      "mode": "incomplete-answer",
+      "note": "flat yes; gives the recorded-mode reading only, not the compare-only reading"
+    },
+    {
+      "item": "q-0050",
+      "variant": "unfiltered",
+      "mode": "incomplete-answer",
+      "note": "flat yes; gives the recorded-mode reading only"
+    },
+    {
+      "item": "q-0050",
+      "variant": "second-model",
+      "mode": "wrong-answer",
+      "note": "says the lock does not care about mode; false under the recorded-mode reading"
+    },
+    {
+      "item": "q-0051",
+      "variant": "baseline",
+      "mode": "ok",
+      "note": "No: gitignore matches at any depth; cites ignore-syntax"
+    },
+    {
+      "item": "q-0051",
+      "variant": "unfiltered",
+      "mode": "ok",
+      "note": "No: matches at any depth; cites ignore-syntax"
+    },
+    {
+      "item": "q-0051",
+      "variant": "second-model",
+      "mode": "over-declining",
+      "note": "declines a 2.0 item the docs answer"
+    },
+    {
+      "item": "q-0052",
+      "variant": "baseline",
+      "mode": "over-declining",
+      "note": "declines a near-miss item the docs answer (No: double braces are an error)"
+    },
+    {
+      "item": "q-0052",
+      "variant": "unfiltered",
+      "mode": "over-declining",
+      "note": "declines a near-miss item the docs answer"
+    },
+    {
+      "item": "q-0052",
+      "variant": "second-model",
+      "mode": "over-declining",
+      "note": "declines a near-miss item the docs answer"
+    },
+    {
+      "item": "q-0053",
+      "variant": "baseline",
+      "mode": "ok",
+      "note": "migration, warning, mode kept, old file not deleted; cites lock-migration"
+    },
+    {
+      "item": "q-0053",
+      "variant": "unfiltered",
+      "mode": "ok",
+      "note": "migration, warning, mode kept, old file not deleted; cites lock-migration"
+    },
+    {
+      "item": "q-0053",
+      "variant": "second-model",
+      "mode": "wrong-answer",
+      "note": "says the old file is not carried into the new lock; misses the migration and the warning"
+    },
+    {
+      "item": "q-0054",
+      "variant": "baseline",
+      "mode": "ok",
+      "note": "yes, mode kept on migration; cites lock-mode and lock-migration"
+    },
+    {
+      "item": "q-0054",
+      "variant": "unfiltered",
+      "mode": "ok",
+      "note": "yes, mode kept on migration; cites lock-mode and lock-migration"
+    },
+    {
+      "item": "q-0054",
+      "variant": "second-model",
+      "mode": "ok",
+      "note": "yes, mode kept on migration; cites both supporting sections"
+    },
+    {
+      "item": "q-0055",
+      "variant": "baseline",
+      "mode": "wrong-answer",
+      "note": "right command and flag, but adds N must be at most 5, which the docs never state"
+    },
+    {
+      "item": "q-0055",
+      "variant": "unfiltered",
+      "mode": "wrong-answer",
+      "note": "right command and flag, but adds N at most 5, which the docs never state"
+    },
+    {
+      "item": "q-0055",
+      "variant": "second-model",
+      "mode": "ok",
+      "note": "--retries N for sync; default five; cites retries-flag"
+    },
+    {
+      "item": "q-0056",
+      "variant": "baseline",
+      "mode": "ok",
+      "note": "No network needed for check; cites check-command"
+    },
+    {
+      "item": "q-0056",
+      "variant": "unfiltered",
+      "mode": "wrong-answer",
+      "note": "says check needs a network; contradicts the docs; cites a section that is not supporting"
+    },
+    {
+      "item": "q-0056",
+      "variant": "second-model",
+      "mode": "over-declining",
+      "note": "declines a 1.0 item the docs answer"
+    },
+    {
+      "item": "q-0057",
+      "variant": "baseline",
+      "mode": "citation-problem",
+      "note": "right (No), but cites remote-retries, which is not a supporting section"
+    },
+    {
+      "item": "q-0057",
+      "variant": "unfiltered",
+      "mode": "citation-problem",
+      "note": "right (No), but cites remote-retries, which is not a supporting section"
+    },
+    {
+      "item": "q-0057",
+      "variant": "second-model",
+      "mode": "ok",
+      "note": "No: check never fetches; cites remote-templates and check-command text"
+    },
+    {
+      "item": "q-0058",
+      "variant": "baseline",
+      "mode": "wrong-answer",
+      "note": "gives a general check how-to; never says what --no-fail output looks like; cites quickstart-check"
+    },
+    {
+      "item": "q-0058",
+      "variant": "unfiltered",
+      "mode": "over-declining",
+      "note": "declines an answerable 2.0 item the docs answer"
+    },
+    {
+      "item": "q-0058",
+      "variant": "second-model",
+      "mode": "citation-problem",
+      "note": "says exit 0 with --no-fail; no [sec:] citation; does not say DRIFT lines still print"
+    },
+    {
+      "item": "q-0059",
+      "variant": "baseline",
+      "mode": "ok",
+      "note": "Unix permission bits, stored by sync; cites lock-mode"
+    },
+    {
+      "item": "q-0059",
+      "variant": "unfiltered",
+      "mode": "ok",
+      "note": "Unix permission bits, stored by sync; cites lock-mode"
+    },
+    {
+      "item": "q-0059",
+      "variant": "second-model",
+      "mode": "wrong-answer",
+      "note": "names a `sablefile lock` command as the one that stores the mode"
+    },
+    {
+      "item": "q-0060",
+      "variant": "baseline",
+      "mode": "over-declining",
+      "note": "declines a 2.0 item the docs answer (format and files keys)"
+    },
+    {
+      "item": "q-0060",
+      "variant": "unfiltered",
+      "mode": "over-declining",
+      "note": "declines a 2.0 item the docs answer"
+    },
+    {
+      "item": "q-0060",
+      "variant": "second-model",
+      "mode": "wrong-answer",
+      "note": "names a lock.json key; the keys are format and files; no citation"
+    },
+    {
+      "item": "q-0061",
+      "variant": "baseline",
+      "mode": "ok",
+      "note": "run diff to preview; cites diff-command"
+    },
+    {
+      "item": "q-0061",
+      "variant": "unfiltered",
+      "mode": "ok",
+      "note": "run diff to preview; cites sync-default"
+    },
+    {
+      "item": "q-0061",
+      "variant": "second-model",
+      "mode": "ok",
+      "note": "run diff to preview; cites diff-command"
+    },
+    {
+      "item": "q-0062",
+      "variant": "baseline",
+      "mode": "ok",
+      "note": "yes, init takes a folder argument; cites init-directory"
+    },
+    {
+      "item": "q-0062",
+      "variant": "unfiltered",
+      "mode": "ok",
+      "note": "yes, init takes a folder argument; cites init-directory"
+    },
+    {
+      "item": "q-0062",
+      "variant": "second-model",
+      "mode": "over-declining",
+      "note": "declines a 2.0 item the docs answer"
+    },
+    {
+      "item": "q-0063",
+      "variant": "baseline",
+      "mode": "over-declining",
+      "note": "declines a 1.1 item the docs answer (sync creates folders)"
+    },
+    {
+      "item": "q-0063",
+      "variant": "unfiltered",
+      "mode": "ok",
+      "note": "sync creates the folder before writing; cites sync-create-dirs"
+    },
+    {
+      "item": "q-0063",
+      "variant": "second-model",
+      "mode": "wrong-answer",
+      "note": "answers with the lock-file layout, not folder creation; no citation"
+    },
+    {
+      "item": "q-0064",
+      "variant": "baseline",
+      "mode": "ok",
+      "note": "No: sync never removes a folder; cites sync-create-dirs"
+    },
+    {
+      "item": "q-0064",
+      "variant": "unfiltered",
+      "mode": "ok",
+      "note": "No: sync never removes a folder; cites sync-create-dirs"
+    },
+    {
+      "item": "q-0064",
+      "variant": "second-model",
+      "mode": "over-declining",
+      "note": "declines a 2.0 item the docs answer"
+    },
+    {
+      "item": "q-0065",
+      "variant": "baseline",
+      "mode": "ok",
+      "note": "any folder; cites templates-location"
+    },
+    {
+      "item": "q-0065",
+      "variant": "unfiltered",
+      "mode": "ok",
+      "note": "any folder; cites templates-location"
+    },
+    {
+      "item": "q-0065",
+      "variant": "second-model",
+      "mode": "citation-problem",
+      "note": "right answer, no [sec:] citation"
+    },
+    {
+      "item": "q-0066",
+      "variant": "baseline",
+      "mode": "ok",
+      "note": "No, rendering runs no code; cites template-render"
+    },
+    {
+      "item": "q-0066",
+      "variant": "unfiltered",
+      "mode": "ok",
+      "note": "No, rendering runs no code; cites template-render"
+    },
+    {
+      "item": "q-0066",
+      "variant": "second-model",
+      "mode": "over-declining",
+      "note": "declines a 2.0 item the docs answer"
+    },
+    {
+      "item": "q-0067",
+      "variant": "baseline",
+      "mode": "ok",
+      "note": "yes, https template in a [[file]]; cites remote-templates"
+    },
+    {
+      "item": "q-0067",
+      "variant": "unfiltered",
+      "mode": "citation-problem",
+      "note": "right (yes), but cites config-files-table, not a supporting section"
+    },
+    {
+      "item": "q-0067",
+      "variant": "second-model",
+      "mode": "over-declining",
+      "note": "declines a 1.1 item the docs answer"
+    },
+    {
+      "item": "q-0068",
+      "variant": "baseline",
+      "mode": "ok",
+      "note": "halts, names the URL, exits 1; cites remote-fetch-failure"
+    },
+    {
+      "item": "q-0068",
+      "variant": "unfiltered",
+      "mode": "ok",
+      "note": "halts, names the URL, exits 1; cites remote-fetch-failure"
+    },
+    {
+      "item": "q-0068",
+      "variant": "second-model",
+      "mode": "over-declining",
+      "note": "declines a 2.0 item the docs answer"
+    },
+    {
+      "item": "q-0069",
+      "variant": "baseline",
+      "mode": "ok",
+      "note": "exit status 1 for sync; cites sync-exit-status"
+    },
+    {
+      "item": "q-0069",
+      "variant": "unfiltered",
+      "mode": "ok",
+      "note": "exit status 1 for sync; cites sync-exit-status"
+    },
+    {
+      "item": "q-0069",
+      "variant": "second-model",
+      "mode": "ok",
+      "note": "exit status 1 for sync; cites sync-exit-status"
+    },
+    {
+      "item": "q-0070",
+      "variant": "baseline",
+      "mode": "ok",
+      "note": "No, status 0 only shows sync finished; cites sync-exit-status"
+    },
+    {
+      "item": "q-0070",
+      "variant": "unfiltered",
+      "mode": "ok",
+      "note": "No, status 0 only shows sync finished"
+    },
+    {
+      "item": "q-0070",
+      "variant": "second-model",
+      "mode": "over-declining",
+      "note": "declines a 1.1 item the docs answer"
+    },
+    {
+      "item": "q-0071",
+      "variant": "baseline",
+      "mode": "ok",
+      "note": ".sablefileignore, one entry per line; cites ignore-file"
+    },
+    {
+      "item": "q-0071",
+      "variant": "unfiltered",
+      "mode": "ok",
+      "note": ".sablefileignore, one entry per line; cites ignore-file"
+    },
+    {
+      "item": "q-0071",
+      "variant": "second-model",
+      "mode": "incomplete-answer",
+      "note": "names the file; does not say what sync, check or diff do with the paths; no citation"
+    },
+    {
+      "item": "q-0072",
+      "variant": "baseline",
+      "mode": "ok",
+      "note": "No, an ignored target is not written; cites ignore-file"
+    },
+    {
+      "item": "q-0072",
+      "variant": "unfiltered",
+      "mode": "ok",
+      "note": "No, an ignored target is not written; cites ignore-file"
+    },
+    {
+      "item": "q-0072",
+      "variant": "second-model",
+      "mode": "over-declining",
+      "note": "declines a 2.0 item the docs answer"
+    },
+    {
+      "item": "q-0073",
+      "variant": "baseline",
+      "mode": "ok",
+      "note": "lines starting with # are comments; cites ignore-syntax"
+    },
+    {
+      "item": "q-0073",
+      "variant": "unfiltered",
+      "mode": "ok",
+      "note": "lines starting with # are comments; cites ignore-syntax"
+    },
+    {
+      "item": "q-0073",
+      "variant": "second-model",
+      "mode": "over-declining",
+      "note": "declines a 2.0 item the docs answer"
+    },
+    {
+      "item": "q-0074",
+      "variant": "baseline",
+      "mode": "ok",
+      "note": "first step is diff; cites troubleshoot-drift"
+    },
+    {
+      "item": "q-0074",
+      "variant": "unfiltered",
+      "mode": "incomplete-answer",
+      "note": "says look at the change; never names diff as the first step"
+    },
+    {
+      "item": "q-0074",
+      "variant": "second-model",
+      "mode": "citation-problem",
+      "note": "right first step (diff), but cites check-command, not a supporting section"
+    },
+    {
+      "item": "q-0075",
+      "variant": "baseline",
+      "mode": "ok",
+      "note": "sablefile --version; cites install-check-version"
+    },
+    {
+      "item": "q-0075",
+      "variant": "unfiltered",
+      "mode": "ok",
+      "note": "sablefile --version; cites install-check-version"
+    },
+    {
+      "item": "q-0075",
+      "variant": "second-model",
+      "mode": "over-declining",
+      "note": "declines a 2.0 item the docs answer"
+    },
+    {
+      "item": "q-0076",
+      "variant": "baseline",
+      "mode": "ok",
+      "note": "pip uninstall; project files left alone; cites install-uninstall"
+    },
+    {
+      "item": "q-0076",
+      "variant": "unfiltered",
+      "mode": "ok",
+      "note": "pip uninstall; project files left alone; cites install-uninstall"
+    },
+    {
+      "item": "q-0076",
+      "variant": "second-model",
+      "mode": "over-declining",
+      "note": "declines a 1.0 item the docs answer"
+    },
+    {
+      "item": "q-0077",
+      "variant": "baseline",
+      "mode": "ok",
+      "note": "pip show in the same shell; cites troubleshoot-command-not-found"
+    },
+    {
+      "item": "q-0077",
+      "variant": "unfiltered",
+      "mode": "ok",
+      "note": "pip show in the same shell; cites troubleshoot-command-not-found"
+    },
+    {
+      "item": "q-0077",
+      "variant": "second-model",
+      "mode": "over-declining",
+      "note": "declines a 2.0 item the docs answer"
+    },
+    {
+      "item": "q-0078",
+      "variant": "baseline",
+      "mode": "ok",
+      "note": "No, the upgrade writes no project file; cites install-upgrade"
+    },
+    {
+      "item": "q-0078",
+      "variant": "unfiltered",
+      "mode": "ok",
+      "note": "No, the upgrade writes no project file; cites install-upgrade"
+    },
+    {
+      "item": "q-0078",
+      "variant": "second-model",
+      "mode": "over-declining",
+      "note": "declines a 1.1 item the docs answer"
+    },
+    {
+      "item": "q-0079",
+      "variant": "baseline",
+      "mode": "over-declining",
+      "note": "declines a 2.0 item the docs answer (open the target)"
+    },
+    {
+      "item": "q-0079",
+      "variant": "unfiltered",
+      "mode": "over-declining",
+      "note": "declines a 2.0 item the docs answer"
+    },
+    {
+      "item": "q-0079",
+      "variant": "second-model",
+      "mode": "over-declining",
+      "note": "declines a 2.0 item the docs answer"
+    },
+    {
+      "item": "q-0080",
+      "variant": "baseline",
+      "mode": "ok",
+      "note": "placeholder and value both defined; cites glossary-terms"
+    },
+    {
+      "item": "q-0080",
+      "variant": "unfiltered",
+      "mode": "over-declining",
+      "note": "says in two sentences that the sections don't define the difference, then ends with the decline phrase; the docs answer the question, so this is an over-decline"
+    },
+    {
+      "item": "q-0080",
+      "variant": "second-model",
+      "mode": "citation-problem",
+      "note": "right answer, no [sec:] citation"
+    }
+  ]
+}

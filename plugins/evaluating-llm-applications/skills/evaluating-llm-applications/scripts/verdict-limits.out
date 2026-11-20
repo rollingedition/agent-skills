@@ -1,0 +1,13 @@
+order-change rate: 22.7% (34 of 150)
+length gap, longest band minus shortest band: -8.4 points, interval [-28.6, +8.1] points
+length gap method: percentile bootstrap over items, each band resampled alone, 2000 resamples, 95% level
+shortest band, under 15 words: 94.1% (16 of 17)
+longest band, 30 words or more: 85.7% (18 of 21)
+unreadable verdicts, five answer-judge recordings: 2 of 600
+items per answer-judge recording: 120
+most unreadable in one recording: 1 of 120
+self-preference test on these recordings: not possible
+same-model recordings: 4 of 5
+baseline PASS rate, same dev items: 78.5% (62 of 79)
+second-model PASS rate, same dev items: 40.5% (32 of 79)
+second-model minus baseline, same dev items: -38.0 points, interval [-48.1, -26.6] points, n = 79

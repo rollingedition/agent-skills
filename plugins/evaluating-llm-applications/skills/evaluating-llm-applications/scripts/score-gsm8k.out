@@ -1,0 +1,19 @@
+items: 100
+readable: 100 of 100
+accuracy: 90.0% (90 of 100)
+accuracy interval: [84.0%, 95.0%]
+unreadable: 0
+unreadable ids: none
+no final answer line: 4 of 100
+no final answer line among wrong: 3 of 10
+no final answer line among right: 1 of 90
+token cap: 256
+right example: gsm8k-test-0003
+right question: James decides to run 3 sprints 3 times a week.  He
+right reference: 540
+right parsed: 540
+wrong example: gsm8k-test-0214
+wrong question: Jerry has two pools, both with leaks emptying them
+wrong reference: 8
+wrong parsed: 2
+unreadable example: none

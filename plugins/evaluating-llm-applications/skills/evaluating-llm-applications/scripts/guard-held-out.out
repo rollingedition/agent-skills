@@ -1,0 +1,8 @@
+threshold (frozen from dev): 0.00
+held-out answerable items: 20
+held-out unanswerable items: 7
+held-out replies the guard changed to declines: 0 of 27
+false refusal rate: 45.0% (9 of 20) interval [25.0%, 70.0%]
+false refusals: q-0101, q-0102, q-0103, q-0105, q-0106, q-0111, q-0115, q-0116, q-0117
+false answer rate: 0.0% (0 of 7) interval [0.0%, 0.0%]
+false answers: none

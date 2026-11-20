@@ -1,0 +1,7 @@
+section IDs found in one version only, by version: 1.0 0, 1.1 0, 2.0 4
+baseline citations to a section ID found in more than one version: 87.0% (20 of 23)
+unfiltered citations to a section ID found in more than one version: 63.2% (12 of 19)
+dev items where the verdicts differ: 4
+  q-0003, q-0021, q-0022, q-0033
+held-out items where the verdicts differ: 2
+  q-0082, q-0085

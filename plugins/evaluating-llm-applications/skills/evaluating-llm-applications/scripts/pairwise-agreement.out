@@ -1,0 +1,8 @@
+agreement, A,B order, dev: 77.3% (58 of 75)
+agreement, B,A order, dev: 73.3% (55 of 75)
+agreement, both orders, dev: 65.3% (49 of 75); flipped pairs: 15
+95% interval, both orders, dev: [53.3%, 76.0%]
+agreement, A,B order, held-out: 74.7% (56 of 75)
+agreement, B,A order, held-out: 76.0% (57 of 75)
+agreement, both orders, held-out: 62.7% (47 of 75); flipped pairs: 19
+95% interval, both orders, held-out: [52.0%, 73.3%]

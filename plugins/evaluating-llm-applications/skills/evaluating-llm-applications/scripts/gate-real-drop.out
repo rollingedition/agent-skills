@@ -1,0 +1,10 @@
+unreadable verdicts, baseline: 1 (q-0043, "VERDICT: PARTIAL")
+unreadable verdicts, second-model: 0
+dev items compared (n): 79
+baseline pass rate: 78.5% (62 of 79)
+second-model pass rate: 40.5% (32 of 79)
+difference, second-model minus baseline: -38.0 points
+95% interval of the difference: [-48.1, -26.6] points
+upper bound of the interval: -26.6 points
+threshold: 5.0 points
+decision: fail, since the upper bound -26.6 is below -5.0

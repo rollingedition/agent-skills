@@ -1,0 +1,41 @@
+dev items: 80
+replies coded: 240
+labelled: coded by the drafting model (one coder; not human labels)
+mode                        baseline    unfiltered  second-model
+ok                                56            49            24
+over-declining                    10            15            31
+wrong-version-answer               2             3             0
+wrong-answer                       3             5             9
+missed-refusal                     0             2             2
+incomplete-answer                  8             4             7
+citation-problem                   1             2             6
+malformed-reply                    0             0             1
+all modes                         80            80            80
+
+ok, baseline: 56
+over-declining, baseline: 10
+wrong-version-answer, baseline: 2
+wrong-answer, baseline: 3
+missed-refusal, baseline: 0
+incomplete-answer, baseline: 8
+citation-problem, baseline: 1
+malformed-reply, baseline: 0
+defective, baseline: 24
+ok, unfiltered: 49
+over-declining, unfiltered: 15
+wrong-version-answer, unfiltered: 3
+wrong-answer, unfiltered: 5
+missed-refusal, unfiltered: 2
+incomplete-answer, unfiltered: 4
+citation-problem, unfiltered: 2
+malformed-reply, unfiltered: 0
+defective, unfiltered: 31
+ok, second-model: 24
+over-declining, second-model: 31
+wrong-version-answer, second-model: 0
+wrong-answer, second-model: 9
+missed-refusal, second-model: 2
+incomplete-answer, second-model: 7
+citation-problem, second-model: 6
+malformed-reply, second-model: 1
+defective, second-model: 56

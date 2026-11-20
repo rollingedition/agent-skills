@@ -1,0 +1,14 @@
+dev items: 80
+dev items with a format problem: 0.0% (0 of 80)
+dev problem answered-declined-expected: 0
+dev problem declined-with-text: 0
+dev problem empty: 0
+dev problem no-citation: 0
+dev problem unknown-section: 0
+held-out items: 40
+held-out items with a format problem: 0.0% (0 of 40)
+held-out problem answered-declined-expected: 0
+held-out problem declined-with-text: 0
+held-out problem empty: 0
+held-out problem no-citation: 0
+held-out problem unknown-section: 0
