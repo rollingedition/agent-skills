@@ -13,9 +13,9 @@ This repository is generated from the books, so changes made here are overwritte
 | [Agent Harnesses](https://rollingedition.com/agent-harnesses) | `agent-harnesses` | 2026.11.2 | 64 of 64 examples pass |
 | [Business Intelligence with Agents](https://rollingedition.com/business-intelligence-with-agents) | `business-intelligence-with-agents` | 2026.11.14 | 78 of 78 examples pass |
 | [Data Governance as Code](https://rollingedition.com/data-governance-as-code) | `data-governance-as-code` | 2026.11.29 | 108 of 108 examples pass |
-| [Language Models from the Ground Up](https://rollingedition.com/language-models-from-the-ground-up) | `language-models-from-the-ground-up` | 2026.11.14 | 86 of 86 examples pass |
+| [Language Models from the Ground Up](https://rollingedition.com/language-models-from-the-ground-up) | `language-models-from-the-ground-up` | 2026.11.15 | 86 of 86 examples pass |
 | [Model Context Protocol in Practice](https://rollingedition.com/model-context-protocol-in-practice) | `model-context-protocol-in-practice` | 2026.11.13 | 70 of 70 examples pass |
-| [Open Table Formats](https://rollingedition.com/open-table-formats) | `open-table-formats` | 2026.11.8 | 39 of 39 examples pass |
+| [Open Table Formats](https://rollingedition.com/open-table-formats) | `open-table-formats` | 2026.11.9 | 39 of 39 examples pass |
 | [A Primer on Search Relevance](https://rollingedition.com/primer-on-search-relevance) | `primer-on-search-relevance` | 2026.11.10 | 132 of 132 examples pass |
 | [Small Open Models](https://rollingedition.com/small-open-models) | `small-open-models` | 2026.11.7 | 36 of 36 examples pass |
 | [Time Series Forecasting](https://rollingedition.com/time-series-forecasting) | `time-series-forecasting` | 2026.11.10 | 41 of 41 examples pass |

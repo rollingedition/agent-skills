@@ -3,13 +3,13 @@ title: "Open Table Formats"
 chapter: "Expire snapshots and remove unreferenced files"
 chapter_id: expiry-and-cleanup
 book: open-table-formats
-edition: 2026.11.8
-verified: 2026-11-15
-edition_code: HYVJ-ADAD
+edition: 2026.11.9
+verified: 2026-11-20
+edition_code: 0GY7-XEMW
 canonical: https://rollingedition.com/open-table-formats/expiry-and-cleanup
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“Expire snapshots and remove unreferenced files,” chapter 7 of Open Table Formats, Edition 2026.11.8, examples passed Nov 15, 2026. By Rolling Edition, https://rollingedition.com/open-table-formats/expiry-and-cleanup. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Expire snapshots and remove unreferenced files,” chapter 7 of Open Table Formats, Edition 2026.11.9, examples passed Nov 20, 2026. By Rolling Edition, https://rollingedition.com/open-table-formats/expiry-and-cleanup. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Expire snapshots and remove unreferenced files
 
@@ -43,7 +43,7 @@ The overwrite adds two snapshots, not one. pyiceberg writes a delete snapshot th
 
 The expiry call deletes no data files, so the example counts them itself, before and after: the distinct files that the snapshots list, and the files on disk that none of them lists. Watch the last count, which is where the replaced file shows up:
 
-Example `expire-iceberg-snapshots` (Python 3.12.15 · deltalake 1.6.6 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.8:
+Example `expire-iceberg-snapshots` (Python 3.12.15 · deltalake 1.6.6 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.9:
 
 ```python
 """Expire the three append snapshots by ID, then count what the snapshots still reference. The point rests on the
@@ -121,7 +121,7 @@ The last read fails. A scan of snapshot 3 after the expiry raises `ValueError`, 
 
 A file that no snapshot lists is an orphan. Spark and Java offer a `deleteOrphanFiles` action: it lists the table location, compares the files with the metadata and deletes the difference, and its default age interval is 3 days ([Apache Iceberg, maintenance](https://iceberg.apache.org/docs/latest/maintenance/)). The pyiceberg API page lists no orphan-file step, and the 0.12.0 package has none either. Its maintenance methods expire snapshots ([PyIceberg API](https://py.iceberg.apache.org/api/)).
 
-A helper in the book's shared module, [`examples/lib/lakehouse.py`](https://github.com/rollingedition/book-open-table-formats/blob/a12b02a1b399f8a7477b0ce12f63483623329727/examples/lib/lakehouse.py), `orphan_data_files`, makes the comparison by hand. It lists the Parquet files under the table location, subtracts the files that any remaining snapshot lists, and returns the rest. The output shows only the count, because the file names carry UUIDs. That count is the line that shows the expired file is still on disk.
+A helper in the book's shared module, [`examples/lib/lakehouse.py`](https://github.com/rollingedition/book-open-table-formats/blob/30c244e814cd926b5228c79006a1d286687bcae8/examples/lib/lakehouse.py), `orphan_data_files`, makes the comparison by hand. It lists the Parquet files under the table location, subtracts the files that any remaining snapshot lists, and returns the rest. The output shows only the count, because the file names carry UUIDs. That count is the line that shows the expired file is still on disk.
 
 A listing cannot tell an orphan from a file that a writer has written and not yet committed. The commit links the file to the table, and until then the file looks unreferenced. This is why the age guards matter. [DuckLake's `ducklake_delete_orphaned_files`](#expire-and-clean-up-in-ducklake) keeps young files by default, and the Spark action takes an age interval for the same reason. pyiceberg has no interval, so the check is yours to make. Deleting an orphan is a separate decision, and it belongs after the writers that could commit it have stopped.
 
@@ -143,7 +143,7 @@ The default retention in deltalake is 168 hours, seven days. A table can set its
 
 A dry run lists the files that a real vacuum would delete and deletes none of them. Run one before every vacuum, and compare its count with the table's history. The case is three appends, a delete in version 3 and an append in version 4. A short list can be checked by hand: here, each file in the list is one that a delete removed, and the one that matters is the delete in version 3. Two dry runs on that history ask vacuum, at two retentions, what it would delete:
 
-Example `vacuum-delta-dry-run` (Python 3.12.15 · deltalake 1.6.6 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.8:
+Example `vacuum-delta-dry-run` (Python 3.12.15 · deltalake 1.6.6 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.9:
 
 ```python
 """Show that vacuum's default retention keeps a file that a delete has just removed, and that a read of an older version
@@ -216,7 +216,7 @@ A third call, `ducklake_delete_orphaned_files`, handles files that no snapshot l
 
 Attaching the catalog and creating the schema and the table through the helpers makes three snapshots before any rows: the attach makes snapshot 1, and the two `CREATE` statements make snapshots 2 and 3, labelled from 1 with setup included, as [chapter 2](#snapshot-decisions) does. Then the loading helper inserts hours 00 to 02, deletes hour 02 and inserts the corrected hour 02. That makes 8 snapshots, which the example labels "snapshot 1" up to the last one. The last is the corrected insert. The one before it is the delete, which drops the old hour-02 file. The insert before that, snapshot 6, is the last snapshot that lists it.
 
-Example `ducklake-expire-cleanup` (Python 3.12.15 · deltalake 1.6.6 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.8:
+Example `ducklake-expire-cleanup` (Python 3.12.15 · deltalake 1.6.6 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.9:
 
 ```python
 """Expire every snapshot before the correction, clean up what expiry released, and run the orphan check as a dry run. The
