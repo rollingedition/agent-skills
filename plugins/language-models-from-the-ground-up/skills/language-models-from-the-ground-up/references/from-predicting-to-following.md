@@ -3,13 +3,13 @@ title: "Language Models from the Ground Up"
 chapter: "From predicting to following instructions"
 chapter_id: from-predicting-to-following
 book: language-models-from-the-ground-up
-edition: 2026.11.16
+edition: 2026.11.17
 verified: 2026-11-19
-edition_code: FY8Q-PVVV
+edition_code: DR5A-G7ZM
 canonical: https://rollingedition.com/language-models-from-the-ground-up/from-predicting-to-following
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“From predicting to following instructions,” chapter 11 of Language Models from the Ground Up, Edition 2026.11.16, examples passed Nov 19, 2026. By Rolling Edition, https://rollingedition.com/language-models-from-the-ground-up/from-predicting-to-following. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“From predicting to following instructions,” chapter 11 of Language Models from the Ground Up, Edition 2026.11.17, examples passed Nov 19, 2026. By Rolling Edition, https://rollingedition.com/language-models-from-the-ground-up/from-predicting-to-following. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # From predicting to following instructions
 
@@ -27,7 +27,7 @@ Both steps of tuning are training, with the loop of [chapter 8](#update-with-ada
 
 Lay one product out as a request and a response, its name as the request and its description as the response, the way the store's model already reads it. Then compute that model's loss over every token, and over the response's tokens only:
 
-Example `instruction-loss-by-hand` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1), passing in Edition 2026.11.16:
+Example `instruction-loss-by-hand` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1), passing in Edition 2026.11.17:
 
 ```python
 """Computes the store's model's loss on one product laid out as a request and a response, over every token and over
@@ -77,7 +77,7 @@ loss = −log σ(margin)
 
 with σ the logistic function from [chapter 4](#learn-by-predicting-neighbours) ([Rafailov et al., 2023](https://arxiv.org/abs/2305.18290), equation 7). Made-up log-probabilities keep the arithmetic in plain view, so this example uses them, with β = 0.1:
 
-Example `dpo-loss-by-hand` (Python 3.12.15 · numpy 2.5.5), passing in Edition 2026.11.16:
+Example `dpo-loss-by-hand` (Python 3.12.15 · numpy 2.5.5), passing in Edition 2026.11.17:
 
 ```python
 """Computes the DPO margin and loss by hand for two made-up cases, with a fixed beta. The prose's point rests on the
@@ -118,7 +118,7 @@ The store needs descriptions for products that have none, the job [chapter 9](#c
 
 Both models start from [chapter 9](#choosing-the-next-token)'s product, `front porch welcome sign wall décor`. Read what each wrote, then measure all 8 products the recording described, each without a description to draw on:
 
-Example `base-and-tuned` (Python 3.12.15), passing in Edition 2026.11.16:
+Example `base-and-tuned` (Python 3.12.15), passing in Edition 2026.11.17:
 
 ```python
 """Prints what the base and the tuned model wrote for one product with no description, then measures every such product's
@@ -180,7 +180,7 @@ The tuned model answered in the [previous section](#ask-base-and-tuned) because 
 
 The tuned model's full prompt, and its reply beside the one it gives to the same request as plain text, show what it actually read:
 
-Example `chat-template` (Python 3.12.15), passing in Edition 2026.11.16:
+Example `chat-template` (Python 3.12.15), passing in Edition 2026.11.17:
 
 ```python
 """Prints the full prompt the tuned model read, with its chat template, and its reply with and without the template. The
@@ -226,7 +226,7 @@ Checking the answers takes a list of material words, from `wood` and `metal` to 
 
 Class each model's answers for 40 products drawn at random, split by whether the product's data names a material. Where the data names none, will the tuned model make up fewer materials than the base model? Decide before you look.
 
-Example `made-up-materials` (Python 3.12.15), passing in Edition 2026.11.16:
+Example `made-up-materials` (Python 3.12.15), passing in Edition 2026.11.17:
 
 ```python
 """Classes both models' answers to the material question, split by whether the product's name or description names a
@@ -298,7 +298,7 @@ the exponential of the average log-probability, the same average that perplexity
 
 Does confidence tell the two kinds apart? Compare the tuned model's confidence in its supported and made-up answers, and count how many of each a threshold of 0.5 per token would keep:
 
-Example `answer-confidence` (Python 3.12.15 · numpy 2.5.5), passing in Edition 2026.11.16:
+Example `answer-confidence` (Python 3.12.15 · numpy 2.5.5), passing in Edition 2026.11.17:
 
 ```python
 """Compares the tuned model's confidence in its supported and made-up answers to the material question, and counts what a
@@ -346,7 +346,7 @@ The [material question](#measure-made-up-details) gave the model one product at 
 
 Place the asked product among 10 product listings: first, in the middle, or last. Then ask the tuned model, SmolLM2-360M-Instruct, what that product is made of. Count the answers that name only its own materials, as `lib.claims` checks them, for the 14 products whose data names one:
 
-Example `answer-position` (Python 3.12.15), passing in Edition 2026.11.16:
+Example `answer-position` (Python 3.12.15), passing in Edition 2026.11.17:
 
 ```python
 """Counts the tuned model's answers that name only the asked product's own materials, with the product first, in the middle
@@ -393,7 +393,7 @@ Full fine-tuning updates every weight, which for a model of hundreds of millions
 
 A LoRA correction would train far fewer weights; count them on SmolLM2-360M, adapting the query and value weights of every layer, at two ranks, against full fine-tuning. The query weights map 960 numbers to 960; the value weights, because keys and values are grouped, map 960 to 320:
 
-Example `lora-parameters` (Python 3.12.15), passing in Edition 2026.11.16:
+Example `lora-parameters` (Python 3.12.15), passing in Edition 2026.11.17:
 
 ```python
 """Counts what LoRA would train on SmolLM2-360M, adapting the query and value weights of every layer at two ranks, and
@@ -435,7 +435,7 @@ This book doesn't run the fine-tuning: our judgement is that even LoRA, over the
 
 This book has scored every model the same way on names, from [chapter 3](#counting-further-back) on: perplexity per token of the store's tokenizer, on the store's validation names. The test names were kept aside so that choices made by looking at the validation names, such as the kept epochs and the mixing shares, couldn't flatter the results. This final comparison scores the five models that were chosen between on the 4,281 test names, with the mixing shares chosen on validation:
 
-Example `test-names` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1), passing in Edition 2026.11.16:
+Example `test-names` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1), passing in Edition 2026.11.17:
 
 ```python
 """Scores the five models the book chose between on the test names, each name's tokens and its end, and prints each

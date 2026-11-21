@@ -1,13 +1,13 @@
 ---
 title: "Glossary"
 book: "Business Intelligence with Agents"
-edition: "2026.11.15"
+edition: "2026.11.16"
 canonical: "https://rollingedition.com/business-intelligence-with-agents/glossary"
 ---
 
 # Glossary of *Business Intelligence with Agents*
 
-The 144 terms this book defines, as Edition 2026.11.15 has them, each in the book's own sentence. When a task this skill covers uses one, it means what it says here: read its section before you rely on it, and cite the section. Where a definition depends on a package, it says the version this edition pins and runs its examples on. On the web: https://rollingedition.com/business-intelligence-with-agents/glossary
+The 144 terms this book defines, as Edition 2026.11.16 has them, each in the book's own sentence. When a task this skill covers uses one, it means what it says here: read its section before you rely on it, and cite the section. Where a definition depends on a package, it says the version this edition pins and runs its examples on. On the web: https://rollingedition.com/business-intelligence-with-agents/glossary
 
 ## ablation
 
@@ -15,6 +15,7 @@ An ablation measures every layer the same way: it scores a series of configurati
 
 - Also: ablations
 - Measured from: golden question
+- Close to: https://rollingedition.com/concepts/artificial-intelligence/ablation
 - Defined in: [Measure what each layer adds](layered-context.md#measure-each-layer)
 - Address: https://rollingedition.com/concepts/llm-evaluation/ablation
 
@@ -23,6 +24,7 @@ An ablation measures every layer the same way: it scores a series of configurati
 The allowlist is every table in the agent's database, read by allowed_schema() with each table's columns, and the same mapping is the schema qualify resolves columns against.
 
 - Also: allowlists
+- Contrasts with: qualify
 - Defined in: [Allow only read-only queries on known tables](guarded-sql.md#read-only-allowlist)
 - Address: https://rollingedition.com/concepts/artificial-intelligence/allowlist
 
@@ -40,6 +42,7 @@ An ambiguous question, such as "Who are our best customers?", has several reason
 
 an ambiguous SELECT column, where several valid SQLs differ in the columns they select
 
+- A kind of: ambiguous question
 - Defined in: [Kinds of questions the warehouse can't answer](say-when-it-cannot.md#kinds-of-unanswerable)
 - Address: https://rollingedition.com/concepts/artificial-intelligence/ambiguous-select-column
 
@@ -66,7 +69,7 @@ every question the agent handles gets an audit entry, written by code beside the
 
 - Also: audit entries, audit log
 - Defined in: [Log who asked what, and what ran](who-may-see-what.md#log-who-asked)
-- Address: https://rollingedition.com/concepts/data-governance/audit-entry
+- Address: https://rollingedition.com/concepts/data-governance/audit-log
 
 ## average order value
 
@@ -92,6 +95,7 @@ Binding the role at build means one server per person, which is what stdio gives
 
 BIRD, a text-to-SQL benchmark whose questions come with "external knowledge evidence"
 
+- A kind of: public benchmark
 - Defined in: [Add the business glossary](layered-context.md#add-the-glossary)
 - Address: https://rollingedition.com/concepts/llm-evaluation/bird
 
@@ -117,6 +121,7 @@ A business glossary lists the business words whose meaning a company's teams cho
 Where you can, a second query written another way, the gold's check_sql, must return the same result as the golden SQL.
 
 - Also: check_sql, check queries
+- Part of: golden question
 - Defined in: [Check the gold before you trust it](golden-questions.md#check-the-gold)
 - Address: https://rollingedition.com/concepts/llm-evaluation/check-query
 
@@ -136,6 +141,8 @@ Cohen's kappa estimates chance agreement from each rater's own label shares
 - Also: kappa, κ
 - Formula: `kappa, pi = (p_o − chance) / (1 − chance)`
 - Contrasts with: Scott's pi
+- The same as: https://rollingedition.com/concepts/search-and-recommendation/cohens-kappa
+- Close to: https://rollingedition.com/concepts/artificial-intelligence/kappa
 - Defined in: [Calibrate the judge against reference labels](catch-regressions.md#calibrate-the-judge)
 - Address: https://rollingedition.com/concepts/llm-evaluation/cohens-kappa
 
@@ -188,7 +195,7 @@ Coverage is the share of questions the system doesn't reject
 
 - Formula: `coverage = questions answered with a number / questions asked`
 - Defined in: [Measure declines, not only accuracy](say-when-it-cannot.md#measure-declines)
-- Address: https://rollingedition.com/concepts/llm-evaluation/coverage
+- Address: https://rollingedition.com/concepts/llm-evaluation/selective-coverage
 
 ## custom granularity
 
@@ -223,6 +230,7 @@ What no setting hides is DuckDB's catalog, such as information_schema and duckdb
 A decline is an answer: it ends the run, it says why, and the person can act on it.
 
 - Also: declines, declining
+- Contrasts with: ask_back
 - Defined in: [Decline with a reason](say-when-it-cannot.md#decline-with-a-reason)
 - Address: https://rollingedition.com/concepts/ai-agents/decline
 
@@ -268,7 +276,7 @@ A declined answer says it can't answer a question that has an answer.
 
 - Contrasts with: wrong answer
 - Defined in: [Score both on five golden questions](bi-agent-end-to-end.md#score-five-questions)
-- Address: https://rollingedition.com/concepts/llm-evaluation/declined-outcome
+- Address: https://rollingedition.com/concepts/llm-evaluation/false-refusal
 
 ## denied column
 
@@ -309,6 +317,7 @@ dimensions (what you can group and filter by)
 
 - Also: dimensions
 - Part of: semantic model
+- Part of: metric request
 - Defined in: [Define metrics once in a semantic layer](semantic-layer.md)
 - Address: https://rollingedition.com/concepts/data-warehousing/dimension
 
@@ -326,6 +335,7 @@ An entity is a key with a type.
 
 An error is an answer whose SQL doesn't run.
 
+- Contrasts with: wrong answer
 - Defined in: [Score both on five golden questions](bi-agent-end-to-end.md#score-five-questions)
 - Address: https://rollingedition.com/concepts/llm-evaluation/error-outcome
 
@@ -391,6 +401,7 @@ familiarity, text that has low perplexity for the judge
 Fan-out is what happens when a query joins a table to another that has several rows for each of its rows, and then sums a column of the first.
 
 - A kind of: failure kind
+- A kind of: failure kind
 - Defined in: [Joins that fan out and inflate a sum](wrong-numbers.md#joins-that-fan-out)
 - Address: https://rollingedition.com/concepts/data-warehousing/fan-out
 
@@ -427,6 +438,7 @@ Freshness is how far a source's events have arrived, read from when its rows wer
 
 - Also: data freshness
 - Comes before: freshness check
+- Part of: provenance
 - Defined in: [Check freshness before answering](say-when-it-cannot.md#check-freshness)
 - Address: https://rollingedition.com/concepts/data-warehousing/freshness
 
@@ -434,6 +446,7 @@ Freshness is how far a source's events have arrived, read from when its rows wer
 
 The freshness check in lib/declining.py compares each feed's newest load with the end of the period a request filters on, plus the settling window of the metrics that read the feed.
 
+- Computed from: settling window
 - Defined in: [Check freshness before answering](say-when-it-cannot.md#check-freshness)
 - Address: https://rollingedition.com/concepts/data-warehousing/freshness-check
 
@@ -468,8 +481,9 @@ Guarded SQL is the fallback, not the default, for questions no metric covers, wr
 A held-out split is the usual defence: tune on one part, and score the other only when you report a result.
 
 - Also: held-out set, test split
+- The same as: https://rollingedition.com/concepts/artificial-intelligence/test-split
 - Defined in: [Hold out a test split](golden-questions.md#hold-out-a-test-split)
-- Address: https://rollingedition.com/concepts/llm-evaluation/held-out-split
+- Address: https://rollingedition.com/concepts/llm-evaluation/held-out
 
 ## host
 
@@ -496,6 +510,8 @@ The Python SDK's Client connects to a server object in the same process when you
 a judge, a model call that grades an answer against a rubric and returns a verdict
 
 - Also: judges, model as a judge, LLM judge
+- Close to: https://rollingedition.com/concepts/search-and-recommendation/judge
+- Contrasts with: comparison rule
 - Defined in: [Judge only what can't be compared](catch-regressions.md#judge-what-cannot-be-compared)
 - Address: https://rollingedition.com/concepts/llm-evaluation/judge
 
@@ -544,6 +560,7 @@ Most warehouses keep tables that nobody should query any more and nobody can dro
 
 Lexical retrieval matches words
 
+- The same as: https://rollingedition.com/concepts/search-and-recommendation/lexical-retrieval
 - Defined in: [What goes wrong in production](layered-context.md#layered-context-in-production)
 - Address: https://rollingedition.com/concepts/artificial-intelligence/lexical-retrieval
 
@@ -553,6 +570,7 @@ line_net_revenue is net revenue counted on the lines themselves, in the order_li
 
 - Also: line-level net revenue, line-level revenue
 - A kind of: simple metric
+- A kind of: net revenue
 - Defined in: [Join through entities so sums can't fan out](semantic-layer.md#join-through-entities)
 - Address: https://rollingedition.com/concepts/data-warehousing/line-net-revenue
 
@@ -650,6 +668,7 @@ MCP is an open protocol in which an application, the host, runs a client for eac
 
 - Also: MCP
 - Implemented by: mcp 2.3.0
+- The same as: https://rollingedition.com/concepts/artificial-intelligence/mcp-protocol
 - Defined in: [Serve the semantic layer over MCP](serve-over-mcp.md)
 - Address: https://rollingedition.com/concepts/ai-agents/model-context-protocol
 
@@ -657,6 +676,7 @@ MCP is an open protocol in which an application, the host, runs a client for eac
 
 The golden SQL for gq-002 follows the shop's definition of net revenue, which the finance team owns: revenue in euros after discounts and before tax, from real orders that weren't cancelled, on the order's local business day.
 
+- A kind of: metric
 - Defined in: [Run the SQL and check the number](bi-agent-end-to-end.md#check-the-first-number)
 - Address: https://rollingedition.com/concepts/data-warehousing/net-revenue
 
@@ -696,6 +716,7 @@ order_refunds, a metric counted on the order's local day
 a tool can declare an outputSchema and return structuredContent that conforms to it
 
 - Also: outputSchema
+- Part of: MCP tool
 - Defined in: [Return answers with their provenance](serve-over-mcp.md#return-provenance)
 - Address: https://rollingedition.com/concepts/ai-agents/output-schema
 
@@ -704,6 +725,8 @@ a tool can declare an outputSchema and return structuredContent that conforms to
 Comparison in lib/regressions.py takes, for each question, the share of runs correct under the base and under the candidate, and their difference.
 
 - Also: paired differences, mean paired difference
+- Close to: https://rollingedition.com/concepts/artificial-intelligence/paired-difference
+- Close to: https://rollingedition.com/concepts/search-and-recommendation/per-query-differences
 - Defined in: [Gate a change in CI](catch-regressions.md#gate-a-change)
 - Address: https://rollingedition.com/concepts/llm-evaluation/paired-difference
 
@@ -721,6 +744,7 @@ Parsing turns the text into a tree, with one node for each statement, table, col
 In the penalty score, each question scores one point for a right answer or a right decline, nothing for declining an answerable question, and minus c for a wrong number, including an answer to a question it should have declined; the score is the mean over the questions
 
 - Formula: `penalty score = (right answers + correct declines − c × wrong numbers) / questions asked`
+- Computed from: wrong answer
 - Defined in: [Measure declines, not only accuracy](say-when-it-cannot.md#measure-declines)
 - Address: https://rollingedition.com/concepts/llm-evaluation/penalty-score
 
@@ -763,6 +787,7 @@ the principal, meaning whoever your sign-in system says is asking
 
 An answer's provenance is the metric or SQL behind it, the filters, the role it was computed for and how fresh the data was.
 
+- Part of: ToolReply
 - Defined in: [Show the provenance with every answer](say-when-it-cannot.md#show-provenance)
 - Address: https://rollingedition.com/concepts/data-governance/provenance
 
@@ -771,6 +796,7 @@ An answer's provenance is the metric or SQL behind it, the filters, the role it 
 A public benchmark for text-to-SQL or data agents gives you questions, a database and a gold answer for each question, and a score that others have reported on the same set.
 
 - Also: public benchmarks
+- Contrasts with: golden question
 - Defined in: [Why a public benchmark isn't your test](golden-questions.md#benchmarks-are-not-your-test)
 - Address: https://rollingedition.com/concepts/llm-evaluation/public-benchmark
 
@@ -781,6 +807,7 @@ check() qualifies every column against the columns of the tables the query may r
 - Also: qualification, qualifies
 - True for: sqlglot 30.31.0
 - Implemented by: sqlglot 30.31.0
+- The same as: https://rollingedition.com/concepts/data-engineering/qualify
 - Defined in: [Parse the SQL before it runs](guarded-sql.md#parse-before-running)
 - Address: https://rollingedition.com/concepts/artificial-intelligence/column-qualification
 
@@ -790,7 +817,7 @@ A golden question's kind says what a right answer looks like: answer when the wa
 
 - Part of: golden question
 - Defined in: [Write questions from the work people do](golden-questions.md#write-golden-questions)
-- Address: https://rollingedition.com/concepts/llm-evaluation/question-kind
+- Address: https://rollingedition.com/concepts/llm-evaluation/kind
 
 ## ratio metric
 
@@ -814,6 +841,7 @@ The raw schema holds what the source systems loaded: orders, order lines, refund
 A recording is a saved set of model replies with a manifest, made once by a script in the repository's recordings/ folder and replayed by the examples.
 
 - Also: recordings
+- The same as: https://rollingedition.com/concepts/llm-evaluation/recording
 - Defined in: [Ask a question, get SQL from a model](bi-agent-end-to-end.md#ask-for-sql)
 - Address: https://rollingedition.com/concepts/artificial-intelligence/recording
 
@@ -822,6 +850,7 @@ A recording is a saved set of model replies with a manifest, made once by a scri
 Reference labels computed by results_match() are nobody's opinion: anyone can recompute them from questions.toml and the recordings, and when one looks wrong, the fix is to the golden question, where it's open to correction like the rest of the book.
 
 - Also: reference labels
+- Computed from: comparison rule
 - Defined in: [Calibrate the judge against reference labels](catch-regressions.md#calibrate-the-judge)
 - Address: https://rollingedition.com/concepts/llm-evaluation/reference-label
 
@@ -838,7 +867,7 @@ The shop's finance team defines the refund rate in golden question gq-028: refun
 
 gate() applies two rules of our choosing: it fails on a stable break, a question the base got right in at least four runs of five and the candidate in at most one, and when the whole interval of the mean difference lies below zero.
 
-- Also: gate, CI gate
+- Also: CI gate
 - Computed from: paired difference
 - Defined in: [Gate a change in CI](catch-regressions.md#gate-a-change)
 - Address: https://rollingedition.com/concepts/llm-evaluation/regression-gate
@@ -865,8 +894,10 @@ Validating a request means checking it against the layer's definitions and the w
 A role is who is asking, role in the code
 
 - Also: roles
+- Part of: provenance
+- Part of: golden question
 - Defined in: [Keep the agent inside who may see what](who-may-see-what.md)
-- Address: https://rollingedition.com/concepts/data-governance/role
+- Address: https://rollingedition.com/concepts/data-governance/requester-role
 
 ## role's view
 
@@ -899,6 +930,7 @@ A row filter takes the decision away from the model: a condition on a table, suc
 A schema tells a model which tables exist, what their columns are called and what type each column holds.
 
 - Also: schemas
+- Part of: layered context
 - Defined in: [What the schema says, and what it doesn't](layered-context.md#what-the-schema-says)
 - Address: https://rollingedition.com/concepts/data-warehousing/schema
 
@@ -957,6 +989,7 @@ Snowflake's secure views exist to limit access to sensitive data
 selective risk is the error rate on the questions the system answers
 
 - Formula: `selective risk = wrong numbers / questions answered with a number`
+- Computed from: wrong answer
 - Defined in: [Measure declines, not only accuracy](say-when-it-cannot.md#measure-declines)
 - Address: https://rollingedition.com/concepts/llm-evaluation/selective-risk
 
@@ -1061,6 +1094,7 @@ a stable break, a question the base got right in at least four runs of five and 
 
 A run that uses all four model calls without an answer is a failure, and grade() scores it as step limit, apart from the declines the model chose.
 
+- Contrasts with: decline
 - Defined in: [Measure metrics-first on the golden questions](metrics-first.md#measure-metrics-first)
 - Address: https://rollingedition.com/concepts/ai-agents/step-limit
 
@@ -1085,6 +1119,7 @@ A structured reply is one the code can parse into a typed object and check field
 
 a t interval, the standard error times Student's t for one fewer degrees of freedom than questions
 
+- Computed from: paired difference
 - Defined in: [Gate a change in CI](catch-regressions.md#gate-a-change)
 - Address: https://rollingedition.com/concepts/llm-evaluation/t-interval
 
@@ -1143,6 +1178,7 @@ Numbers must agree with the gold within 0.05% relative by default, plus an absol
 A tool is a function the model may ask the code to run, by replying with a JSON object that names it and gives its arguments.
 
 - Also: tools
+- The same as: https://rollingedition.com/concepts/search-and-recommendation/tool
 - Defined in: [Answer from one defined metric](bi-agent-end-to-end.md#answer-from-a-metric)
 - Address: https://rollingedition.com/concepts/ai-agents/tool
 
@@ -1167,6 +1203,7 @@ Every tool of the semantic server returns a ToolReply, a pydantic model with two
 The trace is every step of one run, kept by run_agent(): each model reply, and each tool result sent back.
 
 - Also: traces
+- The same as: https://rollingedition.com/concepts/search-and-recommendation/trace
 - Defined in: [Read the trace of one run](bi-agent-end-to-end.md#read-one-trace)
 - Address: https://rollingedition.com/concepts/ai-agents/trace
 
@@ -1177,13 +1214,14 @@ An unanswerable question, such as the cost of shipping, asks for data the wareho
 - Also: unanswerable questions
 - Kinds: nonexistent SELECT column
 - Defined in: [Cover declines and roles, not only answers](golden-questions.md#cover-declines-and-roles)
-- Address: https://rollingedition.com/concepts/llm-evaluation/unanswerable-question
+- Address: https://rollingedition.com/concepts/llm-evaluation/unanswerable-item
 
 ## unwritten filter
 
 Some rules about which rows count are so familiar to the people who own a number that nobody writes them down: cancelled orders don't count as revenue, test accounts aren't customers, a refund belongs to the month of its order.
 
 - Also: unwritten filters
+- A kind of: failure kind
 - A kind of: failure kind
 - Defined in: [Filters nobody wrote down](wrong-numbers.md#unwritten-filters)
 - Address: https://rollingedition.com/concepts/data-warehousing/unwritten-filter
@@ -1194,6 +1232,7 @@ A verified query shows the shop's rules applied: a question someone asked, with 
 
 - Also: verified queries
 - Part of: layered context
+- Part of: verified query repository
 - Defined in: [Retrieve verified queries as examples](layered-context.md#retrieve-verified-queries)
 - Address: https://rollingedition.com/concepts/artificial-intelligence/verified-query
 

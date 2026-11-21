@@ -1,13 +1,13 @@
 ---
 title: "Glossary"
 book: "Model Context Protocol in Practice"
-edition: "2026.11.15"
+edition: "2026.11.16"
 canonical: "https://rollingedition.com/model-context-protocol-in-practice/glossary"
 ---
 
 # Glossary of *Model Context Protocol in Practice*
 
-The 69 terms this book defines, as Edition 2026.11.15 has them, each in the book's own sentence. When a task this skill covers uses one, it means what it says here: read its section before you rely on it, and cite the section. Where a definition depends on a package, it says the version this edition pins and runs its examples on. On the web: https://rollingedition.com/model-context-protocol-in-practice/glossary
+The 69 terms this book defines, as Edition 2026.11.16 has them, each in the book's own sentence. When a task this skill covers uses one, it means what it says here: read its section before you rely on it, and cite the section. Where a definition depends on a package, it says the version this edition pins and runs its examples on. On the web: https://rollingedition.com/model-context-protocol-in-practice/glossary
 
 ## access token
 
@@ -63,6 +63,7 @@ Capability laundering is hiding what a tool's code can do behind a description t
 
 A client is the host's connection to one server
 
+- The same as: https://rollingedition.com/concepts/ai-agents/mcp-client
 - Defined in: [Separate the host, the client and the server](what-mcp-adds.md#host-client-server)
 - Address: https://rollingedition.com/concepts/model-context-protocol/client
 
@@ -92,6 +93,7 @@ Consent is the host asking the user before a call that changes something
 
 The core protocol is what every client and server must implement.
 
+- Contrasts with: extension
 - Defined in: [Negotiate an extension](tasks-and-extensions.md#negotiate-an-extension)
 - Address: https://rollingedition.com/concepts/model-context-protocol/core-protocol
 
@@ -177,6 +179,7 @@ a tool that needs state from an earlier call gets it as an explicit handle: one 
 
 The host is the application the user works in.
 
+- The same as: https://rollingedition.com/concepts/ai-agents/mcp-host
 - Defined in: [Separate the host, the client and the server](what-mcp-adds.md#host-client-server)
 - Address: https://rollingedition.com/concepts/model-context-protocol/host
 
@@ -184,6 +187,7 @@ The host is the application the user works in.
 
 The book's host loop, lib.host, is a small host the book writes itself, so each step is visible.
 
+- A kind of: host
 - Defined in: [Let a model choose the tool](mcp-end-to-end.md#let-a-model-choose)
 - Address: https://rollingedition.com/concepts/ai-agents/host-loop
 
@@ -239,6 +243,7 @@ The Model Context Protocol (MCP) is how an application that uses a model gets to
 
 - Also: MCP
 - Implemented by: mcp 2.3.0
+- The same as: https://rollingedition.com/concepts/ai-agents/model-context-protocol
 - Defined in: [MCP end to end](mcp-end-to-end.md)
 - Address: https://rollingedition.com/concepts/artificial-intelligence/mcp-protocol
 
@@ -284,6 +289,7 @@ A server's three primitives are its tools, resources and prompts
 Progress is MCP's answer to a long call: the server reports how far it has got while the call runs
 
 - Also: notifications/progress
+- Part of: core protocol
 - Defined in: [Stream progress on a long call](streamable-http.md#stream-progress)
 - Address: https://rollingedition.com/concepts/model-context-protocol/progress
 
@@ -371,6 +377,7 @@ a rug pull, where a server changes a definition after the user approved it
 
 A server exposes capabilities, such as tools, and knows nothing else about the host.
 
+- The same as: https://rollingedition.com/concepts/ai-agents/mcp-server
 - Defined in: [Separate the host, the client and the server](what-mcp-adds.md#host-client-server)
 - Address: https://rollingedition.com/concepts/model-context-protocol/server
 
@@ -428,6 +435,7 @@ For a server that many hosts share, the Model Context Protocol (MCP) defines a s
 structuredContent: the result's data as JSON that a program can read without parsing text
 
 - Also: structuredContent
+- The same as: https://rollingedition.com/concepts/ai-agents/structured-content
 - Defined in: [Return structured content with an output schema](design-tools.md#structured-output)
 - Address: https://rollingedition.com/concepts/model-context-protocol/structured-content
 
@@ -435,6 +443,7 @@ structuredContent: the result's data as JSON that a program can read without par
 
 a task: the call's work, whose status the client asks for as often as the server suggests, and whose result waits on the server until the client fetches it
 
+- Contrasts with: progress
 - Defined in: [Run long work as tasks](tasks-and-extensions.md)
 - Address: https://rollingedition.com/concepts/model-context-protocol/task
 
@@ -480,6 +489,7 @@ A tool is a named action with a description and an input schema, and the model d
 
 - Also: tools
 - Contrasts with: resource
+- The same as: https://rollingedition.com/concepts/search-and-recommendation/tool
 - Defined in: [Tools are actions the model chooses](what-mcp-adds.md#tools-model-chooses)
 - Address: https://rollingedition.com/concepts/ai-agents/tool
 
@@ -488,6 +498,8 @@ A tool is a named action with a description and an input schema, and the model d
 A tool's annotations tell the host what a call will do before it's made
 
 - Also: tool annotations, ToolAnnotations
+- Part of: tool definition
+- The same as: https://rollingedition.com/concepts/ai-agents/tool-annotation
 - Defined in: [Mark what a tool changes with annotations](design-tools.md#tool-annotations)
 - Address: https://rollingedition.com/concepts/model-context-protocol/tool-annotation
 

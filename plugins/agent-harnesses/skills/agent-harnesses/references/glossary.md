@@ -1,13 +1,13 @@
 ---
 title: "Glossary"
 book: "Agent Harnesses"
-edition: "2026.11.4"
+edition: "2026.11.5"
 canonical: "https://rollingedition.com/agent-harnesses/glossary"
 ---
 
 # Glossary of *Agent Harnesses*
 
-The 86 terms this book defines, as Edition 2026.11.4 has them, each in the book's own sentence. When a task this skill covers uses one, it means what it says here: read its section before you rely on it, and cite the section. Where a definition depends on a package, it says the version this edition pins and runs its examples on. On the web: https://rollingedition.com/agent-harnesses/glossary
+The 86 terms this book defines, as Edition 2026.11.5 has them, each in the book's own sentence. When a task this skill covers uses one, it means what it says here: read its section before you rely on it, and cite the section. Where a definition depends on a package, it says the version this edition pins and runs its examples on. On the web: https://rollingedition.com/agent-harnesses/glossary
 
 ## action
 
@@ -23,6 +23,8 @@ A pipeline has actions, which are its tool calls
 an agent when an LLM dynamically directs its own processes and tool use
 
 - Also: agents
+- Close to: https://rollingedition.com/concepts/search-and-recommendation/agent
+- Part of: hybrid
 - Defined in: [Start with the fixed pipeline](when-an-agent-is-the-wrong-design.md#fixed-pipeline-first)
 - Address: https://rollingedition.com/concepts/ai-agents/agent
 
@@ -202,6 +204,7 @@ A fixed pipeline is a task's list of steps, written as code before the run start
 
 - Also: pipeline
 - Contrasts with: agent
+- Part of: hybrid
 - Defined in: [Start with the fixed pipeline](when-an-agent-is-the-wrong-design.md#fixed-pipeline-first)
 - Address: https://rollingedition.com/concepts/ai-agents/fixed-pipeline
 
@@ -344,6 +347,7 @@ The naive range treats each task as an independent trial, and it is built with t
 The harness slides a window of the same length as old down the file, keeps the window that matches best, and breaks a tie toward the earlier window, so the answer is the same on every run.
 
 - Also: nearest-line errors
+- Part of: refusal
 - Defined in: [Edit errors that name the nearest lines](tool-schemas.md#edit-errors)
 - Address: https://rollingedition.com/concepts/ai-agents/nearest-lines
 
@@ -524,6 +528,7 @@ the harness gives each server's tools a prefix: server__tool, with a double unde
 
 A single model call fits a step that needs a model's judgement, with no tool and no loop, and whose output a person reads afterwards.
 
+- Contrasts with: fixed pipeline
 - Defined in: [The decision table](when-an-agent-is-the-wrong-design.md#which-design)
 - Address: https://rollingedition.com/concepts/ai-agents/single-model-call
 
@@ -532,6 +537,7 @@ A single model call fits a step that needs a model's judgement, with no tool and
 The standard error of the proportion is the square root of a fraction: the proportion times one minus the proportion, divided by the number of tasks.
 
 - Computed from: pass@1
+- Close to: https://rollingedition.com/concepts/search-and-recommendation/standard-error
 - Defined in: [How sure the count is](testing-the-agent.md#how-sure)
 - Address: https://rollingedition.com/concepts/llm-evaluation/standard-error-of-the-proportion
 
@@ -609,6 +615,8 @@ a token is a unit of one vocabulary, and the same text can split into different 
 - Also: tokens
 - Comes before: prompt count
 - Comes before: completion count
+- The same as: https://rollingedition.com/concepts/natural-language-processing/token
+- The same as: https://rollingedition.com/concepts/semantic-search/token
 - Defined in: [Tokens as counts](traces-and-cost.md#token-counts)
 - Address: https://rollingedition.com/concepts/large-language-models/token
 
@@ -629,6 +637,7 @@ A tool call is one request inside a step
 
 - Also: tool calls
 - Part of: step
+- The same as: https://rollingedition.com/concepts/search-and-recommendation/tool-call
 - Defined in: [A loop in about seventy lines](tools-and-a-loop.md#the-loop)
 - Address: https://rollingedition.com/concepts/ai-agents/tool-call
 
@@ -644,6 +653,7 @@ Chapter 6 divided the harness's tools into classes: a read runs, and a change wa
 Think of a tool's schema as the form the model fills in before it makes a call.
 
 - Also: schema, tool schemas
+- Part of: fixed part
 - Defined in: [A schema says what is allowed](tool-schemas.md#schema-says)
 - Address: https://rollingedition.com/concepts/ai-agents/tool-schema
 
@@ -677,6 +687,7 @@ Tool set v2 has the same seven tools as tool set v1, with the same sentences and
 The record of each step is the trace.
 
 - Also: traces
+- The same as: https://rollingedition.com/concepts/search-and-recommendation/trace
 - Defined in: [Trace each run and count what it cost](traces-and-cost.md)
 - Address: https://rollingedition.com/concepts/ai-agents/trace
 

@@ -1,13 +1,13 @@
 ---
 title: "Glossary"
 book: "A Primer on Search Relevance"
-edition: "2026.11.10"
+edition: "2026.11.11"
 canonical: "https://rollingedition.com/primer-on-search-relevance/glossary"
 ---
 
 # Glossary of *A Primer on Search Relevance*
 
-The 184 terms this book defines, as Edition 2026.11.10 has them, each in the book's own sentence. When a task this skill covers uses one, it means what it says here: read its section before you rely on it, and cite the section. Where a definition depends on a package, it says the version this edition pins and runs its examples on. On the web: https://rollingedition.com/primer-on-search-relevance/glossary
+The 184 terms this book defines, as Edition 2026.11.11 has them, each in the book's own sentence. When a task this skill covers uses one, it means what it says here: read its section before you rely on it, and cite the section. Where a definition depends on a package, it says the version this edition pins and runs its examples on. On the web: https://rollingedition.com/primer-on-search-relevance/glossary
 
 ## A/A test
 
@@ -31,6 +31,7 @@ an agent, an LLM that runs the searches itself and decides how many to run
 
 - Also: agents
 - A kind of: large language model
+- Close to: https://rollingedition.com/concepts/ai-agents/agent
 - Defined in: [Retrieval for LLM applications](retrieval-for-llm-applications.md)
 - Address: https://rollingedition.com/concepts/search-and-recommendation/agent
 
@@ -62,6 +63,7 @@ a catalog often keeps facts about a product as structured attributes, such as co
 
 attribution asks whether a cited source supports the statement it is attached to
 
+- Close to: https://rollingedition.com/concepts/retrieval-augmented-generation/citation-accuracy
 - Defined in: [Check every citation against the context](retrieval-for-llm-applications.md#check-citations-against-context)
 - Address: https://rollingedition.com/concepts/search-and-recommendation/attribution
 
@@ -70,6 +72,7 @@ attribution asks whether a cited source supports the statement it is attached to
 The ranker the store runs today is the baseline
 
 - Contrasts with: candidate ranker
+- Close to: https://rollingedition.com/concepts/artificial-intelligence/baseline
 - Defined in: [Diff two runs query by query](testing-changes.md#diff-runs-per-query)
 - Address: https://rollingedition.com/concepts/search-and-recommendation/baseline
 
@@ -105,6 +108,7 @@ BM25 is a lexical scoring function with three parts.
 - Computed from: term frequency
 - Computed from: inverse document frequency
 - Implemented by: bm25s 0.3.16
+- The same as: https://rollingedition.com/concepts/retrieval-augmented-generation/bm25
 - Defined in: [Rank products with BM25](search-end-to-end.md#rank-with-bm25)
 - Address: https://rollingedition.com/concepts/search-and-recommendation/bm25
 
@@ -121,6 +125,7 @@ Combining a term's weighted frequencies across fields before saturating the tota
 The Bonferroni correction is a simple, conservative fix: when you test m hypotheses, test each at 0.05 divided by m
 
 - Also: Bonferroni
+- The same as: https://rollingedition.com/concepts/artificial-intelligence/bonferroni-correction
 - Defined in: [Decide in advance what counts as established](measuring-search.md#when-a-difference-is-established)
 - Address: https://rollingedition.com/concepts/search-and-recommendation/bonferroni-correction
 
@@ -183,6 +188,7 @@ chunking is the rule that cuts a document, such as a fixed number of tokens, sen
 A citation here is the ID an answer gives for a product it recommends.
 
 - Also: citations
+- Close to: https://rollingedition.com/concepts/retrieval-augmented-generation/citation
 - Defined in: [Score each answer by the products it cites](retrieval-for-llm-applications.md#retrieval-bounds-the-answer)
 - Address: https://rollingedition.com/concepts/search-and-recommendation/citation
 
@@ -202,6 +208,8 @@ Cohen's kappa corrects the observed agreement for chance by comparing it with th
 - Formula: `kappa = (observed - expected) / (1 - expected)`
 - Computed from: observed agreement
 - Implemented by: scikit-learn 1.9.1
+- The same as: https://rollingedition.com/concepts/llm-evaluation/cohens-kappa
+- Close to: https://rollingedition.com/concepts/artificial-intelligence/kappa
 - Defined in: [Measure agreement beyond chance with kappa](judgments-from-people-and-llms.md#agreement-beyond-chance)
 - Address: https://rollingedition.com/concepts/search-and-recommendation/cohens-kappa
 
@@ -234,6 +242,7 @@ the condensed list, a ranking with its unjudged products dropped before scoring,
 
 A confidence interval is a range of plausible values for the true mean difference
 
+- Close to: https://rollingedition.com/concepts/artificial-intelligence/interval
 - Defined in: [Report how big the gap is](measuring-search.md#report-the-size-of-a-gap)
 - Address: https://rollingedition.com/concepts/search-and-recommendation/confidence-interval
 
@@ -313,6 +322,7 @@ Cosine similarity is the cosine of the angle between two vectors: 1 when they po
 - Formula: `cosine(q, d) = dot(q, d) / (length(q) × length(d))`
 - Computed from: dot product
 - Implemented by: scikit-learn 1.9.1
+- The same as: https://rollingedition.com/concepts/artificial-intelligence/cosine-similarity
 - Defined in: [Compare embeddings with cosine similarity](semantic-retrieval.md#compare-with-cosine-similarity)
 - Address: https://rollingedition.com/concepts/search-and-recommendation/cosine-similarity
 
@@ -362,6 +372,7 @@ Each result contributes its grade as a gain, shrunk by a discount that grows wit
 
 Distillation trains a small model, the student, to imitate a large model, the teacher.
 
+- The same as: https://rollingedition.com/concepts/fine-tuning/distillation
 - Defined in: [Distill the cross-encoder into a small ranker](ranking.md#distill-the-cross-encoder)
 - Address: https://rollingedition.com/concepts/search-and-recommendation/distillation
 
@@ -393,6 +404,7 @@ The dot product multiplies two vectors number by number and adds up the results,
 
 Early stopping scores held-out train queries after every tree, and keeps the trees up to the best score once 30 more bring no gain.
 
+- Close to: https://rollingedition.com/concepts/deep-learning/early-stopping
 - Defined in: [Train LambdaMART with LightGBM](ranking.md#train-lambdamart)
 - Address: https://rollingedition.com/concepts/search-and-recommendation/early-stopping
 
@@ -459,6 +471,7 @@ The nonzero terms of a SPLADE vector include expansion terms: words the text doe
 Faithfulness is the share of an answer's claims that the context supports.
 
 - Also: faithful
+- The same as: https://rollingedition.com/concepts/retrieval-augmented-generation/faithfulness
 - Defined in: [Check what the cited product supports](retrieval-for-llm-applications.md#check-citation-support)
 - Address: https://rollingedition.com/concepts/search-and-recommendation/faithfulness
 
@@ -468,6 +481,7 @@ A learned ranker scores each pair of a query and a product from a list of number
 
 - Also: features, ranking feature
 - Comes before: learning to rank
+- Close to: https://rollingedition.com/concepts/feature-engineering/feature
 - Defined in: [Describe each candidate with features](ranking.md#ranking-features)
 - Address: https://rollingedition.com/concepts/search-and-recommendation/feature
 
@@ -540,6 +554,7 @@ gradient-boosted trees, which add small decision trees one at a time, each fitte
 Grounding means that an answer rests on the context it was given, as the exact share assumes, not on what the model remembers or invents.
 
 - Also: grounded
+- Close to: https://rollingedition.com/concepts/retrieval-augmented-generation/grounded
 - Defined in: [Check every citation against the context](retrieval-for-llm-applications.md#check-citations-against-context)
 - Address: https://rollingedition.com/concepts/search-and-recommendation/grounding
 
@@ -623,6 +638,7 @@ An inverted index turns the texts around: for each term, it keeps the list of pr
 
 This chapter calls whoever gives a judgment, person or LLM, a judge
 
+- Close to: https://rollingedition.com/concepts/llm-evaluation/judge
 - Defined in: [Write judging guidelines](judgments-from-people-and-llms.md#write-judging-guidelines)
 - Address: https://rollingedition.com/concepts/search-and-recommendation/judge
 
@@ -717,6 +733,7 @@ With length normalization, a long text, which has more chances to contain any te
 
 Lexical retrieval finds and ranks products by the words they share with the query.
 
+- The same as: https://rollingedition.com/concepts/artificial-intelligence/lexical-retrieval
 - Defined in: [Lexical retrieval](lexical-retrieval.md)
 - Address: https://rollingedition.com/concepts/search-and-recommendation/lexical-retrieval
 
@@ -849,6 +866,7 @@ the null hypothesis, the assumption that the rankers are equally good
 
 The share of pairs on which two judges give the same grade, the observed agreement
 
+- The same as: https://rollingedition.com/concepts/llm-evaluation/agreement
 - Defined in: [Measure agreement beyond chance with kappa](judgments-from-people-and-llms.md#agreement-beyond-chance)
 - Address: https://rollingedition.com/concepts/search-and-recommendation/observed-agreement
 
@@ -867,6 +885,7 @@ The tests in this book are paired: both rankers are scored on the same queries, 
 - Also: paired
 - A kind of: significance test
 - Computed from: per-query differences
+- Close to: https://rollingedition.com/concepts/artificial-intelligence/paired-comparison
 - Defined in: [Test a gap with a permutation test](measuring-search.md#permutation-test-on-queries)
 - Address: https://rollingedition.com/concepts/search-and-recommendation/paired-test
 
@@ -897,6 +916,7 @@ Stopping a test the moment it looks significant, called peeking
 
 per-query differences: one number per query, the new ranker's score minus the old one's
 
+- Close to: https://rollingedition.com/concepts/llm-evaluation/paired-difference
 - Defined in: [Read per-query differences, not only the mean](measuring-search.md#read-per-query-differences)
 - Address: https://rollingedition.com/concepts/search-and-recommendation/per-query-differences
 
@@ -915,6 +935,7 @@ Per-query min-max scaling maps the lowest score among the query's ranked product
 The percentile interval is the middle 95% of the resampled means.
 
 - A kind of: confidence interval
+- The same as: https://rollingedition.com/concepts/artificial-intelligence/percentile-bootstrap
 - Defined in: [Report how big the gap is](measuring-search.md#report-the-size-of-a-gap)
 - Address: https://rollingedition.com/concepts/search-and-recommendation/percentile-interval
 
@@ -977,6 +998,7 @@ A listwise answer can suffer from positional bias: an LLM's tendency to let a pr
 
 A positional index stores, for each term and product, the positions where the term occurs, so that a phrase becomes a check on positions
 
+- Comes before: phrase match
 - Defined in: [Match phrases with term positions](lexical-retrieval.md#match-phrases-with-positions)
 - Address: https://rollingedition.com/concepts/search-and-recommendation/positional-index
 
@@ -1315,6 +1337,7 @@ standalone query, one that reads without the earlier turns and keeps what the sh
 standard error: the standard deviation of the differences divided by the square root of the number of queries, which estimates how far the mean would move from one sample of queries to another
 
 - Computed from: per-query differences
+- Close to: https://rollingedition.com/concepts/llm-evaluation/standard-error-of-the-proportion
 - Defined in: [Get the p-value from a paired t-test](measuring-search.md#paired-t-test-on-queries)
 - Address: https://rollingedition.com/concepts/search-and-recommendation/standard-error
 
@@ -1322,6 +1345,7 @@ standard error: the standard deviation of the differences divided by the square 
 
 the forms of a word share one term, its stem
 
+- A kind of: term
 - Defined in: [Stem terms so word forms match](lexical-retrieval.md#stem-word-forms)
 - Address: https://rollingedition.com/concepts/search-and-recommendation/stem
 
@@ -1429,6 +1453,8 @@ Splitting the text into pieces gives tokens.
 The store's encoder reads text as tokens, word pieces from its own vocabulary, not the terms of chapter 5's tokenizer.
 
 - Contrasts with: term
+- The same as: https://rollingedition.com/concepts/natural-language-processing/token
+- The same as: https://rollingedition.com/concepts/large-language-models/token
 - Defined in: [Turn text into embeddings](semantic-retrieval.md#turn-text-into-embeddings)
 - Address: https://rollingedition.com/concepts/semantic-search/token
 
@@ -1438,6 +1464,7 @@ A tool is a function the program offers the model, described by a name, a descri
 
 - Also: tools
 - Comes before: tool call
+- The same as: https://rollingedition.com/concepts/ai-agents/tool
 - Defined in: [Read an agent's searches from its trace](retrieval-for-llm-applications.md#read-agent-searches)
 - Address: https://rollingedition.com/concepts/search-and-recommendation/tool
 
@@ -1448,6 +1475,7 @@ A tool call is the model's request to run a tool with arguments.
 - Also: tool calls
 - Part of: agent loop
 - Part of: trace
+- The same as: https://rollingedition.com/concepts/ai-agents/tool-call
 - Defined in: [Read an agent's searches from its trace](retrieval-for-llm-applications.md#read-agent-searches)
 - Address: https://rollingedition.com/concepts/search-and-recommendation/tool-call
 
@@ -1456,6 +1484,7 @@ A tool call is the model's request to run a tool with arguments.
 The trace is the record of every tool call and its result.
 
 - Also: traces
+- The same as: https://rollingedition.com/concepts/ai-agents/trace
 - Defined in: [Read an agent's searches from its trace](retrieval-for-llm-applications.md#read-agent-searches)
 - Address: https://rollingedition.com/concepts/search-and-recommendation/trace
 

@@ -1,13 +1,13 @@
 ---
 title: "Glossary"
 book: "Time Series Forecasting"
-edition: "2026.11.12"
+edition: "2026.11.13"
 canonical: "https://rollingedition.com/time-series-forecasting/glossary"
 ---
 
 # Glossary of *Time Series Forecasting*
 
-The 97 terms this book defines, as Edition 2026.11.12 has them, each in the book's own sentence. When a task this skill covers uses one, it means what it says here: read its section before you rely on it, and cite the section. Where a definition depends on a package, it says the version this edition pins and runs its examples on. On the web: https://rollingedition.com/time-series-forecasting/glossary
+The 97 terms this book defines, as Edition 2026.11.13 has them, each in the book's own sentence. When a task this skill covers uses one, it means what it says here: read its section before you rely on it, and cite the section. Where a definition depends on a package, it says the version this edition pins and runs its examples on. On the web: https://rollingedition.com/time-series-forecasting/glossary
 
 ## AICc
 
@@ -65,6 +65,7 @@ Average of weeks takes the mean of the same hour on the same weekday over the fo
 
 a backtest is the score of many windows, each made as it would have been made on its day
 
+- Comes before: leakage
 - Defined in: [Why a baseline comes first](beat-the-naive-baselines.md#why-a-baseline-comes-first)
 - Address: https://rollingedition.com/concepts/model-evaluation/backtest
 
@@ -196,6 +197,7 @@ The daily MASE takes each client's mean absolute error over the day's 24 hours, 
 Decision windows are the windows the feature set is chosen on, never the standard cutoffs, which are the windows the book reports.
 
 - Also: decision windows
+- A kind of: window
 - Defined in: [Choose on decision windows](add-calendar-and-lag-features.md#choose-on-decision-windows)
 - Address: https://rollingedition.com/concepts/model-evaluation/decision-window
 
@@ -221,7 +223,7 @@ The error of an hour is the actual demand minus the forecast.
 
 - Comes before: score
 - Defined in: [Score both on a held-out week](forecast-tomorrows-demand.md#score-on-a-held-out-week)
-- Address: https://rollingedition.com/concepts/model-evaluation/error
+- Address: https://rollingedition.com/concepts/time-series-forecasting/error
 
 ## ETS
 
@@ -246,6 +248,7 @@ the features: the readings and facts the model may use for the row's hour.
 
 - Also: features
 - Part of: feature table
+- Close to: https://rollingedition.com/concepts/search-and-recommendation/feature
 - Defined in: [Turn history into features](add-calendar-and-lag-features.md#turn-history-into-features)
 - Address: https://rollingedition.com/concepts/feature-engineering/feature
 
@@ -260,6 +263,7 @@ A feature table has one row for each hour a model must predict.
 
 The fill is the mean of the hour before and the hour after, taken from the history before the cutoff only.
 
+- Computed from: history
 - Defined in: [Mark clock-change hours as missing](backtest-without-looking-ahead.md#mark-clock-change-hours-as-missing)
 - Address: https://rollingedition.com/concepts/time-series-forecasting/fill
 
@@ -405,6 +409,7 @@ A backtest leaks when a window's model sees a reading from the hours it is asked
 
 The level of a series is its typical reading
 
+- Part of: time series
 - Defined in: [Why a statistical model comes next](fit-statistical-models-per-client.md#why-a-statistical-model-comes-next)
 - Address: https://rollingedition.com/concepts/time-series-forecasting/level
 
@@ -506,6 +511,9 @@ The model string sets which forms the model may take, with one letter each for e
 
 A monitoring system covers alerts, dashboards, data quality across many feeds and the people who respond.
 
+- Contrasts with: forecast log
+- Contrasts with: flag
+- Contrasts with: coverage
 - Defined in: [Know when to retire a model](keep-the-forecast-running.md#know-when-to-retire-a-model)
 - Address: https://rollingedition.com/concepts/data-science/monitoring-system
 
@@ -593,6 +601,8 @@ The quantile loss is tau * (y - q) when the reading y is at or above the purchas
 
 A rebuilt log is leakage in disguise, because it knows what the forecast should have been.
 
+- A kind of: leakage
+- Contrasts with: forecast log
 - Defined in: [Log every forecast before its actuals arrive](keep-the-forecast-running.md#log-every-forecast-before-actuals)
 - Address: https://rollingedition.com/concepts/time-series-forecasting/rebuilt-log
 
@@ -750,6 +760,7 @@ The first retirement trigger is sustained drift: flags on consecutive days with 
 Each row of a feature table holds the value to predict, which the book calls the target
 
 - Part of: feature table
+- Close to: https://rollingedition.com/concepts/natural-language-processing/target
 - Defined in: [Turn history into features](add-calendar-and-lag-features.md#turn-history-into-features)
 - Address: https://rollingedition.com/concepts/feature-engineering/target
 
@@ -782,6 +793,7 @@ Top-down forecasts the top, the total, and splits it down by proportions.
 
 a trailing mean: the average of the 24 hours up to and including each hour, which reads nothing after its hour
 
+- A kind of: feature
 - Defined in: [Check a backtest for leakage](backtest-without-looking-ahead.md#check-a-backtest-for-leakage)
 - Address: https://rollingedition.com/concepts/feature-engineering/trailing-mean
 

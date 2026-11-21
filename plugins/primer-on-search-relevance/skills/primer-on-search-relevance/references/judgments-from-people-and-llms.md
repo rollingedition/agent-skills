@@ -3,13 +3,13 @@ title: "A Primer on Search Relevance"
 chapter: "Judgments from people and LLMs"
 chapter_id: judgments-from-people-and-llms
 book: primer-on-search-relevance
-edition: 2026.11.10
+edition: 2026.11.11
 verified: 2026-11-19
-edition_code: ANXY-CR00
+edition_code: BR8A-JH1B
 canonical: https://rollingedition.com/primer-on-search-relevance/judgments-from-people-and-llms
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“Judgments from people and LLMs,” chapter 4 of A Primer on Search Relevance, Edition 2026.11.10, examples passed Nov 19, 2026. By Rolling Edition, https://rollingedition.com/primer-on-search-relevance/judgments-from-people-and-llms. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Judgments from people and LLMs,” chapter 4 of A Primer on Search Relevance, Edition 2026.11.11, examples passed Nov 19, 2026. By Rolling Edition, https://rollingedition.com/primer-on-search-relevance/judgments-from-people-and-llms. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Judgments from people and LLMs
 
@@ -29,7 +29,7 @@ WANDS published the guidelines its annotators used: eight pages, under the MIT l
 
 The recording's two prompts are judging guidelines for the LLM. `short` is WANDS's three definitions alone; `guidelines` keeps them and adds five rules, so print it as [the recording](#judgments-from-people-and-llms) sent it:
 
-Example `print-judging-guidelines` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1), passing in Edition 2026.11.10:
+Example `print-judging-guidelines` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1), passing in Edition 2026.11.11:
 
 ```python
 """Prints the model, the word count of each prompt and the guidelines prompt verbatim, from the recording's manifest. The prose's point rests on the rules at the end of that prompt."""
@@ -92,7 +92,7 @@ The **train pool**, for measuring agreement, holds pairs people judged for train
 
 The question is how often the LLM of [the recording](#judgments-from-people-and-llms) grades a pair the way the store's judges did. The train pool, with the [`short` prompt](#write-judging-guidelines) (WANDS's three definitions alone), answers it. A 3×3 table of counts, built by hand, gives kappa, and scikit-learn's `cohen_kappa_score` checks the result:
 
-Example `kappa-by-hand` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pandas 3.1.1 · scikit-learn 1.9.1 · scipy 1.18.1), passing in Edition 2026.11.10:
+Example `kappa-by-hand` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pandas 3.1.1 · scikit-learn 1.9.1 · scipy 1.18.1), passing in Edition 2026.11.11:
 
 ```python
 """Builds the 3×3 table of the store's grades against the short prompt's on the train pool, then computes observed agreement, chance agreement and kappa from it. The prose's point rests on the printed kappa by hand, which matches the scikit-learn line."""
@@ -164,7 +164,7 @@ With every disagreement weighted 1, the formula gives plain kappa. scikit-learn'
 
 For both [prompts](#write-judging-guidelines), the example builds the linear weights by hand on the evenly drawn train pairs of [Measure agreement beyond chance](#agreement-beyond-chance), then checks each result against scikit-learn:
 
-Example `weighted-kappa-by-hand` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pandas 3.1.1 · scikit-learn 1.9.1 · scipy 1.18.1), passing in Edition 2026.11.10:
+Example `weighted-kappa-by-hand` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pandas 3.1.1 · scikit-learn 1.9.1 · scipy 1.18.1), passing in Edition 2026.11.11:
 
 ```python
 """Computes linear weighted kappa by hand for both prompts on the train pool and checks each against scikit-learn. The prose's point rests on the two linear weighted kappa lines, which match scikit-learn's, and on the one-grade-apart shares beside them."""
@@ -232,7 +232,7 @@ The prompts also differ in their far misses, the pairs two grades apart: 12 for 
 
 [The recording](#judgments-from-people-and-llms) drew the train pool evenly, up to 4 pairs of each label per train query, so the pool holds more exact and irrelevant pairs than the store's judgments do. To see what that does to kappa, weight each pair so the pool has the label mix of all the train queries' judgments, and measure again:
 
-Example `kappa-under-two-label-mixes` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pandas 3.1.1 · scikit-learn 1.9.1 · scipy 1.18.1), passing in Edition 2026.11.10:
+Example `kappa-under-two-label-mixes` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pandas 3.1.1 · scikit-learn 1.9.1 · scipy 1.18.1), passing in Edition 2026.11.11:
 
 ```python
 """Measures each prompt's agreement with the store's judges on the train pool, as drawn and reweighted to the label mix of all the train judgments. The prose's point rests on the kappa lines for each mix and on the higher-kappa lines, which change with the mix."""
@@ -320,7 +320,7 @@ Not every study agrees. Thomas et al., with one of their 32 prompts on a sample 
 
 A matrix for each prompt on each [pool](#judgments-from-people-and-llms) shows which way the LLM errs, and whether that direction survives the move from balanced train pairs to the rankers' top 10s: the train pool is drawn evenly by label, and the test pool's judged pairs are the top 10s of [chapter 1's four rankers](#search-end-to-end-decisions) that an LLM would grade. The test-pool matrices report on test queries; they don't choose a prompt:
 
-Example `llm-confusion-matrix` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pandas 3.1.1 · scikit-learn 1.9.1 · scipy 1.18.1), passing in Edition 2026.11.10:
+Example `llm-confusion-matrix` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pandas 3.1.1 · scikit-learn 1.9.1 · scipy 1.18.1), passing in Edition 2026.11.11:
 
 ```python
 """Prints the confusion matrix of the store's grades against each prompt's grades, on the train pool and on the judged test pairs, with the counts of lower and higher grades. The prose's point rests on the 'stricter' line for each pool, read with the largest error printed beside it."""
@@ -417,11 +417,11 @@ Nor does the direction of the errors say what happens to a ranker's score. A len
 
 ## Compare what the LLM saw with what the judges saw {#what-the-llm-saw}
 
-A judge can grade only the evidence it is shown. WANDS's judges saw the query and the product's ID, name, image and web page, and the guidelines told them to understand the query first: "Strongly recommend google it first" ([annotation guidelines](https://github.com/wayfair/WANDS/raw/3b74dcf4ba29ab8ff3e6a50b5b09fc627cb882b5/Product%20Search%20Relevance%20Annotation%20Guidelines.pdf)). The recording showed the LLM each product's name, class, category, description and attributes, as `lib.agreement.as_the_llm_saw` writes them out. The store's sample cuts descriptions to about 400 characters ([data card](https://github.com/rollingedition/book-primer-on-search-relevance/blob/67880c1fa437fcb912ca77d75451f3169c432ea6/examples/data/wands/README.md)) and holds no images, so the recording sent the LLM text only. Some disagreement may come from this gap rather than from how well the LLM judges; that is our inference. One consequence can be tested: if the LLM grades what is written, it should give a lower grade to exact products whose text doesn't say what the query asks for, and a higher grade to partial products whose text does.
+A judge can grade only the evidence it is shown. WANDS's judges saw the query and the product's ID, name, image and web page, and the guidelines told them to understand the query first: "Strongly recommend google it first" ([annotation guidelines](https://github.com/wayfair/WANDS/raw/3b74dcf4ba29ab8ff3e6a50b5b09fc627cb882b5/Product%20Search%20Relevance%20Annotation%20Guidelines.pdf)). The recording showed the LLM each product's name, class, category, description and attributes, as `lib.agreement.as_the_llm_saw` writes them out. The store's sample cuts descriptions to about 400 characters ([data card](https://github.com/rollingedition/book-primer-on-search-relevance/blob/5e4dd6e694b238a5865068d35869c54eddf4c1df/examples/data/wands/README.md)) and holds no images, so the recording sent the LLM text only. Some disagreement may come from this gap rather than from how well the LLM judges; that is our inference. One consequence can be tested: if the LLM grades what is written, it should give a lower grade to exact products whose text doesn't say what the query asks for, and a higher grade to partial products whose text does.
 
 This check takes one train pair, then the test query `clear shower curtain` and every judged exact and partial pair in both pools ([the recording](#judgments-from-people-and-llms)). It looks for each query word in what the LLM saw, split into lowercase words the way [chapter 2's check](#relevance-is-a-judgment) splits them:
 
-Example `llm-grades-follow-written-words` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.10:
+Example `llm-grades-follow-written-words` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.11:
 
 ```python
 """Checks whether the LLM's grades follow the words in each product's text, for one train pair, for the clear shower curtain products, and across both pools. The prose's point rests on the 'share graded lower' and 'share graded higher' lines, which compare pairs whose text has every query word with pairs that miss one."""
@@ -541,7 +541,7 @@ Across three LLMs and 72 prompts on TREC's Deep Learning collections, Arabzadeh 
 
 The two prompts share their definitions, and `guidelines` adds five rules on top ([Write judging guidelines](#write-judging-guidelines)). Each pool in [the recording](#judgments-from-people-and-llms) shows where the prompts disagree, and the train pool shows whether it can tell which prompt agrees better with the store's judges. Pairs from the same query aren't independent, so the interval resamples whole train queries, as [chapter 3's bootstrap](#report-the-size-of-a-gap) resamples queries:
 
-Example `prompt-disagreement` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pandas 3.1.1 · scikit-learn 1.9.1 · scipy 1.18.1), passing in Edition 2026.11.10:
+Example `prompt-disagreement` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pandas 3.1.1 · scikit-learn 1.9.1 · scipy 1.18.1), passing in Edition 2026.11.11:
 
 ```python
 """Counts where the two prompts disagree, their kappa with each other, and how far their kappas with people differ across resampled train queries. The prose's point rests on the 95% interval line, which includes 0 for this recording."""
@@ -638,7 +638,7 @@ Of the 590 pairs in the top 10s of [chapter 1's four rankers](#search-end-to-end
 
 Let each [prompt](#write-judging-guidelines) fill them, rescore the four rankers on nDCG@10 ([Score one ranking](#score-one-ranking)), and rerun [chapter 3's planned comparisons](#when-a-difference-is-established) on the filled grades:
 
-Example `fill-unjudged-pairs` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.10:
+Example `fill-unjudged-pairs` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.11:
 
 ```python
 """Fills the pairs nobody judged with each prompt's grades, then rescores the four rankers and the planned verdicts with the filled grades. The prose's point rests on the 'that change' lines, which list the rankers and verdicts that move when the holes are filled."""
@@ -741,7 +741,7 @@ Yilmaz et al. note that rankings with a tau of 0.9 or more are often treated as 
 
 Scoring [chapter 1's four rankers](#search-end-to-end-decisions) on nDCG@10 under human grades and under each [prompt's](#write-judging-guidelines) LLM grades shows whether the LLM orders them as people do. The LLM judged only the test pool, the products in those rankers' top 10s, so a control also scores them with human grades for the pool's pairs only. With four rankers there are 6 pairs, so one swapped pair moves tau by 0.333, and tau can take only seven values. That is crude. A judge this far from people on single pairs could still order the rankers as they do. Will it? Commit to an answer first:
 
-Example `kendall-tau-four-rankers` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.10:
+Example `kendall-tau-four-rankers` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.11:
 
 ```python
 """Scores the four rankers under human grades, under people's grades on the LLM's pairs as a control, and under each prompt, then counts the swapped pairs for each set. The prose's point rests on the 'swapped under' lines, read with the tau lines beside them."""
@@ -855,7 +855,7 @@ Decisions come from verdicts under [the book's rule](#when-a-difference-is-estab
 
 Chapter 3's three planned comparisons use a threshold of 0.0167 and intervals at the 0.9833 level. Rerunning them under human grades and under each [prompt's](#write-judging-guidelines) grades on the test pool, with chapter 3's exploratory comparison of the reranked hybrid with semantic retrieval added, shows whether the store would have shipped the same rankers:
 
-Example `planned-comparisons-llm-grades` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.10:
+Example `planned-comparisons-llm-grades` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.11:
 
 ```python
 """Runs chapter 3's three planned comparisons, and the exploratory one, under human grades and under each prompt's grades on the test pool. The prose's point rests on the 'verdicts that differ' lines and the count of disagreeing checks."""
@@ -1021,7 +1021,7 @@ In search evaluation, Oosterhuis et al. build metric intervals this way, warning
 
 Suppose the store could afford human judgments for 10 of 30 test queries. The example draws 2,000 random sets of that size and, for each, corrects the LLM's estimate, under each [prompt](#write-judging-guidelines), of two gaps between [chapter 1's rankers](#search-end-to-end-decisions): semantic retrieval minus BM25, and the hybrid minus semantic retrieval, and compares each corrected estimate with what the human sample says on its own. **Spread** is an estimate's standard deviation over the draws. The simulation chooses nothing:
 
-Example `correct-llm-scores-with-humans` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.10:
+Example `correct-llm-scores-with-humans` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.11:
 
 ```python
 """Draws random sets of human-judged test queries and corrects the LLM's estimate of two ranker gaps with each set. The prose's point rests on the 'smaller than the human sample's' lines, read with the correlation lines beside them."""

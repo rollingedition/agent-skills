@@ -1,18 +1,19 @@
 ---
 title: "Glossary"
 book: "Data Governance as Code"
-edition: "2026.11.31"
+edition: "2026.11.32"
 canonical: "https://rollingedition.com/data-governance-as-code/glossary"
 ---
 
 # Glossary of *Data Governance as Code*
 
-The 151 terms this book defines, as Edition 2026.11.31 has them, each in the book's own sentence. When a task this skill covers uses one, it means what it says here: read its section before you rely on it, and cite the section. Where a definition depends on a package, it says the version this edition pins and runs its examples on. On the web: https://rollingedition.com/data-governance-as-code/glossary
+The 151 terms this book defines, as Edition 2026.11.32 has them, each in the book's own sentence. When a task this skill covers uses one, it means what it says here: read its section before you rely on it, and cite the section. Where a definition depends on a package, it says the version this edition pins and runs its examples on. On the web: https://rollingedition.com/data-governance-as-code/glossary
 
 ## access log
 
 a separate access log, with learner IDs, a retention period and no chain
 
+- Contrasts with: audit log
 - Defined in: [Keep values out of the record](audit-and-evidence.md#keep-values-out-of-the-record)
 - Address: https://rollingedition.com/concepts/data-governance/access-log
 
@@ -21,6 +22,8 @@ a separate access log, with learner IDs, a retention period and no chain
 An access review compares what each person may read with what they use.
 
 - Also: access reviews
+- Computed from: audit log
+- Computed from: policy
 - Defined in: [Audit and evidence](audit-and-evidence.md)
 - Address: https://rollingedition.com/concepts/data-governance/access-review
 
@@ -149,6 +152,7 @@ GitHub requests code owners' review automatically when a pull request modifies c
 
 Column lineage says which input columns each output column came from, and that is what governance needs
 
+- Contrasts with: run event
 - Defined in: [Trace each output column to its sources](lineage-from-pipelines.md#trace-output-columns)
 - Address: https://rollingedition.com/concepts/data-pipelines/column-lineage
 
@@ -189,6 +193,7 @@ Consent is a person's agreement to one use of their data, such as marketing emai
 Copy-on-write rewrites each affected data file without the deleted rows.
 
 - Contrasts with: merge-on-read
+- The same as: https://rollingedition.com/concepts/data-engineering/copy-on-write
 - Defined in: [Delete expired rows with row deletes](retention-consent-erasure.md#delete-expired-rows)
 - Address: https://rollingedition.com/concepts/data-warehousing/copy-on-write
 
@@ -237,6 +242,7 @@ Audited.check_engine_log matches each query in DuckDB's log, by keyed digest, ag
 
 Everything else a rule needs besides the request, such as each user's groups and each column's classification, comes from a second document, which OPA calls data.
 
+- Contrasts with: input
 - Defined in: [Generate the data the policy reads](access-policies-as-code.md#generate-the-data-the-policy-reads)
 - Address: https://rollingedition.com/concepts/data-governance/data-document
 
@@ -367,6 +373,7 @@ a domain, the part of the business the table belongs to
 Each domain has a package of its own, owned by its team
 
 - Also: domain rules
+- Contrasts with: global rule
 - Defined in: [Layer domain rules on the global rules](governance-in-ci.md#run-global-and-domain-rules)
 - Address: https://rollingedition.com/concepts/data-governance/domain-rule
 
@@ -399,6 +406,7 @@ its logging framework has a QueryLog type, which records the queries DuckDB exec
 equality deletes, which mark it by the values of one or more columns
 
 - Also: equality deletes
+- Contrasts with: position delete
 - Defined in: [Delete expired rows with row deletes](retention-consent-erasure.md#delete-expired-rows)
 - Address: https://rollingedition.com/concepts/data-warehousing/equality-delete
 
@@ -413,6 +421,7 @@ Erasure is removing a person's data on request.
 
 an erasure register: for each request, its ID and a keyed hash (HMAC-SHA256) of the erased learner's ID, and nothing else
 
+- Computed from: HMAC
 - Defined in: [An erased learner comes back](retention-consent-erasure.md#erased-learner-comes-back)
 - Address: https://rollingedition.com/concepts/data-governance/erasure-register
 
@@ -427,6 +436,8 @@ lib.retention.scan reads every file under the catalog's warehouse, each with its
 
 Evidence is a report that shows a control works, generated from records rather than captured from a screen.
 
+- Computed from: audit log
+- Computed from: policy
 - Defined in: [Audit and evidence](audit-and-evidence.md)
 - Address: https://rollingedition.com/concepts/data-governance/evidence
 
@@ -467,6 +478,7 @@ Iceberg gives every column a field ID, an integer unique within the table's sche
 
 - Also: field IDs
 - True for: pyiceberg 0.12.0
+- The same as: https://rollingedition.com/concepts/data-engineering/field-id
 - Defined in: [Key column metadata by field ID](a-catalog-you-can-test.md#key-column-metadata-by-field-id)
 - Address: https://rollingedition.com/concepts/data-warehousing/field-id
 
@@ -499,6 +511,7 @@ has_side_effects is "true if this function changes the database state"
 On a pull request, a check is a gate: it runs on every change, before the change merges, and it fails the pull request through its exit code.
 
 - Also: gates
+- The same as: https://rollingedition.com/concepts/llm-evaluation/gate
 - Defined in: [Run every check as one job](governance-in-ci.md#run-every-rule-as-one-job)
 - Address: https://rollingedition.com/concepts/data-governance/gate
 
@@ -507,6 +520,7 @@ On a pull request, a check is a gate: it runs on every change, before the change
 The platform team keeps one package of global rules, which the domains agree on
 
 - Also: global rules
+- Part of: federated computational governance
 - Defined in: [Layer domain rules on the global rules](governance-in-ci.md#run-global-and-domain-rules)
 - Address: https://rollingedition.com/concepts/data-governance/global-rule
 
@@ -514,6 +528,7 @@ The platform team keeps one package of global rules, which the domains agree on
 
 The script decodes greedily, taking the most likely next token
 
+- The same as: https://rollingedition.com/concepts/large-language-models/greedy-decoding
 - Defined in: [Draft metadata with a local model](a-catalog-you-can-test.md#draft-descriptions-with-a-local-model)
 - Address: https://rollingedition.com/concepts/data-engineering/greedy-decoding
 
@@ -546,6 +561,7 @@ HMAC is the construction RFC 2104 describes for keying a hash
 a column copied unchanged, an IDENTITY edge in OpenLineage's terms
 
 - Also: IDENTITY edges
+- A kind of: DIRECT
 - Defined in: [Plan an erasure from lineage](retention-consent-erasure.md#plan-erasure-from-lineage)
 - Address: https://rollingedition.com/concepts/data-pipelines/identity-edge
 
@@ -636,6 +652,7 @@ LSH cuts each signature into b bands of r rows
 a manifest lists data files, with each file's column statistics
 
 - Also: manifests
+- The same as: https://rollingedition.com/concepts/data-engineering/manifest
 - Defined in: [Remove the files no snapshot references](retention-consent-erasure.md#remove-unreferenced-files)
 - Address: https://rollingedition.com/concepts/data-warehousing/manifest
 
@@ -651,6 +668,7 @@ OpenLineage's masking flag says only that a value was obfuscated, such as by a h
 Merge-on-read leaves the data file alone and writes a delete file beside it.
 
 - Contrasts with: copy-on-write
+- The same as: https://rollingedition.com/concepts/data-engineering/merge-on-read
 - Defined in: [Delete expired rows with row deletes](retention-consent-erasure.md#delete-expired-rows)
 - Address: https://rollingedition.com/concepts/data-warehousing/merge-on-read
 
@@ -762,6 +780,7 @@ an owner, the team answerable for the table, never a person
 
 We add a first rule of our own: lowering a column's classification, changing a table's owner, or moving a table to another domain needs the approval of the team that owns the table on the main branch.
 
+- Contrasts with: breaking-change checker
 - Defined in: [Ask the owner before lowering a classification](governance-in-ci.md#ask-the-owner-before-lowering)
 - Address: https://rollingedition.com/concepts/data-governance/owner-rule
 
@@ -769,6 +788,7 @@ We add a first rule of our own: lowering a column's classification, changing a t
 
 Cedar's experimental partial evaluation, which returns residual policies for the parts it can't yet decide, and whose result is not a final authorization decision
 
+- Contrasts with: decision
 - Defined in: [Write the same rules in Cedar](access-policies-as-code.md#the-same-rules-in-cedar)
 - Address: https://rollingedition.com/concepts/data-governance/partial-evaluation
 
@@ -815,6 +835,9 @@ A policy is code that answers whether a request may go ahead.
 A policy revision is a fingerprint of everything a decision depended on besides the request.
 
 - Also: revision
+- Computed from: policy
+- Computed from: data document
+- Part of: decision record
 - Defined in: [Audit and evidence](audit-and-evidence.md)
 - Address: https://rollingedition.com/concepts/data-governance/policy-revision
 
@@ -839,6 +862,7 @@ Validation checks policies against a schema before any request
 position deletes, which mark a row by its data file and its position
 
 - Also: position deletes
+- Contrasts with: equality delete
 - Defined in: [Delete expired rows with row deletes](retention-consent-erasure.md#delete-expired-rows)
 - Address: https://rollingedition.com/concepts/data-warehousing/position-delete
 
@@ -878,6 +902,7 @@ ODCS defines a property's id as "A unique identifier for the element used to cre
 
 the tables the pipeline's own SQL reads, which the values come from, as prov:wasDerivedFrom
 
+- Contrasts with: prov:wasInfluencedBy
 - Defined in: [Generate the dataset card from the run](governing-data-for-ai.md#generate-the-dataset-card)
 - Address: https://rollingedition.com/concepts/data-governance/prov-was-derived-from
 
@@ -885,6 +910,7 @@ the tables the pipeline's own SQL reads, which the values come from, as prov:was
 
 the table the enforcement layer's rewrite adds, which only decides which rows exist, as prov:wasInfluencedBy
 
+- Contrasts with: prov:wasDerivedFrom
 - Defined in: [Generate the dataset card from the run](governing-data-for-ai.md#generate-the-dataset-card)
 - Address: https://rollingedition.com/concepts/data-governance/prov-was-influenced-by
 
@@ -932,6 +958,7 @@ An ID with no meaning of its own, such as learner_id, is a pseudonymous identifi
 
 The purpose is an attribute of the request.
 
+- A kind of: attribute
 - Defined in: [Narrow by attribute: region, consent and purpose](access-policies-as-code.md#narrow-by-attribute)
 - Address: https://rollingedition.com/concepts/data-governance/purpose
 
@@ -941,6 +968,7 @@ sqlglot parses a query into a tree, and its qualify step resolves every column a
 
 - True for: sqlglot 30.33.0
 - Implemented by: sqlglot 30.33.0
+- The same as: https://rollingedition.com/concepts/artificial-intelligence/column-qualification
 - Defined in: [Find every table and column a query reads](enforcing-policies-on-queries.md#find-what-a-query-reads)
 - Address: https://rollingedition.com/concepts/data-engineering/qualify
 
@@ -949,6 +977,7 @@ sqlglot parses a query into a tree, and its qualify step resolves every column a
 recall, the share of labelled spans of each type that a detector finds with a label of that type
 
 - Measured from: truth
+- Close to: https://rollingedition.com/concepts/llm-evaluation/true-positive-rate
 - Defined in: [Measure a detector against labelled spans](finding-personal-data.md#measure-against-labelled-spans)
 - Address: https://rollingedition.com/concepts/data-governance/recall
 
@@ -1013,6 +1042,8 @@ A retention rule says how long one kind of data is kept, from which date the tim
 
 The SQL the layer hands DuckDB is kept only as rewritten_digest, an HMAC-SHA256 under a key only the layer holds, which the cross-check matches against DuckDB's own log.
 
+- Computed from: HMAC
+- Part of: decision record
 - Defined in: [Keep values out of the record](audit-and-evidence.md#keep-values-out-of-the-record)
 - Address: https://rollingedition.com/concepts/data-governance/rewritten-digest
 
@@ -1021,6 +1052,7 @@ The SQL the layer hands DuckDB is kept only as rewritten_digest, an HMAC-SHA256 
 a role is a group of principals with the same job
 
 - Also: roles
+- A kind of: attribute
 - Defined in: [Access policies as code](access-policies-as-code.md)
 - Address: https://rollingedition.com/concepts/data-governance/role
 
@@ -1071,6 +1103,7 @@ A run reports itself through run events: a START when it begins, then one termin
 lib.ci.build builds a scratch platform the way the platform runs: the source tables, the side's migrations, the deploy, which writes the metadata into the catalog and sets every table's generated properties, then the nightly run of the side's own pipelines, with lineage
 
 - Also: scratch platforms
+- A kind of: catalog
 - Defined in: [Governance in CI](governance-in-ci.md)
 - Address: https://rollingedition.com/concepts/data-governance/scratch-platform
 
@@ -1094,6 +1127,7 @@ a semi-join, a test that the review's learner_id is among the learners who conse
 The shared modules, files in examples/lib/ that hold the code many examples need, are yours to open and read
 
 - Also: shared modules
+- The same as: https://rollingedition.com/concepts/artificial-intelligence/shared-module
 - Defined in: [Governance end to end](governance-end-to-end.md)
 - Address: https://rollingedition.com/concepts/data-engineering/shared-module
 
@@ -1118,6 +1152,7 @@ Expiry removes snapshots, not files.
 
 - Also: expiry
 - True for: pyiceberg 0.12.0
+- The same as: https://rollingedition.com/concepts/data-engineering/expiry
 - Defined in: [Remove the files no snapshot references](retention-consent-erasure.md#remove-unreferenced-files)
 - Address: https://rollingedition.com/concepts/data-warehousing/snapshot-expiry
 
@@ -1196,6 +1231,7 @@ A rule whose body never evaluates to true has no value, which Rego calls undefin
 An unreferenced file, which Iceberg calls an orphan, is under the table's location but in no snapshot's metadata.
 
 - Also: unreferenced files, orphan file, orphan files
+- The same as: https://rollingedition.com/concepts/data-engineering/orphan
 - Defined in: [Remove the files no snapshot references](retention-consent-erasure.md#remove-unreferenced-files)
 - Address: https://rollingedition.com/concepts/data-warehousing/unreferenced-file
 

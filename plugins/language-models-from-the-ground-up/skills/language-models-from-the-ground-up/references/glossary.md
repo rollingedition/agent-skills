@@ -1,13 +1,13 @@
 ---
 title: "Glossary"
 book: "Language Models from the Ground Up"
-edition: "2026.11.16"
+edition: "2026.11.17"
 canonical: "https://rollingedition.com/language-models-from-the-ground-up/glossary"
 ---
 
 # Glossary of *Language Models from the Ground Up*
 
-The 134 terms this book defines, as Edition 2026.11.16 has them, each in the book's own sentence. When a task this skill covers uses one, it means what it says here: read its section before you rely on it, and cite the section. Where a definition depends on a package, it says the version this edition pins and runs its examples on. On the web: https://rollingedition.com/language-models-from-the-ground-up/glossary
+The 134 terms this book defines, as Edition 2026.11.17 has them, each in the book's own sentence. When a task this skill covers uses one, it means what it says here: read its section before you rely on it, and cite the section. Where a definition depends on a package, it says the version this edition pins and runs its examples on. On the web: https://rollingedition.com/language-models-from-the-ground-up/glossary
 
 ## <unk>
 
@@ -22,6 +22,7 @@ A word the training text doesn't contain at all is counted as one more vocabular
 
 Leaving a part out allows a simple experiment, called an ablation: remove one part, and measure what the model loses.
 
+- Close to: https://rollingedition.com/concepts/llm-evaluation/ablation
 - Defined in: [Leave out a block to see what it does](the-transformer-block.md#leave-out-a-block)
 - Address: https://rollingedition.com/concepts/artificial-intelligence/ablation
 
@@ -55,6 +56,7 @@ The simplest smoothing method, add-one smoothing, pretends that every possible p
 
 In vectors, the answer to "a is to b as c is to what?" is the token nearest to b − a + c, leaving out the three tokens in the question
 
+- Computed from: embedding
 - Defined in: [Analogies, and where they fail](words-as-vectors.md#analogies-and-where-they-fail)
 - Address: https://rollingedition.com/concepts/natural-language-processing/analogy
 
@@ -102,6 +104,9 @@ the base model, the one trained only to predict the next token
 
 a baseline, a fixed yardstick: one model, one text, one tokenizer and one measure that every later model is compared against
 
+- Close to: https://rollingedition.com/concepts/llm-evaluation/baseline
+- Close to: https://rollingedition.com/concepts/search-and-recommendation/baseline
+- Close to: https://rollingedition.com/concepts/model-evaluation/baseline
 - Defined in: [The baseline every later model is measured against](counting-further-back.md#the-baseline)
 - Address: https://rollingedition.com/concepts/artificial-intelligence/baseline
 
@@ -211,6 +216,8 @@ After the warm-up, the step size falls along half a cosine curve, to a tenth of 
 
 To measure how alike two vectors are, this book uses cosine similarity: the cosine of the angle between them, 1 when they point the same way, 0 when they're at right angles.
 
+- The same as: https://rollingedition.com/concepts/search-and-recommendation/cosine-similarity
+- Computed from: vector
 - Defined in: [One-hot vectors know nothing](words-as-vectors.md#one-hot-vectors-know-nothing)
 - Address: https://rollingedition.com/concepts/artificial-intelligence/cosine-similarity
 
@@ -273,6 +280,7 @@ DPO's loss works on a pair of responses to one request, one preferred and one re
 
 the simplest defence is early stopping: measure validation loss after every epoch, one full pass over the training text, and keep the weights from the best epoch.
 
+- Close to: https://rollingedition.com/concepts/search-and-recommendation/early-stopping
 - Defined in: [Stop when validation loss turns up](a-neural-language-model.md#stop-at-the-best-epoch)
 - Address: https://rollingedition.com/concepts/deep-learning/early-stopping
 
@@ -331,6 +339,7 @@ The way to teach a general model the store's text is fine-tuning: continue train
 Full fine-tuning updates every weight, which for a model of hundreds of millions of parameters takes time and memory.
 
 - A kind of: fine-tuning
+- The same as: https://rollingedition.com/concepts/fine-tuning/full-fine-tuning
 - Defined in: [Adapt a model to your text](from-predicting-to-following.md#adapt-a-model)
 - Address: https://rollingedition.com/concepts/large-language-models/full-fine-tuning
 
@@ -383,6 +392,7 @@ The simplest decoder is greedy: at every step, take the single likeliest token.
 
 - Also: greedy
 - Contrasts with: sampling
+- The same as: https://rollingedition.com/concepts/data-engineering/greedy-decoding
 - Defined in: [Choose the likeliest token](choosing-the-next-token.md#choose-the-likeliest-token)
 - Address: https://rollingedition.com/concepts/large-language-models/greedy-decoding
 
@@ -533,6 +543,7 @@ LoRA, low-rank adaptation, freezes the model's weights and trains a small correc
 - Formula: `W + BA`
 - A kind of: fine-tuning
 - Contrasts with: full fine-tuning
+- The same as: https://rollingedition.com/concepts/fine-tuning/lora
 - Defined in: [Adapt a model to your text](from-predicting-to-following.md#adapt-a-model)
 - Address: https://rollingedition.com/concepts/large-language-models/lora
 
@@ -659,6 +670,7 @@ The heads' outputs are joined side by side and mixed back together by one more l
 
 A validation perplexity that turns up while training perplexity keeps falling is overfitting
 
+- Measured from: perplexity
 - Defined in: [Stop when validation loss turns up](a-neural-language-model.md#stop-at-the-best-epoch)
 - Address: https://rollingedition.com/concepts/artificial-intelligence/overfitting
 
@@ -683,6 +695,7 @@ padding, which fills out short texts in a training batch
 The window model has 1,394,732 parameters, the numbers it learns.
 
 - Also: parameters
+- The same as: https://rollingedition.com/concepts/large-language-models/parameter
 - Defined in: [Predict from a window of embeddings](a-neural-language-model.md#predict-from-a-window)
 - Address: https://rollingedition.com/concepts/deep-learning/parameter
 
@@ -711,6 +724,7 @@ A perplexity per word divides a model's total log-probability of a text by the n
 a pinned revision, a fixed version of its repository
 
 - Also: revision
+- The same as: https://rollingedition.com/concepts/artificial-intelligence/pinned-revision
 - Defined in: [Inside an open model](inside-an-open-model.md)
 - Address: https://rollingedition.com/concepts/large-language-models/pinned-revision
 
@@ -815,6 +829,7 @@ RMSNorm drops the mean: it divides each vector by its root mean square, the squa
 
 root mean square, the square root of the average of its squared numbers
 
+- Computed from: vector
 - Defined in: [Normalize before each part](the-transformer-block.md#normalize-before-each-part)
 - Address: https://rollingedition.com/concepts/artificial-intelligence/root-mean-square
 
@@ -849,6 +864,7 @@ changes the step size after every batch, following a schedule, which sets the st
 
 the book's shared modules: short files in examples/lib/ that hold setup code many examples need, which you can open and read
 
+- The same as: https://rollingedition.com/concepts/data-engineering/shared-module
 - Defined in: [Load the store's text](predicting-the-next-word.md#load-the-store-text)
 - Address: https://rollingedition.com/concepts/artificial-intelligence/shared-module
 
@@ -917,6 +933,7 @@ Softmax exponentiates every logit and divides by the sum, so the results are pos
 
 - Formula: `P(token i) = exp(zᵢ) / Σⱼ exp(zⱼ)`
 - Comes before: attention
+- The same as: https://rollingedition.com/concepts/large-language-models/softmax
 - Defined in: [Predict from a window of embeddings](a-neural-language-model.md#predict-from-a-window)
 - Address: https://rollingedition.com/concepts/deep-learning/softmax
 
@@ -957,6 +974,7 @@ If the model gave the actual next word probability p, its surprise at that word 
 a system message, instructions placed before the user's request
 
 - Part of: chat template
+- Close to: https://rollingedition.com/concepts/llm-evaluation/system-text
 - Defined in: [Format the request as the model was tuned](from-predicting-to-following.md#format-the-request)
 - Address: https://rollingedition.com/concepts/large-language-models/system-message
 
@@ -972,6 +990,7 @@ tanh, a function that squashes any number into the range from −1 to 1
 
 the targets are the text's tokens without the first, so position i is trained to predict token i + 1
 
+- Close to: https://rollingedition.com/concepts/feature-engineering/target
 - Defined in: [Turn products into batches](training-a-small-model.md#turn-products-into-batches)
 - Address: https://rollingedition.com/concepts/natural-language-processing/target
 
@@ -987,6 +1006,8 @@ Before sampling, the distribution can be made sharper or flatter with a temperat
 
 a test split kept for final reports
 
+- The same as: https://rollingedition.com/concepts/llm-evaluation/held-out
+- Close to: https://rollingedition.com/concepts/model-evaluation/test-split
 - Defined in: [Load the store's text](predicting-the-next-word.md#load-the-store-text)
 - Address: https://rollingedition.com/concepts/artificial-intelligence/test-split
 
@@ -995,6 +1016,8 @@ a test split kept for final reports
 A token is the unit a language model reads and predicts: whatever the text is cut into before the model sees it.
 
 - Comes before: vocabulary
+- The same as: https://rollingedition.com/concepts/large-language-models/token
+- The same as: https://rollingedition.com/concepts/semantic-search/token
 - Defined in: [Tokens](tokens.md)
 - Address: https://rollingedition.com/concepts/natural-language-processing/token
 
@@ -1010,6 +1033,7 @@ The different tokens a text uses are its token types.
 The list of merges, in the order they were learned, is the tokenizer.
 
 - Implemented by: tokenizers 0.23.3
+- Close to: https://rollingedition.com/concepts/large-language-models/tokenizer
 - Defined in: [Merge the most frequent pair, again and again](tokens.md#merge-frequent-pairs)
 - Address: https://rollingedition.com/concepts/natural-language-processing/tokenizer
 
@@ -1056,6 +1080,8 @@ The transformer block adds parts around attention that transform each position, 
 
 a validation split for comparing models while you build them
 
+- The same as: https://rollingedition.com/concepts/model-evaluation/dev-split
+- Close to: https://rollingedition.com/concepts/llm-evaluation/dev
 - Defined in: [Load the store's text](predicting-the-next-word.md#load-the-store-text)
 - Address: https://rollingedition.com/concepts/artificial-intelligence/validation-split
 
@@ -1078,6 +1104,7 @@ a vector, a list of numbers
 
 A vector's length here is the square root of the sum of its squared numbers
 
+- Computed from: vector
 - Defined in: [Add each part's output to a residual stream](the-transformer-block.md#add-to-the-residual-stream)
 - Address: https://rollingedition.com/concepts/artificial-intelligence/vector-length
 

@@ -1,18 +1,19 @@
 ---
 title: "Glossary"
 book: "Evaluating LLM Applications"
-edition: "2026.11.4"
+edition: "2026.11.5"
 canonical: "https://rollingedition.com/evaluating-llm-applications/glossary"
 ---
 
 # Glossary of *Evaluating LLM Applications*
 
-The 125 terms this book defines, as Edition 2026.11.4 has them, each in the book's own sentence. When a task this skill covers uses one, it means what it says here: read its section before you rely on it, and cite the section. Where a definition depends on a package, it says the version this edition pins and runs its examples on. On the web: https://rollingedition.com/evaluating-llm-applications/glossary
+The 124 terms this book defines, as Edition 2026.11.5 has them, each in the book's own sentence. When a task this skill covers uses one, it means what it says here: read its section before you rely on it, and cite the section. Where a definition depends on a package, it says the version this edition pins and runs its examples on. On the web: https://rollingedition.com/evaluating-llm-applications/glossary
 
 ## agreement
 
 Agreement is the share of rows on which the judge and the human give the same verdict.
 
+- The same as: https://rollingedition.com/concepts/search-and-recommendation/observed-agreement
 - Defined in: [Agreement and kappa](calibrate-the-judge.md#agreement-and-kappa)
 - Address: https://rollingedition.com/concepts/llm-evaluation/agreement
 
@@ -20,6 +21,7 @@ Agreement is the share of rows on which the judge and the human give the same ve
 
 Ambiguous items could mean two things, and their reference answer covers both readings.
 
+- A kind of: item
 - Defined in: [The twenty items](measure-before-you-change.md#the-twenty-items)
 - Address: https://rollingedition.com/concepts/llm-evaluation/ambiguous-item
 
@@ -28,6 +30,7 @@ Ambiguous items could mean two things, and their reference answer covers both re
 ambiguous-target: a pronoun or a phrase such as "the file" has no clear referent without the sections.
 
 - Also: ambiguous-target
+- Part of: planted item
 - Defined in: [Planted items and their traps](build-the-test-set.md#planted-items)
 - Address: https://rollingedition.com/concepts/llm-evaluation/ambiguous-target
 
@@ -42,6 +45,7 @@ The answer judge checks a reply about sablefile against the written reference an
 
 Answerable items have their answer on the page.
 
+- A kind of: item
 - Defined in: [The twenty items](measure-before-you-change.md#the-twenty-items)
 - Address: https://rollingedition.com/concepts/llm-evaluation/answerable-item
 
@@ -64,6 +68,7 @@ For sequences of 200 items or more, the documentation treats an item as junk whe
 
 The baseline is the setup chapter 1 measured.
 
+- Close to: https://rollingedition.com/concepts/artificial-intelligence/baseline
 - Defined in: [What the replies look like](read-the-outputs.md#what-the-replies-look-like)
 - Address: https://rollingedition.com/concepts/llm-evaluation/baseline
 
@@ -71,6 +76,7 @@ The baseline is the setup chapter 1 measured.
 
 Papineni and colleagues proposed BLEU in 2002 as a quick and inexpensive way to score machine translation.
 
+- Contrasts with: ROUGE-N
 - Defined in: [Where BLEU and ROUGE mislead](checks-in-code.md#where-bleu-rouge-mislead)
 - Address: https://rollingedition.com/concepts/artificial-intelligence/bleu
 
@@ -80,6 +86,7 @@ The index is built with BM25, which scores each section by the words it shares w
 
 - True for: bm25s 0.3.16
 - Implemented by: bm25s 0.3.16
+- The same as: https://rollingedition.com/concepts/search-and-recommendation/bm25
 - Defined in: [Retrieve, then answer](measure-before-you-change.md#retrieve-then-answer)
 - Address: https://rollingedition.com/concepts/retrieval-augmented-generation/bm25
 
@@ -88,6 +95,7 @@ The index is built with BM25, which scores each section by the words it shares w
 the Bonferroni correction, which shares the error budget between the comparisons.
 
 - Formula: `1 minus 0.05 divided by m`
+- The same as: https://rollingedition.com/concepts/search-and-recommendation/bonferroni-correction
 - Defined in: [Many comparisons](intervals-and-sample-size.md#many-comparisons)
 - Address: https://rollingedition.com/concepts/artificial-intelligence/bonferroni-correction
 
@@ -111,6 +119,7 @@ The chance share averages one over each item's option count.
 
 a candidate has four parts: the mode, the input the check reads, the claim it tests, and what it can't see.
 
+- Contrasts with: code check
 - Defined in: [From a failure to a check](read-the-outputs.md#from-a-failure-to-a-check)
 - Address: https://rollingedition.com/concepts/llm-evaluation/check-candidate
 
@@ -118,6 +127,7 @@ a candidate has four parts: the mode, the input the check reads, the claim it te
 
 A citation is a claim about the docs: this section, in this version, supports the sentence it is attached to.
 
+- Close to: https://rollingedition.com/concepts/search-and-recommendation/citation
 - Defined in: [Citation accuracy](grounded-answers.md#citation-accuracy)
 - Address: https://rollingedition.com/concepts/retrieval-augmented-generation/citation
 
@@ -126,6 +136,7 @@ A citation is a claim about the docs: this section, in this version, supports th
 Citation accuracy asks whether each citation names a section the item lists as supporting.
 
 - Contrasts with: faithfulness
+- Close to: https://rollingedition.com/concepts/search-and-recommendation/attribution
 - Defined in: [Check that answers rest on the cited docs, in the asked version](grounded-answers.md)
 - Address: https://rollingedition.com/concepts/retrieval-augmented-generation/citation-accuracy
 
@@ -225,6 +236,7 @@ dev items, the split of the test set this book works with while it develops its 
 
 - Also: dev items
 - Part of: test set
+- Close to: https://rollingedition.com/concepts/artificial-intelligence/validation-split
 - Defined in: [Read the replies to find what to measure](read-the-outputs.md)
 - Address: https://rollingedition.com/concepts/llm-evaluation/dev
 
@@ -248,6 +260,7 @@ An exact match asks whether two strings are equal, and it suits any text that is
 
 the book keeps one example environment: one set of files that every chapter's examples import, pinned to the same versions, so the replay model, the checks and the gate are the same code in every chapter.
 
+- Contrasts with: task
 - Defined in: [Running it as a framework task](keep-the-evaluation-running.md#running-it-as-a-framework-task)
 - Address: https://rollingedition.com/concepts/artificial-intelligence/example-environment
 
@@ -264,6 +277,7 @@ The loader sets extra="forbid", so an unknown field is an error and not a field 
 
 F1, which combines recall with precision
 
+- Contrasts with: ROUGE-N
 - Defined in: [Where BLEU and ROUGE mislead](checks-in-code.md#where-bleu-rouge-mislead)
 - Address: https://rollingedition.com/concepts/artificial-intelligence/f1
 
@@ -288,6 +302,7 @@ Each reply got one mode, its main defect
 Faithfulness asks whether each claim is in the sections the assistant was shown.
 
 - Contrasts with: version-correctness
+- The same as: https://rollingedition.com/concepts/search-and-recommendation/faithfulness
 - Defined in: [Check that answers rest on the cited docs, in the asked version](grounded-answers.md)
 - Address: https://rollingedition.com/concepts/retrieval-augmented-generation/faithfulness
 
@@ -311,6 +326,7 @@ The false answer rate is the number of unanswerable items answered, over the num
 false-premise: the question asks about a flag or key that the asked version does not have.
 
 - Also: false-premise
+- Part of: planted item
 - Defined in: [Planted items and their traps](build-the-test-set.md#planted-items)
 - Address: https://rollingedition.com/concepts/llm-evaluation/false-premise
 
@@ -318,7 +334,9 @@ false-premise: the question asks about a flag or key that the asked version does
 
 A false refusal is an answerable item declined
 
+- Also: over-declining
 - Contrasts with: false answer
+- A kind of: failure mode
 - Defined in: [Declines](measure-before-you-change.md#declines-in-code)
 - Address: https://rollingedition.com/concepts/llm-evaluation/false-refusal
 
@@ -336,6 +354,7 @@ The false refusal rate is the number of answerable items declined, over the numb
 An item flips when its five verdicts are not all the same.
 
 - Also: flips, flaky
+- Measured from: variance set
 - Defined in: [Variance within one item](intervals-and-sample-size.md#variance-within-one-item)
 - Address: https://rollingedition.com/concepts/llm-evaluation/flip
 
@@ -365,6 +384,7 @@ A fuzzy match scores how alike two strings are.
 
 A gate is a rule that stops a change from merging.
 
+- The same as: https://rollingedition.com/concepts/data-governance/gate
 - Defined in: [A gate that respects the interval](keep-the-evaluation-running.md#a-gate-that-respects-the-interval)
 - Address: https://rollingedition.com/concepts/llm-evaluation/gate
 
@@ -372,6 +392,7 @@ A gate is a rule that stops a change from merging.
 
 An answer is grounded when a reader who follows its citations finds the claim where the citation says it is, in the version they asked about.
 
+- Close to: https://rollingedition.com/concepts/search-and-recommendation/grounding
 - Defined in: [What grounded means here](grounded-answers.md#what-grounded-means)
 - Address: https://rollingedition.com/concepts/retrieval-augmented-generation/grounded
 
@@ -388,6 +409,7 @@ GSM8K is grade-school math word problems, each with a worked solution that ends 
 A guard reads the best-matching section's score and declines when it falls below a threshold.
 
 - Also: retrieval-score guard, decline guard
+- Computed from: BM25
 - Defined in: [A guard on recorded replies](declining-when-the-docs-dont-say.md#a-guard)
 - Address: https://rollingedition.com/concepts/retrieval-augmented-generation/guard
 
@@ -398,6 +420,7 @@ held-out is used once, to report a result.
 - Also: held-out items
 - Contrasts with: dev
 - Part of: test set
+- The same as: https://rollingedition.com/concepts/artificial-intelligence/test-split
 - Defined in: [Dev and held-out](build-the-test-set.md#dev-and-held-out)
 - Address: https://rollingedition.com/concepts/llm-evaluation/held-out
 
@@ -407,6 +430,7 @@ An interval answers a different question from the pass rate: how far would the r
 
 - Also: 95% interval
 - Computed from: pass rate
+- Close to: https://rollingedition.com/concepts/search-and-recommendation/confidence-interval
 - Defined in: [A pass rate and its interval](measure-before-you-change.md#a-pass-rate-and-its-interval)
 - Address: https://rollingedition.com/concepts/artificial-intelligence/interval
 
@@ -422,6 +446,7 @@ an item: one test question with the fields a scorer needs.
 
 The item rate counts an answered item once if at least one of its citations is supported, so one good citation carries the item.
 
+- Computed from: supported
 - Defined in: [Citation accuracy](grounded-answers.md#citation-accuracy)
 - Address: https://rollingedition.com/concepts/retrieval-augmented-generation/item-rate
 
@@ -429,6 +454,7 @@ The item rate counts an answered item once if at least one of its citations is s
 
 a judge: a model that reads the question, a written reference answer and the assistant's reply, and returns PASS or FAIL
 
+- Close to: https://rollingedition.com/concepts/search-and-recommendation/judge
 - Defined in: [One judge](measure-before-you-change.md#one-judge)
 - Address: https://rollingedition.com/concepts/llm-evaluation/judge
 
@@ -436,6 +462,7 @@ a judge: a model that reads the question, a written reference answer and the ass
 
 The judged-correct rate is the count for version-dependent items alone, so a version miss shows on its own line, and a team can see whether a change to retrieval moved it.
 
+- Computed from: version-dependent item
 - Defined in: [Version-correctness](grounded-answers.md#version-correctness)
 - Address: https://rollingedition.com/concepts/llm-evaluation/judged-correct-rate
 
@@ -443,6 +470,7 @@ The judged-correct rate is the count for version-dependent items alone, so a ver
 
 The variant k5 retrieves five sections instead of three.
 
+- Contrasts with: baseline
 - Defined in: [Held-out, once](intervals-and-sample-size.md#held-out-once)
 - Address: https://rollingedition.com/concepts/llm-evaluation/k5
 
@@ -451,6 +479,8 @@ The variant k5 retrieves five sections instead of three.
 For two raters on pass or fail, kappa is the observed agreement minus the chance agreement, divided by one minus the chance agreement.
 
 - Computed from: agreement
+- Close to: https://rollingedition.com/concepts/search-and-recommendation/cohens-kappa
+- Close to: https://rollingedition.com/concepts/llm-evaluation/cohens-kappa
 - Defined in: [Agreement and kappa](calibrate-the-judge.md#agreement-and-kappa)
 - Address: https://rollingedition.com/concepts/artificial-intelligence/kappa
 
@@ -498,6 +528,7 @@ missing means no version has a section with the cited ID.
 
 A naive gate would fail whenever the point estimate of the difference is below minus the threshold
 
+- Contrasts with: gate
 - Defined in: [A gate that respects the interval](keep-the-evaluation-running.md#a-gate-that-respects-the-interval)
 - Address: https://rollingedition.com/concepts/llm-evaluation/naive-gate
 
@@ -506,6 +537,7 @@ A naive gate would fail whenever the point estimate of the difference is below m
 a planted near-miss term, a name close to one the docs use, which catches a careless reply
 
 - Also: near-miss-term
+- Part of: planted item
 - Defined in: [What the replies look like](read-the-outputs.md#what-the-replies-look-like)
 - Address: https://rollingedition.com/concepts/llm-evaluation/near-miss-term
 
@@ -513,6 +545,7 @@ a planted near-miss term, a name close to one the docs use, which catches a care
 
 No difference detected is a finding about a set at its size.
 
+- Computed from: interval
 - Defined in: [Paired comparisons](intervals-and-sample-size.md#paired-comparisons)
 - Address: https://rollingedition.com/concepts/artificial-intelligence/no-difference-detected
 
@@ -556,19 +589,12 @@ Outcome against path asks whether a pass came with its section in hand, and whet
 - Defined in: [Check that answers rest on the cited docs, in the asked version](grounded-answers.md)
 - Address: https://rollingedition.com/concepts/llm-evaluation/outcome-against-path
 
-## over-declining
-
-An over-declining reply declines an item the docs answer.
-
-- A kind of: failure mode
-- Defined in: [Over-declining](read-the-outputs.md#over-declining)
-- Address: https://rollingedition.com/concepts/llm-evaluation/over-declining
-
 ## paired comparison
 
 A paired comparison subtracts, for each item, the verdict of the baseline from the verdict of prompt B, and averages the differences over the set.
 
 - Contrasts with: unpaired comparison
+- Close to: https://rollingedition.com/concepts/search-and-recommendation/paired-test
 - Defined in: [Paired comparisons](intervals-and-sample-size.md#paired-comparisons)
 - Address: https://rollingedition.com/concepts/artificial-intelligence/paired-comparison
 
@@ -576,6 +602,7 @@ A paired comparison subtracts, for each item, the verdict of the baseline from t
 
 The paired difference is rubric B's score minus rubric A's, averaged over the dev rows
 
+- Close to: https://rollingedition.com/concepts/llm-evaluation/paired-difference
 - Defined in: [Agreement and kappa](calibrate-the-judge.md#agreement-and-kappa)
 - Address: https://rollingedition.com/concepts/artificial-intelligence/paired-difference
 
@@ -583,6 +610,7 @@ The paired difference is rubric B's score minus rubric A's, averaged over the de
 
 A pairwise judge reads two replies and picks the better one, rather than passing or failing each.
 
+- Contrasts with: pass or fail rubric
 - Defined in: [Pairwise calibration](calibrate-the-judge.md#pairwise-calibration)
 - Address: https://rollingedition.com/concepts/llm-evaluation/pairwise-judge
 
@@ -606,6 +634,7 @@ A pass or fail rubric gives the judge two answers.
 A pass rate is a count divided by a denominator
 
 - Formula: `pass rate = passed items / items`
+- Computed from: item
 - Defined in: [A pass rate and its interval](measure-before-you-change.md#a-pass-rate-and-its-interval)
 - Address: https://rollingedition.com/concepts/llm-evaluation/pass-rate
 
@@ -621,6 +650,7 @@ Path is what the steps before the reply reached.
 The percentile bootstrap is the simplest interval built on resampling, the middle 95% of the resampled rates.
 
 - A kind of: interval
+- The same as: https://rollingedition.com/concepts/search-and-recommendation/percentile-interval
 - Defined in: [A pass rate and its interval](measure-before-you-change.md#a-pass-rate-and-its-interval)
 - Address: https://rollingedition.com/concepts/artificial-intelligence/percentile-bootstrap
 
@@ -656,6 +686,7 @@ ratio(), which the documentation defines as twice the number of matching element
 
 The recording is a folder of replies, one per item.
 
+- The same as: https://rollingedition.com/concepts/artificial-intelligence/recording
 - Defined in: [Replay the answers](measure-before-you-change.md#replay-the-answers)
 - Address: https://rollingedition.com/concepts/llm-evaluation/recording
 
@@ -686,6 +717,7 @@ A reference-guided judge is given a written answer for the question, and it chec
 
 The retrieval-path count asks one question of each item: is a supporting section of the asked version in the top k?
 
+- Measured from: supporting sections
 - Defined in: [Retrieval quality belongs to another book](grounded-answers.md#retrieval-quality)
 - Address: https://rollingedition.com/concepts/retrieval-augmented-generation/retrieval-path-count
 
@@ -733,6 +765,7 @@ A scale gives the judge several answers.
 The second-model variant keeps the baseline's prompt and hands the answer to a smaller model, Qwen3 with 0.6 billion parameters in an 8-bit build.
 
 - Also: second model
+- Contrasts with: baseline
 - Defined in: [What the replies look like](read-the-outputs.md#what-the-replies-look-like)
 - Address: https://rollingedition.com/concepts/llm-evaluation/second-model-variant
 
@@ -749,6 +782,7 @@ self-preference: whether the judge favours answers written by its own model.
 stale-answer: the answer sits under a section ID that a version filter removes, so a filter that is too strict misses it.
 
 - Also: stale-answer
+- Part of: planted item
 - Defined in: [Planted items and their traps](build-the-test-set.md#planted-items)
 - Address: https://rollingedition.com/concepts/llm-evaluation/stale-answer
 
@@ -787,6 +821,7 @@ supporting sections, the parts of the docs that a correct answer rests on.
 The system text states the task, the rules and the form the reply must take.
 
 - Part of: rubric
+- Close to: https://rollingedition.com/concepts/large-language-models/system-message
 - Defined in: [Write a rubric a judge can apply](a-judge-with-a-rubric.md)
 - Address: https://rollingedition.com/concepts/llm-evaluation/system-text
 
@@ -816,6 +851,7 @@ A test set is a list of questions, each with the answer it should get.
 
 The transfer assumption is that the judge's miss rate on human passes, and its pass-through rate on human fails, are the same on sablefile's replies as on the HelpSteer2 rows.
 
+- Comes before: corrected pass rate
 - Defined in: [The transfer assumption](calibrate-the-judge.md#transfer-assumption)
 - Address: https://rollingedition.com/concepts/llm-evaluation/transfer-assumption
 
@@ -824,6 +860,7 @@ The transfer assumption is that the judge's miss rate on human passes, and its p
 The true negative rate, TNR, is the share of human FAIL rows that the judge fails.
 
 - Also: TNR
+- Contrasts with: agreement
 - Defined in: [True positive and true negative rates](calibrate-the-judge.md#tpr-and-tnr)
 - Address: https://rollingedition.com/concepts/llm-evaluation/true-negative-rate
 
@@ -832,6 +869,7 @@ The true negative rate, TNR, is the share of human FAIL rows that the judge fail
 The true positive rate, TPR, is the share of human PASS rows that the judge passes.
 
 - Also: TPR
+- Close to: https://rollingedition.com/concepts/data-governance/recall
 - Defined in: [True positive and true negative rates](calibrate-the-judge.md#tpr-and-tnr)
 - Address: https://rollingedition.com/concepts/llm-evaluation/true-positive-rate
 
@@ -862,6 +900,7 @@ Unanswerable items ask about something the docs don't cover, and the right reply
 
 The unfiltered variant drops the baseline's version filter.
 
+- Contrasts with: baseline
 - Defined in: [What the replies look like](read-the-outputs.md#what-the-replies-look-like)
 - Address: https://rollingedition.com/concepts/llm-evaluation/unfiltered-variant
 
@@ -906,6 +945,7 @@ an unreadable verdict means the judge gave no judgment at all.
 
 The upper bound is the least negative reading the data still allows
 
+- Part of: interval
 - Defined in: [A gate that respects the interval](keep-the-evaluation-running.md#a-gate-that-respects-the-interval)
 - Address: https://rollingedition.com/concepts/llm-evaluation/upper-bound
 
@@ -921,6 +961,7 @@ The variance set holds five samples of the assistant's reply to each dev item, d
 version-swap: the question uses another version's wording, so an assistant that matches wording answers for that version.
 
 - Also: version-swap
+- Part of: planted item
 - Defined in: [Planted items and their traps](build-the-test-set.md#planted-items)
 - Address: https://rollingedition.com/concepts/llm-evaluation/version-swap
 
@@ -935,6 +976,7 @@ Version-correctness asks whether the answer fits the asked version.
 
 Version-dependent items have an answer that changes from one version to the next
 
+- A kind of: item
 - Defined in: [The twenty items](measure-before-you-change.md#the-twenty-items)
 - Address: https://rollingedition.com/concepts/llm-evaluation/version-dependent-item
 
@@ -942,6 +984,7 @@ Version-dependent items have an answer that changes from one version to the next
 
 A pass with a wide interval is a weak pass
 
+- Measured from: interval
 - Defined in: [A gate that respects the interval](keep-the-evaluation-running.md#a-gate-that-respects-the-interval)
 - Address: https://rollingedition.com/concepts/llm-evaluation/weak-pass
 

@@ -3,13 +3,13 @@ title: "Agent Harnesses"
 chapter: "When an agent is the wrong design"
 chapter_id: when-an-agent-is-the-wrong-design
 book: agent-harnesses
-edition: 2026.11.4
+edition: 2026.11.5
 verified: 2026-11-20
-edition_code: QTC9-C576
+edition_code: ZR7Z-RM4S
 canonical: https://rollingedition.com/agent-harnesses/when-an-agent-is-the-wrong-design
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“When an agent is the wrong design,” chapter 12 of Agent Harnesses, Edition 2026.11.4, examples passed Nov 20, 2026. By Rolling Edition, https://rollingedition.com/agent-harnesses/when-an-agent-is-the-wrong-design. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“When an agent is the wrong design,” chapter 12 of Agent Harnesses, Edition 2026.11.5, examples passed Nov 20, 2026. By Rolling Edition, https://rollingedition.com/agent-harnesses/when-an-agent-is-the-wrong-design. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # When an agent is the wrong design
 
@@ -23,7 +23,7 @@ Anthropic's engineering post on building agents draws a similar line. It calls a
 
 Each pipeline is a list of exact edits and a summary, kept in `lib/pipeline.py`. An [edit](#edit-errors) names the text it replaces and the text that replaces it, and it fails when the old text is not in the file exactly once. The pipeline runs its list through tool set v1, so each call behaves as it does for the agent, and it scores the result with [the same done rule](#score). Only three pipelines are written, for T-02, T-04 and T-05. The example runs them and prints each one beside the agent's stored run on the same task.
 
-Example `fixed-pipeline-same-task` (Python 3.12.15 · pydantic 2.14.3), passing in Edition 2026.11.4:
+Example `fixed-pipeline-same-task` (Python 3.12.15 · pydantic 2.14.3), passing in Edition 2026.11.5:
 
 ```python
 """The fixed pipeline on the tasks where one known edit works (T-02, T-04, T-05), with no model, beside the recorded
@@ -171,7 +171,7 @@ The decision table sorts each task by three readings: whether its steps are know
 
 The rules run in one order, and the order is the point. First, a change the harness forbids is not a design question. Chapter 6's gate refuses any change under `.github/`, and it refuses a rename that removes a public name, because no yes can lift a rule of that kind ([never-class changes](#never-class)). Second, a person's yes means an agent behind a gate, because the gate must ask before it applies a change. Third, known steps mean a pipeline when a check decides the result, and one model call when no check does. Open steps mean an agent. The order matters for T-16, which the second rule alone would send to a gate, and which the first rule refuses.
 
-Example `decision-table` (Python 3.12.15 · pydantic 2.14.3), passing in Edition 2026.11.4:
+Example `decision-table` (Python 3.12.15 · pydantic 2.14.3), passing in Edition 2026.11.5:
 
 ```python
 """The decision table for chapter 12: every task in the set, with the author's readings (judgement, not measured), the

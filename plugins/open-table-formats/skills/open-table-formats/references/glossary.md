@@ -1,13 +1,13 @@
 ---
 title: "Glossary"
 book: "Open Table Formats"
-edition: "2026.11.10"
+edition: "2026.11.11"
 canonical: "https://rollingedition.com/open-table-formats/glossary"
 ---
 
 # Glossary of *Open Table Formats*
 
-The 50 terms this book defines, as Edition 2026.11.10 has them, each in the book's own sentence. When a task this skill covers uses one, it means what it says here: read its section before you rely on it, and cite the section. Where a definition depends on a package, it says the version this edition pins and runs its examples on. On the web: https://rollingedition.com/open-table-formats/glossary
+The 50 terms this book defines, as Edition 2026.11.11 has them, each in the book's own sentence. When a task this skill covers uses one, it means what it says here: read its section before you rely on it, and cite the section. Where a definition depends on a package, it says the version this edition pins and runs its examples on. On the web: https://rollingedition.com/open-table-formats/glossary
 
 ## append
 
@@ -68,6 +68,7 @@ A copy reads the rows of one table at one moment and writes them into another ta
 In copy-on-write, the writer rewrites each data file that held a matching row and leaves out the deleted rows.
 
 - Contrasts with: merge-on-read
+- The same as: https://rollingedition.com/concepts/data-warehousing/copy-on-write
 - Implemented by: pyiceberg 0.12.0
 - Implemented by: deltalake 1.6.6
 - Defined in: [Delete rows, and what each format writes](corrections-and-merges.md#delete-rows-iceberg-and-delta)
@@ -101,6 +102,7 @@ A data file is a Parquet file that holds rows of a table.
 The data path, the folder where DuckLake writes Parquet files, is stored in the catalog.
 
 - True for: duckdb 2.0.0
+- Part of: catalog
 - Defined in: [Attach a DuckLake catalog](catalogs.md#attach-ducklake-catalog)
 - Address: https://rollingedition.com/concepts/data-engineering/data-path
 
@@ -116,6 +118,8 @@ the day transform puts each row under its calendar day
 
 A delete removes the rows that match a predicate.
 
+- Comes before: copy-on-write
+- Comes before: merge-on-read
 - Defined in: [Delete rows, and what each format writes](corrections-and-merges.md#delete-rows-iceberg-and-delta)
 - Address: https://rollingedition.com/concepts/data-engineering/delete
 
@@ -184,6 +188,7 @@ expiry removes snapshots from the metadata, so time travel can't reach them
 
 - Also: snapshot expiry
 - Comes before: cleanup
+- The same as: https://rollingedition.com/concepts/data-warehousing/snapshot-expiry
 - Implemented by: pyiceberg 0.12.0
 - Implemented by: duckdb 2.0.0
 - Defined in: [Snapshots keep files alive](expiry-and-cleanup.md#snapshots-keep-files-alive)
@@ -194,6 +199,7 @@ expiry removes snapshots from the metadata, so time travel can't reach them
 Iceberg gives every column an integer field ID when the column is created, and it matches columns by that ID.
 
 - Also: field IDs
+- The same as: https://rollingedition.com/concepts/data-warehousing/field-id
 - Defined in: [Columns are tracked by ID](evolving-schema.md#columns-tracked-by-id)
 - Address: https://rollingedition.com/concepts/data-engineering/field-id
 
@@ -230,6 +236,7 @@ each manifest names data files along with their statistics
 
 - Also: manifests
 - Part of: metadata
+- The same as: https://rollingedition.com/concepts/data-warehousing/manifest
 - Defined in: [What a table format adds to files](first-table.md#what-a-table-format-adds)
 - Address: https://rollingedition.com/concepts/data-engineering/manifest
 
@@ -254,6 +261,7 @@ A MERGE statement names the target table, the source batch and the key in its ON
 In merge-on-read, the writer leaves the data file alone and writes a delete file that records which rows are gone.
 
 - Implemented by: duckdb 2.0.0
+- The same as: https://rollingedition.com/concepts/data-warehousing/merge-on-read
 - Defined in: [Delete rows, and what each format writes](corrections-and-merges.md#delete-rows-iceberg-and-delta)
 - Address: https://rollingedition.com/concepts/data-engineering/merge-on-read
 
@@ -285,6 +293,7 @@ A snapshot's summary has a required field, operation, which is one of append, re
 A file that no snapshot lists is an orphan.
 
 - Also: orphan file, orphan files, orphans
+- The same as: https://rollingedition.com/concepts/data-warehousing/unreferenced-file
 - Defined in: [Find orphan files after expiry](expiry-and-cleanup.md#find-orphan-files)
 - Address: https://rollingedition.com/concepts/data-engineering/orphan
 

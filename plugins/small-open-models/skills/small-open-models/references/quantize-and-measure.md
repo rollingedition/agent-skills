@@ -3,13 +3,13 @@ title: "Small Open Models"
 chapter: "Quantize the router and measure what changes"
 chapter_id: quantize-and-measure
 book: small-open-models
-edition: 2026.11.9
+edition: 2026.11.11
 verified: 2026-11-20
-edition_code: ND0S-78AT
+edition_code: 2BZS-KAEW
 canonical: https://rollingedition.com/small-open-models/quantize-and-measure
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“Quantize the router and measure what changes,” chapter 7 of Small Open Models, Edition 2026.11.9, examples passed Nov 20, 2026. By Rolling Edition, https://rollingedition.com/small-open-models/quantize-and-measure. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Quantize the router and measure what changes,” chapter 7 of Small Open Models, Edition 2026.11.11, examples passed Nov 20, 2026. By Rolling Edition, https://rollingedition.com/small-open-models/quantize-and-measure. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Quantize the router and measure what changes
 
@@ -31,7 +31,7 @@ The merge comes first for a reason. [Chapter 5](fine-tune-with-lora#adapters-tra
 
 Older PyTorch code uses `torch.ao.quantization.quantize_dynamic`, which also stores Linear weights as int8 and quantizes activations as it runs, a different scheme. PyTorch 2.15 deprecates it, and its warning points to torchao's `quantize_` ([PyTorch v2.15.0, `torch/ao/quantization/utils.py`](https://raw.githubusercontent.com/pytorch/pytorch/v2.15.0/torch/ao/quantization/utils.py)), which the [torchao README at v0.18.0](https://raw.githubusercontent.com/pytorch/ao/v0.18.0/README.md) shows as the migration. The examples in this book call no deprecated API themselves.
 
-Example `int8-layers-and-bytes` (Python 3.12.15 · peft 0.21.3 · torch 2.15.0+cpu · torchao 0.18.0+cpu · transformers 5.23.0), passing in Edition 2026.11.9:
+Example `int8-layers-and-bytes` (Python 3.12.15 · peft 0.21.3 · torch 2.15.0+cpu · torchao 0.18.0+cpu · transformers 5.23.0), passing in Edition 2026.11.11:
 
 ```python
 """Counts the backbone Linear layers the int8 copy quantizes, and the weight bytes they store, from their shapes.
@@ -100,7 +100,7 @@ Scoring `test_200` with both copies at the threshold in chapter 5's manifest sho
 
 The two copies are not treated alike on purpose. The float32 side is the adapter as chapter 5 loaded it, unmerged, while the int8 side is merged first, because the helper merges before it quantizes. So the count below holds the merge and the quantization together. The run never scores a merged float32 copy on its own, and the chapter does not claim that the merge alone changes nothing.
 
-Example `int8-changed-predictions` (Python 3.12.15 · peft 0.21.3 · torch 2.15.0+cpu · torchao 0.18.0+cpu · transformers 5.23.0), passing in Edition 2026.11.9:
+Example `int8-changed-predictions` (Python 3.12.15 · peft 0.21.3 · torch 2.15.0+cpu · torchao 0.18.0+cpu · transformers 5.23.0), passing in Edition 2026.11.11:
 
 ```python
 """Scores test_200 with the float32 adapter, its int8 copy and the copy with the head in int8, at the threshold in chapter 5's manifest.
@@ -196,6 +196,8 @@ Fewer bytes for the weights does not by itself make a model faster, and this cha
 No example prints a timing. A timing changes with the machine and with the load on it, so an example that printed one would give a different output on every run, and the book's examples have to give the same output every time. A speed ratio belongs in a recording instead.
 
 Weight-only int8 saved weight bytes, and whether the copy also computes faster on a CPU is a separate question. The `throughput` recording tests that. It times this chapter's int8 copy, `banking77-lora-v1-int8`, built by the same helper the examples use, against the float32 adapter and against the stand-in, on the machine named in its manifest. On that machine, with four threads and batches of 16, the int8 copy ran at 0.9 times the float32 classifier's messages a second, so the recording gives no speed reason to serve int8. [Chapter 10](when-a-small-model-is-the-wrong-choice#count-the-bill-and-the-machine) reports the rates with the machine they were measured on. The recording did not time the 360M model, and this chapter claims no speed for any machine but that one.
+
+The same gap between bytes and speed has been reported on GPUs. A single-author preprint by Sani compares three translation models, NLLB-200-distilled-1.3B, Qwen2.5-1.5B and Aya-23-8B, in FP16 and in bitsandbytes INT8 and 4-bit NF4 on NVIDIA T4 GPUs. The author reports that quantizing kept translation quality within about 1 chrF point, while latency rose by 1.3 to 5.3 times instead of falling ([arXiv:2611.24043v1](https://arxiv.org/abs/2611.24043v1), read on Nov 21, 2026). That is GPU inference with bitsandbytes, not this book's torchao int8 on a CPU, so it is a caution and not a measurement of the router, whose own answer is the `throughput` recording on its named machine.
 
 A recording of that kind pins its model and its inputs, runs them once on the named machine, and saves the outputs with a manifest that names the script. Examples that use a recording read its saved outputs and do not run the model themselves. For the speed comparison, the recording runs the same messages through both copies, with the same number of threads for each, and saves the timing of each copy as its own output. The ratio is worked out from those saved outputs, and the reader can see the machine and the thread count beside it. A reader who wants the ratio for their own machine should run the same recording there, and report the machine with the result.
 

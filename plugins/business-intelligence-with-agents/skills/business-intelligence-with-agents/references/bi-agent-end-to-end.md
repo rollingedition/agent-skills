@@ -3,13 +3,13 @@ title: "Business Intelligence with Agents"
 chapter: "A data agent end to end"
 chapter_id: bi-agent-end-to-end
 book: business-intelligence-with-agents
-edition: 2026.11.15
+edition: 2026.11.16
 verified: 2026-11-19
-edition_code: 28XD-AHKT
+edition_code: CSAB-T5TX
 canonical: https://rollingedition.com/business-intelligence-with-agents/bi-agent-end-to-end
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“A data agent end to end,” chapter 1 of Business Intelligence with Agents, Edition 2026.11.15, examples passed Nov 19, 2026. By Rolling Edition, https://rollingedition.com/business-intelligence-with-agents/bi-agent-end-to-end. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“A data agent end to end,” chapter 1 of Business Intelligence with Agents, Edition 2026.11.16, examples passed Nov 19, 2026. By Rolling Edition, https://rollingedition.com/business-intelligence-with-agents/bi-agent-end-to-end. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # A data agent end to end
 
@@ -31,7 +31,7 @@ The shop's warehouse, which every example queries, is a DuckDB database with two
 
 The row counts are the quickest way to see them, so the example builds the warehouse and prints them.
 
-Example `load-the-warehouse` (Python 3.12.15 · duckdb 2.0.0), passing in Edition 2026.11.15:
+Example `load-the-warehouse` (Python 3.12.15 · duckdb 2.0.0), passing in Edition 2026.11.16:
 
 ```python
 """Build the shop's warehouse from its seed and list every table with its row count. The point about test orders rests on the `raw.orders` and `analytics.fct_orders` rows; the last two lines give the shop's test orders and its cancelled orders."""
@@ -101,7 +101,7 @@ On the examples' side, `lib/model.py` provides `RecordedModel("schema-only-sql")
 
 The question is one the finance team asks every month: "What was net revenue in each region in March 2026?" It is also `gq-002`, a golden question with a checked answer; the next section tests the answer against it. Before judging its number, read the SQL the model writes.
 
-Example `first-question-to-sql` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.15:
+Example `first-question-to-sql` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.16:
 
 ```python
 """Send the warehouse's schema and one question to the recorded model, and print the SQL it wrote. The prose reads that SQL for its table, its columns and its date filter, against the `analytics.fct_orders` line printed above it."""
@@ -164,7 +164,7 @@ A golden question is a question with its checked answer: the golden SQL, written
 
 Put the model's query beside the golden one, region by region, with each region's cancelled orders alongside to check the gap against.
 
-Example `run-the-model-sql` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.15:
+Example `run-the-model-sql` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.16:
 
 ```python
 """Run the SQL the model wrote for net revenue by region in March 2026, and check it against the golden result. The prose reads each region's model, golden and cancelled-orders lines, and the final match line."""
@@ -235,7 +235,7 @@ The model reaches the metric through tools. A tool is a function the model may a
 
 The recording `metric-tool-runs` holds the same model's replies to the metric prompt, recorded the way `schema-only-sql` was. Here is `gq-002` again, through the metric.
 
-Example `one-metric-answer` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.15:
+Example `one-metric-answer` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.16:
 
 ```python
 """Answer the same question from one defined metric: the model picks the metric, the code writes and runs the SQL. The point rests on the request and the compiled SQL printed here, and on the assertion that the answer equals the golden result."""
@@ -316,7 +316,7 @@ The five golden questions cover the traps one at a time:
 
 Both approaches face all five, and the output has one row per question, showing where each one fails.
 
-Example `score-five-golden` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.15:
+Example `score-five-golden` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.16:
 
 ```python
 """Score both approaches on five golden questions: schema-only SQL, and the agent with one defined metric. The prose's counts are the totals printed on the last lines, one per outcome and approach."""
@@ -387,7 +387,7 @@ A score says how often the agent was right. A trace says why, for one run. The t
 
 The agent declined `gq-004` in the [five-question score](#score-five-questions), so this replay prints every step of that run.
 
-Example `print-one-trace` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.15:
+Example `print-one-trace` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.16:
 
 ```python
 """Print the trace of one recorded agent run: every model reply and tool result, then what the run returned. The `reason:` line printed last settles whether the decline's stated cause is true."""

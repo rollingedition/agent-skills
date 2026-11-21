@@ -1,13 +1,13 @@
 ---
 title: "Glossary"
 book: "Small Open Models"
-edition: "2026.11.9"
+edition: "2026.11.11"
 canonical: "https://rollingedition.com/small-open-models/glossary"
 ---
 
 # Glossary of *Small Open Models*
 
-The 100 terms this book defines, as Edition 2026.11.9 has them, each in the book's own sentence. When a task this skill covers uses one, it means what it says here: read its section before you rely on it, and cite the section. Where a definition depends on a package, it says the version this edition pins and runs its examples on. On the web: https://rollingedition.com/small-open-models/glossary
+The 100 terms this book defines, as Edition 2026.11.11 has them, each in the book's own sentence. When a task this skill covers uses one, it means what it says here: read its section before you rely on it, and cite the section. Where a definition depends on a package, it says the version this edition pins and runs its examples on. On the web: https://rollingedition.com/small-open-models/glossary
 
 ## accuracy
 
@@ -38,6 +38,7 @@ the trained LoRA matrices are the adapter
 
 The version the route reports is the suffix of the adapter's name.
 
+- Computed from: adapter
 - Defined in: [What goes wrong in production](serve-the-router-on-a-cpu.md#what-goes-wrong-in-production)
 - Address: https://rollingedition.com/concepts/message-routing/adapter-version
 
@@ -55,7 +56,7 @@ the log-probability of the answer, which is the sum of the answer's token log-pr
 
 - Computed from: token
 - Defined in: [Ask a model for one team](route-a-message.md#ask-a-model-for-one-team)
-- Address: https://rollingedition.com/concepts/large-language-models/answer-log-probability
+- Address: https://rollingedition.com/concepts/large-language-models/total-log-probability
 
 ## BANKING77
 
@@ -105,6 +106,7 @@ A base model is a model already pretrained on a large amount of text, which you 
 The baseline is the stand-in's score on test_1001, the sample that the final comparison in chapter 10 uses.
 
 - Measured from: test_1001
+- Close to: https://rollingedition.com/concepts/artificial-intelligence/baseline
 - Defined in: [The baseline from recorded answers](measure-the-routing-task.md#the-baseline-from-recorded-answers)
 - Address: https://rollingedition.com/concepts/model-evaluation/baseline
 
@@ -140,6 +142,7 @@ The chat form wraps the router prompt's text in the model's chat template, which
 A classification head works differently from the stand-in: it keeps the language model's layers and adds one output layer with 77 outputs, one for each team.
 
 - Also: score head, classifier head
+- Contrasts with: stand-in
 - Defined in: [A head that scores the teams](fine-tune-with-lora.md#a-head-that-scores-the-teams)
 - Address: https://rollingedition.com/concepts/fine-tuning/classification-head
 
@@ -185,6 +188,7 @@ The baseline is the hand-off rate on the dev split at the adapter's threshold.
 the dev split, the training messages held back for choosing settings
 
 - Contrasts with: test split
+- The same as: https://rollingedition.com/concepts/artificial-intelligence/validation-split
 - Defined in: [What the router returns](route-a-message.md#what-the-router-returns)
 - Address: https://rollingedition.com/concepts/model-evaluation/dev-split
 
@@ -193,6 +197,7 @@ the dev split, the training messages held back for choosing settings
 Distillation trains a small model to reproduce a large one.
 
 - Also: knowledge distillation
+- The same as: https://rollingedition.com/concepts/search-and-recommendation/distillation
 - Defined in: [What distillation copies](distill-a-larger-model.md#what-distillation-copies)
 - Address: https://rollingedition.com/concepts/fine-tuning/distillation
 
@@ -235,6 +240,7 @@ the forward passes, each one call of the network
 the model decoded freely: greedy, taking the highest-scoring token at each step, as in this chapter, but with no mask on the tokens it could pick
 
 - Also: unconstrained decoding
+- A kind of: greedy decoding
 - Defined in: [Why free text fails](prompt-and-constrain.md#why-free-text-fails)
 - Address: https://rollingedition.com/concepts/large-language-models/free-decoding
 
@@ -243,6 +249,7 @@ the model decoded freely: greedy, taking the highest-scoring token at each step,
 Full fine-tuning changes every weight in the base model.
 
 - Contrasts with: LoRA
+- The same as: https://rollingedition.com/concepts/large-language-models/full-fine-tuning
 - Defined in: [Adapters train a small part of the model](fine-tune-with-lora.md#adapters-train-a-small-part-of-the-model)
 - Address: https://rollingedition.com/concepts/fine-tuning/full-fine-tuning
 
@@ -266,6 +273,7 @@ Here the teacher's greedy answer plays the part of the mode: it is the one team 
 
 greedy decoding, which takes the most likely token at each step
 
+- The same as: https://rollingedition.com/concepts/data-engineering/greedy-decoding
 - Defined in: [Ask a model for one team](route-a-message.md#ask-a-model-for-one-team)
 - Address: https://rollingedition.com/concepts/large-language-models/greedy-decoding
 
@@ -273,6 +281,7 @@ greedy decoding, which takes the most likely token at each step
 
 A hand-off gives the message to a person who can route it
 
+- Close to: https://rollingedition.com/concepts/ai-agents/handoff
 - Defined in: [What the router returns](route-a-message.md#what-the-router-returns)
 - Address: https://rollingedition.com/concepts/message-routing/hand-off
 
@@ -298,6 +307,8 @@ Hand-off rate is the messages whose confidence is below the threshold, divided b
 
 handoff(confidence, threshold) returns true when the confidence is below the threshold, and false when it is equal to the threshold or above it.
 
+- Computed from: confidence
+- Computed from: threshold
 - Defined in: [Hand off the unsure messages](route-a-message.md#hand-off-the-unsure-messages)
 - Address: https://rollingedition.com/concepts/message-routing/hand-off-rule
 
@@ -358,6 +369,7 @@ The set_num_threads setting covers the threads used inside one operation, the in
 
 The keeps are the messages whose answers the route returned
 
+- Contrasts with: hand-off
 - Defined in: [Sample handed-off messages for people](version-watch-and-fall-back.md#sample-handed-off-messages-for-people)
 - Address: https://rollingedition.com/concepts/message-routing/kept-message
 
@@ -408,6 +420,7 @@ The paper that introduced LoRA, Hu et al. (2021), says it freezes the pre-traine
 - Also: low-rank adaptation
 - Contrasts with: full fine-tuning
 - Implemented by: peft 0.21.3
+- The same as: https://rollingedition.com/concepts/large-language-models/lora
 - Defined in: [Adapters train a small part of the model](fine-tune-with-lora.md#adapters-train-a-small-part-of-the-model)
 - Address: https://rollingedition.com/concepts/fine-tuning/lora
 
@@ -487,6 +500,7 @@ An open-weights licence such as Apache-2.0 governs the model's files
 
 A parameter is one of the numbers the model learns during training
 
+- The same as: https://rollingedition.com/concepts/deep-learning/parameter
 - Defined in: [Load each model at its pinned revision](choose-a-base-model.md#load-each-model-at-its-pinned-revision)
 - Address: https://rollingedition.com/concepts/large-language-models/parameter
 
@@ -503,6 +517,7 @@ A per-row scale lets each output row use the full range of the 8-bit integers fo
 A revision pinned by a full commit hash names one snapshot of the files
 
 - True for: huggingface_hub 2.4.0
+- The same as: https://rollingedition.com/concepts/large-language-models/pinned-revision
 - Defined in: [Load each model at its pinned revision](choose-a-base-model.md#load-each-model-at-its-pinned-revision)
 - Address: https://rollingedition.com/concepts/artificial-intelligence/pinned-revision
 
@@ -576,6 +591,8 @@ The raw form passes the router prompt's text to the model as it stands.
 
 A recording fixes the answers to one model at one revision, so a reader who runs the same example later sees the same numbers.
 
+- The same as: https://rollingedition.com/concepts/artificial-intelligence/recording
+- The same as: https://rollingedition.com/concepts/llm-evaluation/recording
 - Defined in: [The baseline from recorded answers](measure-the-routing-task.md#the-baseline-from-recorded-answers)
 - Address: https://rollingedition.com/concepts/message-routing/recording
 
@@ -585,6 +602,7 @@ The manifest names the script that made the recording, the model and its pinned 
 
 - Also: manifest
 - Part of: recording
+- The same as: https://rollingedition.com/concepts/data-governance/recording-manifest
 - Defined in: [The baseline from recorded answers](measure-the-routing-task.md#the-baseline-from-recorded-answers)
 - Address: https://rollingedition.com/concepts/message-routing/recording-manifest
 
@@ -655,6 +673,7 @@ The first candidate is SmolLM2, a family of models published on Hugging Face.
 SmolLM2-135M-Instruct is the smallest model in the family that this book keeps, and it is the core model for the rest of the book.
 
 - Also: core model
+- Part of: SmolLM2
 - Defined in: [Show what a small model does first](route-a-message.md#show-what-a-small-model-does-first)
 - Address: https://rollingedition.com/concepts/artificial-intelligence/smollm2-135m-instruct
 
@@ -669,6 +688,7 @@ Hinton, Vinyals and Dean's paper, which gave distillation its name, proposed tra
 
 Softmax turns the scores into 77 probabilities that sum to one.
 
+- The same as: https://rollingedition.com/concepts/deep-learning/softmax
 - Defined in: [A head that scores the teams](fine-tune-with-lora.md#a-head-that-scores-the-teams)
 - Address: https://rollingedition.com/concepts/large-language-models/softmax
 
@@ -731,6 +751,7 @@ A team is a label the router can return, such as card_arrival, and it is never a
 The test split is the source's own held-out file.
 
 - Contrasts with: dev split
+- Close to: https://rollingedition.com/concepts/artificial-intelligence/test-split
 - Defined in: [Dev, test and fixed samples](measure-the-routing-task.md#dev-test-and-fixed-samples)
 - Address: https://rollingedition.com/concepts/model-evaluation/test-split
 
@@ -771,6 +792,8 @@ the threshold is the value below which a message is handed off
 A token is a piece of text the model reads and writes.
 
 - Also: tokens
+- The same as: https://rollingedition.com/concepts/natural-language-processing/token
+- The same as: https://rollingedition.com/concepts/semantic-search/token
 - Defined in: [What the router returns](route-a-message.md#what-the-router-returns)
 - Address: https://rollingedition.com/concepts/large-language-models/token
 
@@ -778,6 +801,7 @@ A token is a piece of text the model reads and writes.
 
 The tokenizer turns the prompt's text into tokens, the units a model reads.
 
+- Close to: https://rollingedition.com/concepts/natural-language-processing/tokenizer
 - Defined in: [Measure what one message costs](choose-a-base-model.md#measure-what-one-message-costs)
 - Address: https://rollingedition.com/concepts/large-language-models/tokenizer
 
