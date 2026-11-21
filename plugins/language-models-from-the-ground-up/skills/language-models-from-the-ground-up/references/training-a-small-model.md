@@ -3,13 +3,13 @@ title: "Language Models from the Ground Up"
 chapter: "Training a small model"
 chapter_id: training-a-small-model
 book: language-models-from-the-ground-up
-edition: 2026.11.15
+edition: 2026.11.16
 verified: 2026-11-19
-edition_code: ST86-2YTJ
+edition_code: FY8Q-PVVV
 canonical: https://rollingedition.com/language-models-from-the-ground-up/training-a-small-model
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“Training a small model,” chapter 8 of Language Models from the Ground Up, Edition 2026.11.15, examples passed Nov 19, 2026. By Rolling Edition, https://rollingedition.com/language-models-from-the-ground-up/training-a-small-model. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Training a small model,” chapter 8 of Language Models from the Ground Up, Edition 2026.11.16, examples passed Nov 19, 2026. By Rolling Edition, https://rollingedition.com/language-models-from-the-ground-up/training-a-small-model. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Training a small model
 
@@ -21,13 +21,13 @@ As in [chapter 5](#train-with-pytorch), training ran once, in PyTorch. The examp
 
 ## Turn products into batches {#turn-products-into-batches}
 
-Training starts by turning the store's catalog into numbers the model can learn from. Each product becomes one text: the start marker, the name, the separator `<sep>`, the description and the end marker, tokenized by the [store's tokenizer](#train-the-store-tokenizer). A text longer than the model's limit is cut. Each training step takes a **batch** of texts at once, so the arithmetic runs on whole matrices, and texts of different lengths are filled out to the longest in the batch with a padding token.
+Training starts by turning the store's catalog into numbers the model can learn from. Each product becomes one text: the start marker, the name, the separator `<sep>`, the description and the end marker, tokenized by the [store's tokenizer](#train-the-store-tokenizer). A text longer than the model's limit is cut. Each training step takes a [batch](#take-gradient-descent-steps) of texts at once, so the arithmetic runs on whole matrices, and texts of different lengths are filled out to the longest in the batch with a padding token.
 
-Each text then gives the model one prediction per position. The **inputs** are its tokens without the last, and the **targets** are its tokens without the first, so position i is trained to predict token i + 1. Thanks to the [causal mask](#hide-the-future), one forward pass makes every one of those predictions at once. The loss is averaged over the targets that aren't padding: the padding costs computation but teaches nothing.
+Each text then gives the model one prediction per position. The **inputs** are a text's tokens without the last, and the **targets** are the text's tokens without the first, so position i is trained to predict token i + 1. Thanks to the [causal mask](#hide-the-future), one forward pass makes every one of those predictions at once. The loss is averaged over the targets that aren't padding: the padding costs computation but teaches nothing.
 
 Padding is the cost to watch, so build one shuffled epoch's batches as the training script does, and count how much of each batch is padding:
 
-Example `training-batches` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1), passing in Edition 2026.11.15:
+Example `training-batches` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1), passing in Edition 2026.11.16:
 
 ```python
 """Builds one shuffled epoch of batches the way the training script does, and measures the padding in them.
@@ -86,7 +86,7 @@ steps in the recorded run: 17,136
 
 The training split holds 34,252 texts and 2,843,222 tokens. That count includes each text's start, separator and end markers, which [chapter 4's count](#describe-by-neighbours) of 2,744,320 tokens leaves out, and excludes what the length limit cuts; only 1.0% of the texts are cut.
 
-Each batch holds 32 texts, so one pass over the training texts, an **epoch**, takes 1,071 steps, and the recorded run took 17,136 steps over 16 epochs.
+Each batch holds 32 texts, so one pass over the training texts, an [epoch](#stop-at-the-best-epoch), takes 1,071 steps, and the recorded run took 17,136 steps over 16 epochs.
 
 Over one shuffled epoch, 46% of the targets are padding, between 30% and 59% depending on the batch, because one long description sets the width of every shorter text beside it. Each batch is a rectangle: one row per text, one column per position.
 
@@ -111,15 +111,15 @@ With batches in hand, each step is the loop of [chapter 5](#take-gradient-descen
 
 The first three lines are the [previous section](#turn-products-into-batches): a padded batch, inputs without the last token, and a loss over the shifted targets that ignores padding. Two lines differ from [chapter 5](#a-neural-language-model).
 
-The optimizer is **AdamW**, the Adam of [chapter 5](#train-with-pytorch) with **weight decay** applied apart from the gradient: at every step, each weight is also reduced by its value times the step size times a decay factor, here 0.1 ([PyTorch's AdamW](https://docs.pytorch.org/docs/2.14/generated/torch.optim.AdamW.html)). Loshchilov and Hutter showed that applying the decay this way works better with Adam than adding it to the loss ([Loshchilov and Hutter, 2019](https://arxiv.org/abs/1711.05101)). Decay is a form of [regularization](#stop-at-the-best-epoch), which chapter 5's window model lacked: it pulls every weight towards zero, so a weight stays large only while the training text keeps pushing it there.
+The optimizer is **AdamW**, the Adam of [chapter 5](#train-with-pytorch) with **weight decay** applied apart from the gradient. Weight decay reduces each weight at every step by its value times the step size times a decay factor, here 0.1 ([PyTorch's AdamW](https://docs.pytorch.org/docs/2.14/generated/torch.optim.AdamW.html)). Loshchilov and Hutter showed that applying the decay this way works better with Adam than adding it to the loss ([Loshchilov and Hutter, 2019](https://arxiv.org/abs/1711.05101)). Decay is a form of [regularization](#stop-at-the-best-epoch), which chapter 5's window model lacked: it pulls every weight towards zero, so a weight stays large only while the training text keeps pushing it there.
 
-The script also **clips** the gradients: when their combined length, measured as if every gradient were one long vector, exceeds 1.0, it scales them all down to that length ([PyTorch's clip_grad_norm_](https://docs.pytorch.org/docs/2.14/generated/torch.nn.utils.clip_grad_norm_.html)). One unusual batch then can't throw the weights far off. Pascanu and colleagues proposed clipping for exactly that: rare, very large gradients that would otherwise undo much of what training had learned ([Pascanu et al., 2013](https://arxiv.org/abs/1211.5063)).
+The training script also **clips** the gradients: when their combined length, measured as if every gradient were one long vector, exceeds 1.0, it scales them all down to that length ([PyTorch's clip_grad_norm_](https://docs.pytorch.org/docs/2.14/generated/torch.nn.utils.clip_grad_norm_.html)). One unusual batch then can't throw the weights far off. Pascanu and colleagues proposed clipping for exactly that: rare, very large gradients that would otherwise undo much of what training had learned ([Pascanu et al., 2013](https://arxiv.org/abs/1211.5063)).
 
 **Working rule:** Use AdamW with a modest weight decay, and clip gradients by their combined length. Keep the training step short enough to read whole, so that every choice in it is visible: what the loss ignores, what the optimizer decays and what gets clipped.
 
 ## Warm up, then decay the step size {#warm-up-then-decay}
 
-The last line of the loop, `scheduler.step()`, changes the step size after every batch, following a **schedule**. For the first 200 steps, it rises in a straight line from nearly zero to its peak, 0.003: a **warm-up**, as the transformer paper's schedule had ([Vaswani et al., 2017](https://arxiv.org/abs/1706.03762), section 5.3). In Adam's first steps, its running average of squared gradients rests on only a few batches, so its step sizes vary widely; Liu and colleagues showed that warm-up works by reducing that variance ([Liu et al., 2020](https://arxiv.org/abs/1908.03265)). After the warm-up, the step size falls along half a cosine curve, to a tenth of the peak by the last step ([Loshchilov and Hutter, 2017](https://arxiv.org/abs/1608.03983)). Large steps early cover ground; small steps late let the weights settle into a low point instead of bouncing around it. In symbols, after the warm-up:
+The last line of the loop, `scheduler.step()`, changes the step size after every batch, following a **schedule**, which sets the step size for each step of the run. For the first 200 steps, the step size rises in a straight line from nearly zero to its peak, 0.003: a **warm-up**, as the transformer paper's schedule had ([Vaswani et al., 2017](https://arxiv.org/abs/1706.03762), section 5.3). In Adam's first steps, its running average of squared gradients rests on only a few batches, so its step sizes vary widely; Liu and colleagues showed that warm-up works by reducing that variance ([Liu et al., 2020](https://arxiv.org/abs/1908.03265)). After the warm-up, the step size falls along half a cosine curve, to a tenth of the peak by the last step ([Loshchilov and Hutter, 2017](https://arxiv.org/abs/1608.03983)). Large steps early cover ground; small steps late let the weights settle into a low point instead of bouncing around it. In symbols, after the warm-up:
 
 rate = peak × (0.1 + 0.9 × ½ (1 + cos(π × progress)))
 
@@ -127,7 +127,7 @@ where progress runs from 0 at the end of the warm-up to 1 at the last step.
 
 Whether the schedule matches the run's is checkable: compute it by hand from the recorded settings, and set it against the step sizes the training script saved every tenth step:
 
-Example `learning-rate-schedule` (Python 3.12.15 · numpy 2.5.5), passing in Edition 2026.11.15:
+Example `learning-rate-schedule` (Python 3.12.15 · numpy 2.5.5), passing in Edition 2026.11.16:
 
 ```python
 """Computes the warm-up and cosine schedule by hand from the recorded settings, and checks it against the step sizes
@@ -186,7 +186,7 @@ With its batches, updates and schedule set, the store's model trained for 16 epo
 
 Read as [perplexity](#score-with-perplexity) per token, the recorded curves, epoch by epoch, look like this:
 
-Example `transformer-training-curve` (Python 3.12.15 · numpy 2.5.5), passing in Edition 2026.11.15:
+Example `transformer-training-curve` (Python 3.12.15 · numpy 2.5.5), passing in Edition 2026.11.16:
 
 ```python
 """Prints the recorded run's perplexity for each epoch, then the epoch kept and its validation perplexities.
@@ -254,7 +254,7 @@ The comparison has to count the same predictions. The 4-gram predicts each name'
 
 Make a guess first: can the transformer alone beat the counted baseline that chapter 5's window model couldn't? Then score both models, and mixtures of the two, the way [chapter 5](#mix-with-the-counts) did:
 
-Example `transformer-on-names` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1), passing in Edition 2026.11.15:
+Example `transformer-on-names` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1), passing in Edition 2026.11.16:
 
 ```python
 """Scores every validation name, its end included, with the 4-gram baseline and with the transformer, then mixes them
@@ -307,7 +307,7 @@ The [names comparison](#compare-on-names) favours counting, because names are sh
 
 Put the longer reach to the test on descriptions: fit the 4-gram on every training text, then score it, the transformer and an even mix on the descriptions of the first 500 validation products, leaving out texts cut at the length limit and products with no description. It also splits the tokens, as [chapter 5](#compare-with-the-baseline) did, by whether their three-token context occurs in the training texts:
 
-Example `transformer-on-descriptions` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1), passing in Edition 2026.11.15:
+Example `transformer-on-descriptions` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1), passing in Edition 2026.11.16:
 
 ```python
 """Scores the descriptions of the first 500 validation products with a 4-gram trained on whole texts, with the transformer,
@@ -389,7 +389,7 @@ So the training script recorded seven cheaper runs beside the main one, each cha
 
 Which change buys the most? Read the eight runs side by side, each one's size, steps and perplexities at its best and last epochs:
 
-Example `width-data-and-steps` (Python 3.12.15 · numpy 2.5.5), passing in Edition 2026.11.15:
+Example `width-data-and-steps` (Python 3.12.15 · numpy 2.5.5), passing in Edition 2026.11.16:
 
 ```python
 """Reads eight recorded runs and prints each one's parameters, steps, best epoch, and validation perplexities at its best
@@ -498,7 +498,7 @@ Averages say how good a model is; the search box shows what that means to a shop
 
 A shopper would see the transformer's three likeliest next tokens, and those of the half-and-half mix that the [names comparison](#compare-on-names) favoured, after the same five prefixes, each treated as the start of a name. A suggestion of `<sep>` means the model expects the name to end there:
 
-Example `transformer-autocomplete` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1), passing in Edition 2026.11.15:
+Example `transformer-autocomplete` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1), passing in Edition 2026.11.16:
 
 ```python
 """Asks the transformer and its half-and-half mix with the 4-gram for their three likeliest next tokens after five prefixes,

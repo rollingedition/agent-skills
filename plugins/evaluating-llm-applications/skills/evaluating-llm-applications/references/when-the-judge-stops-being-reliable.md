@@ -3,13 +3,13 @@ title: "Evaluating LLM Applications"
 chapter: "Find where a judge's verdict stops being reliable"
 chapter_id: when-the-judge-stops-being-reliable
 book: evaluating-llm-applications
-edition: 2026.11.2
+edition: 2026.11.3
 verified: 2026-11-21
-edition_code: G0M7-3TW7
+edition_code: 4V0Y-VKTV
 canonical: https://rollingedition.com/evaluating-llm-applications/when-the-judge-stops-being-reliable
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“Find where a judge's verdict stops being reliable,” chapter 7 of Evaluating LLM Applications, Edition 2026.11.2, examples passed Nov 21, 2026. By Rolling Edition, https://rollingedition.com/evaluating-llm-applications/when-the-judge-stops-being-reliable. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Find where a judge's verdict stops being reliable,” chapter 7 of Evaluating LLM Applications, Edition 2026.11.3, examples passed Nov 21, 2026. By Rolling Edition, https://rollingedition.com/evaluating-llm-applications/when-the-judge-stops-being-reliable. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Find where a judge's verdict stops being reliable
 
@@ -29,7 +29,7 @@ The test is simple to state. Judge each pair twice, once with the replies in one
 
 Each human-rated pair is judged in both orders, and each pair lands in one of four kinds: consistent, order-changed, tie or unreadable. The example's output calls the order-changed pairs flipped. An unreadable pair has a missing verdict in either order. For the order-changed pairs, the question is which position won both orders.
 
-Example `position-flips` (Python 3.12.15 · numpy 2.5.5), passing in Edition 2026.11.2:
+Example `position-flips` (Python 3.12.15 · numpy 2.5.5), passing in Edition 2026.11.3:
 
 ```python
 """How the pairwise judge's verdict follows the position it was shown in, on the HelpSteer2 pairs. Each pair is judged in both
@@ -124,7 +124,7 @@ Length asks a different question. Position is about which reply the judge sees f
 
 The test is simpler than the attack. It takes the dev replies that the baseline assistant answered, sorts them into three bands by word count, and prints the judge's pass rate for each band. The edges that set the bands are fixed in the example. Other edges would make other bands, and the picture could change with them.
 
-Example `length-and-verdicts` (Python 3.12.15 · numpy 2.5.5 · pydantic 2.14.3 · typing-extensions 4.16.0), passing in Edition 2026.11.2:
+Example `length-and-verdicts` (Python 3.12.15 · numpy 2.5.5 · pydantic 2.14.3 · typing-extensions 4.16.0), passing in Edition 2026.11.3:
 
 ```python
 """The reference-guided judge's PASS rate by the length of the assistant's reply, on the dev items the baseline answered. The
@@ -177,7 +177,7 @@ The longest band passed 85.7% (18 of 21).
 
 The comparison the book reports is the longest band minus the shortest. Its order is fixed by length, so it is set before anyone reads the rates. The highest-rate band minus the lowest-rate band would be chosen after the rates are seen, and it could never fall below zero. The gap is -8.4 points, interval [-28.6, +8.1] points.
 
-The method is percentile bootstrap over items, each band resampled alone, 2000 resamples, 95% level. The two bands hold different items, so each is resampled on its own, and the bands' counts are the ones in their rates above. The band counts are small, so the interval is wide. The interval includes zero, so the result is no difference detected between the longest and the shortest band.
+The method is percentile bootstrap over items, each band resampled alone, 2000 resamples, 95% level. The two bands hold different items, so each is resampled on its own, and the bands' counts are the ones in their rates above. The band counts are small, so the interval is wide. The interval includes zero, so the result is [no difference detected](#paired-comparisons) between the longest and the shortest band.
 
 No difference detected does not mean that length is harmless. It says that bands of this size cannot separate a gap from zero. They cannot pick out a few points of bias, because one reply moves a band's rate by several points. The bootstrap over items that [intervals and sample size](intervals-and-sample-size#bootstrap-over-items) describes is the same resampling. The two bands here are resampled on their own, an interval for two separate groups, which that chapter does not build.
 
@@ -207,7 +207,7 @@ A report that describes the judge as fair to its own model has to say that the t
 
 The limits are useful only as rules a reader can apply, and each rule needs a count to check it against. A reader who checks only the table has the limits, not the reasons for them, and the sections above give the reason for each line. The limits table prints them as labelled lines, in groups: the order-change rate; the length gap, with its method; the unreadable verdicts; the same-model count; and the second-model comparison. The order-change rate leaves out pairs unreadable in either order, while the position example above counts every pair in its split. Read the table from the top, because each line answers one question and no line answers another.
 
-Example `verdict-limits` (Python 3.12.15 · numpy 2.5.5 · pydantic 2.14.3 · typing-extensions 4.16.0), passing in Edition 2026.11.2:
+Example `verdict-limits` (Python 3.12.15 · numpy 2.5.5 · pydantic 2.14.3 · typing-extensions 4.16.0), passing in Edition 2026.11.3:
 
 ```python
 """The judge's limits as one table, one labelled line per limit, each computed as in position-flips and length-and-verdicts.

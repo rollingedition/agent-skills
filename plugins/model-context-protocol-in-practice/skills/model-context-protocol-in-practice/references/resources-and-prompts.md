@@ -3,13 +3,13 @@ title: "Model Context Protocol in Practice"
 chapter: "Serve data as resources and prompts"
 chapter_id: resources-and-prompts
 book: model-context-protocol-in-practice
-edition: 2026.11.13
+edition: 2026.11.14
 verified: 2026-11-19
-edition_code: P21J-Z4WN
+edition_code: VS53-BS53
 canonical: https://rollingedition.com/model-context-protocol-in-practice/resources-and-prompts
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“Serve data as resources and prompts,” chapter 4 of Model Context Protocol in Practice, Edition 2026.11.13, examples passed Nov 19, 2026. By Rolling Edition, https://rollingedition.com/model-context-protocol-in-practice/resources-and-prompts. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Serve data as resources and prompts,” chapter 4 of Model Context Protocol in Practice, Edition 2026.11.14, examples passed Nov 19, 2026. By Rolling Edition, https://rollingedition.com/model-context-protocol-in-practice/resources-and-prompts. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Serve data as resources and prompts
 
@@ -17,7 +17,7 @@ By the end of this chapter you can publish the shop's policies and records as Mo
 
 [The shop](#the-shop) sells kitchen and garden goods, and most of what its support team's host needs to answer a ticket is something to read, not something to do. [Separate the host, the client and the server](#host-client-server) gave the shop's server, `shop-support`, one capability of each kind: the tool `get_order_status`, the refund policy as a resource, and a short `review_refund` prompt. One document and one prompt don't cover it. Every refund answer must follow the refund policy, a ticket is about one order, and a stock question is about one product's count. If each of those is a tool, the model has to decide to fetch it, and it may not.
 
-For this, a Model Context Protocol (MCP) server has two other primitives, which differ from tools in who decides when they're used ([Put each capability in the right primitive](#choose-a-primitive)). A **resource** is data the server publishes under a URI, and the host decides whether to put it in front of a model. A **prompt** is a message template the server offers, and the user picks it. This chapter builds both out for the shop.
+For this, a Model Context Protocol (MCP) server has two other primitives, which differ from tools in who decides when they're used ([Put each capability in the right primitive](#choose-a-primitive)). A **[resource](#resources-application-chooses)** is data the server publishes under a URI, and the host decides whether to put it in front of a model. A **[prompt](#prompts-user-chooses)** is a message template the server offers, and the user picks it. This chapter builds both out for the shop.
 
 The server keeps the name `shop-support` throughout. Each example defines only the part its section teaches, and runs itself as chapter 2's server examples do: with no arguments, the file starts a client that launches the same file with `--serve` over stdio.
 
@@ -25,11 +25,11 @@ The server keeps the name `shop-support` throughout. Each example defines only t
 
 `shop-support` already publishes one of the rules an answer must follow, the refund policy, which [Resources are data the application chooses](#resources-application-chooses) showed how to serve, and the shop has five more. Each one suits a resource: data that a server publishes under a URI, with a `name`, an optional `title` and `description`, a `mimeType`, and contents that are either text or a base64 `blob` ([resources](https://modelcontextprotocol.io/specification/2026-07-28/server/resources)). A client lists a server's resources with `resources/list` and reads one with `resources/read`.
 
-Resources are application-driven: the host decides how they're used. The specification's resources page says a host might show a picker, search the resources, or include some automatically, based on heuristics or the model's own selection. The protocol gives the model no way to read a resource; the host decides, though it may let the model choose. A resource's URI follows RFC 3986, and a server may use a scheme of its own. The specification keeps `https://` for resources a client can fetch without the server, directly from the web.
+Resources are [application-driven](#resources-in-context): the host decides how they're used. The specification's resources page says a host might show a picker, search the resources, or include some automatically, based on heuristics or the model's own selection. The protocol gives the model no way to read a resource; the host decides, though it may let the model choose. A resource's URI follows RFC 3986, and a server may use a scheme of its own. The specification keeps `https://` for resources a client can fetch without the server, directly from the web.
 
 The six are **the shop's policies**, short rules written for this book on refunds, returns, shipping, stock, data handling and escalation. They are Markdown files in `examples/data/shop/policies/`, licensed CC BY 4.0 with the book's text and listed in the data card, `examples/data/shop/README.md`. `lib.policies` reads each one's title, `Updated:` date and one-sentence summary, so the server can describe every policy without opening the files on each request.
 
-The server publishes each policy as a static resource at `shop://policies/{slug}`. The refund policy keeps the URI `shop://policies/refund` and the name `refund-policy` that chapter 2 gave it. The SDK's `FileResource` reads the file again on every `resources/read`, so an edited policy reaches the next read without a restart (`mcp/server/mcpserver/resources/types.py`). Each resource also carries three **annotations**, which are hints the host may use or ignore ([resources](https://modelcontextprotocol.io/specification/2026-07-28/server/resources)):
+The server publishes each policy as a static resource at `shop://policies/{slug}`. The refund policy keeps the URI `shop://policies/refund` and the name `refund-policy` that chapter 2 gave it. The SDK's `FileResource` reads the file again on every `resources/read`, so an edited policy reaches the next read without a restart (`mcp/server/mcpserver/resources/types.py`). A resource's **annotations** are three hints the host may use or ignore ([resources](https://modelcontextprotocol.io/specification/2026-07-28/server/resources)):
 
 - `audience` says who the content is for. The policies are for `assistant`, the model.
 - `priority`, from 0.0 to 1.0, says how important the content is, and 1 means "effectively required". We give the refund policy 1.0 and the others 0.5. That is a judgement: every refund answer must follow the refund policy, while the other five matter only for some tickets.
@@ -37,7 +37,7 @@ The server publishes each policy as a static resource at `shop://policies/{slug}
 
 At the pinned revision, `resources/list` and `resources/read` results carry two cache hints. `ttlMs` says how long a result stays fresh, and `cacheScope` says whether a cache may share it across callers ([caching](https://modelcontextprotocol.io/specification/2026-07-28/server/utilities/caching)). The SDK's default is a `ttlMs` of 0 with the `private` scope (`mcp/server/caching.py`). The policies are the same for every caller and change rarely, so this server marks both methods `public` for an hour. Listing and reading the policies shows both hints.
 
-Example `list-policy-resources` (Python 3.12.15 · cryptography 50.0.2 · httpx2 2.16.2 · mcp 2.3.0 · mcp-types 2.3.0 · pydantic 2.14.3 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.13:
+Example `list-policy-resources` (Python 3.12.15 · cryptography 50.0.2 · httpx2 2.16.2 · mcp 2.3.0 · mcp-types 2.3.0 · pydantic 2.14.3 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.14:
 
 ```python
 """Serves the shop's six policies as static resources, then lists them and reads the refund policy from a client.
@@ -129,7 +129,7 @@ The shop's order template is `shop://orders/{order_id}`, and its function wraps 
 
 Four reads, one success and three kinds of miss: a real order, one that doesn't exist, one ID in the wrong format, and one URI whose variable tries to climb out of the order's path.
 
-Example `order-resource-template` (Python 3.12.15 · cryptography 50.0.2 · httpx2 2.16.2 · mcp 2.3.0 · mcp-types 2.3.0 · pydantic 2.14.3 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.13:
+Example `order-resource-template` (Python 3.12.15 · cryptography 50.0.2 · httpx2 2.16.2 · mcp 2.3.0 · mcp-types 2.3.0 · pydantic 2.14.3 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.14:
 
 ```python
 """Reads orders through the template shop://orders/{order_id} and prints what each kind of miss returns.
@@ -228,7 +228,7 @@ The handler asks the shop's API for that customer's orders and keeps those that 
 
 The API's response also carries the customer's total order count. When that total is more than the API returned, older orders might match too, so the handler leaves `total` out and sets `has_more`. Otherwise it reports the number of matches as `total`. The order template applies the same scope to reads: another customer's order gets the same not-found answer as an order that doesn't exist. A shared module, `lib.shop_reads`, holds the async helper both handlers use to call the shop's API. The run types two prefixes and reads two orders the caller can't see.
 
-Example `complete-order-ids` (Python 3.12.15 · cryptography 50.0.2 · httpx2 2.16.2 · mcp 2.3.0 · mcp-types 2.3.0 · pydantic 2.14.3 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.13:
+Example `complete-order-ids` (Python 3.12.15 · cryptography 50.0.2 · httpx2 2.16.2 · mcp 2.3.0 · mcp-types 2.3.0 · pydantic 2.14.3 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.14:
 
 ```python
 """Completes order IDs for shop://orders/{order_id} from the orders of the one customer the server acts for, and answers another customer's order as if it didn't exist.
@@ -328,7 +328,7 @@ In the Python SDK, server code publishes a change with `await ctx.notify_resourc
 
 The shop's stock policy says a negative count means a recount is due, and KG-1018 has a negative count in the `south` warehouse. To show a change within one process, the example keeps the counts in the server's memory, standing in for the shop's stock system. It publishes each product's counts as `shop://stock/{sku}`, and it adds a tool, `set_on_hand`, that a warehouse's host would call after a recount. The tool replaces one count and publishes an update for that product's URI. The client watches KG-1018 and KG-9999, which doesn't exist. It records a recount of another product, then one of KG-1018, and later closes the stream and opens it again.
 
-Example `stock-resource-changes` (Python 3.12.15 · anyio 4.16.0 · cryptography 50.0.2 · httpx2 2.16.2 · jsonschema 4.26.0 · mcp 2.3.0 · mcp-types 2.3.0 · pydantic 2.14.3 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.13:
+Example `stock-resource-changes` (Python 3.12.15 · anyio 4.16.0 · cryptography 50.0.2 · httpx2 2.16.2 · jsonschema 4.26.0 · mcp 2.3.0 · mcp-types 2.3.0 · pydantic 2.14.3 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.14:
 
 ```python
 """Watches two products with subscriptions/listen, records recounts while a stream is open and while it is closed, and re-reads after each.
@@ -411,7 +411,7 @@ The in-memory bus reaches only the streams in its own process. With two replicas
 
 ## Package a workflow as a prompt {#workflows-as-prompts}
 
-The resources in [the previous sections](#policies-as-resources) give a host the shop's data. Some of the support team's work, though, is a fixed procedure that a person starts, such as reviewing a refund before anyone issues it. A **prompt** packages such a procedure as a named message template that the server offers and the user picks, for example as a slash command. The user decides when it's used, and the server writes it, as [Prompts are templates the user chooses](#prompts-user-chooses) quoted.
+The resources in [the previous sections](#policies-as-resources) give a host the shop's data. Some of the support team's work, though, is a fixed procedure that a person starts, such as reviewing a refund before anyone issues it. A **[prompt](#prompts-user-chooses)** packages such a procedure as a named message template that the server offers and the user picks, for example as a slash command. The user decides when it's used, and the server writes it, as [Prompts are templates the user chooses](#prompts-user-chooses) quoted.
 
 A prompt has a `name`, an optional `title` and `description`, and `arguments`, each with a name, a description and whether it's required. A client lists prompts with `prompts/list` and fills one in with `prompts/get`, which returns `messages`. Each message has the role `user` or `assistant` and one content block: text, an image, audio, a resource link, or an embedded resource that carries a resource's contents inside the message. There is no `system` role, so a prompt is not a system prompt, and the host keeps its own. The same page says implementations "MUST carefully validate all prompt inputs and outputs to prevent injection attacks or unauthorized access to resources."
 
@@ -421,7 +421,7 @@ The support team reviews each refund request against the refund policy, which sa
 
 Filling the prompt in for order O-1145, whose customer asks for €343.49, shows the messages a model would receive. Three bad calls follow: a path where an order ID belongs, a missing argument and a misspelled prompt name.
 
-Example `refund-review-prompt` (Python 3.12.15 · cryptography 50.0.2 · httpx2 2.16.2 · mcp 2.3.0 · mcp-types 2.3.0 · pydantic 2.14.3 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.13:
+Example `refund-review-prompt` (Python 3.12.15 · cryptography 50.0.2 · httpx2 2.16.2 · mcp 2.3.0 · mcp-types 2.3.0 · pydantic 2.14.3 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.14:
 
 ```python
 """Packages a refund review as a prompt, with the refund policy embedded, the order quoted and the arguments checked first.

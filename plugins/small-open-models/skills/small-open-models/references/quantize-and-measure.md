@@ -3,13 +3,13 @@ title: "Small Open Models"
 chapter: "Quantize the router and measure what changes"
 chapter_id: quantize-and-measure
 book: small-open-models
-edition: 2026.11.8
+edition: 2026.11.9
 verified: 2026-11-20
-edition_code: HZX4-S3DE
+edition_code: ND0S-78AT
 canonical: https://rollingedition.com/small-open-models/quantize-and-measure
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“Quantize the router and measure what changes,” chapter 7 of Small Open Models, Edition 2026.11.8, examples passed Nov 20, 2026. By Rolling Edition, https://rollingedition.com/small-open-models/quantize-and-measure. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Quantize the router and measure what changes,” chapter 7 of Small Open Models, Edition 2026.11.9, examples passed Nov 20, 2026. By Rolling Edition, https://rollingedition.com/small-open-models/quantize-and-measure. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Quantize the router and measure what changes
 
@@ -25,13 +25,13 @@ A linear layer is a weight matrix that maps one vector to another. The router's 
 
 The scale is what makes the scheme work for a whole matrix. A single scale for an entire matrix has to cover its largest weight, so the rows whose weights are small get a coarse grid. Jacob et al. (2018) report that a shared resolution gives channels with narrow ranges much larger relative error ([arXiv:1712.05877](https://arxiv.org/abs/1712.05877)). That is a CNN result, so here it is a reason to test per-row scales, not a measurement. A per-row scale lets each output row use the full range of the 8-bit integers for its own weights. That is why the byte count adds one float32 scale for each output row. The scales are few, but they are not free, so the byte count below includes them.
 
-The helper in this book, `int8_classifier`, names its scheme in its docstring: per-row int8 weights, with float32 activations. The scheme is torchao's `Int8WeightOnlyConfig`, which the [torchao source at v0.18.0](https://raw.githubusercontent.com/pytorch/ao/v0.18.0/torchao/quantization/quant_api.py) describes as "int8 weight-only symmetric per-channel quantization to linear layers". The helper applies it in three steps. It merges the adapter's weights into the base model with PEFT's `merge_and_unload`. It calls `quantize_` from `torchao.quantization` with `Int8WeightOnlyConfig`, and passes a filter that selects every `nn.Linear` layer except the one named `score`. Then it returns the model in evaluation mode. The result is the int8 copy, named `banking77-lora-v1-int8` in the recordings. It is a derived model built from the adapter, not a second adapter. The output layer, `score`, is the head that chapter 5 trained, and the section on it explains why the helper leaves it out.
+The helper in this book, `int8_classifier`, names its scheme in its docstring: per-row int8 weights, with float32 activations. The scheme is torchao's `Int8WeightOnlyConfig`, which the [torchao source at v0.18.0](https://raw.githubusercontent.com/pytorch/ao/v0.18.0/torchao/quantization/quant_api.py) describes as "int8 weight-only symmetric per-channel quantization to linear layers". The helper applies it in three steps. It merges the adapter's weights into the base model with PEFT's `merge_and_unload`. It calls `quantize_` from `torchao.quantization` with `Int8WeightOnlyConfig`, and passes a filter that selects every `nn.Linear` layer except the one named `score`. Then it returns the model in evaluation mode. The int8 copy, named `banking77-lora-v1-int8` in the recordings, is the model the helper returns: a derived model built from the adapter, not a second adapter. The output layer, `score`, is the head that chapter 5 trained, and the section on it explains why the helper leaves it out.
 
 The merge comes first for a reason. [Chapter 5](fine-tune-with-lora#adapters-train-a-small-part-of-the-model) described the adapter as a small set of matrices beside the base model's layers. Merging folds the adapter's update into the base weights, so each layer is one weight matrix, quantized once, and the layer count describes the router. Without the merge, the same call would also quantize the adapter's own matrices as separate int8 layers.
 
 Older PyTorch code uses `torch.ao.quantization.quantize_dynamic`, which also stores Linear weights as int8 and quantizes activations as it runs, a different scheme. PyTorch 2.15 deprecates it, and its warning points to torchao's `quantize_` ([PyTorch v2.15.0, `torch/ao/quantization/utils.py`](https://raw.githubusercontent.com/pytorch/pytorch/v2.15.0/torch/ao/quantization/utils.py)), which the [torchao README at v0.18.0](https://raw.githubusercontent.com/pytorch/ao/v0.18.0/README.md) shows as the migration. The examples in this book call no deprecated API themselves.
 
-Example `int8-layers-and-bytes` (Python 3.12.15 · peft 0.21.3 · torch 2.15.0+cpu · torchao 0.18.0+cpu · transformers 5.23.0), passing in Edition 2026.11.8:
+Example `int8-layers-and-bytes` (Python 3.12.15 · peft 0.21.3 · torch 2.15.0+cpu · torchao 0.18.0+cpu · transformers 5.23.0), passing in Edition 2026.11.9:
 
 ```python
 """Counts the backbone Linear layers the int8 copy quantizes, and the weight bytes they store, from their shapes.
@@ -100,7 +100,7 @@ Scoring `test_200` with both copies at the threshold in chapter 5's manifest sho
 
 The two copies are not treated alike on purpose. The float32 side is the adapter as chapter 5 loaded it, unmerged, while the int8 side is merged first, because the helper merges before it quantizes. So the count below holds the merge and the quantization together. The run never scores a merged float32 copy on its own, and the chapter does not claim that the merge alone changes nothing.
 
-Example `int8-changed-predictions` (Python 3.12.15 · peft 0.21.3 · torch 2.15.0+cpu · torchao 0.18.0+cpu · transformers 5.23.0), passing in Edition 2026.11.8:
+Example `int8-changed-predictions` (Python 3.12.15 · peft 0.21.3 · torch 2.15.0+cpu · torchao 0.18.0+cpu · transformers 5.23.0), passing in Edition 2026.11.9:
 
 ```python
 """Scores test_200 with the float32 adapter, its int8 copy and the copy with the head in int8, at the threshold in chapter 5's manifest.
@@ -163,7 +163,7 @@ predictions changed with the head in int8 too: 1/200
 
 On this sample the int8 copy changes 0/200 (0.0%) predictions and 0/200 hand-off decisions. The copy that also quantizes the head is counted in [the section on the score head](#keep-the-score-head-in-float32). The output beside this paragraph gives each copy's accuracy, its hand-offs and its accuracy on the messages not handed off, each with its denominator.
 
-The three measures are the ones [chapter 2](measure-the-routing-task#three-measures-each-with-its-denominator) defined, and each has its denominator. Accuracy divides the correct messages by all 200, so a handed-off message counts as wrong if its team is wrong. The hand-off rate divides the messages below the threshold by all 200. Accuracy on the messages not handed off divides the correct ones among the kept messages, and it is not defined when none are kept. The changed-prediction count uses the same 200 messages and asks a different question: did the two copies agree on each one? Agreement is not correctness, which is why the output also prints the accuracy.
+The three measures are the ones [chapter 2](measure-the-routing-task#three-measures-each-with-its-denominator) defined, and each has its denominator. Accuracy divides the correct messages by all 200, so a handed-off message counts as wrong if its team is wrong. The hand-off rate divides the messages below the threshold by all 200. Accuracy on the messages not handed off divides the correct ones among the kept messages, and it is not defined when none are kept. The changed-prediction count uses the same 200 messages and asks a question the three measures do not: did the two copies agree on each one? Agreement is not correctness, which is why the output also prints the accuracy.
 
 A changed prediction is not automatically a loss. It can turn a wrong team into a right one, or a right team into a wrong one, and the count alone does not say which. To read the direction, compare each copy's team with the gold label on every message the copies disagree on. Accuracy can hide this. Two copies can have the same accuracy while different messages are right on each, so the same total says nothing about which messages moved. When the count is zero, there are no flips to read in either direction. A reader who gets a non-zero count should read the flips before reading the totals.
 

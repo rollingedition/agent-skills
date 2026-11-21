@@ -3,13 +3,13 @@ title: "Evaluating LLM Applications"
 chapter: "Decide whether a change is better, and how many questions you need"
 chapter_id: intervals-and-sample-size
 book: evaluating-llm-applications
-edition: 2026.11.2
+edition: 2026.11.3
 verified: 2026-11-21
-edition_code: G0M7-3TW7
+edition_code: 4V0Y-VKTV
 canonical: https://rollingedition.com/evaluating-llm-applications/intervals-and-sample-size
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“Decide whether a change is better, and how many questions you need,” chapter 8 of Evaluating LLM Applications, Edition 2026.11.2, examples passed Nov 21, 2026. By Rolling Edition, https://rollingedition.com/evaluating-llm-applications/intervals-and-sample-size. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Decide whether a change is better, and how many questions you need,” chapter 8 of Evaluating LLM Applications, Edition 2026.11.3, examples passed Nov 21, 2026. By Rolling Edition, https://rollingedition.com/evaluating-llm-applications/intervals-and-sample-size. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Decide whether a change is better, and how many questions you need
 
@@ -25,7 +25,7 @@ Ask the same question twice and a model can answer differently. This chapter's c
 
 The variance set holds five samples of the assistant's reply to each dev item, drawn at temperature 0.7. The judge reads every reply at temperature zero. An item flips when its five verdicts are not all the same. Counting the flips gives a measure of how much the verdicts move from sample to sample, before any change is made.
 
-Example `flip-rate` (Python 3.12.15 · numpy 2.5.5 · pydantic 2.14.3 · typing-extensions 4.16.0), passing in Edition 2026.11.2:
+Example `flip-rate` (Python 3.12.15 · numpy 2.5.5 · pydantic 2.14.3 · typing-extensions 4.16.0), passing in Edition 2026.11.3:
 
 ```python
 """The flip rate over the dev variance set: the share of items whose judge verdict differs across their five samples. The
@@ -104,7 +104,7 @@ The flip rate measures only the spread that comes from sampling this assistant's
 
 [Chapter 1](measure-before-you-change#a-pass-rate-and-its-interval) showed an interval on a pass rate and used it to read a small set. This section explains the method, because the rest of the chapter uses it three ways: on a rate, on a paired difference, and on a difference that has to clear a stricter level.
 
-The method is the percentile bootstrap. The items in a set are one sample of the questions a team could have written, so a different set would give a somewhat different rate. To estimate how much, draw items from the set with replacement, as many as the set holds, so that some items come up twice and some not at all. Compute the statistic for that draw, repeat the draw many times, and keep the middle 95% of the results. The bootstrap adds no data. It reuses the items the set already has, and it shows how far the statistic would move if the set had been another draw of the same kind.
+The method is the [percentile bootstrap](#a-pass-rate-and-its-interval). The items in a set are one sample of the questions a team could have written, so a different set would give a somewhat different rate. To estimate how much, draw items from the set with replacement, as many as the set holds, so that some items come up twice and some not at all. Compute the statistic for that draw, repeat the draw many times, and keep the middle 95% of the results. The bootstrap adds no data. It reuses the items the set already has, and it shows how far the statistic would move if the set had been another draw of the same kind.
 
 The unit of resampling is the item, and that is the rule to keep. For a rate, each item contributes its verdict. For a paired difference, each item contributes one number: the verdict of prompt B minus the verdict of the baseline, which is plus one, zero or minus one. For the variance set, the five samples of an item are kept together, because they answer one question. Drawing them apart would make them look like five independent questions, and the interval would come out too narrow. [Miller (2024)](https://arxiv.org/abs/2411.00640) makes the same point for questions that come in related groups. That paper is a preprint and a practitioner's note, not a reviewed method, so this book uses it for the reason and not as proof.
 
@@ -116,11 +116,11 @@ The method also depends on the set being a fair sample of the questions, which [
 
 ## Paired comparisons {#paired-comparisons}
 
-Two prompts answer the same questions, so their results are paired. For each item, subtract the verdict of the baseline from the verdict of prompt B, and average the differences over the set. The average is the comparison, and its interval comes from the bootstrap over items.
+Two prompts answer the same questions, so their results are paired. A paired comparison subtracts, for each item, the verdict of the baseline from the verdict of prompt B, and averages the differences over the set. Its interval comes from the bootstrap over items.
 
 Pairing matters because most items agree. An item that both prompts pass, or both fail, contributes nothing to the difference, whatever the question's difficulty. The comparison's spread comes from the items on which the two prompts split. An unpaired comparison takes two separate pass rates and sets them side by side. It carries the variation between questions on every item, including the ones that agree, and that variation can hide a real difference. The paired version cancels the part the two prompts share. The argument for paired differences in Miller (2024) says the same: the variance of a paired difference falls as long as the two models' scores on each item are positively correlated.
 
-Example `paired-prompt-b` (Python 3.12.15 · numpy 2.5.5 · pydantic 2.14.3 · typing-extensions 4.16.0), passing in Edition 2026.11.2:
+Example `paired-prompt-b` (Python 3.12.15 · numpy 2.5.5 · pydantic 2.14.3 · typing-extensions 4.16.0), passing in Edition 2026.11.3:
 
 ```python
 """Compares prompt-b (P2) with the baseline prompt (P1) on the eighty dev items: each pass rate, the paired difference with
@@ -191,17 +191,17 @@ The baseline passes 78.5% (62 of 79). Prompt B passes 81.0% (64 of 79). The diff
 
 The split shows where the difference lives. 59 items pass under both prompts, and 12 fail under both. Only the items that split move the difference: 5 pass only under prompt B, and 3 pass only under the baseline.
 
-The interval includes zero, so the reading is no difference detected at n = 79. The interval runs from a drop to a rise, and this set can't say which end is nearer. No difference detected is a finding about this set at this size. It is not a claim that the prompts are equal, and the text shouldn't say they are.
+The interval includes zero, so the reading is no difference detected at n = 79. The interval runs from a drop to a rise, and this set can't say which end is nearer. No difference detected is a finding about a set at its size. It is not a claim that the prompts are equal, and the text shouldn't say they are.
 
 **Working rule:** Compare variants on the same items, paired, and report the difference with its interval and n. Call one variant better only when the whole interval sits above zero, and worse only when the whole interval sits below it. When the interval includes zero, report no difference detected at that n, and say how many items the difference would need, as [How many questions a difference needs](#how-many-questions) works out.
 
 ## Held-out, once {#held-out-once}
 
-Dev items are for building. A team may tune a prompt on them, read the failures and change the next version. The dev results can't then prove that a change works, because the change was shaped by them. The held-out set is the check that isn't tuned. A comparison on held-out is run once, against rules fixed before the run: the variants, the level and the reading. Run it again after a change of mind, or choose the level after seeing the number, and the interval no longer means what it says.
+Dev items are for building. A team may tune a prompt on them, read the failures and change the next version. The dev results can't then prove that a change works, because the change was shaped by them. The [held-out set](#dev-and-held-out) is the check that isn't tuned. A comparison on held-out is run once, against rules fixed before the run: the variants, the level and the reading. Run it again after a change of mind, or choose the level after seeing the number, and the interval no longer means what it says.
 
 This section runs three comparisons on the held-out set, each variant against the baseline. Prompt B is the one from [Paired comparisons](#paired-comparisons). The variant k5 retrieves five sections instead of three. The variant unfiltered retrieves from every version of the docs at once, with three sections, instead of only the asked version.
 
-Example `held-out-variants` (Python 3.12.15 · numpy 2.5.5 · pydantic 2.14.3 · typing-extensions 4.16.0), passing in Edition 2026.11.2:
+Example `held-out-variants` (Python 3.12.15 · numpy 2.5.5 · pydantic 2.14.3 · typing-extensions 4.16.0), passing in Edition 2026.11.3:
 
 ```python
 """Compares prompt-b, k5 and unfiltered with the baseline on the held-out items, each variant once, at the level the
@@ -313,7 +313,7 @@ The count is part of the design. Count the comparisons of one metric that the ch
 The question to ask before a comparison is how many items it needs to show a difference of the size the team cares about. The answer depends on one quantity: how much the two variants disagree, item by item. Two prompts that disagree on few items show a small difference with few items.
 The paired formula makes this concrete. Write z-conf for the two-sided normal value at the confidence level and z-power for the one at the power. Then n = (z-conf + z-power)² · var(d) / δ², where var(d) is the variance of one item's paired difference and δ is the difference to detect. The variance is the share of items on which the two variants disagree, minus the square of their average difference. So the estimate is driven by disagreement, not by the pass rates themselves. This section uses 95% confidence and 80% power.
 
-Example `sample-size` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pydantic 2.14.3 · typing-extensions 4.16.0), passing in Edition 2026.11.2:
+Example `sample-size` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pydantic 2.14.3 · typing-extensions 4.16.0), passing in Edition 2026.11.3:
 
 ```python
 """How many items a paired comparison needs to detect a difference of 5 and of 10 points, with 95% confidence and 80% power.
@@ -397,7 +397,7 @@ reading: with 20 items and a change that disagrees with the baseline on 10.1% of
 
 Here the code reads the disagreement between prompt B and the baseline on the dev items. Its assumption is printed, and it is the one to check: the next change disagrees with the baseline on about as many items as prompt B did. Here the share of items that disagree is 10.1% (8 of 79).
 
-Example `sample-size-limits` (Python 3.12.15 · numpy 2.5.5 · pydantic 2.14.3 · typing-extensions 4.16.0), passing in Edition 2026.11.2:
+Example `sample-size-limits` (Python 3.12.15 · numpy 2.5.5 · pydantic 2.14.3 · typing-extensions 4.16.0), passing in Edition 2026.11.3:
 
 ```python
 """The arithmetic behind the five-point figure in sample-size, and the limits of its inputs: the interval on the share of
@@ -481,7 +481,7 @@ The same estimate answers the question for Chapter 1's set. With twenty items, t
 
 Chapter 1's set disagreed on 10.0% (2 of 20) of its items.
 
-Its interval was 30.0 points wide. The formula gives 27.8 points at the same disagreement, which is close. The [twenty-item example](https://github.com/rollingedition/book-evaluating-llm-applications/blob/7ea4125515ebebc29a8a8af15855471e1681785d/examples/twenty-cannot-tell.py) shows that set. At that disagreement, twenty items would usually miss a difference of ten points, and a team that wants to see a difference of five points needs hundreds of items, not dozens.
+Its interval was 30.0 points wide. The formula gives 27.8 points at the same disagreement, which is close. The [twenty-item example](https://github.com/rollingedition/book-evaluating-llm-applications/blob/8c34edd978b89b13f71af691b1c0a38f3c262020/examples/twenty-cannot-tell.py) shows that set. At that disagreement, twenty items would usually miss a difference of ten points, and a team that wants to see a difference of five points needs hundreds of items, not dozens.
 
 The estimate rests on the discordant items alone, so it is an order of magnitude, not a count. Its 95% interval on the share is [3.8%, 17.7%]. Across that interval, a five-point difference needs 118 items at the low end and 555 at the high end. The formula is a normal approximation, while the reading rule uses a bootstrap, and the two agree only roughly when few items disagree. At the held-out level of 98.33%, the same inputs need 422 items for a five-point difference.
 

@@ -3,19 +3,19 @@ title: "Language Models from the Ground Up"
 chapter: "Choosing the next token"
 chapter_id: choosing-the-next-token
 book: language-models-from-the-ground-up
-edition: 2026.11.15
+edition: 2026.11.16
 verified: 2026-11-19
-edition_code: ST86-2YTJ
+edition_code: FY8Q-PVVV
 canonical: https://rollingedition.com/language-models-from-the-ground-up/choosing-the-next-token
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“Choosing the next token,” chapter 9 of Language Models from the Ground Up, Edition 2026.11.15, examples passed Nov 19, 2026. By Rolling Edition, https://rollingedition.com/language-models-from-the-ground-up/choosing-the-next-token. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Choosing the next token,” chapter 9 of Language Models from the Ground Up, Edition 2026.11.16, examples passed Nov 19, 2026. By Rolling Edition, https://rollingedition.com/language-models-from-the-ground-up/choosing-the-next-token. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Choosing the next token
 
 By the end of this chapter you can turn a language model's probabilities into text, and choose how: always the likeliest token, the likeliest whole text by beam search, or a sample shaped by a temperature, a top-k or top-p cut, a repetition penalty and a minimum length. You'll measure what each choice does to the text, and learn which failures no choice of setting can fix.
 
-A language model gives a probability for every possible next token; it doesn't write. To write, something has to choose one token, append it, ask for the next probabilities, and repeat until the model predicts the end marker, `</s>`. That choosing is called **decoding**, and it decides much of what the text reads like, with the model unchanged.
+A language model gives a probability for every possible next token; it doesn't write. To write, something has to choose one token, append it, ask for the next probabilities, and repeat until the model predicts the end marker, `</s>`. Turning a model's probabilities into text, one chosen token at a time, is called **decoding**, and it decides much of what the text reads like, with the model unchanged.
 
 The store has a reason to write: of the furniture and home goods in its validation split, 597 of 4,282 products have no description, and so do 14% of its training products. The store's model, the transformer that [chapter 8](#training-a-small-model) trained and measured, learned descriptions from the store's own text, so it can draft one from a product's name: start the text with the name and `<sep>`, as every training text was laid out, and let the model continue. This chapter does that with greedy decoding, beam search and sampling, using the book's shared module `lib.decoding`, built in NumPy on `lib.transformer`. Then it measures what each method writes against the store's real descriptions, and fixes two failures that the measurements expose: repetition, and descriptions that come out empty.
 
@@ -25,7 +25,7 @@ The simplest decoder is **greedy**: at every step, take the single likeliest tok
 
 A product with no description is the store's need, so start with one: `front porch welcome sign wall décor`, decoded greedily for up to 60 tokens. Then take a second product, `5 light light bulb`, and print the probability that its description is empty:
 
-Example `greedy-description` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1), passing in Edition 2026.11.15:
+Example `greedy-description` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1), passing in Edition 2026.11.16:
 
 ```python
 """Greedy decoding writes one description of a product that has none, and shows how it repeats itself, and how likely
@@ -77,7 +77,7 @@ The greedy description also says the sign is `made of natural wood`, which nothi
 
 ## Search for the likeliest text {#search-for-the-likeliest-text}
 
-[Greedy decoding](#choose-the-likeliest-token) picks the likeliest token at each step, which isn't the same as the likeliest text: a slightly less likely first word can lead to much likelier words after it. **Beam search** looks further. It keeps the k likeliest partial texts, the beam, scored by their **total log-probability**, the sum of the logarithms of their tokens' probabilities, where higher means likelier. At each step it extends every text in the beam by its k likeliest next tokens, and keeps the best k of the results. A text that reaches the end marker is finished and stays in the running. The heart of `lib.decoding.beam` is the line that scores each extension:
+[Greedy decoding](#choose-the-likeliest-token) picks the likeliest token at each step, which isn't the same as the likeliest text: a slightly less likely first word can lead to much likelier words after it. **Beam search** looks further, keeping the k likeliest partial texts, the beam, scored by their **total log-probability**, the sum of the logarithms of a text's token probabilities, where higher means likelier. At each step it extends every text in the beam by its k likeliest next tokens, and keeps the best k of the results. A text that reaches the end marker is finished and stays in the running. The heart of `lib.decoding.beam` is the line that scores each extension:
 
 ```python
             candidates += [(score + log_p[token], written + [int(token)]) for token in np.argsort(-log_p, kind="stable")[:width]]
@@ -85,7 +85,7 @@ The greedy description also says the sign is `made of natural wood`, which nothi
 
 Which description do you expect beam search to rank likeliest for the welcome sign? Run it twice, with a beam of 4. The first run completes the search query `outdoor bar` by up to 4 tokens, the end of the name included, the way a search box might offer whole phrases; the second writes the welcome sign's description and prints the likeliest text overall and per token, its total log-probability divided by its length.
 
-Example `beam-search` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1), passing in Edition 2026.11.15:
+Example `beam-search` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1), passing in Edition 2026.11.16:
 
 ```python
 """Beam search with a beam of four, on a search query and on a product's description. The prose quotes the two
@@ -131,7 +131,7 @@ The likeliest description overall is empty. Ending at once has a probability of 
 
 ## Sample, with a temperature {#sample-with-a-temperature}
 
-Greedy decoding and beam search use only the top of the distribution. **Sampling**, which [chapter 1](#predicting-the-next-word) used to generate names, uses all of it: draw the next token at random, in proportion to its probability, so a token with probability 0.2 is chosen one time in five. Before sampling, the distribution can be made sharper or flatter with a **temperature**, T: divide every logit by T before the softmax. In symbols, with zᵢ the logit of token i, as in [chapter 5](#predict-from-a-window):
+Greedy decoding and beam search use only the top of the distribution. **Sampling**, which [chapter 1](#predicting-the-next-word) used to generate names, uses all of the distribution: draw the next token at random, in proportion to its probability, so a token with probability 0.2 is chosen one time in five. Before sampling, the distribution can be made sharper or flatter with a **temperature**, T: divide every logit by T before the softmax. In symbols, with zᵢ the logit of token i, as in [chapter 5](#predict-from-a-window):
 
 P(token i) = exp(zᵢ / T) / Σⱼ exp(zⱼ / T)
 
@@ -139,7 +139,7 @@ A temperature below 1 sharpens the distribution, giving more of the probability 
 
 To see what temperature does to one real choice, stop the greedy description early and read the next token's distribution at three temperatures. For each one, the example prints the three likeliest tokens, how many cover 90% of the probability, and how much falls outside temperature 1's 90% cover.
 
-Example `temperature-by-hand` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1), passing in Edition 2026.11.15:
+Example `temperature-by-hand` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1), passing in Edition 2026.11.16:
 
 ```python
 """The next token's distribution after the first nine tokens of the greedy description, at three temperatures, and how
@@ -209,7 +209,7 @@ Top-p adapts to the model's confidence, where top-k doesn't. At the point in the
 
 Four samplers, each from the same random seed, write the welcome sign's description up to 40 tokens: sampling at temperature 1, sampling at 0.7, top-k with k = 20, and top-p with p = 0.9. Then the example replays the temperature-1 sample, listing the tokens drawn from outside each step's 90% nucleus, which top-p 0.9 would have cut.
 
-Example `sample-descriptions` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1), passing in Edition 2026.11.15:
+Example `sample-descriptions` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1), passing in Edition 2026.11.16:
 
 ```python
 """Four samplers write the same description from one seed, and the temperature-1 draws are then replayed to mark the
@@ -274,7 +274,7 @@ Single samples show the flavour of each method; measurements show the trade-offs
 
 How close does each setting come to real text? Draw 20 validation products at random from those with a description, write a description for each with every method, and compare them with the real ones, cut at the same 60-token limit:
 
-Example `measure-decoding` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1), passing in Edition 2026.11.15:
+Example `measure-decoding` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1), passing in Edition 2026.11.16:
 
 ```python
 """Seven ways of choosing the next token, measured on the same 20 product descriptions: how often each repeats
@@ -373,7 +373,7 @@ What the measures can't say is whether a description is true. A description can 
 
 Go back to where the [greedy description](#choose-the-likeliest-token) was about to write `distressed` a second time. Apply the penalty by hand to the next token's logits, check the result against `lib.decoding.penalize`, and compare the probabilities before and after. Then write it greedily with the penalty, to see whether the loop goes:
 
-Example `repetition-penalty-by-hand` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1), passing in Edition 2026.11.15:
+Example `repetition-penalty-by-hand` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1), passing in Edition 2026.11.16:
 
 ```python
 """The repetition penalty applied by hand to the next token's logits, checked against lib.decoding.penalize, and then
@@ -429,7 +429,7 @@ The [greedy example](#choose-the-likeliest-token) found the model ready to write
 
 The bulb that greedy decoding left empty is the test case. Decode it twice, with no minimum and then with a minimum of 10 tokens; the output first gives the chance its description ends at once:
 
-Example `minimum-length` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1), passing in Edition 2026.11.15:
+Example `minimum-length` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1), passing in Edition 2026.11.16:
 
 ```python
 """Greedy decoding of the bulb's description, without a minimum length and with one that forbids the end marker until

@@ -3,13 +3,13 @@ title: "Evaluating LLM Applications"
 chapter: "Read the replies to find what to measure"
 chapter_id: read-the-outputs
 book: evaluating-llm-applications
-edition: 2026.11.2
+edition: 2026.11.3
 verified: 2026-11-21
-edition_code: G0M7-3TW7
+edition_code: 4V0Y-VKTV
 canonical: https://rollingedition.com/evaluating-llm-applications/read-the-outputs
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“Read the replies to find what to measure,” chapter 2 of Evaluating LLM Applications, Edition 2026.11.2, examples passed Nov 21, 2026. By Rolling Edition, https://rollingedition.com/evaluating-llm-applications/read-the-outputs. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Read the replies to find what to measure,” chapter 2 of Evaluating LLM Applications, Edition 2026.11.3, examples passed Nov 21, 2026. By Rolling Edition, https://rollingedition.com/evaluating-llm-applications/read-the-outputs. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Read the replies to find what to measure
 
@@ -27,15 +27,15 @@ This chapter doesn't choose the checks or write a judge's rubric, and it doesn't
 
 ## What the replies look like {#what-the-replies-look-like}
 
-Three variants of the assistant answered the same dev items, and every comparison in this chapter sets one variant's replies beside another's. The baseline is the setup chapter 1 measured. It retrieves sections only from the version the question asks about, so its context holds one version's docs. The unfiltered variant drops that filter. Its context can hold sections from all three versions, each marked with its version, so the model can see a mismatch and can also copy the wrong version's text. The second-model variant keeps the baseline's prompt and hands the answer to a smaller model, Qwen3 with 0.6 billion parameters in an 8-bit build. The prompt is the same, so a difference from the baseline comes from the model, not the prompt.
+Three variants of the assistant answered the same dev items, and every comparison in this chapter sets one variant's replies beside another's. The baseline is the setup chapter 1 measured. It retrieves sections only from the version the question asks about, so its context holds one version's docs. The unfiltered variant drops the baseline's version filter. Its context can hold sections from all three versions, each marked with its version, so the model can see a mismatch and can also copy the wrong version's text. The second-model variant keeps the baseline's prompt and hands the answer to a smaller model, Qwen3 with 0.6 billion parameters in an 8-bit build. The prompt is the same, so a difference from the baseline comes from the model, not the prompt.
 
-Each dev item has a kind, and the kind says what a right reply looks like. An answerable item is one the docs answer. An unanswerable item asks for something the docs don't say, and the right reply is a decline in the words the assistant was given: "The docs don't say." A version-dependent item has an answer that changes with the version asked about, so the same question asked of two versions can have two right answers. An ambiguous item can be read two ways, and the docs answer each reading. Some items are planted, written to catch one specific mistake. The output gives each planted item its reason, which is one of a false premise, a near-miss term, a version swap, a stale answer or an ambiguous target. A reply that fails a planted item shows whether the assistant made the mistake that item was written for.
+Each dev item has a kind, and the kind says what a right reply looks like. An [answerable item](#the-twenty-items) is one the docs answer. An [unanswerable item](#the-twenty-items) asks for something the docs don't say, and the right reply is a decline in the words the assistant was given: "The docs don't say." A version-dependent item has an answer that changes with the version asked about, so the same question asked of two versions can have two right answers. An ambiguous item can be read two ways, and the docs answer each reading. Some items are [planted](#the-twenty-items), written to catch one specific mistake. The output gives each planted item its reason, which is one of a false premise, a near-miss term, a version swap, a stale answer or an ambiguous target. A reply that fails a planted item shows whether the assistant made the mistake that item was written for.
 
 Reading one item takes three steps. Start with the question and its version, since a reply is right only for the version it names. Then read the reference answer, which is the author's statement of what a right reply says. Then read the three replies against it, one at a time. Only after that does a reader group the replies or count them.
 
 The example that follows is where the chapter starts. It prints every dev item with its reference answer and each variant's reply, grouped by kind and sorted by ID, so the three replies to one question sit on adjacent lines. Read across an item's lines, not down one variant's column. The variants fail in different ways on the same question, and that difference is what to see. Each reply is cut to its first 120 characters, and its line says whether the reply declined and what it cited. A reply that holds the decline phrase inside other text is marked as a phrase, not a decline, so you can see where the parser draws the line.
 
-Example `read-replies-dev` (Python 3.12.15 · numpy 2.5.5 · pydantic 2.14.3 · typing-extensions 4.16.0), passing in Edition 2026.11.2:
+Example `read-replies-dev` (Python 3.12.15 · numpy 2.5.5 · pydantic 2.14.3 · typing-extensions 4.16.0), passing in Edition 2026.11.3:
 
 ```python
 """Prints the dev items, grouped by kind and sorted by ID, with each item's reference answer and the baseline,
@@ -520,7 +520,7 @@ The counts carry the label "coded by the drafting model (one coder; not human la
 
 The tally example turns the notes into counts, and it checks the codes first. Each dev item has exactly one code per variant, no code names a mode the file doesn't define, and the file carries the label. Then it prints one row per mode and one column per variant, and one labelled line for each count, which are the numbers the prose below quotes.
 
-Example `tally-failure-modes` (Python 3.12.15 · numpy 2.5.5 · pydantic 2.14.3 · typing-extensions 4.16.0), passing in Edition 2026.11.2:
+Example `tally-failure-modes` (Python 3.12.15 · numpy 2.5.5 · pydantic 2.14.3 · typing-extensions 4.16.0), passing in Edition 2026.11.3:
 
 ```python
 """Counts the drafting model's failure codes over the dev items, per variant, and prints one table and one labelled line

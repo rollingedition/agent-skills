@@ -3,13 +3,13 @@ title: "Small Open Models"
 chapter: "When a small model is the wrong choice"
 chapter_id: when-a-small-model-is-the-wrong-choice
 book: small-open-models
-edition: 2026.11.8
+edition: 2026.11.9
 verified: 2026-11-20
-edition_code: HZX4-S3DE
+edition_code: ND0S-78AT
 canonical: https://rollingedition.com/small-open-models/when-a-small-model-is-the-wrong-choice
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“When a small model is the wrong choice,” chapter 10 of Small Open Models, Edition 2026.11.8, examples passed Nov 20, 2026. By Rolling Edition, https://rollingedition.com/small-open-models/when-a-small-model-is-the-wrong-choice. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“When a small model is the wrong choice,” chapter 10 of Small Open Models, Edition 2026.11.9, examples passed Nov 20, 2026. By Rolling Edition, https://rollingedition.com/small-open-models/when-a-small-model-is-the-wrong-choice. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # When a small model is the wrong choice
 
@@ -21,7 +21,7 @@ A small router can beat a larger model on most of a set of messages and still be
 
 [Chapter 2](measure-the-routing-task#the-baseline-from-recorded-answers) set the stand-in's score as the baseline. This section puts the router beside it on the same messages: all 1001 messages of `test_1001`, the fixed sample that every chapter's samples come from ([chapter 2](measure-the-routing-task#dev-test-and-fixed-samples)). The router is the classifier `banking77-lora-v1`, run live.
 
-Example `router-on-test-1001` (Python 3.12.15 · peft 0.21.3 · torch 2.15.0+cpu · torchao 0.18.0+cpu · transformers 5.23.0), passing in Edition 2026.11.8:
+Example `router-on-test-1001` (Python 3.12.15 · peft 0.21.3 · torch 2.15.0+cpu · torchao 0.18.0+cpu · transformers 5.23.0), passing in Edition 2026.11.9:
 
 ```python
 """The router and the stand-in on all 1,001 messages of test_1001, the committed test order. The prose rests on the
@@ -70,7 +70,7 @@ On the whole set the router is ahead, right on 847/1001 (84.6%) against the stan
 
 The count that matters most for the inbox is the wrong answers the router sends to a caller: 76/1001 (7.6%). Those are messages it kept, because their confidence cleared the threshold. [Chapter 5](fine-tune-with-lora#choose-the-threshold-on-dev) chose that threshold on the dev split, and [chapter 9](version-watch-and-fall-back#fall-back-to-a-person) says where what the router hands off goes, which is a person.
 
-Example `where-the-router-still-loses` (Python 3.12.15 · peft 0.21.3 · torch 2.15.0+cpu · torchao 0.18.0+cpu · transformers 5.23.0), passing in Edition 2026.11.8:
+Example `where-the-router-still-loses` (Python 3.12.15 · peft 0.21.3 · torch 2.15.0+cpu · torchao 0.18.0+cpu · transformers 5.23.0), passing in Edition 2026.11.9:
 
 ```python
 """Where the router still loses: test_200 scored for the router and the stand-in. The prose rests on the count of
@@ -160,9 +160,9 @@ Put together, the small models here did three things: a prompted model leaned on
 
 ## Count the bill and the machine {#count-the-bill-and-the-machine}
 
-A hosted model is paid per message. Its monthly bill is the number of messages times what one message costs, and one message costs its input tokens at the input price plus its output tokens at the output price. A price list written per million tokens gives the price per token when divided by one million. A routing message is long on the input side, because the prompt and the message are both counted, and short on the output side, because the answer is one team name.
+A hosted model is paid per message. A hosted model's monthly bill is the number of messages times what one message costs, and one message costs its input tokens at the input price plus its output tokens at the output price. A price list written per million tokens gives the price per token when divided by one million. A routing message is long on the input side, because the prompt and the message are both counted, and short on the output side, because the answer is one team name.
 
-A machine is paid for whether it is busy or not. Its monthly bill is its hours times its hourly rate. The number of messages it can route in a month is its throughput, in messages per second, times the seconds in a month, times its utilisation, which is the share of the month it is busy. The machine's cost per message therefore depends on how many messages it routes, and the comparison needs a volume before it gives an answer.
+A machine is paid for whether it is busy or not. A machine's monthly bill is its hours times its hourly rate. The number of messages a machine can route in a month is its throughput, in messages per second, times the seconds in a month, times its utilisation, which is the share of the month it is busy. The machine's cost per message therefore depends on how many messages it routes, and the comparison needs a volume before it gives an answer.
 
 The three formulas below hold for any pair of options.
 
@@ -180,7 +180,7 @@ Throughput is the input that a recording has to supply, because it depends on th
 
 Only the one-per-call pair is like for like. The classifier in batches of 16 takes 16 messages in one forward pass, and the stand-in takes one message per call with its whole router prompt. So the batched ratio of 104.0 mixes model size with batching, and this chapter does not use it for the comparison. The comparison uses the one-per-call ratio of 60.8. Each copy got one timed pass over the 200 messages of `test_200`, after a warm-up of one message, with tokenization inside the timed span. The ratios come from unrounded rates, so they are not exactly the quotient of the printed rates.
 
-Example `cost-ratio-from-recording` (Python 3.12.15 · torch 2.15.0+cpu · transformers 5.23.0), passing in Edition 2026.11.8:
+Example `cost-ratio-from-recording` (Python 3.12.15 · torch 2.15.0+cpu · transformers 5.23.0), passing in Edition 2026.11.9:
 
 ```python
 """The throughput rates and ratios as recorded, and the machine they were measured on. The prose rests on the
@@ -231,7 +231,7 @@ On this machine, at this thread count, the int8 copy was no faster than float32.
 
 The bill needs a rate for the router, and the recording gives one: the classifier at one message per call, timed as the stand-in was. The route handles one message per request, so the bill uses that rate. A reader replaces it with one taken on their own machine.
 
-Example `monthly-bill-from-labelled-inputs` (Python 3.12.15 · torch 2.15.0+cpu · transformers 5.23.0), passing in Edition 2026.11.8:
+Example `monthly-bill-from-labelled-inputs` (Python 3.12.15 · torch 2.15.0+cpu · transformers 5.23.0), passing in Edition 2026.11.9:
 
 ```python
 """The monthly bill for a hosted model and for the router on one machine, from inputs the reader sets. The hosted bill,
@@ -342,13 +342,13 @@ The table is a list of what to count, not a score. Read its rows in order: the r
 
 ## Know the break-even {#know-the-break-even}
 
-The break-even is the volume at which the two monthly bills are equal. Below it, the hosted model costs less at the inputs you set. Above it, the machine costs less, provided the volume is inside the machine's capacity. The machine's bill is paid whether it is busy or idle, so the break-even divides that bill by the hosted price per message:
+The break-even is the volume at which the hosted model's monthly bill and the machine's are equal. Below it, the hosted model costs less at the inputs you set. Above it, the machine costs less, provided the volume is inside the machine's capacity. The machine's bill is paid whether it is busy or idle, so the break-even divides that bill by the hosted price per message:
 
 break-even messages per month = machine bill per month ÷ hosted price per message
 
 The formula does not subtract the machine's cost per message from the hosted price. The machine's cost per message at capacity is its fixed bill divided by its capacity, and that bill is already counted once in the numerator. Subtracting the same cost again would count the machine twice. The formula also holds only within capacity. Above it, one machine cannot carry the volume, and the count is made again for a second machine, with its own bill and its own capacity.
 
-Example `break-even-from-recorded-ratio` (Python 3.12.15 · torch 2.15.0+cpu · transformers 5.23.0), passing in Edition 2026.11.8:
+Example `break-even-from-recorded-ratio` (Python 3.12.15 · torch 2.15.0+cpu · transformers 5.23.0), passing in Edition 2026.11.9:
 
 ```python
 """The monthly volume at which one machine's bill equals the hosted bill for the router's prompts. The break-even line

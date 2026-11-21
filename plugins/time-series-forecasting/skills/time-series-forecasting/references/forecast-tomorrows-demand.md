@@ -3,13 +3,13 @@ title: "Time Series Forecasting"
 chapter: "Forecast tomorrow's demand"
 chapter_id: forecast-tomorrows-demand
 book: time-series-forecasting
-edition: 2026.11.10
+edition: 2026.11.11
 verified: 2026-11-20
-edition_code: 6387-FADQ
+edition_code: 1RPH-3A4D
 canonical: https://rollingedition.com/time-series-forecasting/forecast-tomorrows-demand
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“Forecast tomorrow's demand,” chapter 1 of Time Series Forecasting, Edition 2026.11.10, examples passed Nov 20, 2026. By Rolling Edition, https://rollingedition.com/time-series-forecasting/forecast-tomorrows-demand. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Forecast tomorrow's demand,” chapter 1 of Time Series Forecasting, Edition 2026.11.11, examples passed Nov 20, 2026. By Rolling Edition, https://rollingedition.com/time-series-forecasting/forecast-tomorrows-demand. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Forecast tomorrow's demand
 
@@ -23,11 +23,11 @@ This book follows one case throughout: an electricity supplier that buys power a
 
 The supplier commits to its purchases before the day starts, and it needs a range as well as a single number, because buying too little costs more than buying too much. This book builds the forecast that such a purchase starts from. A forecast here is the expected demand of one client in each hour, made from readings recorded before the forecast was made.
 
-Three terms fix what a forecast is. The moment a forecast is made is its cutoff. It uses only the readings before that cutoff, and it reaches forward a fixed number of hours, its horizon. A window is one cutoff with its horizon and the forecast it produces. Here the horizon is 24 hours, so each window covers one day: the 24 hours that start at its cutoff.
+Three terms fix what a forecast is. The moment a forecast is made is its cutoff. A forecast uses only the readings before its cutoff, and it reaches forward a fixed number of hours, its horizon. A window is one cutoff with its horizon and the forecast it produces. Here the horizon is 24 hours, so each window covers one day: the 24 hours that start at its cutoff.
 
 The timing matters as much as the method. Every window in this book has its cutoff at 00:00 on the day it predicts, so the last reading it can use is the one for 23:00 on the day before. The case buys before the day starts, so a midnight cutoff is a simplification. The book keeps it so that each window needs only the day before. A supplier that buys earlier would cut earlier and forecast further ahead. A forecast that reads one hour past its cutoff would use information the supplier does not have when it buys, and its score would flatter it.
 
-The data is public. It is the ElectricityLoadDiagrams20112014 dataset from the UCI Machine Learning Repository, by Trindade (2015), with the DOI 10.24432/C58C86. It is licensed under CC BY 4.0. The book ships a cut of it, `electricity_hourly.csv.gz`, with the licence beside it in the same folder. The [data card](https://github.com/rollingedition/book-time-series-forecasting/blob/b469e7eecb1893afe1b6e949a206d7a46591f48c/examples/data/README.md) gives the source, the cut and its limits.
+The data is public. It is the ElectricityLoadDiagrams20112014 dataset from the UCI Machine Learning Repository, by Trindade (2015), with the DOI 10.24432/C58C86. It is licensed under CC BY 4.0. The book ships a cut of it, `electricity_hourly.csv.gz`, with the licence beside it in the same folder. The [data card](https://github.com/rollingedition/book-time-series-forecasting/blob/c81194a3b125d35d83886136e2a40dc799ed2876/examples/data/README.md) gives the source, the cut and its limits.
 
 The raw file holds 370 clients, with a reading every 15 minutes. The cut averages the four readings of each hour, which gives the energy used in that hour in kWh, and it keeps two whole years, 2013 and 2014. One client, `MT_223`, has no non-zero reading in that window, so the cut drops it. The 369 clients that remain are sorted by id, and 30 are kept at evenly spaced positions. A reader who cuts the raw file must drop `MT_223` and take the same 30 evenly spaced positions, or the counts in this book will not match.
 
@@ -56,7 +56,7 @@ The book keeps every value as the meter recorded it. Nothing is filled, smoothed
 
 The lead client has readings in every hour of the window, so none of its rows are `before_first_reading`. Over the two years it has 17516 ordinary rows. It has 2 gap rows and 2 repeat rows, one of each in each year.
 
-Example `load-lead-client` (Python 3.13.16 · numpy 2.5.5 · pandas 2.3.3 · utilsforecast 0.2.17), passing in Edition 2026.11.10:
+Example `load-lead-client` (Python 3.13.16 · numpy 2.5.5 · pandas 2.3.3 · utilsforecast 0.2.17), passing in Edition 2026.11.11:
 
 ```python
 """Loads the lead client's hourly demand, counts its quirk labels, and checks the eight-week history before each
@@ -137,7 +137,7 @@ Take the window at 00:00 on Dec 25 as a worked case. Its forecast for 00:00 on D
 
 Why a day and not a week? A season of 168 hours would copy the same hour of the same weekday from the week before, which is another valid baseline for a series with a weekly rhythm. This chapter uses the daily season because the question is the next day, and because the day-ahead forecast is the one the case needs.
 
-Example `seasonal-naive-next-day` (Python 3.13.16 · numpy 2.5.5 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.10:
+Example `seasonal-naive-next-day` (Python 3.13.16 · numpy 2.5.5 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.11:
 
 ```python
 """Forecasts the lead client's next day with seasonal naive for each day of the held-out week, then scores it.
@@ -217,7 +217,7 @@ Seasonal naive is a baseline, and when a daily cycle dominates the series it can
 
 ## Forecast the next day with one model {#forecast-with-a-statistical-model}
 
-The baseline above answers what a forecast gets with no model at all. The question here is whether a fitted model does better on the same 7 windows, and the model is AutoETS. statsforecast 2.1.1 describes AutoETS as selecting the best ETS (error, trend and seasonality) form with an information criterion (`statsforecast/models.py`, class `AutoETS`). The criterion is AICc, the Akaike information criterion corrected for small samples. It is set in `ets_f`, in `statsforecast/ets.py`, and `AutoETS` offers no other.
+The baseline above answers what a forecast gets with no model at all. The question here is whether a fitted model does better on the same 7 windows, and the model is AutoETS. statsforecast 2.1.1 describes AutoETS as selecting the best ETS (error, trend and seasonality) form with an information criterion (`statsforecast/models.py`, class `AutoETS`). The criterion AutoETS uses is AICc, the Akaike information criterion corrected for small samples. It is set in `ets_f`, in `statsforecast/ets.py`, and `AutoETS` offers no other.
 
 The `model` string sets which forms the model may take, with one letter each for error, trend and season. `Z` lets AICc choose, and `A` fixes the form to additive. This chapter uses `ZZA`: AICc chooses the error and the trend, and the season is additive, so every candidate has a daily cycle. The default, `ZZZ`, also lets AICc choose the season. On this client and these 7 cutoffs it chose no season in every window, a flat form, ETS(A,N,N), so its forecast is one value repeated for the day. This chapter asks whether a model with the daily cycle beats a copy of yesterday, so it does not use that form. Other seasonal forms score differently on this week, and Chapter 4 looks at the forms and the choice.
 
@@ -225,7 +225,7 @@ A fit does three things, and each one matters for what the score means. At a cut
 
 The comparison is fair only when nothing else changes. It uses the same 7 cutoffs and the same 1344 hours of history before each one, and it refits the model at every cutoff using only the history before that cutoff. Only the model differs from the baseline.
 
-Example `autoets-next-day` (Python 3.13.16 · numpy 2.5.5 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.10:
+Example `autoets-next-day` (Python 3.13.16 · numpy 2.5.5 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.11:
 
 ```python
 """Forecasts the lead client's next day with AutoETS for each day of the held-out week, then scores it.
@@ -287,7 +287,7 @@ The counts match the baseline's, so the two scores cover the same 168 hours, and
 
 ## Score both on a held-out week {#score-on-a-held-out-week}
 
-Both examples have now made 7 day-ahead forecasts, from the two sections above. A score turns their errors into one number. The error of an hour is the actual demand minus the forecast. This chapter uses two scores. The mean absolute error, MAE, is the average size of the miss: `MAE = mean(abs(actual - forecast))`. The root mean squared error, RMSE, is `RMSE = sqrt(mean((actual - forecast)^2))`. Both are in kWh, and they answer different questions. Hyndman and Athanasopoulos, in [*Forecasting: Principles and Practice*, ch. 5](https://otexts.com/fpp3/toolbox.html#sec-accuracy), note that a forecast minimising MAE is a forecast of the median, and one minimising RMSE is a forecast of the mean. Because RMSE squares each error, a few large misses raise it more than they raise MAE.
+Both examples have now made 7 day-ahead forecasts, from the two sections above. A score turns the errors of a set of forecasts into one number. The error of an hour is the actual demand minus the forecast. This chapter uses two scores. The mean absolute error, MAE, is the average size of the miss: `MAE = mean(abs(actual - forecast))`. The root mean squared error, RMSE, is `RMSE = sqrt(mean((actual - forecast)^2))`. Both are in kWh, and they answer different questions. Hyndman and Athanasopoulos, in [*Forecasting: Principles and Practice*, ch. 5](https://otexts.com/fpp3/toolbox.html#sec-accuracy), note that a forecast minimising MAE is a forecast of the median, and one minimising RMSE is a forecast of the mean. Because RMSE squares each error, a few large misses raise it more than they raise MAE.
 
 Both scores come from utilsforecast (0.2.17). Its `mae` is the mean of the absolute errors, and its `rmse` is the square root of the mean of the squared errors (`utilsforecast/losses.py`, functions `mae` and `rmse`). The scores pool the 168 scored hours. Each hour counts once, and each of the 7 windows contributes 24 of them.
 
@@ -313,7 +313,7 @@ The forecasts and scores above can go wrong in 5 ways, and only some of them pri
 
 The first failure is a label that is off by an hour, and no score in this chapter detects it. If a reader takes `ds` as the end of its hour rather than the start, the forecasts and the readings they are scored against carry the same shift, so the score does not change. The error is in the purchase instead: the forecast would cover different hours from the ones the supplier buys for. The data card fixes the label, so it is the first thing to check when a forecast is moved to new data.
 
-Leakage flatters a window whose history includes the hours it predicts, and nothing in the score says so. [Hewamalage, Ackermann and Bergmeir (2022)](https://arxiv.org/abs/2203.10716) warn that rolling-origin evaluation is prone to this leak when it is not done with care. The checks here are the cutoff rule and the history length. Each history must end before its cutoff and hold 1344 rows. `history_before` raises an error when a history is short or long. A history with one hour removed is refused: the check at the end of the seasonal naive example prints yes for it.
+[Leakage](#keep-the-future-out-of-history) flatters a window whose history includes the hours it predicts, and nothing in the score says so. [Hewamalage, Ackermann and Bergmeir (2022)](https://arxiv.org/abs/2203.10716) warn that rolling-origin evaluation is prone to this leak when it is not done with care. The checks here are the cutoff rule and the history length. Each history must end before its cutoff and hold 1344 rows. `history_before` raises an error when a history is short or long. A history with one hour removed is refused: the check at the end of the seasonal naive example prints yes for it.
 
 Seasonal naive copies yesterday, so an unusual day becomes tomorrow's forecast, and the held-out week holds one. Dec 25, 2014 is Christmas Day, and the lead client's mean demand that day is 38.40 kWh an hour, against 47.58 kWh on Dec 24. The window for Dec 26 copies that day, so it has the largest MAE of the 7 windows, 12.16 kWh. That is the failure, and the scores show it. One holiday is too few to measure a holiday effect, so the book leaves it alone, as [the case and its data](#the-case-and-its-data) explains. Chapter 10 shows its cost.
 

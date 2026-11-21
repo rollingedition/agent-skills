@@ -1,7 +1,7 @@
 {
   "name": "evaluating-llm-applications",
   "displayName": "Evaluating LLM Applications",
-  "version": "2026.11.2",
+  "version": "2026.11.3",
   "description": "Know whether an LLM application works, and whether a change made it better: test sets, checks, judges you can trust and statistics that hold up, on a documentation assistant for a small command-line tool.",
   "author": {
     "name": "Rolling Edition",

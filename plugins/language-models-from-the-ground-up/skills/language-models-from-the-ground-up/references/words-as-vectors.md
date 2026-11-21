@@ -3,13 +3,13 @@ title: "Language Models from the Ground Up"
 chapter: "Words as vectors"
 chapter_id: words-as-vectors
 book: language-models-from-the-ground-up
-edition: 2026.11.15
+edition: 2026.11.16
 verified: 2026-11-19
-edition_code: ST86-2YTJ
+edition_code: FY8Q-PVVV
 canonical: https://rollingedition.com/language-models-from-the-ground-up/words-as-vectors
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“Words as vectors,” chapter 4 of Language Models from the Ground Up, Edition 2026.11.15, examples passed Nov 19, 2026. By Rolling Edition, https://rollingedition.com/language-models-from-the-ground-up/words-as-vectors. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Words as vectors,” chapter 4 of Language Models from the Ground Up, Edition 2026.11.16, examples passed Nov 19, 2026. By Rolling Edition, https://rollingedition.com/language-models-from-the-ground-up/words-as-vectors. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Words as vectors
 
@@ -21,11 +21,11 @@ Vectors need text that shows how words get used, and the store, an online seller
 
 ## One-hot vectors know nothing {#one-hot-vectors-know-nothing}
 
-Every model so far has treated tokens as names: `patio` is one entry in a table and `outdoor` another, with nothing linking them. Written as vectors, that's a **one-hot** encoding: each token gets a vector as long as the vocabulary, with a 1 in its own position and 0 everywhere else. To measure how alike two vectors are, this book uses **cosine similarity**: the cosine of the angle between them, 1 when they point the same way, 0 when they're at right angles. It ignores how long the vectors are and compares only their directions.
+Every model so far has treated tokens as names: `patio` is one entry in a table and `outdoor` another, with nothing linking them. Written as vectors, that's a **one-hot** encoding, in which each token gets a vector as long as the vocabulary, with a 1 in its own position and 0 everywhere else. To measure how alike two vectors are, this book uses **cosine similarity**: the cosine of the angle between them, 1 when they point the same way, 0 when they're at right angles. It ignores how long the vectors are and compares only their directions.
 
 Give the 2,000 most frequent tokens of the training text one-hot vectors, and compare `patio` with `outdoor`, with `sofa` and with itself. Those 2,000 are about half of the store tokenizer's vocabulary, which keeps every matrix in this chapter small enough to compute in seconds:
 
-Example `one-hot-vectors` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1), passing in Edition 2026.11.15:
+Example `one-hot-vectors` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1), passing in Edition 2026.11.16:
 
 ```python
 """One-hot vectors for the 2,000 most frequent tokens, and the cosine similarity of patio with outdoor, with sofa and with
@@ -77,7 +77,7 @@ The way out is to describe a word by the company it keeps. Two words that appear
 
 Count co-occurrences in the training split's names and descriptions, and list what sits most often near `patio`:
 
-Example `cooccurrence-counts` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1), passing in Edition 2026.11.15:
+Example `cooccurrence-counts` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1), passing in Edition 2026.11.16:
 
 ```python
 """Counts how often each of the 2,000 kept tokens appears within two tokens of another, and lists the six tokens seen most
@@ -119,11 +119,11 @@ So raw counts make poor vectors. Two tokens that both appear often will look ali
 
 ## Weigh co-occurrence by surprise {#weigh-by-surprise}
 
-The fix compares each count with what chance would predict. If `patio` and `furniture` appeared independently of each other, they'd co-occur about as often as their separate frequencies imply. **Pointwise mutual information**, or PMI, measures how far the real count departs from that: the log of the ratio between how often two tokens co-occur and how often they would by chance ([Church and Hanks, 1990](https://aclanthology.org/J90-1003/)). In symbols, for tokens a and b:
+The fix compares each count with what chance would predict. If `patio` and `furniture` appeared independently of each other, they'd co-occur about as often as their separate frequencies imply. **Pointwise mutual information**, or PMI, measures how far the real count departs from chance: the log of the ratio between how often two tokens co-occur and how often they would by chance ([Church and Hanks, 1990](https://aclanthology.org/J90-1003/)). In symbols, for tokens a and b:
 
 PMI(a, b) = log [ P(a, b) / (P(a) · P(b)) ]
 
-where P(a, b) is the share of all co-occurrence counts that are of a and b together, and P(a) and P(b) are each token's share. PMI is positive when two tokens appear together more than chance predicts, and negative when less. Negative values are unreliable, since "less than chance" usually means "rarely seen at all", so **positive PMI**, or PPMI, replaces them with zero. The book's shared module `lib.vectors` computes it from the co-occurrence counts of the [previous section](#describe-by-neighbours), in three lines: the count chance would predict for each pair, the log of the real count over it, and zero wherever that's negative or the pair never occurs:
+where P(a, b) is the share of all co-occurrence counts that are of a and b together, and P(a) and P(b) are each token's share. PMI is positive when two tokens appear together more than chance predicts, and negative when less. Negative values are unreliable, since "less than chance" usually means "rarely seen at all", so **positive PMI**, or PPMI, replaces every negative value with zero. The book's shared module `lib.vectors` computes it from the co-occurrence counts of the [previous section](#describe-by-neighbours), in three lines: the count chance would predict for each pair, the log of the real count over it, and zero wherever that's negative or the pair never occurs:
 
 ```python
 expected = counts.sum(1, keepdims=True) * counts.sum(0, keepdims=True) / total
@@ -133,7 +133,7 @@ return np.where(counts > 0, np.maximum(pmi, 0), 0.0)
 
 Reweighting is meant to stop frequent neighbours dominating, so swap the raw counts for PPMI and list `patio`'s strongest neighbours again:
 
-Example `ppmi-neighbours` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1), passing in Edition 2026.11.15:
+Example `ppmi-neighbours` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1), passing in Edition 2026.11.16:
 
 ```python
 """Reweights the co-occurrence counts with positive PMI, and lists the six tokens with the strongest weight beside patio.
@@ -175,7 +175,7 @@ A [PPMI vector](#weigh-by-surprise) of 2,000 numbers, mostly zeros, has a lot of
 
 Six tokens' four nearest neighbours show what the 64 numbers keep:
 
-Example `svd-neighbours` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1), passing in Edition 2026.11.15:
+Example `svd-neighbours` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1), passing in Edition 2026.11.16:
 
 ```python
 """Compresses the PPMI matrix into 64 numbers per token, and lists the four nearest neighbours of six tokens. The prose's
@@ -213,13 +213,13 @@ None of that was taught. The method never saw a definition of `sofa`, a list of 
 
 ## Learn vectors by predicting neighbours {#learn-by-predicting-neighbours}
 
-The other way to get embeddings is to learn them by prediction, which is how every neural language model in this book gets its own. **Skip-gram with negative sampling**, the method behind word2vec, gives each token two vectors, one for when it's the centre token and one for when it's a neighbour, and trains them on one task: given a token, tell its real neighbours apart from random tokens ([Mikolov et al., 2013a](https://arxiv.org/abs/1301.3781); [Mikolov et al., 2013b](https://arxiv.org/abs/1310.4546)). For a token and one of its real neighbours, the model scores the pair by the dot product of their vectors, turns the score into a probability with the logistic function, and nudges the vectors so the probability rises. For a few random **noise** tokens drawn from the vocabulary, it nudges the probability down. Repeated over millions of pairs, tokens with the same neighbours end up with similar vectors. That's no coincidence: Levy and Goldberg showed that skip-gram with negative sampling, trained this way, in effect factorizes a PMI matrix, shifted down by the log of the number of noise tokens, much as the [SVD](#compress-into-dense-vectors) factorizes PPMI ([Levy and Goldberg, 2014](https://papers.nips.cc/paper_files/paper/2014/hash/b78666971ceae55a8e87efb7cbfd9ad4-Abstract.html)).
+The other way to get embeddings is to learn them by prediction, which is how every neural language model in this book gets its own. **Skip-gram with negative sampling**, the method behind word2vec, gives each token two vectors, one for when it's the centre token and one for when it's a neighbour, and trains them on one task: given a token, tell its real neighbours apart from random tokens ([Mikolov et al., 2013a](https://arxiv.org/abs/1301.3781); [Mikolov et al., 2013b](https://arxiv.org/abs/1310.4546)). For a token and one of its real neighbours, the model scores the pair by the dot product of their vectors, turns the score into a probability with the logistic function, and nudges the vectors so the probability rises. For a few random **noise** tokens drawn from the vocabulary, the model nudges the probability down. Repeated over millions of pairs, tokens with the same neighbours end up with similar vectors. That's no coincidence: Levy and Goldberg showed that skip-gram with negative sampling, trained this way, in effect factorizes a PMI matrix, shifted down by the log of the number of noise tokens, much as the [SVD](#compress-into-dense-vectors) factorizes PPMI ([Levy and Goldberg, 2014](https://papers.nips.cc/paper_files/paper/2014/hash/b78666971ceae55a8e87efb7cbfd9ad4-Abstract.html)).
 
-Write v for the centre token's vector, u for the real neighbour's, and uₙ for each noise token's, and σ for the logistic function, σ(s) = 1 / (1 + e⁻ˢ), which turns a score into a probability. The loss for one pair is the surprise at the real neighbour plus the surprise at each noise token's not being one:
+Write v for the centre token's vector, u for the real neighbour's, and uₙ for each noise token's, and σ for the logistic function, σ(s) = 1 / (1 + e⁻ˢ), which turns a score into a probability. The skip-gram loss for one pair is the surprise at the real neighbour plus the surprise at each noise token's not being one:
 
 L = −log σ(v·u) − Σₙ log σ(−v·uₙ)
 
-and `lib.skipgram.step` lowers it with three lines of gradient descent, where `real` is σ(v·u), `fake` holds σ(v·uₙ) for each noise token, and `rate` is the step size:
+and `lib.skipgram.step` lowers it with three lines of [gradient descent](#take-gradient-descent-steps), where `real` is σ(v·u), `fake` holds σ(v·uₙ) for each noise token, and `rate` is the [step size](#take-gradient-descent-steps):
 
 ```python
 np.add.at(inputs, centre, -rate * grad_v)                               # move v: towards u, away from each uₙ
@@ -229,7 +229,7 @@ np.add.at(outputs, noise, -rate * fake[:, :, None] * v[:, None, :])     # move e
 
 Run three updates on one real pair, `patio` and `umbrella`, with `sofa` and `48` as noise tokens. The centre vectors start small and random and the neighbour vectors at zero, as `lib.skipgram.train` starts them:
 
-Example `skipgram-step` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1), passing in Edition 2026.11.15:
+Example `skipgram-step` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1), passing in Edition 2026.11.16:
 
 ```python
 """Three updates of skip-gram with negative sampling on one real pair, patio and umbrella, with sofa and 48 as noise tokens,
@@ -275,7 +275,7 @@ P(sofa, 48 are real neighbours), after 3 steps: 0.475, 0.475
 
 Training pulls real neighbours together and pushes random tokens apart, and three updates show it in miniature. Before any update, the neighbour vectors are zero, so every score is zero, and σ(0) is one half: the model knows nothing. After three, `umbrella` scores 0.525 as a neighbour of `patio`, up from 0.500, and `sofa` and `48` have dropped to 0.475, 0.475. That's all training does, millions of times over.
 
-**Working rule:** When you train embeddings, start the second set of vectors at zero and the first at small random values, as `lib.skipgram.train` does, and draw noise tokens in proportion to their frequency raised to the power 0.75, which Mikolov et al. found works better than plain frequency. Check one update by hand before running millions: a probability moving the wrong way means the gradient's sign is wrong.
+**Working rule:** When you train embeddings, start the second set of vectors at zero and the first at small random values, as `lib.skipgram.train` does, and draw noise tokens in proportion to their frequency raised to the power 0.75, which Mikolov et al. found works better than plain frequency. Check one update by hand before running millions: a probability moving the wrong way means the [gradient](#compute-gradients)'s sign is wrong.
 
 ## Compare learned vectors with counted ones {#compare-learned-and-counted}
 
@@ -283,7 +283,7 @@ Training skip-gram on all the store's training text runs millions of updates, an
 
 Ask the recorded skip-gram vectors for the same six tokens' neighbours, and compare them with the [SVD's](#compress-into-dense-vectors):
 
-Example `skipgram-neighbours` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1), passing in Edition 2026.11.15:
+Example `skipgram-neighbours` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1), passing in Edition 2026.11.16:
 
 ```python
 """Reads the skip-gram vectors and training losses that recordings/skipgram.py saved, and lists the same six tokens' four
@@ -320,7 +320,7 @@ blue</w>     -> beige</w> 0.88, gray</w> 0.87, green</w> 0.85, brown</w> 0.80
 48</w>       -> 36</w> 0.94, 32</w> 0.92, 1.5</w> 0.89, 24</w> 0.89
 ```
 
-The model learned to tell real neighbours from noise: its training loss fell from 4.16 on the first batch to 2.05 on the last hundred. Its neighbours agree with the SVD's on most tokens, `sofa` with `sectional` and `chaise`, `oak` with `walnut` and `espresso`, colours with colours, sizes with sizes, and differ in emphasis on others: skip-gram puts `outdoor` closest to `indoor`, because the two words appear in the same positions in descriptions such as `indoor or outdoor use`.
+The model learned to tell real neighbours from noise: its training [loss](#compute-gradients) fell from 4.16 on the first batch to 2.05 on the last hundred. Its neighbours agree with the SVD's on most tokens, `sofa` with `sectional` and `chaise`, `oak` with `walnut` and `espresso`, colours with colours, sizes with sizes, and differ in emphasis on others: skip-gram puts `outdoor` closest to `indoor`, because the two words appear in the same positions in descriptions such as `indoor or outdoor use`.
 
 That difference is worth noticing. Vectors built from neighbours put together words used in the same places, and opposites often are: `indoor` and `outdoor` here, and, in the [next section](#analogies-and-where-they-fail), `small`, whose nearest neighbours include `larger` as well as `smaller`. Similar vectors mean similar use, not similar meaning.
 
@@ -332,7 +332,7 @@ Embeddings famously support analogies by arithmetic: if the difference between `
 
 Three analogies on the [skip-gram vectors](#compare-learned-and-counted) show where the arithmetic holds and where it breaks, and the nearest neighbours of three tokens they raise show why:
 
-Example `analogies` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1), passing in Edition 2026.11.15:
+Example `analogies` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1), passing in Edition 2026.11.16:
 
 ```python
 """Three analogies on the skip-gram vectors, each answered by the tokens nearest b minus a plus c; whether lamps and light
@@ -383,7 +383,7 @@ Embeddings for tokens give, with one more step, embeddings for whole texts: aver
 
 Averaging every training name's skip-gram vectors turns each name into one vector. Rare words, most often a product line's name, print as `[name]`, as [chapter 1](#load-the-store-text) explained. Two queries show what that buys: `outdoor bar`, the prefix that stumped [chapter 3](#counting-further-back)'s 4-gram model, and `patio umbrella`:
 
-Example `name-vectors` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1), passing in Edition 2026.11.15:
+Example `name-vectors` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1), passing in Edition 2026.11.16:
 
 ```python
 """Averages each training name's skip-gram token vectors into one unit-length vector, and prints the four training names

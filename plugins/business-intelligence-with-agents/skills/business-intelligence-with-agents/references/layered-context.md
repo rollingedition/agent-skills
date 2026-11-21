@@ -3,19 +3,19 @@ title: "Business Intelligence with Agents"
 chapter: "Give the agent layered context"
 chapter_id: layered-context
 book: business-intelligence-with-agents
-edition: 2026.11.14
+edition: 2026.11.15
 verified: 2026-11-19
-edition_code: 8Q6T-45MG
+edition_code: 28XD-AHKT
 canonical: https://rollingedition.com/business-intelligence-with-agents/layered-context
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“Give the agent layered context,” chapter 4 of Business Intelligence with Agents, Edition 2026.11.14, examples passed Nov 19, 2026. By Rolling Edition, https://rollingedition.com/business-intelligence-with-agents/layered-context. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Give the agent layered context,” chapter 4 of Business Intelligence with Agents, Edition 2026.11.15, examples passed Nov 19, 2026. By Rolling Edition, https://rollingedition.com/business-intelligence-with-agents/layered-context. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Give the agent layered context
 
 By the end of this chapter, you can give a model that writes SQL more than the schema, in layers: notes on columns whose names mislead, a glossary of the shop's business terms, and verified queries retrieved for each question. You can fit those layers to a token budget, measure what each one adds on the dev split of the golden questions, and check the best set once on the held-out test split.
 
-A schema can't say what its columns mean. Chapter 1 gave a model only the shop's schema and asked for net revenue in each region in March 2026. The query it wrote ran, looked right and counted cancelled orders. The rule it missed exists, in the finance team's definition of net revenue, but nothing the model was given contains it. Layered context is the most direct fix: write the rules down where the model reads them. It isn't the fix this book ends with, since chapters 5 and 6 move the definitions into a semantic layer the model can't misread. But any agent that writes SQL needs context, including the guarded one in chapter 7, and the habit this chapter teaches, adding one layer at a time and measuring each, applies to every change that follows.
+A schema can't say what its columns mean. Chapter 1 gave a model only the shop's schema and asked for net revenue in each region in March 2026. The query it wrote ran, looked right and counted cancelled orders. The rule it missed exists, in the finance team's definition of net revenue, but nothing the model was given contains it. Layered context is the most direct fix for what a schema can't say: write the rules down where the model reads them. It isn't the fix this book ends with, since chapters 5 and 6 move the definitions into a [semantic layer](#semantic-layer) the model can't misread. But any agent that writes SQL needs context, including the guarded one in chapter 7, and the habit this chapter teaches, adding one layer at a time and measuring each, applies to every change that follows.
 
 ## What the schema says, and what it doesn't {#what-the-schema-says}
 
@@ -23,7 +23,7 @@ A schema tells a model which tables exist, what their columns are called and wha
 
 The book's measure of this is the golden questions, which chapter 3 built: questions with a verified answer, scored on the dev split while context and prompts are tuned, and once on the held-out test split. Every layer in this chapter is added to the schema, so the schema is the first layer, and the place to start is what it leaves open. `build_context()` in `lib/context.py`, the shared module that builds every layer in this chapter, returns the schema layer when it's asked for nothing else.
 
-Example `schema-digest` (Python 3.12.15 · duckdb 2.0.0), passing in Edition 2026.11.14:
+Example `schema-digest` (Python 3.12.15 · duckdb 2.0.0), passing in Edition 2026.11.15:
 
 ```python
 """What the schema tells a model about revenue, and three March 2026 totals that all fit it. The three printed totals
@@ -77,13 +77,13 @@ The whole of the shop's warehouse fits in those 912 tokens, so there's no case f
 
 The [schema](#what-the-schema-says) leaves open which of several readings is right, and the cheapest place to close some of them is the column itself. A column note is a sentence about one table or column that says what its name doesn't: which rows the table holds, the unit and sign of an amount, the time zone of a timestamp, the values a column takes, or that a table is deprecated. A note isn't documentation of every column. A column called `product_name` needs none, and a note that repeats the name costs tokens and says nothing. The notes worth writing are on the columns a careful analyst new to the warehouse would misread.
 
-Published evidence points the same way. A study that generated column descriptions with a language model found that adding them to the prompt improved text-to-SQL accuracy and, in an ablation that replaced column names with uninformative ones, that the descriptions helped most there ([Wretblad et al., 2024](https://arxiv.org/abs/2408.04691)); it is a single preprint on the BIRD benchmark. Databricks' guidance for its Genie Agents says that "quality table and column descriptions in Unity Catalog are critical for Genie accuracy" ([Databricks](https://docs.databricks.com/aws/en/genie/best-practices)), which is the vendor's advice, not a measurement.
+Published evidence points the same way. A study that generated column descriptions with a language model found that adding them to the prompt improved text-to-SQL accuracy and, in an [ablation](#measure-each-layer) that replaced column names with uninformative ones, that the descriptions helped most there ([Wretblad et al., 2024](https://arxiv.org/abs/2408.04691)); it is a single preprint on the BIRD benchmark. Databricks' guidance for its Genie Agents says that "quality table and column descriptions in Unity Catalog are critical for Genie accuracy" ([Databricks](https://docs.databricks.com/aws/en/genie/best-practices)), which is the vendor's advice, not a measurement.
 
 The shop's notes live in `examples/data/shop/columns.toml`, one entry per table with an optional note per column, and `load_column_notes()` in `lib/context.py` turns each into one line, such as `analytics.fct_orders.placed_at: When the order was placed, in UTC.` The notes cover the traps chapter 2 found: `orders_legacy` is deprecated, `net_revenue_eur` still holds a value for cancelled orders, `placed_at` is UTC while `order_date_local` is the business day, `discount` is negative in `raw.order_lines` and positive in the marts, and the fiscal year starts on February 1.
 
 The recording `context-layers` shows what the notes do once the examples replay it. The recording holds the pinned model's SQL for every dev question of kind `answer`, written once with each layer set this chapter measures, using the prompt `LAYERED_SQL` in `lib/prompts.py`. The recording was made by `recordings/record_context_layers.py`, with the same model, sampling and seed as chapter 1's, and the examples replay it by the hash of the exact messages.
 
-Example `column-descriptions` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.14:
+Example `column-descriptions` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.15:
 
 ```python
 """Add the column notes on columns whose names mislead, and count the dev questions they fix and break under the recorded
@@ -132,15 +132,15 @@ The 33 notes add about 1087 tokens, more than the schema itself. On the dev ques
 
 ## Add the business glossary {#add-the-glossary}
 
-[Column notes](#describe-columns) describe the tables. Many questions turn on something else: what a business word means at this company. "Revenue" could be gross or net. "Orders" could include cancelled ones or not. Refunds "in March" could mean refunds paid in March or refunds on March's orders. These are choices, made by the teams that own the numbers, and no table states them. A business glossary is a list of those words, each with its meaning written in terms of the warehouse's tables and columns.
+[Column notes](#describe-columns) describe the tables. Many questions turn on something else: what a business word means at this company. "Revenue" could be gross or net. "Orders" could include cancelled ones or not. Refunds "in March" could mean refunds paid in March or refunds on March's orders. These are choices, made by the teams that own the numbers, and no table states them. A business glossary lists the business words whose meaning a company's teams chose, and writes each meaning in terms of the warehouse's tables and columns.
 
 Evidence for this layer comes from BIRD, a text-to-SQL benchmark whose questions come with "external knowledge evidence": hints that link a question's words to the database, such as what a term means as a formula over columns. In the benchmark's paper, adding the evidence raised GPT-4's execution accuracy on the dev set from 30.90% to 46.35%, with 2023 models and zero-shot prompts ([Li et al., 2023](https://arxiv.org/abs/2305.03111)). The hints are written per question, though, which is closer to giving the model the answer's ingredients than to giving it a glossary written once.
 
-The shop's glossary is `examples/data/shop/glossary.toml`. Its entries define revenue as net revenue unless the question says gross, orders as every order including cancelled ones, average order value, fiscal periods, new customers, refunds by the month they were paid, units sold, and the two meanings of "channel". `load_glossary()` turns each into one line.
+The shop's glossary is `examples/data/shop/glossary.toml`. Its entries define revenue as net revenue unless the question says gross, orders as every order including cancelled ones, [average order value](#ratio-and-derived-metrics), fiscal periods, new customers, refunds by the month they were paid, units sold, and the two meanings of "channel". `load_glossary()` turns each into one line.
 
 The glossary wasn't written blind, and the book's history shows how it changed. In the same change that recorded the model's first dev replies, with the schema alone, the entry for orders was corrected: it had said that order counts leave out cancelled orders, which disagreed with the finance team's golden SQL. The entries for units sold and for customers who ordered were added in that change too, and the column note on `status` was reworded to match. Later, after the test questions had been recorded with the schema alone, the refund-rate entry was changed to the book-wide definition that chapter 5 uses and that test question `gq-028` also follows: refunded amount divided by gross revenue, because a refund pays back tax and only gross revenue includes it. Each change made the glossary agree with golden SQL that it was then scored against. That is how a dev score gets fitted to dev, and [the check on test](#check-layers-on-test) comes back to what it costs.
 
-Example `glossary-context` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.14:
+Example `glossary-context` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.15:
 
 ```python
 """Add the business glossary on top of the column notes, and count what it changes on the dev questions. The gq-002
@@ -193,13 +193,13 @@ Each configuration was recorded once, with one sampled reply per question, so a 
 
 ## Retrieve verified queries as examples {#retrieve-verified-queries}
 
-Column notes and a glossary state rules. A verified query shows them applied: a question someone asked, with SQL a person checked against the shop's definitions. Given a few such pairs that resemble the question, a model can copy their shape, such as the join to `dim_date` for a fiscal period or the filter on `status`, instead of inventing one. A systematic comparison of prompt designs for text-to-SQL found that the best setup chose examples by the similarity of their questions, after masking domain-specific words, and by the similarity of their SQL to a draft query written first, and showed each as a question and its SQL alone ([Gao et al., 2023](https://arxiv.org/abs/2308.15363)). Warehouse vendors build the same idea into their assistants. Snowflake's Cortex Analyst keeps a verified query repository of "questions and corresponding SQL queries to answer them" ([Snowflake](https://docs.snowflake.com/en/user-guide/snowflake-cortex/cortex-analyst/verified-query-repository)), and Databricks says a Genie Agent can use an example SQL query directly or learn from it, and treats parameterized ones as trusted assets ([Databricks](https://docs.databricks.com/aws/en/genie-agents/tune-quality)). Both are the vendors' own descriptions, not measurements.
+Column notes and a glossary state rules. A verified query shows the shop's rules applied: a question someone asked, with SQL a person checked against the shop's definitions. Given a few such pairs that resemble the question, a model can copy their shape, such as the join to `dim_date` for a fiscal period or the filter on `status`, instead of inventing one. A systematic comparison of prompt designs for text-to-SQL found that the best setup chose examples by the similarity of their questions, after masking domain-specific words, and by the similarity of their SQL to a draft query written first, and showed each as a question and its SQL alone ([Gao et al., 2023](https://arxiv.org/abs/2308.15363)). Warehouse vendors build the same idea into their assistants. Snowflake's Cortex Analyst keeps a verified query repository of "questions and corresponding SQL queries to answer them" ([Snowflake](https://docs.snowflake.com/en/user-guide/snowflake-cortex/cortex-analyst/verified-query-repository)), and Databricks says a Genie Agent can use an example SQL query directly or learn from it, and treats parameterized ones as trusted assets ([Databricks](https://docs.databricks.com/aws/en/genie-agents/tune-quality)). Both are the vendors' own descriptions, not measurements.
 
 The shop's verified queries live in `examples/data/shop/verified_queries.toml`. Their fields follow Snowflake's field names, `name`, `question`, `sql`, `verified_at` and `verified_by`, plus the `role` the query was checked for. Two differ in content. Snowflake's `verified_at` is optional and counted in seconds since 1970, and its `verified_by` names the person who checked the query; the shop's files give a date and name a team, never a person. None of the verified queries is a golden question. They are near neighbours of questions in both splits, such as net revenue by fiscal quarter for fiscal 2025 or average order value by region for 2024, which is how a real repository grows: from questions people asked before. A verified query that was itself a golden question would make the score measure copying.
 
 Retrieval in `lib/context.py` is lexical, with no embeddings. `question_terms()` lowercases the question, drops common words and masks three kinds of word: numbers, month names and the shop's three region codes. Every other word stays as it is. `QueryIndex` scores each verified question against the masked question with TF-IDF and cosine similarity, and `search()` keeps at most three matches that score at least 0.4. This is a cheap stand-in for the selection in [Gao et al.](https://arxiv.org/abs/2308.15363), not a reproduction of it: it masks far fewer words, and it drops the second step, which compares draft SQL.
 
-Example `retrieve-similar-queries` (Python 3.12.15 · duckdb 2.0.0), passing in Edition 2026.11.14:
+Example `retrieve-similar-queries` (Python 3.12.15 · duckdb 2.0.0), passing in Edition 2026.11.15:
 
 ```python
 """Retrieve the verified queries most like a question, by TF-IDF over the masked question's words. The matches kept at the
@@ -249,7 +249,7 @@ For the average order value in each region in March 2026, the closest of the 16 
 
 The last lines of the output show what masking does and doesn't do. "March 2026" and "January 2025" both become `<month> <number>`, so a question about one month matches a verified query about another. "Calendar year 2024" becomes `calendar year <number>`, because "calendar" and "year" are neither common words nor values, and a quarter written as "Q3" isn't masked at all. That is why the March question's best match, a question about calendar year 2024, scores less than a perfect 1.
 
-**Working rule:** Retrieve a few verified queries per question, chosen by similarity of the masked question, and show each as its question and SQL. Set a minimum score and check it on questions the warehouse can't answer, because lexical retrieval always returns something. Never let a golden question into the verified set. Move to embeddings only when your own measurement shows lexical retrieval missing queries that a person would call similar.
+**Working rule:** Retrieve a few verified queries per question, chosen by similarity of the masked question, and show each as its question and SQL. Set a minimum score and check it on questions the warehouse can't answer, because [lexical retrieval](#layered-context-in-production) always returns something. Never let a golden question into the verified set. Move to embeddings only when your own measurement shows lexical retrieval missing queries that a person would call similar.
 
 ## Fit the context to a budget {#fit-a-context-budget}
 
@@ -259,7 +259,7 @@ Fitting a context to a budget means deciding what to leave out, and that decisio
 
 Token counts in `lib/context.py` are estimates: `estimate_tokens()` divides the number of characters by 3.5, because the examples don't load the model's tokenizer. Below, that estimate is set against the count the model's tokenizer reported when the prompt was recorded, and the context for the average-order-value question, `gq-009`, is fitted to an illustrative budget of 2,400 tokens under two priorities.
 
-Example `context-token-budget` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.14:
+Example `context-token-budget` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.15:
 
 ```python
 """Fit one question's layered context to a token budget, and check the token estimate against the model's count. The
@@ -312,11 +312,11 @@ The estimate for the whole prompt is 2917 tokens, against 2364 counted by the mo
 
 ## Measure what each layer adds {#measure-each-layer}
 
-Each layer so far was judged by the questions it fixed and broke. To choose which layers to keep, and in what order a [budget](#fit-a-context-budget) should drop them, you need all of them measured the same way. An ablation does that: it scores a series of configurations that differ by one layer each, on the same questions, under the same comparison rule. The questions are the dev split of the golden questions, because choosing among configurations is tuning, and tuning on the test split would leave nothing held out to check the choice.
+Each layer so far was judged by the questions it fixed and broke. To choose which layers to keep, and in what order a [budget](#fit-a-context-budget) should drop them, you need all of them measured the same way. An ablation measures every layer the same way: it scores a series of configurations that differ by one layer each, on the same questions, under the same comparison rule. The questions are the dev split of the golden questions, because choosing among configurations is tuning, and tuning on the test split would leave nothing held out to check the choice.
 
 The shop's dev split has 24 golden questions. This chapter scores the 17 of kind `answer`. The other 7 should be declined, because the warehouse can't answer them or the role asking may not see the answer, and a prompt that only writes SQL can't decline, so they would score as wrong under every layer set; chapters 8 and 9 score them. Each layer set adds one layer to the one before: the schema alone, then column notes, then the glossary, then up to three retrieved verified queries. The outcomes come from `grade()` in `lib/golden.py`, as in every chapter: correct when the result matches the golden result, wrong when it runs and doesn't, error when it doesn't run. The first layer set, the schema alone, isn't [chapter 3's baseline](#golden-questions) either. That baseline used the schema-only prompt and scored every question in each split, while this run uses the layered prompt `LAYERED_SQL` with no other layer filled in and scores the answer questions only, so its numbers differ.
 
-Example `layer-ablation-dev` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.14:
+Example `layer-ablation-dev` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.15:
 
 ```python
 """Score each layer set on the dev split's answer questions, replaying the recorded model's SQL for each, and print the
@@ -411,7 +411,7 @@ The grid shows where the change came from. Against the run with the glossary, re
 
 The totals say how much each layer helped. The failures say what the next layer should be, so the next two examples read them, starting with the schema-only queries that don't run.
 
-Example `missing-columns-schema-only` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.14:
+Example `missing-columns-schema-only` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.15:
 
 ```python
 """Why the dev queries written with the schema alone don't run: the column each one names, and the analytics tables that have it.
@@ -468,7 +468,7 @@ These are the mistakes column notes are for. With the notes, 1 query in the whol
 
 A second script prints the query for each dev question that all four layers still don't get right.
 
-Example `what-stays-wrong` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.14:
+Example `what-stays-wrong` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.15:
 
 ```python
 """The dev questions that stay wrong with all four layers, each with its query, and a check of whether gq-007 fails only on
@@ -558,7 +558,7 @@ This is the book's measurement on one synthetic warehouse and one 4-billion-para
 
 The [ablation](#measure-each-layer) chose all four layers on the dev split, the questions the chapter tuned on. The set that scored best there still has to be checked once on the held-out test split, together with the schema alone, so the comparison isn't flattered by having been chosen on the same questions. The recording `context-layers-test` holds the model's SQL for the 17 test questions of kind `answer`, under those two layer sets only. Each test question is also scored against its best-matching verified query, for the paragraphs that follow.
 
-Example `best-layers-on-test` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.14:
+Example `best-layers-on-test` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.15:
 
 ```python
 """Choose the best layer set on the dev split, then score it once on the held-out test split beside the schema alone. The

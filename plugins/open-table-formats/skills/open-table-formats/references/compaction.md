@@ -3,17 +3,17 @@ title: "Open Table Formats"
 chapter: "Compact the small files that hourly appends leave"
 chapter_id: compaction
 book: open-table-formats
-edition: 2026.11.9
+edition: 2026.11.10
 verified: 2026-11-20
-edition_code: 0GY7-XEMW
+edition_code: 27Y3-9R88
 canonical: https://rollingedition.com/open-table-formats/compaction
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“Compact the small files that hourly appends leave,” chapter 6 of Open Table Formats, Edition 2026.11.9, examples passed Nov 20, 2026. By Rolling Edition, https://rollingedition.com/open-table-formats/compaction. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Compact the small files that hourly appends leave,” chapter 6 of Open Table Formats, Edition 2026.11.10, examples passed Nov 20, 2026. By Rolling Edition, https://rollingedition.com/open-table-formats/compaction. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Compact the small files that hourly appends leave
 
-This chapter shows you how to count the data files a table holds, merge them into fewer files in Delta Lake, DuckLake and Iceberg, and say what each merge leaves on disk. The trouble starts with the loads. The pageviews table from the [first chapter](#first-table) is loaded once an hour into each of the three formats. Each load is a commit, and each commit writes its own data files. A data file is a Parquet file that holds rows of the table.
+This chapter shows you how to count the data files a table holds, merge them into fewer files in Delta Lake, DuckLake and Iceberg, and say what each merge leaves on disk. The trouble starts with the loads. The pageviews table from the [first chapter](#first-table) is loaded once an hour into each of the three formats. Each load is a commit, and each commit writes its own data files. A data file is a Parquet file that holds rows of a table.
 
 ## Hourly appends leave small files {#hourly-appends-leave-small-files}
 
@@ -21,7 +21,7 @@ Every commit that appends rows writes at least one data file. A table that takes
 
 The count of files is the number to watch, because it grows with time. File size matters too, but this book prints no file sizes, since a size in bytes changes from one run to the next. Counting files is also the honest check on a compaction. The rows should be the same before and after, and the file count should drop.
 
-The fix is compaction: rewriting many small data files into fewer, larger ones. A compaction is a commit like any other. It writes the replacement files, lists them in the metadata, and leaves the old files on disk for as long as the table's history still refers to them. [Chapter 7](#expiry-and-cleanup) covers when those old files can go.
+The fix is compaction. Compaction rewrites many small data files into fewer, larger ones. A compaction is a commit like any other. It writes the replacement files, lists them in the metadata, and leaves the old files on disk for as long as the table's history still refers to them. [Chapter 7](#expiry-and-cleanup) covers when those old files can go.
 
 The three formats have three different calls for it. The table below shows what each one did to the six hourly files this chapter builds.
 
@@ -43,7 +43,7 @@ Delta Lake is the first of the three formats in the table above. Its Python libr
 
 You load the six hours into a Delta table, one append each, then count the files the table lists, compact, and count again. Each count comes from the table's own list of files for its current version.
 
-Example `file-counts-before-after` (Python 3.12.15 · deltalake 1.6.6 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.9:
+Example `file-counts-before-after` (Python 3.12.15 · deltalake 1.6.6 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.10:
 
 ```python
 """Load six hourly appends into a Delta Lake table, compact it, and count its files and rows before and after.
@@ -101,7 +101,7 @@ The compaction did not remove the old files. Read at the version from before the
 
 Delta reads here go through the library's query builder, as every Delta read in this book does. Since the point is the file count, the rows are compared by count alone.
 
-**Working rule:** Compact a Delta table on the schedule from the first section (daily for hourly loads), and check the file count afterwards. Read the retention rules in chapter 7 before you remove anything: a compaction adds a commit and leaves the old files in place, so it adds storage until the vacuum runs.
+**Working rule:** Compact a Delta table on the schedule from the first section (daily for hourly loads), and check the file count afterwards. Read the retention rules in chapter 7 before you remove anything: a compaction adds a commit and leaves the old files in place, so it adds storage until the [vacuum](#vacuum-in-delta-lake) runs.
 
 ## Compact in DuckLake {#compact-in-ducklake}
 
@@ -113,7 +113,7 @@ DuckLake has compaction as a maintenance function that you call from SQL. The fu
 
 What does the merge leave for a snapshot from before it? The example below reads one. It attaches the catalog with inlining off, inserts the six hours one insert each, and calls the merge once. The table lives in the `wiki` schema, so the call names it. It reads the snapshot number before the merge, so it can read the table as it was at that point.
 
-Example `compact-ducklake` (Python 3.12.15 · deltalake 1.6.6 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.9:
+Example `compact-ducklake` (Python 3.12.15 · deltalake 1.6.6 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.10:
 
 ```python
 """Merge six DuckLake data files, then read a snapshot from before the merge to see what the merge left behind.
@@ -178,9 +178,9 @@ parquet files on disk after merge: 7
 
 The merge's result row says what it did: 6 files merged into 1 file. The table lists 1 data file afterwards, down from 6. The row also names the schema and the table, so a merge aimed at the wrong table shows before anything else is read.
 
-The old snapshot still reads. A count taken at the snapshot before the merge returns 2999 rows, the same count the current table returns. The Parquet files on disk number 7, the six the inserts wrote and the one the merge wrote. The six old files stay on disk until the cleanup in [chapter 7](#expiry-and-cleanup) removes them.
+The old snapshot still reads. A count taken at the snapshot before the merge returns 2999 rows, the same count the current table returns. The Parquet files on disk number 7, the six the inserts wrote and the one the merge wrote. The six old files stay on disk until the [cleanup](#snapshots-keep-files-alive) in chapter 7 removes them.
 
-The merge skips a file that has a delete file attached. A delete file is a record of deleted rows, which DuckLake writes instead of rewriting the data file when rows are deleted. [Chapter 5](#corrections-and-merges) writes delete files in DuckLake, so this limit applies there. The DuckLake documentation names `ducklake_rewrite_data_files` as the call that rewrites those files, and its default `delete_threshold` is 0.95, which rewrites a file only when that share of its rows is deleted ([DuckLake documentation: Rewrite Files with Deletes](https://ducklake.select/docs/stable/duckdb/maintenance/rewrite_data_files)). The default is a value you should choose for your own data, not accept without a look.
+The merge skips a file that has a [delete file](#delete-rows-iceberg-and-delta) attached. A delete file is a record of deleted rows, which DuckLake writes instead of rewriting the data file when rows are deleted. [Chapter 5](#corrections-and-merges) writes delete files in DuckLake, so this limit applies there. The DuckLake documentation names `ducklake_rewrite_data_files` as the call that rewrites those files, and its default `delete_threshold` is 0.95, which rewrites a file only when that share of its rows is deleted ([DuckLake documentation: Rewrite Files with Deletes](https://ducklake.select/docs/stable/duckdb/maintenance/rewrite_data_files)). The default is a value you should choose for your own data, not accept without a look.
 
 **Working rule:** Run `ducklake_merge_adjacent_files` after the inserts for a period are done, and read the file count it returns. A merge does not remove deleted rows, so for a table with delete files, call `ducklake_rewrite_data_files` with a `delete_threshold` that you chose for that table, and check the result.
 
@@ -190,7 +190,7 @@ Compaction in Iceberg, at the pinned version of pyiceberg, is a rewrite by overw
 
 A rewrite is judged by what it leaves behind. The check below reads the table's files and rows after six appends and one overwrite, and reads a snapshot from before the rewrite.
 
-Example `iceberg-rewrite-by-overwrite` (Python 3.12.15 · deltalake 1.6.6 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.9:
+Example `iceberg-rewrite-by-overwrite` (Python 3.12.15 · deltalake 1.6.6 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.10:
 
 ```python
 """Rewrite an unpartitioned Iceberg table by overwriting it with its own scan, then check its data files, its snapshot
@@ -276,7 +276,7 @@ When a check fails, stop the job and leave the table as it is. Do not run a seco
 
 ## What goes wrong in production {#compaction-production-failures}
 
-**Storage grows before it shrinks.** Every compaction in this chapter writes replacement files and leaves the old ones on disk. The counts show it. After the DuckLake merge the table lists 1 data file while 7 Parquet files sit on disk, and after the Iceberg rewrite the table lists 1 while 7 sit on disk. A compaction that runs without an expiry step leaves the storage bill higher than before. Plan the expiry and the cleanup together with the compaction, and measure the disk after both. The sign is a disk that grows after each run while the table's row count and file count stay flat.
+**Storage grows before it shrinks.** Every compaction in this chapter writes replacement files and leaves the old ones on disk. The counts show it. After the DuckLake merge the table lists 1 data file while 7 Parquet files sit on disk, and after the Iceberg rewrite the table lists 1 while 7 sit on disk. A compaction that runs without an [expiry](#snapshots-keep-files-alive) step leaves the storage bill higher than before. Plan the expiry and the cleanup together with the compaction, and measure the disk after both. The sign is a disk that grows after each run while the table's row count and file count stay flat.
 
 **Deleted rows stay until a rewrite handles them.** A DuckLake merge skips any file that has a delete file, as [the merge section](#merge-adjacent-files) shows. A table with deletes that is only merged keeps those files as they are. Use `ducklake_rewrite_data_files` for them, with a threshold you chose. Measure the rows before and after, because the merge alone will not show you that the deleted rows are still in the files. Watch for a count of files with delete files that stays the same after each merge.
 

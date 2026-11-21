@@ -3,13 +3,13 @@ title: "Model Context Protocol in Practice"
 chapter: "Run long work as tasks"
 chapter_id: tasks-and-extensions
 book: model-context-protocol-in-practice
-edition: 2026.11.13
+edition: 2026.11.14
 verified: 2026-11-19
-edition_code: P21J-Z4WN
+edition_code: VS53-BS53
 canonical: https://rollingedition.com/model-context-protocol-in-practice/tasks-and-extensions
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“Run long work as tasks,” chapter 7 of Model Context Protocol in Practice, Edition 2026.11.13, examples passed Nov 19, 2026. By Rolling Edition, https://rollingedition.com/model-context-protocol-in-practice/tasks-and-extensions. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Run long work as tasks,” chapter 7 of Model Context Protocol in Practice, Edition 2026.11.14, examples passed Nov 19, 2026. By Rolling Edition, https://rollingedition.com/model-context-protocol-in-practice/tasks-and-extensions. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Run long work as tasks
 
@@ -19,13 +19,13 @@ Before [the shop](#the-shop) places its weekly order for kitchen and garden good
 
 At the API's default speed, 64 products take more than three minutes, and a call that long has to survive the host's timeout, every proxy between the host and the server, and a lead who closes a laptop. Chapter 6 showed, in [Cancel a call the client no longer needs](#cancel-a-call), that a Streamable HTTP client cancels a call by closing its stream, so a call whose connection drops takes its work with it.
 
-Work like this fits another shape that the Model Context Protocol (MCP) offers. With the **Tasks extension**, the server answers the call at once with a handle to a **task**. The client asks for the task's status as often as the server suggests, and the result waits on the server until the client fetches it. Tasks is an **extension**, an optional addition to the protocol that both sides must agree to use. This chapter negotiates one, runs the restock report as a task, and ends with when not to.
+Work like this fits another shape that the Model Context Protocol (MCP) offers. With the **Tasks extension**, the server answers the call at once with a handle to a **task**: the call's work, whose status the client asks for as often as the server suggests, and whose result waits on the server until the client fetches it. Tasks is an **extension**, an optional addition to the protocol that both sides must agree to use. This chapter negotiates one, runs the restock report as a task, and ends with when not to.
 
 Every example serves the shop's MCP server over loopback Streamable HTTP, as chapter 6's do, with the shop's API beside it. Setup they share lives in `examples/lib/`, and two modules there are new. `lib.tasks` is the book's own small Tasks extension, which [Negotiate an extension](#negotiate-an-extension) introduces. `lib.restock` holds the restock report's work: it recounts every product through chapter 6's `lib.recount`, sets the task's status message after each one, and lists the products to reorder.
 
 ## Negotiate an extension {#negotiate-an-extension}
 
-The core protocol is what every client and server must implement. An extension is something the protocol's maintainers, or anyone else, want to standardize without making it mandatory. Extensions became part of the protocol at revision 2026-07-28, when `ClientCapabilities` and `ServerCapabilities` gained an `extensions` field ([changelog](https://modelcontextprotocol.io/specification/2026-07-28/changelog)). The field maps each extension's identifier to a settings object, and an empty one means the extension is supported with no settings. An identifier is a vendor prefix, a slash and a name. Official extensions use the prefix `io.modelcontextprotocol`, and anyone else uses a reversed domain they own ([Extensions overview](https://modelcontextprotocol.io/extensions/overview)).
+The core protocol is what every client and server must implement. An [extension](#tasks-and-extensions) is something the protocol's maintainers, or anyone else, want to standardize without making it mandatory. Extensions became part of the protocol at revision 2026-07-28, when `ClientCapabilities` and `ServerCapabilities` gained an `extensions` field ([changelog](https://modelcontextprotocol.io/specification/2026-07-28/changelog)). The field maps each extension's identifier to a settings object, and an empty one means the extension is supported with no settings. An extension's identifier is a vendor prefix, a slash and a name. Official extensions use the prefix `io.modelcontextprotocol`, and anyone else uses a reversed domain they own ([Extensions overview](https://modelcontextprotocol.io/extensions/overview)).
 
 At the pinned revision, a client declares its extensions in every request, under `_meta["io.modelcontextprotocol/clientCapabilities"].extensions`, the same place it declares every other capability ([Carry the version and capabilities on every request](#request-meta)). A server lists its own in the result of `server/discover` ([Extensions overview](https://modelcontextprotocol.io/extensions/overview)). Both sides leave extensions off by default and need an explicit opt-in. When only one side supports an extension, the specification says that side "MUST either revert to core protocol behavior or reject the request with an appropriate error" ([versioning](https://modelcontextprotocol.io/specification/2026-07-28/basic/versioning)). So an extension is negotiated, not forked: a server that uses one still answers clients that don't.
 
@@ -39,7 +39,7 @@ So this book builds a small one. `lib.tasks` implements, on the SDK's framework,
 
 The shop's server passes `tasks.Tasks({"restock_report"})` to `MCPServer(extensions=[...])`, which tells it to answer every call to `restock_report` with a task. The tool itself calls `lib.restock`. Serving the shop's server to one client with `TasksClient` and one without shows both halves of the negotiation; the example reads the first client's declaration off the wire, and the second client also sends one `tasks/get`.
 
-Example `declare-the-tasks-extension` (Python 3.12.15 · cryptography 50.0.2 · httpx2 2.16.2 · mcp 2.3.0 · mcp-types 2.3.0 · pydantic 2.14.3 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.13:
+Example `declare-the-tasks-extension` (Python 3.12.15 · cryptography 50.0.2 · httpx2 2.16.2 · mcp 2.3.0 · mcp-types 2.3.0 · pydantic 2.14.3 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.14:
 
 ```python
 """Declare the Tasks extension on the shop's server, then show what a client gets with it and without it: both declarations, and the
@@ -117,13 +117,13 @@ The client in [Negotiate an extension](#negotiate-an-extension) declared that it
 
 Three rules limit the server. It MUST NOT return a task to a client that didn't declare the extension on that request, even if the client declared it on an earlier one. Only `tools/call` can be answered with a task in this revision. And the server MUST NOT return the handle until the task is durably created, so that a `tasks/get` for it would already find it ([SEP-2663](https://modelcontextprotocol.io/seps/2663-tasks-extension)).
 
-The handle is a `CreateTaskResult`: a result whose `resultType` is `"task"` instead of `"complete"`. It carries the task's `taskId`, its `status`, an optional `statusMessage`, the timestamps `createdAt` and `lastUpdatedAt`, its lifetime in `ttlMs`, and a suggested `pollIntervalMs` ([Tasks schema](https://raw.githubusercontent.com/modelcontextprotocol/ext-tasks/main/schema/2026-07-28/schema.ts)). The specification lets extensions add `resultType` values, and a client MUST treat a value it doesn't recognize as invalid ([overview](https://modelcontextprotocol.io/specification/2026-07-28/basic)). That rule is why a server never sends a task to a client that hasn't declared the extension.
+A task's handle is a `CreateTaskResult`: a result whose `resultType` is `"task"` instead of `"complete"`. It carries the task's `taskId`, its `status`, an optional `statusMessage`, the timestamps `createdAt` and `lastUpdatedAt`, its lifetime in `ttlMs`, and a suggested `pollIntervalMs` ([Tasks schema](https://raw.githubusercontent.com/modelcontextprotocol/ext-tasks/main/schema/2026-07-28/schema.ts)). The specification lets extensions add `resultType` values, and a client MUST treat a value it doesn't recognize as invalid ([overview](https://modelcontextprotocol.io/specification/2026-07-28/basic)). That rule is why a server never sends a task to a client that hasn't declared the extension.
 
 `lib.tasks` puts all of this in `Tasks.intercept_tool_call`, the SDK's one hook around `tools/call`. For a call to `restock_report`, it checks the request's declaration, creates a task record with an ID from `secrets.token_urlsafe(24)`, and stores it. Then it starts the tool's ordinary handler in the background and returns the handle. Because the background work runs the same handler as a plain call, the task's result is exactly the `CallToolResult` a plain call returns. Timestamps come from `tasks.Clock`, a fake clock that starts on the shop's reference date, 30 June 2026, and moves only when an example moves it, so the output is the same on every run.
 
 This run reuses the server from [the previous example](#negotiate-an-extension) and calls `restock_report` with `allow_claimed=True`, which returns the handle, not the finished report. It then sends one `tasks/get` straight after, to check that the server already holds the task.
 
-Example `start-a-restock-report` (Python 3.12.15 · cryptography 50.0.2 · httpx2 2.16.2 · mcp 2.3.0 · mcp-types 2.3.0 · pydantic 2.14.3 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.13:
+Example `start-a-restock-report` (Python 3.12.15 · cryptography 50.0.2 · httpx2 2.16.2 · mcp 2.3.0 · mcp-types 2.3.0 · pydantic 2.14.3 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.14:
 
 ```python
 """Call restock_report and keep the handle the server answers with at once, instead of waiting for the report. The tasks/get sent straight after is the line the prose rests on: it finds the task, so the server stored it before the handle left."""
@@ -185,7 +185,7 @@ The task ID was 32 characters long, which encodes 192 random bits. The specifica
 
 ## Poll a task and fetch its result {#poll-a-task}
 
-The handle from [Start a task instead of waiting](#start-a-task) said the restock report was `working`. A task has five statuses: `working`, `input_required`, `completed`, `failed` and `cancelled`. The last three are terminal, and once a task reaches one, its state doesn't change ([Tasks overview](https://modelcontextprotocol.io/extensions/tasks/overview)). `failed` means a JSON-RPC error. A tool that ran and returned a result with `isError: true` ends `completed`, with that result inside, and the specification says `failed` MUST NOT be used for it ([SEP-2663](https://modelcontextprotocol.io/seps/2663-tasks-extension)). It is the same split chapter 3 drew between tool execution errors and protocol errors, in [Report failures as tool results](#tool-errors).
+The handle from [Start a task instead of waiting](#start-a-task) said the restock report was `working`. A task has five statuses: `working`, `input_required`, `completed`, `failed` and `cancelled`. The `completed`, `failed` and `cancelled` statuses are terminal, and once a task reaches one, its state doesn't change ([Tasks overview](https://modelcontextprotocol.io/extensions/tasks/overview)). `failed` means a JSON-RPC error. A tool that ran and returned a result with `isError: true` ends `completed`, with that result inside, and the specification says `failed` MUST NOT be used for it ([SEP-2663](https://modelcontextprotocol.io/seps/2663-tasks-extension)). It is the same split chapter 3 drew between tool execution errors and protocol errors, in [Report failures as tool results](#tool-errors).
 
 The client finds out where a task stands by polling. It sends `tasks/get` with the `taskId`, and it SHOULD wait the server's `pollIntervalMs` between polls, a value that may change from one reply to the next. Servers MAY rate-limit clients that poll faster. Each reply is the task, with `resultType` `"complete"`. When the task has completed, the reply carries `result`, which has the same structure as the result type of the original request ([SEP-2663](https://modelcontextprotocol.io/seps/2663-tasks-extension); [Tasks schema](https://raw.githubusercontent.com/modelcontextprotocol/ext-tasks/main/schema/2026-07-28/schema.ts)). For a tool, that is a `CallToolResult`. Clients SHOULD store task IDs durably, so that polling can resume after a crash or a restart.
 
@@ -195,7 +195,7 @@ In the SDK, polling belongs in a client extension. `TasksClient` claims the resu
 
 A host makes this call when a lead asks for the restock report. Through `TasksClient`, with `on_poll=` set to keep every `tasks/get` reply, a client calls `restock_report` with a threshold of 30 units.
 
-Example `poll-the-restock-report` (Python 3.12.15 · cryptography 50.0.2 · httpx2 2.16.2 · jsonschema 4.26.0 · mcp 2.3.0 · mcp-types 2.3.0 · pydantic 2.14.3 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.13:
+Example `poll-the-restock-report` (Python 3.12.15 · cryptography 50.0.2 · httpx2 2.16.2 · jsonschema 4.26.0 · mcp 2.3.0 · mcp-types 2.3.0 · pydantic 2.14.3 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.14:
 
 ```python
 """Call restock_report through a client whose extension polls the task until it ends, and get the report back as an ordinary tool result. The asserts check that the report was still working on more than one poll and that its messages only counted up, which the prose relies on."""
@@ -264,7 +264,7 @@ Cancelling uses `tasks/cancel` with the `taskId`, and the specification says `no
 
 The expiry example sets a one-minute `ttlMs`, which shows expiry without a long wait. So that its output never depends on the machine's speed, it holds each report before every product, with `restock.Steps`, a gate in `lib.restock` that lets one more product start each time `allow()` is called. It starts one report that is never allowed a product, polls it, moves the fake clock 61 seconds on, and polls again. Then it starts a second report, lets it recount one product, waits for its first status message, and cancels it. It polls at once, lets the report start its next product, and polls until the task is terminal.
 
-Example `expire-a-task` (Python 3.12.15 · cryptography 50.0.2 · httpx2 2.16.2 · mcp 2.3.0 · mcp-types 2.3.0 · pydantic 2.14.3 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.13:
+Example `expire-a-task` (Python 3.12.15 · cryptography 50.0.2 · httpx2 2.16.2 · mcp 2.3.0 · mcp-types 2.3.0 · pydantic 2.14.3 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.14:
 
 ```python
 """Show the two ways a task ends early: its time to live runs out and the server purges it, or the client cancels it and the report stops at its next check. The -32602 from the purged task and the final status of the cancelled report are the lines the prose rests on."""
@@ -341,7 +341,7 @@ The last poll found cancelled, stopped after 2 of 64 SKUs. The report recounted 
 
 ## Know what MCP Apps add {#mcp-apps}
 
-Tasks change when a tool's result arrives, as [Start a task instead of waiting](#start-a-task) showed. Another official extension, MCP Apps, changes how a result is shown. Its identifier is `io.modelcontextprotocol/ui`. A tool names a user interface in `_meta.ui.resourceUri`: a `ui://` resource, served with the MIME type `text/html;profile=mcp-app`. A host that supports Apps renders that HTML in a sandboxed iframe, and talks to it only through `postMessage`, in JSON-RPC: MCP's own methods, such as `tools/call`, plus methods whose names start with `ui/`. Through the host, the app can call the server's tools ([MCP Apps](https://modelcontextprotocol.io/extensions/apps/overview); [Apps specification](https://raw.githubusercontent.com/modelcontextprotocol/ext-apps/main/specification/2026-01-26/apps.mdx)).
+Tasks change when a tool's result arrives, as [Start a task instead of waiting](#start-a-task) showed. MCP Apps is an official extension that changes how a result is shown. Its identifier is `io.modelcontextprotocol/ui`. A tool names a user interface in `_meta.ui.resourceUri`: a `ui://` resource, served with the MIME type `text/html;profile=mcp-app`. A host that supports Apps renders that HTML in a sandboxed iframe, and talks to it only through `postMessage`, in JSON-RPC: MCP's own methods, such as `tools/call`, plus methods whose names start with `ui/`. Through the host, the app can call the server's tools ([MCP Apps](https://modelcontextprotocol.io/extensions/apps/overview); [Apps specification](https://raw.githubusercontent.com/modelcontextprotocol/ext-apps/main/specification/2026-01-26/apps.mdx)).
 
 A tool's `_meta.ui.visibility` says who may call it, `["model", "app"]` by default. A tool for the app alone is hidden from the model. The Apps specification puts both directions on the host: it MUST NOT include such a tool in the model's tool list, and it MUST reject an app's call to a tool whose visibility leaves out `"app"` ([Apps specification](https://raw.githubusercontent.com/modelcontextprotocol/ext-apps/main/specification/2026-01-26/apps.mdx)). A UI-enabled tool should still return meaningful text for clients that don't support the extension ([Extensions overview](https://modelcontextprotocol.io/extensions/overview)).
 

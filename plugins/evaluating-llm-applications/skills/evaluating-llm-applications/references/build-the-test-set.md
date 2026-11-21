@@ -3,13 +3,13 @@ title: "Evaluating LLM Applications"
 chapter: "Build a test set you can defend, and read public benchmarks"
 chapter_id: build-the-test-set
 book: evaluating-llm-applications
-edition: 2026.11.2
+edition: 2026.11.3
 verified: 2026-11-21
-edition_code: G0M7-3TW7
+edition_code: 4V0Y-VKTV
 canonical: https://rollingedition.com/evaluating-llm-applications/build-the-test-set
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“Build a test set you can defend, and read public benchmarks,” chapter 3 of Evaluating LLM Applications, Edition 2026.11.2, examples passed Nov 21, 2026. By Rolling Edition, https://rollingedition.com/evaluating-llm-applications/build-the-test-set. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Build a test set you can defend, and read public benchmarks,” chapter 3 of Evaluating LLM Applications, Edition 2026.11.3, examples passed Nov 21, 2026. By Rolling Edition, https://rollingedition.com/evaluating-llm-applications/build-the-test-set. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Build a test set you can defend, and read public benchmarks
 
@@ -21,7 +21,7 @@ This chapter builds the set the book uses and checks it with code. It then reads
 
 ## What a test set is for {#what-a-test-set-is-for}
 
-A test set is a fixed set of questions, paired with the answers you would accept, that stands in for the questions users will ask. Its job is to be asked the same questions each time something changes, so that a difference in score comes from the change and not from the questions. It does that job only while it stays fixed. This set was written from the docs rather than sampled from users, so it stands in for them and does not reproduce them.
+A [test set](#the-twenty-items) is a fixed set of questions, paired with the answers you would accept, that stands in for the questions users will ask. Its job is to be asked the same questions each time something changes, so that a difference in score comes from the change and not from the questions. It does that job only while it stays fixed. This set was written from the docs rather than sampled from users, so it stands in for them and does not reproduce them.
 
 Each row is an **item**: one test question with the fields a scorer needs. The item is the unit of every count in this book, so a pass rate is always a share of items, and its denominator says which ones. Each item has a **reference answer**, which the scorer compares a reply with, and **supporting sections**, the parts of the docs that a correct answer rests on. The reference answers are written labels. The book's own drafting agents wrote them from the docs, a second pass checked them against the docs, and a script checks the file's shape and section IDs. They are not human labels, and the book does not call them that.
 
@@ -59,7 +59,7 @@ Twins can drift into different splits when they are written at different times, 
 
 The schema check below runs both groups of rules and prints the problem count, with the counts by kind and by split.
 
-Example `check-item-schema` (Python 3.12.15 · numpy 2.5.5 · pydantic 2.14.3 · typing-extensions 4.16.0), passing in Edition 2026.11.2:
+Example `check-item-schema` (Python 3.12.15 · numpy 2.5.5 · pydantic 2.14.3 · typing-extensions 4.16.0), passing in Edition 2026.11.3:
 
 ```python
 """Loads all 120 test-set items, runs the per-item and the cross-item rules, and prints the problem count with the
@@ -106,11 +106,11 @@ The set holds 120 items, and the rules find 0 problems. A clean run means the ro
 
 ## Kinds and coverage {#kinds-and-coverage}
 
-Each kind tests something the assistant must do. An answerable item has docs that answer it fully, so the assistant must answer and agree with the reference, and its citations are checked on their own. A refusal there is a false refusal. An unanswerable item has docs that do not say, so the right reply is the decline phrase, exactly. Any other reply is a false answer, and these items are what stop an assistant that always answers from scoring well. [The chapter on declining](declining-when-the-docs-dont-say) covers the phrase. A version-dependent item names the version it asks about, and its reply must match that version's reference. An ambiguous item admits two readings, and the reference holds one answer per reading. A reply must answer each reading the docs support, and a partial answer fails.
+Each kind tests something the assistant must do. An [answerable item](#the-twenty-items) has docs that answer it fully, so the assistant must answer and agree with the reference, and its citations are checked on their own. A refusal there is a [false refusal](#declines-in-code). An [unanswerable item](#the-twenty-items) has docs that do not say, so the right reply is the decline phrase, exactly. Any other reply is a false answer, and these items are what stop an assistant that always answers from scoring well. [The chapter on declining](declining-when-the-docs-dont-say) covers the phrase. A version-dependent item names the version it asks about, and its reply must match that version's reference. An ambiguous item admits two readings, and the reference holds one answer per reading. A reply must answer each reading the docs support, and a partial answer fails.
 
 The kinds table below prints the set by kind and by split.
 
-Example `kinds-by-split` (Python 3.12.15 · numpy 2.5.5 · pydantic 2.14.3 · typing-extensions 4.16.0), passing in Edition 2026.11.2:
+Example `kinds-by-split` (Python 3.12.15 · numpy 2.5.5 · pydantic 2.14.3 · typing-extensions 4.16.0), passing in Edition 2026.11.3:
 
 ```python
 """Prints the stratification of plan section 3.4 as counts: kind by split, then planted items by split, with totals.
@@ -176,7 +176,7 @@ Coverage asks which parts of the tool the set exercises. The sablefile tool has 
 
 The coverage check stops if its mapping misses an item.
 
-Example `behaviour-coverage` (Python 3.12.15 · numpy 2.5.5 · pydantic 2.14.3 · typing-extensions 4.16.0), passing in Edition 2026.11.2:
+Example `behaviour-coverage` (Python 3.12.15 · numpy 2.5.5 · pydantic 2.14.3 · typing-extensions 4.16.0), passing in Edition 2026.11.3:
 
 ```python
 """Shows how many items of the test set exercise each behaviour B1 to B6, and which ones. The mapping in data/behaviours.json
@@ -235,7 +235,7 @@ One item carries two behaviours, so the six counts add up to one more than the i
 
 ### Planted items and their traps {#planted-items}
 
-A planted item is written to break an assistant in one named way. Each carries a reason from a fixed list of five:
+A [planted item](#the-twenty-items) is written to break an assistant in one named way. Each carries a reason from a fixed list of five:
 
 - `false-premise`: the question asks about a flag or key that the asked version does not have. The right reply is the decline phrase, so planted false premises are always unanswerable.
 - `near-miss-term`: a term one version renamed, or a term the docs use for another concept.
@@ -257,7 +257,7 @@ The second trap is a reference that is true for two versions, so a reply that de
 
 ## Dev and held-out {#dev-and-held-out}
 
-The set is split in two, because a score tuned on the questions it is measured with does not show progress. Dev may be tuned on, and held-out is used once, to report a result. The split is stratified, so that each kind appears in both parts in about the same proportion. Without that, one part could hold most of the unanswerable items, and the two scores would then measure different sets. The set holds 80 dev items and 40 held-out items, and each row's `split` field records which part it belongs to. The twenty items that [chapter 1](measure-before-you-change) measures are dev items, so its rates are dev rates.
+The set is split in two, because a score tuned on the questions it is measured with does not show progress. [Dev](#read-the-outputs) may be tuned on, and held-out is used once, to report a result. The split is stratified, so that each kind appears in both parts in about the same proportion. Without that, one part could hold most of the unanswerable items, and the two scores would then measure different sets. The set holds 80 dev items and 40 held-out items, and each row's `split` field records which part it belongs to. The twenty items that [chapter 1](measure-before-you-change) measures are dev items, so its rates are dev rates.
 
 Only dev may be tuned on. Prompt wording, the number of sections retrieved, the version filter and the wording of the judge's rubric may all be chosen from dev results. Once a setting is chosen, it is frozen before held-out runs. Held-out runs once for each variant, in the chapter that compares the variants, and its numbers are the ones a chapter quotes. A recording's manifest says whether anything in it was tuned on held-out, and that answer must be no.
 
@@ -283,7 +283,7 @@ Both samples are seeded samples of one hundred items, and their cards were read 
 
 GSM8K is grade-school math word problems, each with a worked solution that ends in one number. The score is an exact match on that number. The prompt asks for a "Final answer:" line the scorer never reads. It takes the number after the last `####` marker in the reply, or else the last number in the reply. No reply contains `####`, so every verdict came from the last number, which for a finished reply is its "Final answer:" number. The paper describes 8.5K problems, with 1K for testing ([Cobbe and colleagues, 2021](https://arxiv.org/abs/2110.14168)). The [dataset card](https://huggingface.co/datasets/openai/gsm8k) gives its second split 1,319 rows, which the viewer calls "test" and the splits table calls "validation". The book does not reconcile them, and the sample uses the viewer's "test" split. The card gives the licence as MIT.
 
-Example `score-gsm8k` (Python 3.12.15 · numpy 2.5.5), passing in Edition 2026.11.2:
+Example `score-gsm8k` (Python 3.12.15 · numpy 2.5.5), passing in Edition 2026.11.3:
 
 ```python
 """Scores the recorded replies on the 100-item GSM8K sample by exact match on the final number. The accuracy line rests on
@@ -364,13 +364,13 @@ The cap also touches the right replies: 1 of 90 stops before its final line, and
 
 The book uses GSM8K to check the harness, not to rank the assistant.
 
-**Working rule:** Count the replies with no final line before you quote a score, and compare two configurations only with a paired comparison that clears its interval.
+**Working rule:** Count the replies with no final line before you quote a score, and compare two configurations only with a [paired comparison](#paired-comparisons) that clears its interval.
 
 ### TruthfulQA {#truthfulqa}
 
-TruthfulQA asks questions on which people often answer falsely, such as a common myth. Its paper describes 817 questions in 38 categories ([Lin and colleagues, 2022](https://arxiv.org/abs/2109.07958)). The book uses its multiple-choice version, MC1: exactly one option is correct, and the model answers with a letter. The [dataset card](https://huggingface.co/datasets/truthfulqa/truthful_qa) has one split, named validation, and gives the licence as Apache-2.0.
+TruthfulQA asks questions on which people often answer falsely, such as a common myth. Its paper describes 817 questions in 38 categories ([Lin and colleagues, 2022](https://arxiv.org/abs/2109.07958)). The book uses TruthfulQA's multiple-choice version, MC1: exactly one option is correct, and the model answers with a letter. The [dataset card](https://huggingface.co/datasets/truthfulqa/truthful_qa) has one split, named validation, and gives the licence as Apache-2.0.
 
-Example `score-truthfulqa` (Python 3.12.15 · numpy 2.5.5), passing in Edition 2026.11.2:
+Example `score-truthfulqa` (Python 3.12.15 · numpy 2.5.5), passing in Edition 2026.11.3:
 
 ```python
 """Scores the recorded replies on the 100-item TruthfulQA MC1 sample by the option letter each reply gives. Beside the
@@ -466,7 +466,7 @@ The chance share averages one over each item's option count. A random choice wou
 Because the correct option is always first, a reply is right exactly when it chose the first option. So accuracy and the first-option share are one number here, and this sample can't separate a lean toward the first position from knowledge.
 A second recording asks the same questions with each item's options in a seeded random order, so the correct option lands first only by chance.
 
-Example `score-truthfulqa-shuffled` (Python 3.12.15 · numpy 2.5.5), passing in Edition 2026.11.2:
+Example `score-truthfulqa-shuffled` (Python 3.12.15 · numpy 2.5.5), passing in Edition 2026.11.3:
 
 ```python
 """Scores the shuffled-options recording on the 100-item TruthfulQA MC1 sample. Each item's options are in a

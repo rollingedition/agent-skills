@@ -3,13 +3,13 @@ title: "Business Intelligence with Agents"
 chapter: "Where raw text-to-SQL gets the number wrong"
 chapter_id: wrong-numbers
 book: business-intelligence-with-agents
-edition: 2026.11.14
+edition: 2026.11.15
 verified: 2026-11-19
-edition_code: 8Q6T-45MG
+edition_code: 28XD-AHKT
 canonical: https://rollingedition.com/business-intelligence-with-agents/wrong-numbers
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“Where raw text-to-SQL gets the number wrong,” chapter 2 of Business Intelligence with Agents, Edition 2026.11.14, examples passed Nov 19, 2026. By Rolling Edition, https://rollingedition.com/business-intelligence-with-agents/wrong-numbers. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Where raw text-to-SQL gets the number wrong,” chapter 2 of Business Intelligence with Agents, Edition 2026.11.15, examples passed Nov 19, 2026. By Rolling Edition, https://rollingedition.com/business-intelligence-with-agents/wrong-numbers. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Where raw text-to-SQL gets the number wrong
 
@@ -19,7 +19,7 @@ By the end of this chapter, you can name the five ways schema-only text-to-SQL r
 
 The worry is common. In dbt Labs' 2026 survey of analytics engineering, 71% of respondents named "incorrect or hallucinated outputs reaching stakeholders" as a top concern ([dbt Labs, April 14, 2026](https://www.getdbt.com/blog/new-dbt-labs-report-finds-ai-driven-acceleration-is-outpacing-trust-and-governance)). The survey had 363 respondents, collected in late 2025 and early 2026, and it is a vendor's survey of people who chose to answer, so it measures worry, not how often wrong numbers ship. It doesn't say where the wrong numbers come from. The sections below show five places on the shop's warehouse, one at a time, and the last of them counts how often each appears.
 
-Every example replays the recording called `schema-only-sql`: the replies a pinned open model, Qwen3-4B-Instruct-2507, gave when it was shown the schema of every table and one question, and asked for one DuckDB query. [Chapter 1](#ask-for-sql) explains how the recording was made and why each reply is looked up by the hash of the exact messages. Each example then runs the model's query on the warehouse and compares the result with the golden result: the answer to the same question from SQL written against the finance team's definitions and checked by running it, kept with the question in `examples/data/golden/questions.toml`.
+Every example replays the recording called `schema-only-sql`: the replies a pinned open model, Qwen3-4B-Instruct-2507, gave when it was shown the schema of every table and one question, and asked for one DuckDB query. [Chapter 1](#ask-for-sql) explains how the recording was made and why each reply is looked up by the hash of the exact messages. Each example then runs the model's query on the warehouse and compares the result with the golden result: the question's answer from SQL written against the finance team's definitions and checked by running it, kept with the question in `examples/data/golden/questions.toml`.
 
 ## Joins that fan out and inflate a sum {#joins-that-fan-out}
 
@@ -27,7 +27,7 @@ Fan-out is what happens when a query joins a table to another that has several r
 
 In the shop's warehouse, `analytics.fct_orders` holds one row per order with its `net_revenue_eur`, and `analytics.fct_order_lines` holds one row per line with its `product_id`. The question is one a category manager asks: "How much net revenue came from orders that included a tent in 2025?" It is golden question `gq-007`. Its golden SQL counts each order's whole net revenue once, if any of its lines is a product in the `Tents` category. Count the rows the model's join produces, against the golden query: the sum looks plausible but isn't.
 
-Example `tent-orders-fan-out` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.14:
+Example `tent-orders-fan-out` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.15:
 
 ```python
 """Replay the model's SQL for net revenue from orders with a tent, then count each order once. Read the `inflated by` line: it is the fan-out, measured with the model's own joins and filters kept as they are."""
@@ -111,7 +111,7 @@ A [fan-out](#joins-that-fan-out) is a mechanical error: anyone who knows the tab
 
 The shop's finance team defines revenue as net revenue: in euros, after discounts, before tax, from real orders that weren't cancelled, on the order's local business day. The orders mart has both `gross_revenue_eur` and `net_revenue_eur`. EMEA's prices include VAT and the other regions add sales tax on top, so the gap between the two columns differs by region. The question is golden question `gq-008`: "What was our total revenue in 2025?" It doesn't say net, because people who work at the shop don't. Which choice costs most? The example changes one at a time, from gross to golden.
 
-Example `gross-or-net-revenue` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.14:
+Example `gross-or-net-revenue` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.15:
 
 ```python
 """Replay the model's SQL for total revenue in 2025, then change one choice at a time until it reaches the golden result. The line that matters is `overstated by`, and the step from gross to net, which matches the tax in the gross figure."""
@@ -176,9 +176,9 @@ Neither error taxonomy we checked has a class for this. One detailed taxonomy, N
 
 Time looks like the least ambiguous part of a question, and on the shop's warehouse it is where the model went wrong as often as anywhere. A date in a question has a calendar and a time zone, and a warehouse usually stores timestamps in UTC while the business counts days in local time and years in its own fiscal calendar. A [definition](#definitions-not-in-schema) such as "fiscal year" is at least a phrase the model can see in the question. The time zone is invisible: the question says "May", and the query has to know whose May.
 
-The shop counts each order on its region's local business day, stored as `order_date_local` in the orders mart, beside the UTC timestamp `placed_at`. Its fiscal year starts on February 1 and is named for the year it ends in, so fiscal 2026 runs from February 1, 2025 to January 31, 2026, and `analytics.dim_date` holds the fiscal columns. Golden question `gq-004` asks how many customers placed their first order in fiscal year 2026. Golden question `gq-013` asks how many orders each sales region received in May 2026. One tests the fiscal year, the other the local business day.
+The shop counts each order on its region's local business day, stored as `order_date_local` in the orders mart, beside the UTC timestamp `placed_at`. Its [fiscal year](#meet-the-shop) starts on February 1 and is named for the year it ends in, so fiscal 2026 runs from February 1, 2025 to January 31, 2026, and `analytics.dim_date` holds the fiscal columns. Golden question `gq-004` asks how many customers placed their first order in fiscal year 2026. Golden question `gq-013` asks how many orders each sales region received in May 2026. One tests the fiscal year, the other the local business day.
 
-Example `fiscal-year-and-local-day` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.14:
+Example `fiscal-year-and-local-day` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.15:
 
 ```python
 """Two time traps in the model's SQL: a calendar year where the question meant a fiscal one, and UTC days. Read the `gq-004 model` line, the `gq-013` lines, and the counts of orders whose two clocks disagree."""
@@ -282,7 +282,7 @@ A [definition](#definitions-not-in-schema) can go wrong inside the right table; 
 
 The shop's warehouse has one: `analytics.orders_legacy`, which has columns called `revenue` and `sales_region`. Its revenue is gross, tax included, and it keeps test and cancelled orders. Golden question `gq-012`, "What was total revenue for each sales region in 2025?", uses both of its column names, and was written to tempt the model toward it, as was `gq-013`, which asks for orders by sales region. Two checks follow: what the legacy table answers, and whether the model's queries ever read it.
 
-Example `legacy-table-answer` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.14:
+Example `legacy-table-answer` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.15:
 
 ```python
 """What the legacy mart says about revenue by sales region in 2025, and how often the model's queries read that mart. The line to read is `legacy total over golden`, and the count of queries that read `orders_legacy`."""
@@ -349,7 +349,7 @@ The people who write text-to-SQL benchmarks miss these filters too. In the BIRD 
 
 The shop's marts apply one such rule for you: they remove test orders. They can't remove cancelled orders, because some questions are about cancellations, so `fct_orders` keeps them with their `status`, and the order lines keep them too. The question is golden question `gq-015`, "How many units of each product category did we sell in 2025?", which needs the status from one table to filter rows in another. The model's query never drops cancelled orders, and the example shows the cost.
 
-Example `cancelled-lines-counted` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.14:
+Example `cancelled-lines-counted` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.15:
 
 ```python
 """Replay the model's SQL for units sold by category in 2025, and find the filters it left out. Read the `overstated by` line, and the units on cancelled orders, which the missing status filter explains."""
@@ -436,7 +436,7 @@ Each section so far showed one failure on one question. To decide what to fix fi
 
 This run takes the model's schema-only SQL for each golden question from `gq-001` to `gq-016` with an answer, 15 of them, so its failures can be counted. It leaves out `gq-005`, a forecast that should be declined, which is chapter 8's subject. It grades each result against the golden result as correct, wrong or error, and labels each query with its failure kinds. The labels come from `lib/failure_kinds.py`, which parses the model's query and its golden SQL with sqlglot and compares them. For instance, a query that uses `placed_at` where the golden SQL uses the local business day gets the label `time`. The rules are ours, written for this warehouse's traps; the module's docstring lists each one.
 
-Example `classify-schema-only-errors` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.14:
+Example `classify-schema-only-errors` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.15:
 
 ```python
 """Run the model's schema-only SQL on each golden question that has an answer, grade each result, and label the failure kinds of each query. The counts of correct, wrong and error answers, and the kinds the wrong ones carry, are what the prose quotes."""

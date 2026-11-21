@@ -3,13 +3,13 @@ title: "Data Governance as Code"
 chapter: "Governance end to end"
 chapter_id: governance-end-to-end
 book: data-governance-as-code
-edition: 2026.11.30
+edition: 2026.11.31
 verified: 2026-11-19
-edition_code: N1TW-0DRZ
+edition_code: VJ1S-X2E7
 canonical: https://rollingedition.com/data-governance-as-code/governance-end-to-end
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“Governance end to end,” chapter 1 of Data Governance as Code, Edition 2026.11.30, examples passed Nov 19, 2026. By Rolling Edition, https://rollingedition.com/data-governance-as-code/governance-end-to-end. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Governance end to end,” chapter 1 of Data Governance as Code, Edition 2026.11.31, examples passed Nov 19, 2026. By Rolling Edition, https://rollingedition.com/data-governance-as-code/governance-end-to-end. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Governance end to end
 
@@ -32,7 +32,7 @@ The platform's data, which every example in this book reads, is generated. A scr
 
 Every example runs offline, in one Python 3.12.15 process, on pinned libraries: PyIceberg 0.12.0 for the Iceberg catalog and its tables, DuckDB 2.0.0 for queries, sqlglot 30.33.0 to parse SQL, openlineage-python 1.55.0 for lineage, and regopy 1.5.2 for policies written in Rego, the policy language of Open Policy Agent (OPA). Six services that a production platform runs don't run here, and each has a stand-in:
 
-- **Trino**, the SQL engine tools query through: DuckDB behind the book's enforcement layer, which rewrites each query before running it.
+- **Trino**, the SQL engine tools query through: DuckDB behind the book's [enforcement layer](#enforcing-policies-on-queries), which rewrites each query before running it.
 - **OPA's server**, which Trino asks for access decisions ([Trino 484, OPA access control](https://trino.io/docs/484/security/opa-access-control.html)): regopy, evaluating the same Rego inside the Python process.
 - **Spark**, or whatever engine runs the pipelines at scale: DuckDB, running each pipeline's SQL file.
 - **A catalog server or a cloud catalog**, serving table metadata through an API such as the Iceberg REST catalog's ([REST catalog spec, 1.12.0](https://github.com/apache/iceberg/blob/apache-iceberg-1.12.0/open-api/rest-catalog-open-api.yaml)): PyIceberg's SQL catalog, backed by a SQLite file that records where each table's metadata is, with the metadata beside the data on local disk.
@@ -53,14 +53,14 @@ The shared modules, files in `examples/lib/` that hold the code many examples ne
 
 The platform's first problem is its spreadsheet, a list of columns that nothing checks. A catalog lists a platform's tables and their schemas, and governance needs two facts the data doesn't carry: who answers for each table, and how each column must be protected. Kept in a spreadsheet or a catalog server's web page, those facts change without review, and no test can say whether they're complete. Kept in a file in the repository, beside the pipelines, every change is a diff someone approves, and a test can compare the file with the catalog.
 
-The platform's file is `governance/metadata.toml`. It gives each table an **owner**, a **domain**, the part of the business the table belongs to, and a description, and each column a description and a **classification**. Catalog tools mean different things by an owner, as [chapter 2](#keep-metadata-in-a-reviewed-file) compares, and we use one meaning throughout: the team accountable for the table, never a person, so the answer survives someone leaving. A classification is one of four values, from least to most protected:
+The platform's file is `governance/metadata.toml`. It gives each table an [**owner**](#keep-metadata-in-a-reviewed-file), a **domain**, the part of the business the table belongs to, and a description, and each column a description and a **classification**. Catalog tools mean different things by an owner, as [chapter 2](#keep-metadata-in-a-reviewed-file) compares, and we use one meaning throughout: the team accountable for the table, never a person, so the answer survives someone leaving. A classification is one of four values, from least to most protected:
 
 - `public`: may be shown to anyone outside the platform;
 - `internal`: for the platform's staff, and doesn't identify a person by itself;
 - `personal`: identifies a person, or tells something about one;
 - `sensitive`: data whose leak would directly harm someone, such as a card number.
 
-Columns are keyed by their Iceberg field ID, which survives a rename, with the name beside it for people:
+Columns are keyed by their Iceberg [field ID](#key-column-metadata-by-field-id), which survives a rename, with the name beside it for people:
 
 ```toml
 [tables."crm.learners"]
@@ -76,7 +76,7 @@ Three of the book's shared modules do the work. `lib.catalog.open_catalog` build
 
 Loading the file and cataloging `crm.learners` with it takes a few lines, and the check runs on what it builds:
 
-Example `catalog-the-learners` (Python 3.12.15 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.30:
+Example `catalog-the-learners` (Python 3.12.15 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.31:
 
 ```python
 """Apply governance/metadata.toml to crm.learners: write its owner, domain and descriptions into the catalog, then run the
@@ -129,9 +129,9 @@ A spreadsheet can't give you that zero. The check walks the catalog, so a column
 
 ## Capture one pipeline's column lineage {#capture-one-pipelines-lineage}
 
-[The catalog](#catalog-a-table) says what a table holds. Lineage says where its data came from and where it went, and governance needs both: a table built from `crm.learners` may or may not copy its emails. OpenLineage, an open specification for lineage, describes a **job**, such as a pipeline, its **runs**, and the **datasets** each run reads and writes. A run reports itself in events: a START when it begins, then one that ends it, such as COMPLETE or FAIL. Events carry **facets**, OpenLineage's name for blocks of metadata attached to a run, a job or a dataset.
+[The catalog](#catalog-a-table) says what a table holds. [Lineage](#lineage-from-pipelines) says where its data came from and where it went, and governance needs both: a table built from `crm.learners` may or may not copy its emails. OpenLineage, an open specification for lineage, describes a [**job**](#send-run-events), such as a pipeline, its **runs**, and the **datasets** each run reads and writes. A run reports itself in events: a START when it begins, then one that ends it, such as COMPLETE or FAIL. Events carry [**facets**](#send-run-events), OpenLineage's name for blocks of metadata attached to a run, a job or a dataset.
 
-The column lineage facet, on the output of a COMPLETE event, lists for each output column the input columns it came from, each marked DIRECT or INDIRECT. DIRECT means the output is derived from the input. INDIRECT means the input shapes the output without being copied: the output column value is "impacted by the value of inputField column, but it's not derived from it" ([column lineage facet](https://openlineage.io/docs/spec/facets/dataset-facets/column_lineage_facet)). The columns of a join or a filter condition are INDIRECT inputs, since they decide which rows exist, and so are those of a grouping, sort, window or condition.
+The [column lineage facet](#trace-output-columns), on the output of a COMPLETE event, lists for each output column the input columns it came from, each marked DIRECT or INDIRECT. [DIRECT](#add-indirect-inputs) means the output is derived from the input. [INDIRECT](#add-indirect-inputs) means the input shapes the output without being copied: the output column value is "impacted by the value of inputField column, but it's not derived from it" ([column lineage facet](https://openlineage.io/docs/spec/facets/dataset-facets/column_lineage_facet)). The columns of a join or a filter condition are INDIRECT inputs, since they decide which rows exist, and so are those of a grouping, sort, window or condition.
 
 The client library computes no lineage of its own, as [chapter 4](#send-run-events) finds in its source: it sends what you give it. So the book's module `lib.lineage` does the work. It parses each pipeline's SQL with sqlglot and adds the INDIRECT inputs that sqlglot's own lineage leaves out. It also wraps `lib.pipelines.run`, which runs one of the platform's SQL pipelines on DuckDB and writes its output to the catalog: START before the run, COMPLETE with the lineage after it. The events go through OpenLineage's file transport to one file, with a fixed time and a run ID derived from that time and the job's name, so the example writes the same bytes every time.
 
@@ -139,7 +139,7 @@ The platform's `marketing_audience` pipeline is one `create table ... as select 
 
 Run the pipeline with events on, read its lineage back from the events alone, and count the rows through `lib.warehouse.connect`, which gives DuckDB a view of each catalog table:
 
-Example `audience-pipeline-lineage` (Python 3.12.15 · duckdb 2.0.0 · openlineage-python 1.55.0 · pyarrow 26.0.1 · pyiceberg 0.12.0 · pyyaml 6.0.3 · sqlglot 30.33.0), passing in Edition 2026.11.30:
+Example `audience-pipeline-lineage` (Python 3.12.15 · duckdb 2.0.0 · openlineage-python 1.55.0 · pyarrow 26.0.1 · pyiceberg 0.12.0 · pyyaml 6.0.3 · sqlglot 30.33.0), passing in Edition 2026.11.31:
 
 ```python
 """Run the marketing_audience pipeline with OpenLineage events, then read its column lineage back from the events alone.
@@ -208,7 +208,7 @@ The catalog check, from [the section before](#catalog-a-table) and run on the sa
 
 ## Enforce one access decision on a query {#enforce-one-access-decision}
 
-With the platform's tables [cataloged](#catalog-a-table), the next question is who may read what. Policy as code starts from OPA's premise that policy can be decoupled from the software it governs, so the people responsible for it can write, analyze, version and distribute it separately ([OPA philosophy](https://www.openpolicyagent.org/docs/philosophy)). A **policy** answers a request with a **decision**. The platform's policy answers with a document rather than a yes or no: whether to allow the read, the **row filters** that keep only the rows the user may see, and the **column masks** that change how a column is shown. The filters and masks are data, never SQL. A decision does nothing on its own. Something between the user and the engine has to apply it to every table a query reads.
+With the platform's tables [cataloged](#catalog-a-table), the next question is who may read what. Policy as code starts from OPA's premise that policy can be decoupled from the software it governs, so the people responsible for it can write, analyze, version and distribute it separately ([OPA philosophy](https://www.openpolicyagent.org/docs/philosophy)). A [**policy**](#access-policies-as-code) answers a request with a [**decision**](#access-policies-as-code). The platform's policy answers with a document rather than a yes or no: whether to allow the read, the [**row filters**](#access-policies-as-code) that keep only the rows the user may see, and the [**column masks**](#access-policies-as-code) that change how a column is shown. The filters and masks are data, never SQL. A decision does nothing on its own. Something between the user and the engine has to apply it to every table a query reads.
 
 Support agents on the platform each serve one region, `americas`, `emea` or `apac`, and need learners' contact details to answer tickets. The policy, `governance/policies/access.rego`, denies every request by default. It allows each group, the role a user holds in `governance/users.toml`, the tables its work needs, and reads the agent's region from the same file. This rule keeps an agent to their region:
 
@@ -219,11 +219,11 @@ row_filters contains {"column": "support_region", "equals": user.region} if {
 }
 ```
 
-`lib.policy.decide` evaluates the policy with regopy. `lib.enforce` holds the **enforcement layer**: its `Enforcer` asks the policy about every table a query reads, replaces each with a subquery that applies the decision, and runs the rewrite on DuckDB. `lib.enforce.answer` is the one function a service calls, and it returns rows, never the engine's connection.
+`lib.policy.decide` evaluates the policy with regopy. `lib.enforce` holds the [**enforcement layer**](#enforcing-policies-on-queries): its `Enforcer` asks the policy about every table a query reads, replaces each with a subquery that applies the decision, and runs the rewrite on DuckDB. `lib.enforce.answer` is the one function a service calls, and it returns rows, never the engine's connection.
 
 `agent-a05`, a support agent in EMEA, asks for three columns of `crm.learners` and counts learners by region through the layer. Next, the emails are checked against the generated files that `lib.platform.load` reads:
 
-Example `support-region-enforced` (Python 3.12.15 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0 · regopy 1.5.2 · sqlglot 30.33.0), passing in Edition 2026.11.30:
+Example `support-region-enforced` (Python 3.12.15 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0 · regopy 1.5.2 · sqlglot 30.33.0), passing in Edition 2026.11.31:
 
 ```python
 """One access decision from the platform's Rego policy, and the same agent's query enforced in the layer. The point rests on
@@ -278,15 +278,15 @@ regopy is the Python binding of rego-cpp, Microsoft's C++ implementation of Rego
 
 ## Fail the pull request that adds an unclassified column {#fail-the-pull-request}
 
-[The catalog check](#catalog-a-table) proves the catalog complete on the day it runs, and the platform changes every week. A check that waits for someone to remember it gets run rarely and read less. Run on every pull request, where its exit code can fail it, the same check becomes a gate, and its findings appear where engineers already work. The authors of Tricorder, Google's platform for code analysis, found time and again that when developers have to open a dashboard or run a separate command line tool, their use of analysis drops off ([Sadowski et al., 2015](https://static.googleusercontent.com/media/research.google.com/en//pubs/archive/43322.pdf)). That is one company's experience with code analysis, not data, but governance checks meet the same people. A gate also fails a pull request only for what it changes, so a finding already on main is reported with its owner and fails no pull request that leaves it as it is.
+[The catalog check](#catalog-a-table) proves the catalog complete on the day it runs, and the platform changes every week. A check that waits for someone to remember it gets run rarely and read less. Run on every pull request, where its exit code can fail it, the same check becomes a [gate](#run-every-rule-as-one-job), and its findings appear where engineers already work. The authors of Tricorder, Google's platform for code analysis, found time and again that when developers have to open a dashboard or run a separate command line tool, their use of analysis drops off ([Sadowski et al., 2015](https://static.googleusercontent.com/media/research.google.com/en//pubs/archive/43322.pdf)). That is one company's experience with code analysis, not data, but governance checks meet the same people. A gate also fails a pull request only for what it changes, so a finding already on main is reported with its owner and fails no pull request that leaves it as it is.
 
-The book's module for this is `lib.ci`, the platform's governance job. A schema change on the platform is a migration, an `alter table` statement in a file in the branch's `migrations/` folder. Each side of a pull request is a checkout in its own folder, one of main and one of the branch. For each side, `lib.ci.run` builds a scratch platform, a fresh catalog made the way the platform runs. It holds the source tables, the side's migrations, its metadata written into the catalog, and its pipelines. It runs the checks it's given on the branch's platform, runs them on main's alone to learn what is already there, and compares the findings by ID.
+The book's module for this is `lib.ci`, the platform's governance job. A schema change on the platform is a migration, an `alter table` statement in a file in the branch's `migrations/` folder. Each side of a pull request is a checkout in its own folder, one of main and one of the branch. For each side, `lib.ci.run` builds a [scratch platform](#governance-in-ci), a fresh catalog made the way the platform runs. It holds the source tables, the side's migrations, its metadata written into the catalog, and its pipelines. It runs the checks it's given on the branch's platform, runs them on main's alone to learn what is already there, and compares the findings by ID.
 
-This section runs one check, `coverage`. It is [the catalog check](#catalog-a-table), `lib.metadata.problems`, run on the branch's platform, and for each column nobody classified it adds what a rule on column names suggests, from the rules [chapter 3](#classify-columns-from-the-schema) writes.
+This section runs one check, `coverage`. The coverage check is [the catalog check](#catalog-a-table), `lib.metadata.problems`, run on the branch's platform, and for each column nobody classified it adds what a rule on column names suggests, from the rules [chapter 3](#classify-columns-from-the-schema) writes.
 
 The CRM team's pull request adds a column for learners' work email in one migration and forgets the column's metadata, so the coverage check has something to find:
 
-Example `unclassified-column-fails` (Python 3.12.15 · duckdb 2.0.0 · openlineage-python 1.55.0 · phonenumbers 9.0.43 · presidio-analyzer 2.2.366 · pyarrow 26.0.1 · pyiceberg 0.12.0 · pyyaml 6.0.3 · regopy 1.5.2 · sqlglot 30.33.0 · tldextract 5.4.0), passing in Edition 2026.11.30:
+Example `unclassified-column-fails` (Python 3.12.15 · duckdb 2.0.0 · openlineage-python 1.55.0 · phonenumbers 9.0.43 · presidio-analyzer 2.2.366 · pyarrow 26.0.1 · pyiceberg 0.12.0 · pyyaml 6.0.3 · regopy 1.5.2 · sqlglot 30.33.0 · tldextract 5.4.0), passing in Edition 2026.11.31:
 
 ```python
 """The CRM team's pull request adds a column to crm.learners and no metadata for it; the coverage check runs on its branch and
@@ -327,7 +327,7 @@ The pull request fails on 1 finding of its own, the column nobody classified. Th
 
 The findings already on main were there before the pull request: `coverage/ai.review_corpus`, and `coverage/marketing.audience`, the table [the lineage section](#capture-one-pipelines-lineage) found undescribed. Nobody owns either table, so the job names the platform team, the team answerable for tables without an owner. The job exits with code `1`, so the pull request fails until the column has a classification, and the findings on main fail no pull request that leaves them as they are. [Chapter 10's job](#run-every-rule-as-one-job) runs the checks of chapters 2 to 7 on the same pull request, 11 of them.
 
-**Working rule:** Run every governance check as one job on every pull request, required by branch protection, and fail it by exit code on any finding the pull request introduces. Report the findings already on the main branch with their owners, without failing the pull request for them. Put every finding in the pull request itself, under an ID that stays the same from run to run, with what to do about it. Run the same checks on a schedule against the production catalog too, for what changes outside pull requests.
+**Working rule:** Run every governance check as one job on every pull request, required by [branch protection](#gate-the-pull-request), and fail it by exit code on any finding the pull request introduces. Report the findings already on the main branch with their owners, without failing the pull request for them. Put every finding in the pull request itself, under an ID that stays the same from run to run, with what to do about it. Run the same checks on a schedule against the production catalog too, for what changes outside pull requests.
 
 ## What goes wrong in production {#end-to-end-in-production}
 
@@ -339,7 +339,7 @@ The spreadsheet this chapter [started from](#governance-end-to-end) lists tables
 
 Take the platform's spreadsheet, an inventory of `crm.learners` exported as CSV, one row per column. Then the CRM team's migration from [the pull request above](#fail-the-pull-request) adds `work_email`. Compare it with the catalog after the migration to find what it misses:
 
-Example `spreadsheet-misses-new-column` (Python 3.12.15 · duckdb 2.0.0 · openlineage-python 1.55.0 · phonenumbers 9.0.43 · presidio-analyzer 2.2.366 · pyarrow 26.0.1 · pyiceberg 0.12.0 · pyyaml 6.0.3 · regopy 1.5.2 · sqlglot 30.33.0 · tldextract 5.4.0), passing in Edition 2026.11.30:
+Example `spreadsheet-misses-new-column` (Python 3.12.15 · duckdb 2.0.0 · openlineage-python 1.55.0 · phonenumbers 9.0.43 · presidio-analyzer 2.2.366 · pyarrow 26.0.1 · pyiceberg 0.12.0 · pyyaml 6.0.3 · regopy 1.5.2 · sqlglot 30.33.0 · tldextract 5.4.0), passing in Edition 2026.11.31:
 
 ```python
 """A governance inventory kept as a spreadsheet, exported before a schema change, then compared with the catalog after it.
@@ -394,7 +394,7 @@ A policy protects only the reads that pass through whatever enforces it. Trino a
 
 The [enforcement layer](#enforce-one-access-decision) keeps `agent-a05` to EMEA. The layer has routes around it, though, because anything with the catalog's access can read the table's files. Read the table around the layer twice: with DuckDB through `lib.warehouse.connect`, which the layer itself uses, as a notebook would, and with PyIceberg's own scan, as any reader holding the catalog's access would:
 
-Example `read-around-the-layer` (Python 3.12.15 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0 · regopy 1.5.2 · sqlglot 30.33.0), passing in Edition 2026.11.30:
+Example `read-around-the-layer` (Python 3.12.15 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0 · regopy 1.5.2 · sqlglot 30.33.0), passing in Edition 2026.11.31:
 
 ```python
 """The same table, read three ways: through the enforcement layer, and around it with DuckDB and with PyIceberg. The point

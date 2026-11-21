@@ -3,13 +3,13 @@ title: "Small Open Models"
 chapter: "Choose a base model by counting what one message costs"
 chapter_id: choose-a-base-model
 book: small-open-models
-edition: 2026.11.8
+edition: 2026.11.9
 verified: 2026-11-20
-edition_code: HZX4-S3DE
+edition_code: ND0S-78AT
 canonical: https://rollingedition.com/small-open-models/choose-a-base-model
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“Choose a base model by counting what one message costs,” chapter 3 of Small Open Models, Edition 2026.11.8, examples passed Nov 20, 2026. By Rolling Edition, https://rollingedition.com/small-open-models/choose-a-base-model. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Choose a base model by counting what one message costs,” chapter 3 of Small Open Models, Edition 2026.11.9, examples passed Nov 20, 2026. By Rolling Edition, https://rollingedition.com/small-open-models/choose-a-base-model. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Choose a base model by counting what one message costs
 
@@ -54,7 +54,7 @@ The example also watches the pins from the output side. It prints each model's p
 
 One example loads both kept models from the files the runtime fetched and checked against the pins, with no network, and prints the book's first size counts.
 
-Example `load-both-models-offline` (Python 3.12.15 · torch 2.15.0+cpu · torchao 0.18.0+cpu · transformers 5.23.0), passing in Edition 2026.11.8:
+Example `load-both-models-offline` (Python 3.12.15 · torch 2.15.0+cpu · torchao 0.18.0+cpu · transformers 5.23.0), passing in Edition 2026.11.9:
 
 ```python
 """Load the 135M and 360M SmolLM2 models at their pins, offline, and print each one's parameter count and layer count. The chapter's size claims rest on both lines; the parameter line is rounded to whole millions."""
@@ -116,11 +116,11 @@ The [previous section](#load-each-model-at-its-pinned-revision) showed what the 
 
 The prompt opens with the sentence "Route this customer message from an online bank to one support team." It asks for the team name only, lists the teams, then gives the message and ends with the word "Team:". Everything in that text is the same from one message to the next except the message itself, so the cost of a message is the fixed text plus the message's own length.
 
-The tokenizer turns that text into tokens, the units a model reads. The count is in tokens rather than characters because a model reads tokens. Counting needs the tokenizer's rules but no weights, so the count is the first cost you can take before you choose a design. A classifier reads the message once and returns a score for each team. A generative model reads the prompt once and then writes its answer one token at a time, and each token it writes is one more pass through the network. The later chapters use both designs.
+The tokenizer turns the prompt's text into tokens, the units a model reads. The count is in tokens rather than characters because a model reads tokens. Counting needs the tokenizer's rules but no weights, so the count is the first cost you can take before you choose a design. A classifier reads the message once and returns a score for each team. A generative model reads the prompt once and then writes its answer one token at a time, and each token it writes is one more pass through the network. The later chapters use both designs.
 
 One example counts the forward passes, each one call of the network, for a single test message under each design. It uses the 135M model with no adapter. The classifier's head is untrained here, so only the pass count matters.
 
-Example `count-forward-passes` (Python 3.12.15 · torch 2.15.0+cpu · torchao 0.18.0+cpu · transformers 5.23.0), passing in Edition 2026.11.8:
+Example `count-forward-passes` (Python 3.12.15 · torch 2.15.0+cpu · torchao 0.18.0+cpu · transformers 5.23.0), passing in Edition 2026.11.9:
 
 ```python
 """Count the forward passes one test_40 message costs a classifier and a generative model, with the 135M model and no adapter. The point rests on the generative line: the model makes one pass for each token it writes, plus one for the end token."""
@@ -192,7 +192,7 @@ A generative model's cost grows with its answer, and a classifier's does not. Fo
 
 A second example counts the router prompt's tokens for each of the 40 messages in the fixed test sample, using the 135M model's tokenizer. It runs no model.
 
-Example `count-prompt-tokens` (Python 3.12.15 · torch 2.15.0+cpu · transformers 5.23.0), passing in Edition 2026.11.8:
+Example `count-prompt-tokens` (Python 3.12.15 · torch 2.15.0+cpu · transformers 5.23.0), passing in Edition 2026.11.9:
 
 ```python
 """Count the router prompt's tokens for each message in test_40, with the 135M model's tokenizer. No model runs. The point rests on the mean line: a day's prompt cost is the mean, not the median, times the number of messages."""

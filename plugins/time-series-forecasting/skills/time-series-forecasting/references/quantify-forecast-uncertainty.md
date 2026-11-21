@@ -3,13 +3,13 @@ title: "Time Series Forecasting"
 chapter: "Quantify forecast uncertainty"
 chapter_id: quantify-forecast-uncertainty
 book: time-series-forecasting
-edition: 2026.11.10
+edition: 2026.11.11
 verified: 2026-11-20
-edition_code: 6387-FADQ
+edition_code: 1RPH-3A4D
 canonical: https://rollingedition.com/time-series-forecasting/quantify-forecast-uncertainty
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“Quantify forecast uncertainty,” chapter 8 of Time Series Forecasting, Edition 2026.11.10, examples passed Nov 20, 2026. By Rolling Edition, https://rollingedition.com/time-series-forecasting/quantify-forecast-uncertainty. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Quantify forecast uncertainty,” chapter 8 of Time Series Forecasting, Edition 2026.11.11, examples passed Nov 20, 2026. By Rolling Edition, https://rollingedition.com/time-series-forecasting/quantify-forecast-uncertainty. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Quantify forecast uncertainty
 
@@ -21,7 +21,7 @@ The forecasts so far give one number for each client and hour, and a single numb
 
 This chapter states two costs as assumptions. A kWh bought short costs 3.00 cost units, and a kWh bought and not used costs 1.00. These numbers are illustrative. They are not prices, and the book does not claim that any real supplier faces them. [A later section](#choose-the-level-from-the-cost-of-error) shows how they set the purchase.
 
-A prediction interval gives a lower and an upper bound for each hour. Its level, such as 80 or 95, is the share of readings the bounds should contain. That share is the coverage, and coverage belongs to many forecasts made the same way, not to one. One day's band either contains the readings or it does not. Across the 72 hours of three days, the share inside the band is a measurement. Across a year of days, it becomes a track record. A 95 percent band whose hours fall inside it 90 percent of the time has undercovered, but no single day shows it. Only the average over many hours shows it, and that average is what we measure.
+A prediction interval gives a lower and an upper bound for each hour. A prediction interval's level, such as 80 or 95, is the share of readings the bounds should contain. The share of readings the bounds contain is the coverage, and coverage belongs to many forecasts made the same way, not to one. One day's band either contains the readings or it does not. Across the 72 hours of three days, the share inside the band is a measurement. Across a year of days, it becomes a track record. A 95 percent band whose hours fall inside it 90 percent of the time has undercovered, but no single day shows it. Only the average over many hours shows it, and that average is what we measure.
 
 Quantiles connect the bands to the costs. The lower bound of a central 80 percent interval is the 0.1 quantile of the forecast's distribution, the value that the reading falls below one time in ten. The upper bound is the 0.9 quantile. The purchase that minimises the expected cost is also a quantile, and [Choose the level from the cost of error](#choose-the-level-from-the-cost-of-error) derives which one.
 
@@ -44,7 +44,7 @@ The library that does this for the book's model is mlforecast, at version 1.1.0.
 
 To see what the library does with a short calibration history, run its class with three calibration windows. It scores the three standard cutoffs, Dec 29 to Dec 31, 2014, each at 00:00. Those are the held-out week's last three days, and the days this chapter scores. mlforecast refits the global model at each cutoff and calibrates each one on the three before it.
 
-Example `conformal-three-windows` (Python 3.13.16 · holidays 0.110.dev20261118063242 · lightgbm 4.7.0 · mlforecast 1.1.0 · numpy 2.5.5 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.10:
+Example `conformal-three-windows` (Python 3.13.16 · holidays 0.110.dev20261118063242 · lightgbm 4.7.0 · mlforecast 1.1.0 · numpy 2.5.5 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.11:
 
 ```python
 """mlforecast's own conformal intervals, with three calibration windows, refitted at each of the three standard cutoffs.
@@ -122,9 +122,9 @@ The calibration windows must come before the windows you score, and they must no
 
 Twelve windows with thirty clients give 360 residuals for each hour of the day. They come from twelve days, though, and the thirty clients share each day's weather and calendar. So a day-level error is still a sample of twelve. The pooled residuals have a second problem. The clients differ enormously in size. In the scored week the largest client, MT_370, averages 17499.81 kWh an hour over the three scored days. Pooled residuals in kWh are dominated by such clients, so the bands fit the large clients and misfit the small ones. The fix is to divide each client's residuals by that client's scale before pooling, and multiply the bound back by the scale of the client being forecast. The scale is the seasonal naive error on the history before the first calibration cutoff, the same kind of scale the book uses for MASE. With the scale, the thirty clients count alike.
 
-Two choices in this design were made on the decision windows, not on the held-out evaluation. The decision windows are the four cutoffs from Nov 25 to Dec 3, 2014. Their calibration is Nov 9 to 20, 2014, twelve holiday-free days that end four days before the first decision cutoff, the same shape as the held-out design. The windows are scored on their own, and the held-out evaluation is not read. The choices are judged by the interval score and the lowest client's coverage. The interval score adds a band's width to a penalty for each reading that misses the band, the penalty growing with the distance of the miss and scaled by 2 over the miss rate ([Gneiting and Raftery (2007)](https://sites.stat.washington.edu/raftery/Research/PDF/Gneiting2007jasa.pdf), eq. 43). Those windows settle both choices, as the measurements below show.
+Two choices in this design were made on the decision windows, not on the held-out evaluation. The [decision windows](#choose-on-decision-windows) are the four cutoffs from Nov 25 to Dec 3, 2014. Their calibration is Nov 9 to 20, 2014, twelve holiday-free days that end four days before the first decision cutoff, the same shape as the held-out design. The windows are scored on their own, and the held-out evaluation is not read. The choices are judged by the interval score and the lowest client's coverage. The interval score adds a band's width to a penalty for each reading that misses the band, the penalty growing with the distance of the miss and scaled by 2 over the miss rate ([Gneiting and Raftery (2007)](https://sites.stat.washington.edu/raftery/Research/PDF/Gneiting2007jasa.pdf), eq. 43). Those windows settle both choices, as the measurements below show.
 
-Example `conformal-decision-windows` (Python 3.13.16 · holidays 0.110.dev20261118063242 · lightgbm 4.7.0 · mlforecast 1.1.0 · numpy 2.5.5 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.10:
+Example `conformal-decision-windows` (Python 3.13.16 · holidays 0.110.dev20261118063242 · lightgbm 4.7.0 · mlforecast 1.1.0 · numpy 2.5.5 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.11:
 
 ```python
 """The two calibration choices, scaling each client's residuals and the finite-sample levels, decided on the four decision
@@ -205,11 +205,11 @@ Scaling wins on the two measures the variants were judged by, and loses only on 
 
 We judged the variants by these two measures because the pooled figure hides clients. We chose them after seeing the decision numbers, so the pooled figure is reported beside them. At 80 the pooled coverage is closer to its label without the scale, at 0.809 against 0.834. The scale stays.
 
-The finite-sample levels stay out of the bands. Each new residual is one more among n + 1, so the levels move outward a little: each quantile level moves to `floor((n + 1) * a) / n` for the lower bound and `ceil((n + 1) * (1 - a)) / n` for the upper, where `n` is the number of residuals and `a` the tail share. Their effect on the scaled coverage at 80 is small, from 0.834 to 0.835, and the interval score at 80 gets worse, from 336.72 to 337.31. It gets worse at 95 too, as the output shows. The correction widens the bands and does not help, so the bands do not use it.
+The finite-sample levels stay out of the bands. Each new residual is one more among n + 1, so the finite-sample levels move outward a little: each quantile level moves to `floor((n + 1) * a) / n` for the lower bound and `ceil((n + 1) * (1 - a)) / n` for the upper, where `n` is the number of residuals and `a` the tail share. Their effect on the scaled coverage at 80 is small, from 0.834 to 0.835, and the interval score at 80 gets worse, from 336.72 to 337.31. It gets worse at 95 too, as the output shows. The correction widens the bands and does not help, so the bands do not use it.
 
 The held-out evaluation applies the same design to the standard cutoffs, which are the days the rest of the chapter scores.
 
-Example `conformal-earlier-windows` (Python 3.13.16 · holidays 0.110.dev20261118063242 · lightgbm 4.7.0 · mlforecast 1.1.0 · numpy 2.5.5 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.10:
+Example `conformal-earlier-windows` (Python 3.13.16 · holidays 0.110.dev20261118063242 · lightgbm 4.7.0 · mlforecast 1.1.0 · numpy 2.5.5 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.11:
 
 ```python
 """Conformal bands for every client, calibrated on twelve holiday-free days before the scored week, with each client's
@@ -318,13 +318,13 @@ So the book promises nothing about coverage that it does not measure. The covera
 
 ## Choose the level from the cost of error {#choose-the-level-from-the-cost-of-error}
 
-The supplier buys one amount for each hour, and the costs of the two errors set that amount. Let `cu` be the cost of one kWh bought short and `co` the cost of one kWh bought and not used. Let `F` be the distribution of demand. Differentiating the expected cost with respect to the purchase `q` gives `co F(q) - cu (1 - F(q))`, which is zero where `F(q) = cu / (cu + co)`, the smallest expected cost. This is the critical fractile of the newsvendor model. The [HKUST IEEM 101 notes on the newsvendor model](https://ieda.ust.hk/dfaculty/ajay/courses/ieem101/lecs/inventory/newsvendor-proof.pdf) give the same proof, writing the cost of excess as `c0`. This chapter writes it `co`. The purchase is therefore the quantile at level `tau = cu / (cu + co)`.
+The supplier buys one amount for each hour, and the costs of the two errors set that amount. Let `cu` be the cost of one kWh bought short and `co` the cost of one kWh bought and not used. Let `F` be the distribution of demand. Differentiating the expected cost with respect to the purchase `q` gives `co F(q) - cu (1 - F(q))`, which is zero where `F(q) = cu / (cu + co)`, the smallest expected cost. The level `cu / (cu + co)` is the critical fractile of the newsvendor model. The [HKUST IEEM 101 notes on the newsvendor model](https://ieda.ust.hk/dfaculty/ajay/courses/ieem101/lecs/inventory/newsvendor-proof.pdf) give the same proof, writing the cost of excess as `c0`. This chapter writes it `co`. The purchase is therefore the quantile at level `tau = cu / (cu + co)`.
 
-With the illustrative costs from [Why one number is not enough](#why-one-number-is-not-enough), `tau` is 0.75. The rule says to buy the quantile of the demand at that level, for each hour. The quantile at level `tau` is the purchase that minimises the quantile loss at that level, as [Gneiting and Raftery (2007)](https://sites.stat.washington.edu/raftery/Research/PDF/Gneiting2007jasa.pdf) show. The loss is `tau * (y - q)` when the reading `y` is at or above the purchase `q`, and `(1 - tau) * (q - y)` when it is below. The quantile loss is not a cost in kWh or in money. It is the rule that the quantile minimises, and it has the same shape as the supplier's cost. Multiplying it by `cu + co` gives the cost exactly, which the example prints beside the mean cost.
+With the illustrative costs from [Why one number is not enough](#why-one-number-is-not-enough), `tau` is 0.75. The rule says to buy the quantile of the demand at that level, for each hour. The quantile at level `tau` is the purchase that minimises the quantile loss at that level, as [Gneiting and Raftery (2007)](https://sites.stat.washington.edu/raftery/Research/PDF/Gneiting2007jasa.pdf) show. The quantile loss is `tau * (y - q)` when the reading `y` is at or above the purchase `q`, and `(1 - tau) * (q - y)` when it is below. The quantile loss is not a cost in kWh or in money. It is the rule that the quantile minimises, and it has the same shape as the supplier's cost. Multiplying it by `cu + co` gives the cost exactly, which the example prints beside the mean cost.
 
 Does buying at the critical fractile cost less than buying at the median or higher, on days the bands never saw? Below, the purchase is set for each hour from these costs, and the scored days answer the question. The level 0.95 is not offered, as [Measure coverage on held-out days](#measure-coverage-on-held-out-days) explains.
 
-Example `buy-ahead-level-by-cost` (Python 3.13.16 · holidays 0.110.dev20261118063242 · lightgbm 4.7.0 · mlforecast 1.1.0 · numpy 2.5.5 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.10:
+Example `buy-ahead-level-by-cost` (Python 3.13.16 · holidays 0.110.dev20261118063242 · lightgbm 4.7.0 · mlforecast 1.1.0 · numpy 2.5.5 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.11:
 
 ```python
 """The buy level for the total, set from the two costs: the critical fractile, cu / (cu + co), is the quantile that minimises

@@ -3,13 +3,13 @@ title: "Open Table Formats"
 chapter: "Move a table between formats and check the copy"
 chapter_id: migrating-formats
 book: open-table-formats
-edition: 2026.11.9
+edition: 2026.11.10
 verified: 2026-11-20
-edition_code: 0GY7-XEMW
+edition_code: 27Y3-9R88
 canonical: https://rollingedition.com/open-table-formats/migrating-formats
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“Move a table between formats and check the copy,” chapter 9 of Open Table Formats, Edition 2026.11.9, examples passed Nov 20, 2026. By Rolling Edition, https://rollingedition.com/open-table-formats/migrating-formats. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Move a table between formats and check the copy,” chapter 9 of Open Table Formats, Edition 2026.11.10, examples passed Nov 20, 2026. By Rolling Edition, https://rollingedition.com/open-table-formats/migrating-formats. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Move a table between formats and check the copy
 
@@ -27,7 +27,7 @@ The losses are easiest to see as a table. Each row names a part of the table, wh
 
 | Part of the table | After the copy | Where this chapter shows it |
 | --- | --- | --- |
-| Rows and their values | Kept | The digest check |
+| Rows and their values | Kept | The [digest](#check-copy-with-digest) check |
 | Column names and types | Kept where both formats have the type | The Delta Lake section |
 | Commit history | Lost. The copy starts a history of its own | Both copy sections |
 | Partition spec | Lost unless it is set on the target | The DuckLake section |
@@ -47,7 +47,7 @@ The copy reads the Iceberg table with `scan_arrow`, then gives those rows to Duc
 
 The source is partitioned by the hour of `hour_utc`, which is the layout that [moving from daily to hourly partitions](#daily-to-hourly-partitions) arrives at. Here pyiceberg builds that source with the hourly spec, then appends three hours, one commit each:
 
-Example `iceberg-to-ducklake-copy` (Python 3.12.15 · deltalake 1.6.6 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.9:
+Example `iceberg-to-ducklake-copy` (Python 3.12.15 · deltalake 1.6.6 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.10:
 
 ```python
 """Copy an Iceberg table into DuckLake through Arrow, then print what the copy kept of the layout and the history.
@@ -117,7 +117,7 @@ copy snapshot 4: tables_altered
 copy snapshot 5: tables_inserted_into
 ```
 
-The helper `scan_arrow` reads the source at its current snapshot and returns every row of that snapshot as one Arrow table. The copy therefore holds the rows of one moment, the last commit that the scan saw. Writers that commit after the scan are not in the copy, and nothing in the copy tells you so. That is the cutover problem, which the production section returns to.
+The helper `scan_arrow` reads the source at its current snapshot and returns every row of that snapshot as one Arrow table. The copy therefore holds the rows of one moment, the last commit that the scan saw. Writers that commit after the scan are not in the copy, and nothing in the copy tells you so. Commits that land after a copy's scan and never reach the copy are the cutover problem, which the production section returns to.
 
 Two questions decide the copy: did the rows and layout arrive, and what history came with them? The output answers both.
 
@@ -139,7 +139,7 @@ The attach helper also sets `DATA_INLINING_ROW_LIMIT` to 0, so the copied rows a
 
 The Delta source is built the way a team's pipeline would build it: three appends with deltalake, one per hour. The three appends are versions 0, 1 and 2. The copy reads the current rows with `read_delta` and appends them to an Iceberg table made with the target schema:
 
-Example `delta-to-iceberg-copy` (Python 3.12.15 · deltalake 1.6.6 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.9:
+Example `delta-to-iceberg-copy` (Python 3.12.15 · deltalake 1.6.6 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.10:
 
 ```python
 """Copy a Delta Lake table into Iceberg through Arrow, then compare the copy with its source.
@@ -226,7 +226,7 @@ pyiceberg is strict about names. It checks the Arrow schema against the table's 
 
 Timestamps are a place where the formats disagree, sometimes silently. The Iceberg specification defines nanosecond timestamps as a version 3 type, so a version 2 table has no type for them ([the Iceberg specification](https://iceberg.apache.org/spec/), version 3 section). The example's table is version 2, the default. At this pin, pyiceberg refuses to write version 3, so the nanosecond values can only be kept by a format other than Iceberg. This example writes two values that differ only below a microsecond, 1000000500 and 1000000999 nanoseconds, to each format:
 
-Example `timestamp-precision-check` (Python 3.12.15 · deltalake 1.6.6 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.9:
+Example `timestamp-precision-check` (Python 3.12.15 · deltalake 1.6.6 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.10:
 
 ```python
 """Write two timestamps that differ only below a microsecond to Iceberg, Delta Lake and DuckLake, and show what each kept.
@@ -304,9 +304,9 @@ The pageviews table records hours, so the case never reaches the problem. A tabl
 
 ## Check each copy with a sorted digest {#check-copy-with-digest}
 
-A matching row count does not prove that the values match. A copy can keep the count and change one value, and the count will not show it. A digest does. `digest_rows` sorts the rows, writes each one out as a line of text and hashes the result. The sort makes the digest independent of the order in which the rows come back, so two copies with the same rows get the same digest, however each format returns them. `digest_rows` runs on both copies, and on a copy with one view count changed on purpose:
+A matching row count does not prove that the values match. A copy can keep the count and change one value, and the count will not show it. A digest does. The digest of a table is a hash of its sorted rows: `digest_rows` sorts the rows, writes each one out as a line of text and hashes the result. The sort makes the digest independent of the order in which the rows come back, so two copies with the same rows get the same digest, however each format returns them. `digest_rows` runs on both copies, and on a copy with one view count changed on purpose:
 
-Example `verify-copies-by-digest` (Python 3.12.15 · deltalake 1.6.6 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.9:
+Example `verify-copies-by-digest` (Python 3.12.15 · deltalake 1.6.6 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.10:
 
 ```python
 """Check each copy against its source with a sorted digest, and show that one changed value fails it.

@@ -3,13 +3,13 @@ title: "Business Intelligence with Agents"
 chapter: "Build golden questions from your own work"
 chapter_id: golden-questions
 book: business-intelligence-with-agents
-edition: 2026.11.14
+edition: 2026.11.15
 verified: 2026-11-19
-edition_code: 8Q6T-45MG
+edition_code: 28XD-AHKT
 canonical: https://rollingedition.com/business-intelligence-with-agents/golden-questions
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“Build golden questions from your own work,” chapter 3 of Business Intelligence with Agents, Edition 2026.11.14, examples passed Nov 19, 2026. By Rolling Edition, https://rollingedition.com/business-intelligence-with-agents/golden-questions. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Build golden questions from your own work,” chapter 3 of Business Intelligence with Agents, Edition 2026.11.15, examples passed Nov 19, 2026. By Rolling Edition, https://rollingedition.com/business-intelligence-with-agents/golden-questions. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Build golden questions from your own work
 
@@ -29,7 +29,7 @@ The first reason shows on data the book can ship, so this chapter takes a small 
 
 We run [the schema-only approach from chapter 1](#ask-for-sql) on both sets with one model, Qwen3-4B-Instruct-2507, replayed from a recording. The model sees a table's schema and a question, writes SQL, which runs. On DABstep, the model then reads the query's result and gives a final answer in the format the task asks for. The recording `dabstep-runs` holds those replies.
 
-Example `public-vs-own-score` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.14:
+Example `public-vs-own-score` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.15:
 
 ```python
 """Score schema-only SQL on three public DABstep tasks and on the shop's dev questions, with the same model.
@@ -90,11 +90,11 @@ Task 49 shows what a gold depends on. It asks for the top country "for fraud", a
 
 A [public benchmark measures someone else's work](#benchmarks-are-not-your-test), so this set has to come from the shop. The best source is the questions people already ask: requests in the analytics team's queue, the numbers in a monthly finance pack, the filters people set on dashboards. Write each in the asker's words, not tidied into the schema's vocabulary, because the agent will hear the asker's words. Then write the golden SQL that answers it under the business's definitions, and check it.
 
-Each golden question holds the same fields. The `question` is the asker's text. The `role` is who asks, which decides what they may see, and a `regional_lead` also carries their `region`. The `kind` says what a right answer looks like: `answer` when the warehouse can answer it, `decline` when it can't, and `forbidden` when the role may not see the answer. A decline also has a `decline_type`, `ambiguous` or `unanswerable`. An answerable question has `golden_sql`, a comparison rule (`order_matters` and a `tolerance`), and a `note` that names the definition the gold follows. Each question also lists the warehouse's `traps` it tests, such as `fiscal-calendar` or `late-refunds`, and sits in the `dev` or the `test` split.
+Each golden question holds the same fields. The `question` is the asker's text. The `role` is who asks, which decides what they may see, and a `regional_lead` also carries their `region`. A golden question's `kind` says what a right answer looks like: `answer` when the warehouse can answer it, `decline` when it can't, and `forbidden` when the role may not see the answer. A decline also has a `decline_type`, `ambiguous` or `unanswerable`. An answerable question has `golden_sql`, a comparison rule (`order_matters` and a `tolerance`), and a `note` that names the definition the gold follows. Each question also lists the warehouse's `traps` it tests, such as `fiscal-calendar` or `late-refunds`, and sits in the `dev` or the `test` split.
 
 The shop's set lives in `examples/data/golden/questions.toml`, and `load_golden()` in `lib/golden.py` reads it into `GoldenQuestion` objects. The file's header states the two definitions most questions depend on. Net revenue is the finance team's: euros after discounts and before tax, from real orders that weren't cancelled, on the order's local business day. An order count includes cancelled orders and leaves out test orders. One question in full shows what its fields hold.
 
-Example `load-golden-questions` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.14:
+Example `load-golden-questions` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.15:
 
 ```python
 """Load the shop's golden questions, show what one holds and how the set divides, and compute one gold's other reading.
@@ -164,7 +164,7 @@ With [the golden questions written](#write-golden-questions), the next decision 
 
 In the shop, `gq-001` asks for net revenue in fiscal year 2026. Its golden SQL sums `net_revenue_eur` over `fct_orders`, joined to `dim_date` for the fiscal year. Its check query, which [the section on checking the gold](#check-the-gold) uses, sums `net_amount_eur` over `fct_order_lines` with a date range instead. Two queries show where text and results part ways, each compared with the golden SQL: the check query, and the golden SQL with its filter on cancelled orders removed. For each, it asks whether the text is equal, whether it is equal after sqlglot normalizes both, and whether the results match under `results_match()`.
 
-Example `results-match-rules` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.14:
+Example `results-match-rules` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.15:
 
 ```python
 """Two queries written differently for the same golden question: compare their text, then compare their results.
@@ -220,9 +220,9 @@ An execution match has its own blind spot. A query can return the right number f
 
 A [comparison of results](#compare-results-not-sql) still needs rules for the ways two correct results differ. Rows come back in any order unless the query sorts them. Columns carry whatever names the writer chose, in whatever order. Numbers are rounded differently. A rule that is too strict marks correct answers wrong, and a rule that is too loose lets wrong ones through.
 
-`results_match()`, the comparison every score in this book uses, makes these choices. Rows may come in any order, unless the golden question sets `order_matters`. Column names are ignored, and columns may come in any order: it tries each way of lining up the answer's columns with the golden ones. Extra columns are allowed, such as a month next to a total for that month, but the number of rows must be equal. Numbers must agree within 0.05% relative by default, plus an absolute slack of half a unit in the last place the gold rounds to. For money, rounded to the cent, that's half a cent, the default. Changing `gq-002`'s golden result, net revenue in each region in March 2026, the ways real answers differ, and comparing each with the original shows which differences the comparison forgives.
+`results_match()`, the comparison every score in this book uses, makes these choices. Rows may come in any order, unless the golden question sets `order_matters`. Column names are ignored, and columns may come in any order: it tries each way of lining up the answer's columns with the golden ones. Extra columns are allowed, such as a month next to a total for that month, but the number of rows must be equal. Numbers must agree with the gold within 0.05% relative by default, plus an absolute slack of half a unit in the last place the gold rounds to. For money, rounded to the cent, that's half a cent, the default. Changing `gq-002`'s golden result, net revenue in each region in March 2026, the ways real answers differ, and comparing each with the original shows which differences the comparison forgives.
 
-Example `tolerant-comparison` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.14:
+Example `tolerant-comparison` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.15:
 
 ```python
 """Change the golden result for net revenue by region in March 2026 in the ways real answers differ, and compare.
@@ -297,11 +297,11 @@ The tolerance needs care in both directions. Ratios such as a conversion rate ar
 
 ## Check the gold before you trust it {#check-the-gold}
 
-[Public benchmarks](#benchmarks-are-not-your-test) show what happens to unchecked gold: about half of one set was wrong. A golden question written in an afternoon is no different. Its SQL can miss a filter, read the wrong table or follow a definition nobody owns, and every score built on it inherits the mistake. So check each gold before it scores anything. It must run. It must return rows, without NULL values, since an empty gold matches any query that also returns nothing. Where you can, a second query written another way, its `check_sql`, must return the same result. And its note must name the definition it follows, so a person can say whether it's the right one.
+[Public benchmarks](#benchmarks-are-not-your-test) show what happens to unchecked gold: about half of one set was wrong. A golden question written in an afternoon is no different. Its SQL can miss a filter, read the wrong table or follow a definition nobody owns, and every score built on it inherits the mistake. So check each gold before it scores anything. It must run. It must return rows, without NULL values, since an empty gold matches any query that also returns nothing. Where you can, a second query written another way, the gold's `check_sql`, must return the same result as the golden SQL. And its note must name the definition it follows, so a person can say whether it's the right one.
 
 The shop's set gets those checks, with each check query written independently of its golden SQL: from order lines instead of orders, from a date range instead of the fiscal calendar, or by counting another way. Then look at one question in two readings: which country is top for refunds in fiscal 2026, by the number of refunds and by refund rate.
 
-Example `gold-runs-and-agrees` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.14:
+Example `gold-runs-and-agrees` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.15:
 
 ```python
 """Check the gold before trusting it: every golden SQL runs and returns rows, and each check query agrees with it.
@@ -364,7 +364,7 @@ The two readings of the refund question disagree, the same trap as DABstep's tas
 
 The checks above find gold that is broken. Reading the agent's wrong answers finds gold that is unclear. `gq-031` first asked about the average number of "items" in an order, and [the schema-only baseline from chapter 1](#ask-for-sql) got it wrong: its SQL averaged `line_count`, the number of order lines, where the gold sums units. "Items" allows both readings. The defect was in the question, not the agent, so the question now asks for units, counting quantities, not order lines. Recorded replies are keyed by the exact question text, so the reworded question needed a new recording. Replaying both wordings below shows the effect.
 
-Example `reworded-golden-question` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.14:
+Example `reworded-golden-question` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.15:
 
 ```python
 """Read a wrong answer: gq-031 once asked about "items", which allows units or order lines. It now asks for units.
@@ -413,7 +413,7 @@ A [checked gold](#check-the-gold) makes each question trustworthy, and the set a
 
 Coverage also means the warehouse's traps and the shop's roles. Every trap built into the shop's warehouse, from test orders to the legacy mart, should appear in both splits, so a change that breaks one trap shows up in either score. Counting kinds, roles and traps per split shows where the set is thin.
 
-Example `golden-coverage` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.14:
+Example `golden-coverage` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.15:
 
 ```python
 """Count what the golden set covers in each split: kinds, roles and the warehouse's traps.
@@ -483,7 +483,7 @@ A [set that covers the right things](#cover-declines-and-roles) can still mislea
 
 The shop's set has 24 `dev` questions, which every chapter may tune on, and 24 `test` questions, which a chapter scores only for the number it reports. Scoring [the schema-only baseline from chapter 1](#ask-for-sql) on both splits gives the bar every later chapter must beat.
 
-Example `baseline-on-both-splits` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.14:
+Example `baseline-on-both-splits` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.15:
 
 ```python
 """The baseline every later chapter must beat: schema-only SQL scored on the dev split and on the held-out test split.

@@ -3,13 +3,13 @@ title: "Evaluating LLM Applications"
 chapter: "Write a rubric a judge can apply"
 chapter_id: a-judge-with-a-rubric
 book: evaluating-llm-applications
-edition: 2026.11.2
+edition: 2026.11.3
 verified: 2026-11-21
-edition_code: G0M7-3TW7
+edition_code: 4V0Y-VKTV
 canonical: https://rollingedition.com/evaluating-llm-applications/a-judge-with-a-rubric
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“Write a rubric a judge can apply,” chapter 5 of Evaluating LLM Applications, Edition 2026.11.2, examples passed Nov 21, 2026. By Rolling Edition, https://rollingedition.com/evaluating-llm-applications/a-judge-with-a-rubric. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Write a rubric a judge can apply,” chapter 5 of Evaluating LLM Applications, Edition 2026.11.3, examples passed Nov 21, 2026. By Rolling Edition, https://rollingedition.com/evaluating-llm-applications/a-judge-with-a-rubric. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Write a rubric a judge can apply
 
@@ -23,9 +23,9 @@ A judge works from its instructions, and the instructions are the rubric. A rubr
 
 The judge's reply goes to code, and the code reads the first line of it as the verdict. The form the rubric asks for is therefore part of the rubric. A judge that writes its verdict in another shape has given the code nothing to read, and [the section on verdicts below](#verdict-first) says what the code does then.
 
-The book has five rubrics. The answer judge checks a reply about sablefile against the written reference answer for its question. The calibration rubric checks correctness with no reference, on rows from [HelpSteer2](https://huggingface.co/datasets/nvidia/HelpSteer2), a public dataset of human ratings of other models' replies to general prompts, which [chapter 6](calibrate-the-judge#human-ratings) describes. Its dataset card was read on 20 November 2026. Rubric B is a second wording of that calibration task. The pairwise rubric chooses the better of two replies. The faithfulness rubric checks whether an answer is supported by the sections it was given. Each rubric is written as text and carries a hash, and the first example prints the name and the hash of all five. For an item the docs do not cover, the reference is the word none, and the rubric is what tells the judge that a reply passes only when it is the decline sentence.
+The book has five rubrics. The answer judge checks a reply about sablefile against the written reference answer for its question. The calibration rubric checks correctness with no reference, on rows from [HelpSteer2](https://huggingface.co/datasets/nvidia/HelpSteer2), a public dataset of human ratings of other models' replies to general prompts, which [chapter 6](calibrate-the-judge#human-ratings) describes. Its dataset card was read on 20 November 2026. Rubric B is a second wording of the calibration task. The pairwise rubric chooses the better of two replies. The faithfulness rubric checks whether an answer is supported by the sections it was given. Each rubric is written as text and carries a hash, and the first example prints the name and the hash of all five. For an item the docs do not cover, the reference is the word none, and the rubric is what tells the judge that a reply passes only when it is the decline sentence.
 
-Example `rubric-text` (Python 3.12.15 · numpy 2.5.5), passing in Edition 2026.11.2:
+Example `rubric-text` (Python 3.12.15 · numpy 2.5.5), passing in Edition 2026.11.3:
 
 ```python
 """The five rubrics the book's judges use, each with the sha256 its recording's manifest holds, and how many lines its system
@@ -98,11 +98,11 @@ When the reference is wrong, the judge fails correct replies, and the verdict gi
 
 ## Pass, fail, or a scale {#pass-fail-or-scale}
 
-A pass or fail rubric gives the judge two answers. A scale gives it several. The human ratings in HelpSteer2 are on a 0 to 4 scale, and a scale can look like more information than a yes or no. Its cost is in the boundaries. The judge has to tell one point from the next, and the team has to say what each point means and then check that the judge's points agree with the human ones. A pass or fail asks for one decision per reply, and every rate in this book is a rate of such decisions.
+A pass or fail rubric gives the judge two answers. A scale gives the judge several answers. The human ratings in HelpSteer2 are on a 0 to 4 scale, and a scale can look like more information than a yes or no. Its cost is in the boundaries. The judge has to tell one point from the next, and the team has to say what each point means and then check that the judge's points agree with the human ones. A pass or fail asks for one decision per reply, and every rate in this book is a rate of such decisions.
 
 The answer rubric and both [calibration rubrics](#what-a-judge-is-asked) give pass or fail. The search for this chapter looked for a study that compares a scale with pass and fail on binary human labels, and it found none. So this choice is the book's design, not a finding from a source, and a reader should weigh it as a design.
 
-The question this book asks is whether a reply is right, and that question has two answers. A reply can be almost right and still wrong on one fact or one command. A scale would give it a middle grade, and the team would then have to turn that grade into a yes or no before it could read any rate. The pass rate is the share of items the judge passes, over every item in the set, and a correct decline counts as a pass, as [chapter 10](declining-when-the-docs-dont-say) explains. A scale would need a different summary, such as a mean, and a mean hides which replies sit at which point. Take the decline item. A reply either declines or it does not. A scale would let a judge give a middle grade to a reply that declines and then adds a guess, which is the reply that [chapter 10](declining-when-the-docs-dont-say) counts as an error, and the team would then have to decide which side of the scale counts as passing.
+The question this book asks is whether a reply is right, and that question has two answers. A reply can be almost right and still wrong on one fact or one command. A scale would give it a middle grade, and the team would then have to turn that grade into a yes or no before it could read any rate. The [pass rate](#a-pass-rate-and-its-interval) is the share of items the judge passes, over every item in the set, and a correct decline counts as a pass, as [chapter 10](declining-when-the-docs-dont-say) explains. A scale would need a different summary, such as a mean, and a mean hides which replies sit at which point. Take the decline item. A reply either declines or it does not. A scale would let a judge give a middle grade to a reply that declines and then adds a guess, which is the reply that [chapter 10](declining-when-the-docs-dont-say) counts as an error, and the team would then have to decide which side of the scale counts as passing.
 
 **Working rule:** Use pass and fail when the team needs a yes or no on correctness, and report only rates of such decisions. Use a scale only when each step means something the team will act on, and when human ratings exist at each step to check the judge against. Say in the text which form the team chose and why, because that choice sets every rate the team reports. [Chapter 6](calibrate-the-judge) shows how the judge is compared with human ratings.
 
@@ -114,7 +114,7 @@ A pairwise judge has no scale points to define, and it only has to say which of 
 
 The pairwise example uses human preference pairs from HelpSteer2. Each pair is judged twice: once with the first response shown as A, and once with the second response shown as A. Each verdict is then mapped back to the response it picked, so the two orders can be compared. A pair is consistent when the same response wins in both orders. It is order-changed when the same letter wins in both orders, which means the position decided the verdict; the example's output calls these flipped. Tie and unreadable are the two other kinds.
 
-Example `pairwise-both-orders` (Python 3.12.15 · numpy 2.5.5), passing in Edition 2026.11.2:
+Example `pairwise-both-orders` (Python 3.12.15 · numpy 2.5.5), passing in Edition 2026.11.3:
 
 ```python
 """How the pairwise judge's verdict on each HelpSteer2 preference pair depends on which response is shown as A. Each pair is
@@ -185,7 +185,7 @@ The rubric asks for the verdict on the first line and one short sentence of reas
 
 Fixed replies go through the parser, one line of output each, which prints the verdict, or the label `refused` for a reply with no readable verdict.
 
-Example `parse-verdicts` (Python 3.12.15 · numpy 2.5.5), passing in Edition 2026.11.2:
+Example `parse-verdicts` (Python 3.12.15 · numpy 2.5.5), passing in Edition 2026.11.3:
 
 ```python
 """What lib.contract.parse_verdict accepts and refuses: the verdict on a reply's first non-empty line, PASS or FAIL in capitals,
@@ -254,7 +254,7 @@ The sentence to keep from this example is that a reply the parser cannot read is
 
 ## Tuning the wording on dev {#tuning-the-wording}
 
-The wording of a rubric is a setting, and a team will want to tune it until the judge agrees better with its labels. The risk is tuning on the numbers the team then reports. The book divides its items into two splits. Dev is where wording is tuned. Held-out is run once, for each comparison a chapter reports, after the wording is fixed. A held-out split that has been used to choose the wording no longer tests it. Tuning a rubric on held-out items turns the reported agreement into a measure of the tuning, and then the agreement says nothing about the judge.
+The wording of a rubric is a setting, and a team will want to tune it until the judge agrees better with its labels. The risk is tuning on the numbers the team then reports. The book divides its items into two splits. [Dev](#read-the-outputs) is where wording is tuned. Held-out is run once, for each comparison a chapter reports, after the wording is fixed. A held-out split that has been used to choose the wording no longer tests it. Tuning a rubric on held-out items turns the reported agreement into a measure of the tuning, and then the agreement says nothing about the judge.
 
 Before any tuning, the team writes the rule for each kind of item the set holds, in the rubric's own words: what passes, what fails, and what a decline is worth. Then it reads the dev replies the rubric gets wrong, one at a time, and changes the wording only when a reply shows a gap the rule does not cover. A change made to fit one reply is a change to the rubric, and it needs a recording of its own.
 

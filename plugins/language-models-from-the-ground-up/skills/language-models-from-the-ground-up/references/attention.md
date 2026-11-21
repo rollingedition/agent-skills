@@ -3,13 +3,13 @@ title: "Language Models from the Ground Up"
 chapter: "Attention"
 chapter_id: attention
 book: language-models-from-the-ground-up
-edition: 2026.11.15
+edition: 2026.11.16
 verified: 2026-11-19
-edition_code: ST86-2YTJ
+edition_code: FY8Q-PVVV
 canonical: https://rollingedition.com/language-models-from-the-ground-up/attention
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“Attention,” chapter 6 of Language Models from the Ground Up, Edition 2026.11.15, examples passed Nov 19, 2026. By Rolling Edition, https://rollingedition.com/language-models-from-the-ground-up/attention. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Attention,” chapter 6 of Language Models from the Ground Up, Edition 2026.11.16, examples passed Nov 19, 2026. By Rolling Edition, https://rollingedition.com/language-models-from-the-ground-up/attention. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Attention
 
@@ -23,9 +23,9 @@ By the end of this chapter you can compute attention by hand: score how well eac
 
 Attention replaces [chapter 5](#a-neural-language-model)'s fixed slots with a weighted average. At each position, the model computes a new vector as an average of vectors from the positions it can see, with weights it chooses from their content: high for the positions that matter here, low for the rest. The weights come from three vectors that each token's embedding is turned into, by three learned matrices:
 
-- a **query**, what this position is looking for,
-- a **key**, what this position offers to the positions that look at it,
-- a **value**, what this position passes on when it's looked at.
+- a **query**, a vector for what this position is looking for,
+- a **key**, a vector for what this position offers to the positions that look at it,
+- a **value**, a vector for what this position passes on when it's looked at.
 
 The score of position j for position i is the dot product of i's query with j's key, divided by the square root of d, the size of each query and key, meaning how many numbers it holds. Softmax turns each row of scores into weights that are positive and sum to one, and the output at position i is the weighted sum of the values. In matrix form, for all positions at once:
 
@@ -35,7 +35,7 @@ where Q, K and V hold every position's query, key and value as rows ([Vaswani et
 
 To watch the arithmetic on something small, take four tokens of the store's text, the start marker and `sled coffee table`, a table whose base is shaped like a sled's runners. Give each a random vector of 8 numbers, as an untrained embedding table would, and compute attention with random 8-by-4 query, key and value matrices:
 
-Example `attention-by-hand` (Python 3.12.15 · numpy 2.5.5), passing in Edition 2026.11.15:
+Example `attention-by-hand` (Python 3.12.15 · numpy 2.5.5), passing in Edition 2026.11.16:
 
 ```python
 """Computes one attention layer by hand for four tokens, with random matrices. The prose's point rests on the
@@ -86,7 +86,7 @@ The mask also makes training efficient. With it, one pass over a text predicts e
 
 A change to the last token can reach `coffee` only if `coffee` is allowed to look ahead. Apply the mask to the same four tokens' scores, replace `table` with a different vector, and measure how far the output at `coffee` moves, without the mask and with it:
 
-Example `causal-mask` (Python 3.12.15 · numpy 2.5.5), passing in Edition 2026.11.15:
+Example `causal-mask` (Python 3.12.15 · numpy 2.5.5), passing in Edition 2026.11.16:
 
 ```python
 """Applies the causal mask to the same four tokens, then changes the last token and measures how far the output at
@@ -148,9 +148,9 @@ The last two lines show the leak the mask closes. Without the mask, changing the
 
 Attention's formula divides every score by √d, and the reason is in the dot product. A dot product of two vectors adds up one product per number. If the numbers in queries and keys are independent and random, with mean 0 and variance 1, a score has variance d, so queries and keys of a larger size give larger scores ([Vaswani et al., 2017](https://arxiv.org/abs/1706.03762), section 3.2.1, footnote 4). Softmax turns large differences between scores into extreme weights: one position gets nearly all the weight, and the rest nearly none. Vaswani and colleagues suspected that a model in that state learns slowly, because softmax's gradients are tiny when one weight is close to 1. Dividing by √d brings the scores back to variance 1, whatever the size.
 
-The store's model makes this concrete: its heads work with queries and keys of 32 numbers. Draw random queries and keys of three sizes, 4, 32 and 256, score each query against 16 keys with and without the division, and report the largest weight in each row, averaged over 1,000 queries. Guess first: with 256 numbers and no division, how large is a row's biggest weight on average?
+The store's model makes this concrete: its [heads](#several-heads) work with queries and keys of 32 numbers. Draw random queries and keys of three sizes, 4, 32 and 256, score each query against 16 keys with and without the division, and report the largest weight in each row, averaged over 1,000 queries. Guess first: with 256 numbers and no division, how large is a row's biggest weight on average?
 
-Example `scaling-matters` (Python 3.12.15 · numpy 2.5.5), passing in Edition 2026.11.15:
+Example `scaling-matters` (Python 3.12.15 · numpy 2.5.5), passing in Edition 2026.11.16:
 
 ```python
 """Measures the largest softmax weight in each row, at three sizes of query and key, with and without dividing by the
@@ -194,7 +194,7 @@ Splitting the numbers keeps the cost about the same as one head over all of them
 
 Run two heads over four positions of random vectors, with the causal mask, and see whether the last position looks at the same places in each:
 
-Example `attention-heads` (Python 3.12.15 · numpy 2.5.5), passing in Edition 2026.11.15:
+Example `attention-heads` (Python 3.12.15 · numpy 2.5.5), passing in Edition 2026.11.16:
 
 ```python
 """Runs two heads of causal attention over four positions, each head working in four of the eight numbers, then mixes
@@ -246,7 +246,7 @@ Random matrices show the arithmetic; a trained model shows what attention is for
 
 The question is where the model looks for `cover` in a validation product it never trained on, `double chaise patio furniture cover`, whose description repeats the end of its name. Stop at the description's second `furniture`, where the next token is `cover`, and print the model's probability for `cover`, and each head's three largest weights in the first and last layers. `current:` marks the position being predicted from, `name:` a token in the name, and `description:` an earlier token in the description:
 
-Example `trained-attention` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1), passing in Edition 2026.11.15:
+Example `trained-attention` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1), passing in Edition 2026.11.16:
 
 ```python
 """Runs the store's trained model on one validation product, up to the description's second furniture, and prints where
@@ -334,7 +334,7 @@ If the model predicts `cover` by copying it from the name, then changing the nam
 
 Keep the description and change the name: as sold, without `cover`, or ending in `set`. The probabilities of `cover` and `set` at one position show whether the prediction follows the name. Then count what follows `this outdoor patio furniture` in the training descriptions, the four tokens a window model would see:
 
-Example `copy-from-the-name` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1), passing in Edition 2026.11.15:
+Example `copy-from-the-name` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1), passing in Edition 2026.11.16:
 
 ```python
 """Changes the name of one validation product and reads the model's probabilities for cover and set at the same position,
@@ -394,7 +394,7 @@ One text can mislead; an average over many shows a head's habits. One habit wort
 
 Average each head's weight on the previous token over the first 300 validation products, and compare the head with most weight on the previous token with an even spread, which puts 1 / (i + 1) on each of the i + 1 tokens position i can see:
 
-Example `previous-token-heads` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1), passing in Edition 2026.11.15:
+Example `previous-token-heads` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1), passing in Edition 2026.11.16:
 
 ```python
 """Averages each head's weight on the previous token over 300 validation products, and sets the largest average beside
@@ -447,7 +447,7 @@ No head is purely a previous-token head; each mixes it with other habits. A head
 
 Attention's promise was to see past [chapter 5](#a-neural-language-model)'s four-token window, which predicts from the current token and the three before it. Whether the store's model does is measurable. How much lands beyond the window? For every description token in the first 300 validation products, leaving out the end marker, add up the weight each head puts on tokens 4 or more positions back, the nearest a four-token window can't see, and separately the weight on the two markers, `<s>` and `<sep>`. Average over tokens, heads and layers, and compare with an even spread over the positions each token can see:
 
-Example `attention-reaches-back` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1), passing in Edition 2026.11.15:
+Example `attention-reaches-back` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1), passing in Edition 2026.11.16:
 
 ```python
 """Measures how much attention a description token puts on tokens four or more positions back, and on the two markers,
@@ -526,7 +526,7 @@ Attention is the part of a language model whose cost grows fastest with text len
 - **A wrong mask fails silently.** A model that can see the future can reach a low training loss and still be useless for generating text. Test that the weight on later positions is zero, and that changing a later token leaves earlier outputs alone, in the training code and the generation code.
 - **Attention weights aren't explanations.** A high weight says where a head drew its average from, not why the model predicted what it did. In the same model, very different attention weights can give the same prediction ([Jain and Wallace, 2019](https://aclanthology.org/N19-1357/), on recurrent and convolutional classifiers). Use weights to form hypotheses, and test them by changing the input, as this chapter did with the product's name.
 - **Marker weight looks like importance.** Heavy weight on the first token or a separator may mean a head has nothing to do there. Don't remove those tokens, and don't read their weight as meaning.
-- **Softmax overflows without care.** Subtract each row's largest score before exponentiating, as `lib.transformer.softmax` does. Make sure every row keeps at least one unmasked position, or the row becomes NaN: a causal mask always leaves each position itself, but a mask that hides padding can hide a whole row.
+- **Softmax overflows without care.** Subtract each row's largest score before exponentiating, as `lib.transformer.softmax` does. Make sure every row keeps at least one unmasked position, or the row becomes NaN: a causal mask always leaves each position itself, but a mask that hides [padding](#count-the-parameters) can hide a whole row.
 
 ## What this chapter decided {#attention-decisions}
 

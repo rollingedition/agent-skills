@@ -3,13 +3,13 @@ title: "Time Series Forecasting"
 chapter: "Fit a statistical model for each client"
 chapter_id: fit-statistical-models-per-client
 book: time-series-forecasting
-edition: 2026.11.10
+edition: 2026.11.11
 verified: 2026-11-20
-edition_code: 6387-FADQ
+edition_code: 1RPH-3A4D
 canonical: https://rollingedition.com/time-series-forecasting/fit-statistical-models-per-client
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“Fit a statistical model for each client,” chapter 4 of Time Series Forecasting, Edition 2026.11.10, examples passed Nov 20, 2026. By Rolling Edition, https://rollingedition.com/time-series-forecasting/fit-statistical-models-per-client. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Fit a statistical model for each client,” chapter 4 of Time Series Forecasting, Edition 2026.11.11, examples passed Nov 20, 2026. By Rolling Edition, https://rollingedition.com/time-series-forecasting/fit-statistical-models-per-client. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Fit a statistical model for each client
 
@@ -19,9 +19,9 @@ Each of the supplier's clients needs its own day-ahead forecast, and [Chapter 2]
 
 ## Why a statistical model comes next {#why-a-statistical-model-comes-next}
 
-[Chapter 2](#beat-the-naive-baselines) set the bar. Seasonal naive forecasts each hour as the same hour yesterday, and the scaled error, MASE, compares clients with different loads on one scale. [Chapter 3](#backtest-without-looking-ahead) backtested that forecast over many cutoffs. A cutoff is the time a forecast is made, and its history ends there. A window is one cutoff and the 24 hours after it, which is the horizon. Each window's history ends at its cutoff, so no hour is forecast with data from its own day.
+[Chapter 2](#beat-the-naive-baselines) set the bar. [Seasonal naive](#forecast-with-seasonal-naive) forecasts each hour as the same hour yesterday, and the scaled error, MASE, compares clients with different loads on one scale. [Chapter 3](#backtest-without-looking-ahead) backtested that forecast over many cutoffs. A [cutoff](#the-case-and-its-data) is the time a forecast is made, and its history ends there. A [window](#the-case-and-its-data) is one cutoff and the 24 hours after it, which is the horizon. Each window's history ends at its cutoff, so no hour is forecast with data from its own day.
 
-A statistical model adds to that loop. A series has a state. Its level is the typical reading, its trend is the slow drift of that level, its season is the daily shape of the load, and what none of these explain is error. A statistical model holds an estimate of each part, updates the estimates as each reading arrives, and projects them over the horizon. Seasonal naive has no such state. It copies yesterday, so it gets a client's level only as well as yesterday did.
+A statistical model adds to that loop. A series has a state. The level of a series is its typical reading, the trend is the slow drift of the level, the season is the daily shape of the load, and what none of these explain is error. A statistical model holds an estimate of each part of the state of a series, updates the estimates as each reading arrives, and projects them over the horizon. Seasonal naive has no such state. It copies yesterday, so it gets a client's level only as well as yesterday did.
 
 A per-client model is one fit for each client, on that client's history alone, so the cost is one fit per client per window. The subset this chapter uses, [`SUBSET8`](#the-case-and-its-data), has eight clients. Over the book's three standard cutoffs, Dec 29 to Dec 31, 2014, the last three days of the held-out week and the windows every later chapter reports, that is 24 fits for each model. The code runs the fits in one worker (`n_jobs=1`), which keeps the output identical from run to run. Every model in this chapter gets the same three cutoffs and the same 1,344 hours of history before each one. The cutoffs fall in the held-out week, and the subset holds the one late starter a later section needs.
 
@@ -29,15 +29,15 @@ A per-client model is one fit for each client, on that client's history alone, s
 
 ## Fit exponential smoothing {#fit-exponential-smoothing}
 
-Seasonal naive keeps only yesterday, so the first candidate keeps a level instead. Exponential smoothing moves that level toward each new reading. The simplest form updates the level as `level_t = alpha * y_t + (1 - alpha) * level_(t-1)`. The constant alpha, between 0 and 1, sets how fast the level follows the data. The forecast for every hour of the horizon is the last level. Recent readings count for more than older ones, and the weights fall off with age.
+Seasonal naive keeps only yesterday, so the first candidate keeps a level instead. Exponential smoothing moves its level toward each new reading. The simplest form updates the level as `level_t = alpha * y_t + (1 - alpha) * level_(t-1)`. The constant alpha, between 0 and 1, sets how fast the level follows the data. The forecast for every hour of the horizon is the last level. Recent readings count for more than older ones, and the weights fall off with age.
 
-ETS, for error, trend and season, extends that form. Each part is chosen from a short list. The trend can be none, additive or damped. The error can be additive or multiplicative, and the season can be none, additive or multiplicative. A name such as ETS(A,N,A) reads in that order: additive error, no trend, additive season. ETS(M,Ad,M) has a multiplicative error, a damped trend and a multiplicative season.
+ETS, for error, trend and season, extends the simplest form of exponential smoothing. Each part is chosen from a short list. The trend can be none, additive or damped. The error can be additive or multiplicative, and the season can be none, additive or multiplicative. A name such as ETS(A,N,A) reads in that order: additive error, no trend, additive season. ETS(M,Ad,M) has a multiplicative error, a damped trend and a multiplicative season.
 
-AutoETS chooses the form for you. Its default criterion is AICc, the corrected Akaike information criterion, which charges a model for each parameter and corrects for small samples, as the `AutoETS` docstring in statsforecast 2.1.1 (`statsforecast/models.py`) says. Two of its defaults matter for hourly demand. The season length defaults to 1, which means no season at all, and the model gives no warning when you leave it that way. The `model` argument defaults to `"ZZZ"`, which lets the model choose all three parts. For hourly demand with a daily pattern, the call sets `season_length=24`.
+[AutoETS](#forecast-with-a-statistical-model) chooses the ETS form for you. Its default criterion is [AICc](#forecast-with-a-statistical-model), the corrected Akaike information criterion, which charges a model for each parameter and corrects for small samples, as the `AutoETS` docstring in statsforecast 2.1.1 (`statsforecast/models.py`) says. Two of its defaults matter for hourly demand. The season length defaults to 1, which means no season at all, and the model gives no warning when you leave it that way. The `model` argument defaults to `"ZZZ"`, which lets the model choose all three parts. For hourly demand with a daily pattern, the call sets `season_length=24`.
 
 Which form does AutoETS pick for each client, and do its forecasts beat seasonal naive? The lines it prints answer both.
 
-Example `autoets-subset-backtest` (Python 3.13.16 · numpy 2.5.5 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.10:
+Example `autoets-subset-backtest` (Python 3.13.16 · numpy 2.5.5 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.11:
 
 ```python
 """Backtest AutoETS and seasonal naive for the eight clients of SUBSET8 over the three standard cutoffs, and score both.
@@ -137,7 +137,7 @@ The chosen form changes from client to client, and for some clients from one cut
 
 A flat form winning looks odd when the seasonal form contains it. ETS(A,N,N) is ETS(A,N,A) with the seasonal part switched off, so the best seasonal fit cannot have a lower likelihood than the flat fit on the same history. Fitting both forms on each of the 24 windows shows whether that happens.
 
-Example `flat-form-check` (Python 3.13.16 · numpy 2.5.5 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.10:
+Example `flat-form-check` (Python 3.13.16 · numpy 2.5.5 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.11:
 
 ```python
 """For each subset window, fit the flat form ETS(A,N,N) and the additive-season form ETS(A,N,A) on the same history, and count where the seasonal fit has the lower likelihood.
@@ -185,7 +185,7 @@ The seasonal fit loses on likelihood, not only on AICc. Its log-likelihood is lo
 
 [Chapter 1](#forecast-with-a-statistical-model) forced an additive season on the lead client, with `model="ZZA"`, and seasonal naive still had the lower error there. Does that hold across all eight? The forced run covers the same eight clients, beside the default.
 
-Example `autoets-forced-season-backtest` (Python 3.13.16 · numpy 2.5.5 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.10:
+Example `autoets-forced-season-backtest` (Python 3.13.16 · numpy 2.5.5 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.11:
 
 ```python
 """Backtest AutoETS with the season forced to additive (model ZZA) and seasonal naive, for the eight clients of SUBSET8 over the three standard cutoffs.
@@ -294,7 +294,7 @@ The term `(1 - B^24)` replaces each reading with its change from the same hour y
 
 We fix the order rather than search for it, and [the section on automatic search](#why-the-book-avoids-autoarima) explains why. Before the order goes into a backtest, fit it once with statsmodels 0.15.0 on the lead client's history before the first standard cutoff, and print the names of the fitted parameters. That shows whether the model has the terms you wrote down.
 
-Example `arima-summary-look` (Python 3.13.16 · numpy 2.5.5 · pandas 2.3.3 · statsmodels 0.15.0 · utilsforecast 0.2.17), passing in Edition 2026.11.10:
+Example `arima-summary-look` (Python 3.13.16 · numpy 2.5.5 · pandas 2.3.3 · statsmodels 0.15.0 · utilsforecast 0.2.17), passing in Edition 2026.11.11:
 
 ```python
 """Fit the fixed seasonal ARIMA with statsmodels on the lead client's history before the first standard cutoff, and print its parameter names. The parameter lines are what the prose reads."""
@@ -334,7 +334,7 @@ Four forecasts now cover the same 24 hours at the same three cutoffs, from the s
 
 One score is still missing: the fixed ARIMA's, on the same windows and measures.
 
-Example `arima-subset-backtest` (Python 3.13.16 · numpy 2.5.5 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.10:
+Example `arima-subset-backtest` (Python 3.13.16 · numpy 2.5.5 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.11:
 
 ```python
 """Backtest the fixed seasonal ARIMA(1,0,0)(1,1,0)[24] and seasonal naive for the eight clients of SUBSET8 over the three standard cutoffs.
@@ -393,7 +393,7 @@ MASE gap, SeasonalNaive minus ARIMA: 0.07
 clients where ARIMA has lower MASE: 5
 ```
 
-MAE is in kilowatt hours, and RMSE, the root mean squared error, punishes large misses more. Both are computed for each client over its 72 scored hours, then averaged over the eight clients, so each client counts once. MASE divides each client's MAE by the MAE that seasonal naive makes in its own history, over every reading before Dec 29, 2014, from each client's first reading and with the clock-change hours left out, then averages over clients. A MASE of 1 means the model is as accurate as seasonal naive was on its own past. The coverage of AutoETS is the share of scored hours that fall inside its 95% prediction interval, the range the model gives for each hour.
+MAE is in kilowatt hours, and [RMSE](#score-on-a-held-out-week), the root mean squared error, punishes large misses more. Both are computed for each client over its 72 scored hours, then averaged over the eight clients, so each client counts once. [MASE](#scale-errors-with-mase) divides each client's MAE by the MAE that seasonal naive makes in its own history, over every reading before Dec 29, 2014, from each client's first reading and with the clock-change hours left out, then averages over clients. A MASE of 1 means the model is as accurate as seasonal naive was on its own past. The [coverage](#why-one-number-is-not-enough) of AutoETS is the share of scored hours that fall inside its 95% [prediction interval](#why-one-number-is-not-enough), the range the model gives for each hour.
 
 | Model | MAE (kWh) | RMSE (kWh) | MASE | Clients beating seasonal naive on MASE |
 | --- | --- | --- | --- | --- |
@@ -422,7 +422,7 @@ Start with the raw history, the eight weeks before each February cutoff with its
 
 Starting the history at the first reading may fix it. Fitting AutoETS twice at each February cutoff, once on the raw eight weeks and once on the start history, which begins at `MT_115`'s first reading, shows whether it does, scored on the 24 hours from each cutoff.
 
-Example `late-starter-trim` (Python 3.13.16 · numpy 2.5.5 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.10:
+Example `late-starter-trim` (Python 3.13.16 · numpy 2.5.5 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.11:
 
 ```python
 """Backtest AutoETS for MT_115, a late starter, on three February cutoffs: once on its raw eight weeks and once on its history from its first reading.

@@ -3,13 +3,13 @@ title: "Business Intelligence with Agents"
 chapter: "Define metrics once in a semantic layer"
 chapter_id: semantic-layer
 book: business-intelligence-with-agents
-edition: 2026.11.14
+edition: 2026.11.15
 verified: 2026-11-19
-edition_code: 8Q6T-45MG
+edition_code: 28XD-AHKT
 canonical: https://rollingedition.com/business-intelligence-with-agents/semantic-layer
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“Define metrics once in a semantic layer,” chapter 5 of Business Intelligence with Agents, Edition 2026.11.14, examples passed Nov 19, 2026. By Rolling Edition, https://rollingedition.com/business-intelligence-with-agents/semantic-layer. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Define metrics once in a semantic layer,” chapter 5 of Business Intelligence with Agents, Edition 2026.11.15, examples passed Nov 19, 2026. By Rolling Edition, https://rollingedition.com/business-intelligence-with-agents/semantic-layer. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Define metrics once in a semantic layer
 
@@ -17,7 +17,7 @@ By the end of this chapter, you can write the shop's semantic models and metrics
 
 Chapter 1 answered one question from one defined metric, net revenue, written as a few lines of Python with its SQL built by string formatting. That was enough to show the shape the book keeps: the model chooses a governed definition, and code writes the SQL. It isn't enough for the questions the shop's teams ask about the camping and outdoor gear it sells. Finance wants refund rates by country in fiscal 2026. A category manager wants net revenue by product category, which lives on the order lines, not the orders. Marketing wants average order value by channel. Each of those needs a join, a grain or a ratio, and each is a place where [chapter 2](#wrong-numbers) found schema-only SQL going wrong: a join that repeats rows, a definition the schema doesn't hold, a year that doesn't start in January.
 
-A semantic layer is where those choices are written down once. It describes each table by its entities (the keys it can be joined on), its dimensions (what you can group and filter by) and its metrics (the numbers people ask for, with their rules), and it compiles a request for a metric into SQL. The evidence that business meaning in a model's context helps is thin. The one benchmark we rely on, over one enterprise insurance schema, found that GPT-4 answered 16% of questions correctly over the SQL tables and 54% over a knowledge-graph layer that carried the business's meaning ([Sequeda et al., 2023](https://arxiv.org/abs/2311.07509)). The authors work for a knowledge-graph vendor, and the study covers one schema and one model, so read it as a sign that meaning helps, not as a multiplier you will see.
+A semantic layer is where the choices behind joins, grains and ratios are written down once. It describes each table by its entities (the keys it can be joined on), its dimensions (what you can group and filter by) and its [metrics](#answer-from-a-metric) (the numbers people ask for, with their rules), and it compiles a request for a metric into SQL. The evidence that business meaning in a model's context helps is thin. The one benchmark we rely on, over one enterprise insurance schema, found that GPT-4 answered 16% of questions correctly over the SQL tables and 54% over a knowledge-graph layer that carried the business's meaning ([Sequeda et al., 2023](https://arxiv.org/abs/2311.07509)). The authors work for a knowledge-graph vendor, and the study covers one schema and one model, so read it as a sign that meaning helps, not as a multiplier you will see.
 
 This chapter builds the shop's semantic layer in MetricFlow's YAML, compiles it with a small compiler of the book's own, `lib/semantic.py`, and checks it against MetricFlow 0.214.0, which reads the same files. MetricFlow is the semantic layer dbt Labs maintains, available under the Apache 2.0 licence since Oct 14, 2025, from version 0.209.0 on ([dbt Labs](https://www.getdbt.com/blog/open-source-metricflow-governed-metrics); [PyPI](https://pypi.org/project/metricflow/0.213.0/)). The book uses its own compiler so that you can read every step from request to SQL, and so that the examples change only when we change them.
 
@@ -66,7 +66,7 @@ The orders model's time dimension is `order_date_local`, the order's local busin
 
 Parsing won't reveal a wrong declaration, so the code loads the layer and checks its definitions against the warehouse: every expression must run, and every primary entity must be unique in its table. It repeats the check on a copy with one mistake, in which the order lines declare `order` as their primary entity.
 
-Example `load-semantic-models` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.14:
+Example `load-semantic-models` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.15:
 
 ```python
 """Load the shop's semantic layer from YAML, list what each semantic model declares, and check it against the warehouse."""
@@ -117,7 +117,7 @@ The shop has 5 semantic models and 10 metrics, and the check finds 0 problems in
 
 ## Compile a metric request to SQL {#compile-a-metric-request}
 
-With the [shop's definitions loaded](#entities-measures-dimensions), the layer's job is to turn a request into SQL. A metric request names the metrics, the dimensions to group by and the filters, and optionally an order and a limit. It holds names, not SQL, so everything in it can be checked against the definitions before anything runs. The compiler then finds each dimension's column, adds the joins and the metric's own filter, and writes the aggregate.
+With the [shop's definitions loaded](#entities-measures-dimensions), the layer's job is to turn a request into SQL. A [metric request](#answer-from-a-metric) names the metrics, the dimensions to group by and the filters, and optionally an order and a limit. It holds names, not SQL, so everything in it can be checked against the definitions before anything runs. The compiler then finds each dimension's column, adds the joins and the metric's own filter, and writes the aggregate.
 
 The book's compiler builds the query as a sqlglot expression tree rather than as text. sqlglot is a Python library that parses, builds and translates SQL. Building a tree has two consequences. A filter value becomes a literal node in the tree, so text inside it can't change the query's structure. And the same tree can be written in another warehouse's dialect, which the [dialect subsection](#any-dialect) uses.
 
@@ -132,7 +132,7 @@ Dimension names follow MetricFlow's convention, so a request reads the same in e
 
 Chapter 1's question is the first test: golden question `gq-002` asks, "What was net revenue in each region in March 2026?" As a request, it is `net_revenue` grouped by `order__region` and filtered to March 2026. The code prints the request and its SQL, runs it, and checks the answer against the golden result. Then it sends a filter value holding SQL of its own, and asks for a dimension the layer doesn't define.
 
-Example `compile-net-revenue` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.14:
+Example `compile-net-revenue` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.15:
 
 ```python
 """Compile one metric request to SQL with the book's semantic layer, run it, and check it against the golden answer. The printed `matches golden: yes` line is the fact the prose states."""
@@ -204,11 +204,11 @@ What a request can't name matters as much. A request for a metric or dimension t
 
 ## Join through entities so sums can't fan out {#join-through-entities}
 
-The [compiled request](#compile-a-metric-request) read one table. Many questions need two. A fan-out happens when a join matches each row of one table to several rows of another, so a sum over the joined rows counts each value of the first table several times. A semantic layer prevents it with the entity types: it joins from a metric's table only to a table where the entity is primary, many rows to one, so each row of the metric's table matches at most one row. MetricFlow's documentation lists a join from a primary to a foreign entity as "Fan-out (Not allowed)" and allows at most two hops ([dbt Labs](https://docs.getdbt.com/docs/build/join-logic)). The book's compiler applies the same two rules.
+The [compiled request](#compile-a-metric-request) read one table. Many questions need two. A [fan-out](#joins-that-fan-out) happens when a join matches each row of one table to several rows of another, so a sum over the joined rows counts each value of the first table several times. A semantic layer prevents it with the entity types: it joins from a metric's table only to a table where the entity is primary, many rows to one, so each row of the metric's table matches at most one row. MetricFlow's documentation lists a join from a primary to a foreign entity as "Fan-out (Not allowed)" and allows at most two hops ([dbt Labs](https://docs.getdbt.com/docs/build/join-logic)). The book's compiler applies the same two rules.
 
 The shop's case is a category manager's question: net revenue by product category in 2025. Net revenue is summed per order, in `analytics.fct_orders`, and a product's category is reached through the order lines, several per order. The layer refuses `net_revenue` by `product__category`. A hand-written join runs beside that refusal, since it returns a number without error, and the line-level metric is asked for instead.
 
-Example `entity-join-no-fanout` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.14:
+Example `entity-join-no-fanout` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.15:
 
 ```python
 """Ask for net revenue by product category: the layer refuses the fan-out join and points to a line-level metric. The printed `inflated by` and `difference from net revenue` lines are the facts the prose states."""
@@ -279,7 +279,7 @@ difference from net revenue: 0.90
 
 The layer refuses the request and says why: `'net_revenue' is summed per order, but 'product' is reached through 'order_lines', which has many rows per order; each order would count once per row. Use a metric defined on 'order_lines': line_net_revenue, units_sold`. The hand-written join shows what the refusal prevents. Net revenue in 2025 is 1,651,527.86 euros. Summed over the orders joined to their lines, the same revenue comes to 5,573,978.43, inflated by 238%, because each order counts once for each of its lines. Nothing in that query fails, and nothing in its result says it's wrong.
 
-`line_net_revenue` is net revenue counted on the lines themselves, in the `order_lines` semantic model, with the same rule on cancelled orders. Its SQL joins the lines to products and to orders, both many rows to one, so no line repeats. The categories add up to 1,651,526.96 euros, 0.90 away from net revenue. That gap is rounding, not fan-out: the warehouse rounds each line's amount and each order's total to the cent separately, and over a year of lines the cents add up.
+`line_net_revenue` is net revenue counted on the lines themselves, in the `order_lines` semantic model, with net revenue's rule on cancelled orders. Its SQL joins the lines to products and to orders, both many rows to one, so no line repeats. The categories add up to 1,651,526.96 euros, 0.90 away from net revenue. That gap is rounding, not fan-out: the warehouse rounds each line's amount and each order's total to the cent separately, and over a year of lines the cents add up.
 
 When a request needs numbers from two tables, a layer doesn't join the tables first. It aggregates each metric in its own table, then joins the aggregated results on the dimensions they share; MetricFlow uses full outer joins for that step ([dbt Labs](https://docs.getdbt.com/docs/build/join-logic)), and so does the book's compiler. Each sum is complete before any join, so no join can repeat its rows.
 
@@ -289,13 +289,13 @@ The protection holds only as far as the declarations are true. Declare the lines
 
 ## Build ratio and derived metrics from simple ones {#ratio-and-derived-metrics}
 
-Simple metrics, like the [line-level revenue](#join-through-entities), aggregate one column of one table. Many of the numbers people ask for are built from two: a refund rate, an average order value. A ratio metric divides one metric by another, and a derived metric combines several with an expression. What matters is the order of operations: a ratio is the sum of the numerator over the sum of the denominator, per group, never the average of row-by-row ratios. MetricFlow computes the numerator and the denominator in separate subqueries, joins them on their common dimensions and then divides ([dbt Labs](https://docs.getdbt.com/docs/build/ratio)).
+Simple metrics, like the [line-level revenue](#join-through-entities), aggregate one column of one table. Many of the numbers people ask for are built from two: a refund rate, an average order value. A ratio metric divides one metric by another, and a derived metric combines several metrics with an expression. What matters is the order of operations: a ratio is the sum of the numerator over the sum of the denominator, per group, never the average of row-by-row ratios. MetricFlow computes the numerator and the denominator in separate subqueries, joins them on their common dimensions and then divides ([dbt Labs](https://docs.getdbt.com/docs/build/ratio)).
 
 The shop's finance team defines the refund rate in golden question `gq-028`: refunded euros over gross revenue of the same orders, those placed in the period that weren't cancelled. Two choices hide in that sentence. The refunds belong to the order's day, not the day the money went back, so the numerator is `order_refunds`, a metric counted on the order's local day; `refunds`, counted on the day of the refund, answers a different question. And the denominator is gross revenue, not net revenue. A refund pays back what the customer was charged, tax included, and gross revenue includes tax while net revenue leaves it out, so only gross revenue measures both sides in the same euros; over net revenue, a fully refunded order would have a refund rate above 100%. The book uses this one definition everywhere, in the glossary and the verified queries as well. The numerator carries the rule on cancelled orders as an input filter, and `gross_revenue` carries it in its own definition, so each side applies it.
 
 The tempting version is why this example matters: averaging each order's refund rate per region looks right and isn't. Beside it sits the layer's rate for fiscal 2026, which the example compiles.
 
-Example `refund-rate-metric` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.14:
+Example `refund-rate-metric` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.15:
 
 ```python
 """A ratio metric divides two separately aggregated sums, and averaging per-order ratios gives a different number. The printed `matches golden: yes` lines are the facts the prose states."""
@@ -399,11 +399,11 @@ The highest refund rate by country belongs to NL, the answer golden question `gq
 
 Every metric in the [shop's layer](#entities-measures-dimensions) is counted on a time dimension, and most questions name a period. A layer handles standard grains, such as month, quarter and year, by truncating the date. Fiscal periods can't be computed that way, because they start where the business says they do. MetricFlow handles both through the time spine, a table with one row per day that every time-based metric needs, at least at a daily grain. A custom granularity, such as `fiscal_year`, is a column of the time spine that names the period each day belongs to ([dbt Labs](https://docs.getdbt.com/docs/build/metricflow-time-spine)).
 
-The shop's fiscal year starts on February 1 and is named for the year it ends in, so fiscal 2026 runs from February 1, 2025 to January 31, 2026. The warehouse's `analytics.dim_date` holds `fiscal_year` and `fiscal_quarter`, but its quarter is a number from 1 to 4, which repeats every year. A custom grain must name one period, so the view `semantic.calendar` labels each quarter with its year, as in `2026-Q1`, and the project configuration declares `fiscal_year` and `fiscal_quarter` as custom grains of that view. A request then groups by `metric_time__fiscal_quarter`.
+The shop's [fiscal year](#meet-the-shop) starts on February 1 and is named for the year it ends in, so fiscal 2026 runs from February 1, 2025 to January 31, 2026. The warehouse's `analytics.dim_date` holds `fiscal_year` and `fiscal_quarter`, but its quarter is a number from 1 to 4, which repeats every year. A custom grain must name one period, so the view `semantic.calendar` labels each quarter with its year, as in `2026-Q1`, and the project configuration declares `fiscal_year` and `fiscal_quarter` as custom grains of that view. A request then groups by `metric_time__fiscal_quarter`.
 
 Grouping net revenue by fiscal and calendar quarter shows how far apart the two calendars sit when a year starts in February. Two golden questions about first fiscal quarters close the check.
 
-Example `fiscal-quarter-grain` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.14:
+Example `fiscal-quarter-grain` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.15:
 
 ```python
 """Group net revenue by fiscal quarter, a custom grain from the time spine, and by calendar quarter, a standard one. The printed `matches golden: yes` lines are the facts the prose states."""
@@ -483,7 +483,7 @@ The [shop's YAML](#entities-measures-dimensions) is portable only if a productio
 
 The two compilers should return the same rows, so the example checks 8 requests: simple, ratio and derived metrics, a two-hop join, the fiscal grains and two time dimensions on one table. Each pair runs on the shop's warehouse and its rows are compared. The run also prints MetricFlow's SQL for chapter 1's question, and its refusal of the [join section's](#join-through-entities) request.
 
-Example `metricflow-agrees` (Python 3.12.15 · duckdb 2.0.0 · metricflow 0.214.0 · pydantic 2.14.3 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.14:
+Example `metricflow-agrees` (Python 3.12.15 · duckdb 2.0.0 · metricflow 0.214.0 · pydantic 2.14.3 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.15:
 
 ```python
 """Compile the same requests with MetricFlow and with the book's compiler, run both, and compare the results. The printed `requests that agree` line is the fact the prose states."""
@@ -583,7 +583,7 @@ MetricFlow's SQL is longer, with a comment naming each step, and reaches the sam
 
 MetricFlow also asks more of the YAML than the book's compiler does: every semantic model that a simple metric counts on needs a time dimension of its own. The next code builds the engine twice. The copy points `order_lines` at `analytics.fct_order_lines`, the analytics table, which has no order day, and drops the model's time dimension.
 
-Example `metricflow-needs-a-date` (Python 3.12.15 · duckdb 2.0.0 · metricflow 0.214.0 · pydantic 2.14.3 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.14:
+Example `metricflow-needs-a-date` (Python 3.12.15 · duckdb 2.0.0 · metricflow 0.214.0 · pydantic 2.14.3 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.15:
 
 ```python
 """Show that MetricFlow won't build its engine when a fact's semantic model has no date of its own."""
@@ -634,7 +634,7 @@ The shop's YAML builds a `MetricFlowEngine`. The copy doesn't: MetricFlow raises
 
 A layer that compiles to an expression tree, as [the book's compiler does](#compile-a-metric-request), can write that tree for another warehouse. sqlglot 30.31.0 calls itself "a transpiler, not a validator", warns that some queries can't be translated between some dialects, and by default makes a best-effort translation unless `unsupported_level` is set to raise ([PyPI](https://pypi.org/project/sqlglot/30.27.0/)). Each dialect's refund rate by calendar quarter differs in two lines, the quarter and the division, so the example prints those two for each dialect. It also prints BigQuery's quarter as sqlglot writes it from an uncast column.
 
-Example `transpile-metric-sql` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.14:
+Example `transpile-metric-sql` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.15:
 
 ```python
 """Write one compiled metric request in six warehouses' dialects, and show what transpiling doesn't check. The printed quarter and ratio lines per dialect, and the `bigquery without the cast` line, are the facts the prose states."""

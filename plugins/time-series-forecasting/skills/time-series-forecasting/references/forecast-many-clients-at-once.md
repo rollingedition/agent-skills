@@ -3,13 +3,13 @@ title: "Time Series Forecasting"
 chapter: "Forecast many clients with one model"
 chapter_id: forecast-many-clients-at-once
 book: time-series-forecasting
-edition: 2026.11.10
+edition: 2026.11.11
 verified: 2026-11-20
-edition_code: 6387-FADQ
+edition_code: 1RPH-3A4D
 canonical: https://rollingedition.com/time-series-forecasting/forecast-many-clients-at-once
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“Forecast many clients with one model,” chapter 6 of Time Series Forecasting, Edition 2026.11.10, examples passed Nov 20, 2026. By Rolling Edition, https://rollingedition.com/time-series-forecasting/forecast-many-clients-at-once. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Forecast many clients with one model,” chapter 6 of Time Series Forecasting, Edition 2026.11.11, examples passed Nov 20, 2026. By Rolling Edition, https://rollingedition.com/time-series-forecasting/forecast-many-clients-at-once. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Forecast many clients with one model
 
@@ -37,13 +37,13 @@ The mean and deviation come from that client's history before the cutoff only, a
 
 ## Identify each client {#identify-each-client}
 
-Once the rows share one table, the model no longer knows which client a row belongs to, unless you tell it. Scaling removes each client's mean and spread, so what remains is mostly the shape of the day. An identifier puts the client in the table as a static categorical feature. The trees can then split on the client and learn that client's own habits. The cost is one more split to learn for each client, and a client with no history has nothing to learn from. A new client therefore needs a refit before the model can forecast it.
+Once the rows share one table, the model no longer knows which client a row belongs to, unless you tell it. Scaling removes each client's mean and spread, so what remains is mostly the shape of the day. A client identifier puts the client in the table as a static categorical feature. The trees can then split on the client and learn that client's own habits. The cost is one more split to learn for each client, and a client with no history has nothing to learn from. A new client therefore needs a refit before the model can forecast it.
 
 The rule for keeping an identifier is the one [Chapter 5](#measure-what-each-feature-adds) sets for every feature: keep it only if it lowers the mean per-client MASE on decision windows that the standard cutoffs do not use. The held-out week runs from Dec 25 to Dec 31, 2014, and it has seven daily cutoffs. The three standard cutoffs, Dec 29 to Dec 31, 2014, are the reported scores, so the decision does not use them, and it does not use Dec 25 to Dec 28, 2014 either. The [decision windows](#choose-on-decision-windows) are four ordinary days before the held-out week: cutoffs on Nov 25, Nov 26, Dec 2 and Dec 3, all in 2014, each forecasting 24 hours. None of their scored hours falls on a Portuguese holiday. The one holiday of 2014 between these windows and the held-out week, Dec 8, 2014, is not among them. The calendar lists no holiday on Dec 1, 2014.
 
 Before the identifier goes into the model, test it on windows the reported scores never touch. The check fits the model twice on each decision cutoff, with and without the identifier, and refuses to start if a scored hour is a holiday or in the held-out week.
 
-Example `client-identifier-check` (Python 3.13.16 · holidays 0.110.dev20261118063242 · lightgbm 4.7.0 · mlforecast 1.1.0 · numpy 2.5.5 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.10:
+Example `client-identifier-check` (Python 3.13.16 · holidays 0.110.dev20261118063242 · lightgbm 4.7.0 · mlforecast 1.1.0 · numpy 2.5.5 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.11:
 
 ```python
 """Tests whether a client identifier lowers the global model's error on four ordinary decision windows, before the
@@ -127,13 +127,13 @@ The identifier has a cost at the standard cutoffs. There, the final model's mean
 
 ## Apply the start rule to every client {#apply-the-start-rule-to-every-client}
 
-A series begins at its first reading. Before that, the meter reports zeros, and those zeros are not low use. [Chapter 4](#meet-the-late-starters) met this for one client. With thirty clients, three are late starters. `MT_039` first reads on 2013-10-03, `MT_179` on 2013-12-20, and `MT_115` on 2014-01-14. A model fitted on their leading zeros learns a level near zero for them. The start rule drops every reading before a client's first reading. It finds that reading in the rows before the cutoff only.
+A series begins at its first reading. Before that, the meter reports zeros, and those zeros are not low use. [Chapter 4](#meet-the-late-starters) met this for one client. With thirty clients, three are late starters. `MT_039` first reads on 2013-10-03, `MT_179` on 2013-12-20, and `MT_115` on 2014-01-14. A model fitted on their leading zeros learns a level near zero for them. The [start rule](#start-each-series-at-its-first-reading) drops every reading before a client's first reading. It finds that reading in the rows before the cutoff only.
 
 The rule refuses a cutoff in two cases only: a client has no non-zero reading before the cutoff, or it has fewer than 48 hours of history since its first reading. It does not skip the client, because a skipped client leaves the total short. The rule does not catch a gap or a run of zeros in the middle of a series, and a meter replaced under the same id passes too, because its zeros are not leading. The scale catches a gap, because it refuses a series that is not one unbroken hourly series. Nothing in the forecast checks for one, so a gap there shows only as fewer training rows.
 
 The leak check asks whether the rule reads only the past and refuses the right cutoffs. It runs nine cutoffs, refused or not, and poisons each from the cutoff on, once with zeros and once with a value no meter could record. The history must not change, and every accepted cutoff must hold all thirty clients.
 
-Example `start-rule-leak-check` (Python 3.13.16 · holidays 0.110.dev20261118063242 · lightgbm 4.7.0 · mlforecast 1.1.0 · numpy 2.5.5 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.10:
+Example `start-rule-leak-check` (Python 3.13.16 · holidays 0.110.dev20261118063242 · lightgbm 4.7.0 · mlforecast 1.1.0 · numpy 2.5.5 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.11:
 
 ```python
 """Checks that the start rule reads only rows before each cutoff, refuses the cutoffs the data's flag predicts, and
@@ -200,7 +200,7 @@ The same checks run on a deliberately broken version, which reads each first rea
 
 The model runs with the start rule and without it, on the standard cutoffs and then the February cutoffs. The counts that differ, and each run's error, show what the rule does.
 
-Example `global-model-raw-starts` (Python 3.13.16 · holidays 0.110.dev20261118063242 · lightgbm 4.7.0 · mlforecast 1.1.0 · numpy 2.5.5 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.10:
+Example `global-model-raw-starts` (Python 3.13.16 · holidays 0.110.dev20261118063242 · lightgbm 4.7.0 · mlforecast 1.1.0 · numpy 2.5.5 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.11:
 
 ```python
 """Runs the global model with the start rule and without it, on the February cutoffs, where a late starter's zeros enter
@@ -311,7 +311,7 @@ You could instead mark the zeros as missing, as the clock rule does for the two 
 
 The three standard cutoffs are Dec 29 to Dec 31, 2014, each at 00:00 on that day, with 24 hours forecast from each. For thirty clients that is 72 scored hours per client. Seasonal naive is the baseline [Chapter 2](#three-baselines-to-beat) set. It takes each cutoff's own history, the 8 weeks before it, and copies the last day's readings forward. At the standard cutoffs no client's history holds a leading zero, so the global model and seasonal naive read the same readings. The comparison is fair because the inputs match, not because the methods are alike.
 
-The headline is the mean per-client MASE, the measure [Chapter 2](#scale-errors-with-mase) defines. The book uses one scale per client per backtest, the rule [Chapter 2](#take-the-mase-scale-from-history) sets, and the function `book_scale` in `examples/lib/scoring.py` builds it. The scale is the mean absolute change between each reading and the reading one day earlier, taken over every reading before the first scored cutoff. A late starter is counted from its first reading, and the clock-change readings are masked out. A client with no non-zero reading before the cutoff has no scale, so it is left out of MASE and reported, not treated as an error. Because the scale reads only readings before the scored windows, it is known at every cutoff and cannot leak. Each client counts once in the mean, so one large client cannot set the headline. The pooled MAE and RMSE follow as second lines. They show the error in kilowatt hours that the supplier pays, and they are weighted toward the large clients.
+The headline is the mean per-client MASE, the measure [Chapter 2](#scale-errors-with-mase) defines. The book uses one scale per client per backtest, the rule [Chapter 2](#take-the-mase-scale-from-history) sets, and the function `book_scale` in `examples/lib/scoring.py` builds it. The [scale](#scale-errors-with-mase) is the mean absolute change between each reading and the reading one day earlier, taken over every reading before the first scored cutoff. A late starter is counted from its first reading, and the clock-change readings are masked out. A client with no non-zero reading before the cutoff has no scale, so it is left out of MASE and reported, not treated as an error. Because the scale reads only readings before the scored windows, it is known at every cutoff and cannot leak. Each client counts once in the mean, so one large client cannot set the headline. The pooled MAE and RMSE follow as second lines. They show the error in kilowatt hours that the supplier pays, and they are weighted toward the large clients.
 
 The scale is part of the score. `MT_115`'s scale is 2.22 kWh if the zeros before its first reading are kept, and 4.58 kWh with the book's rule, which counts it from its first reading.
 
@@ -321,7 +321,7 @@ On the standard cutoffs the same forecasts score a mean MASE of 1.01 with the sc
 
 The score below sets the global model beside seasonal naive on the three standard cutoffs.
 
-Example `global-model-thirty-clients` (Python 3.13.16 · holidays 0.110.dev20261118063242 · lightgbm 4.7.0 · mlforecast 1.1.0 · numpy 2.5.5 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.10:
+Example `global-model-thirty-clients` (Python 3.13.16 · holidays 0.110.dev20261118063242 · lightgbm 4.7.0 · mlforecast 1.1.0 · numpy 2.5.5 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.11:
 
 ```python
 """Scores one global LightGBM model, with the identifier that client-identifier-check kept, against seasonal naive on the
@@ -408,7 +408,7 @@ The chapter does not explain why seasonal naive wins for those clients, and that
 
 ## Budget the run time {#budget-the-run-time}
 
-A backtest costs fits, and the count is what to check before you run one. A per-client model is fitted once for each client, each window and each method, so the count is clients times windows times methods. Thirty clients over three windows is ninety fits for one per-client method. A global model is fitted once for each window and method, however many clients it covers, so the same three windows cost three fits. More clients make each global fit larger, but they do not add fits.
+A backtest costs fits, and the count is what to check before you run one. A [per-client model](#why-a-statistical-model-comes-next) is fitted once for each client, each window and each method, so the count is clients times windows times methods. Thirty clients over three windows is ninety fits for one per-client method. A global model is fitted once for each window and method, however many clients it covers, so the same three windows cost three fits. More clients make each global fit larger, but they do not add fits.
 
 The book sets a subset rule for the expensive per-client methods. [`SUBSET8`](#the-case-and-its-data) is the eight-client subset that [Chapter 4](#fit-exponential-smoothing) runs its per-client statistical models on. A global model covers all thirty in one fit, so it runs on all thirty clients, as `ALL30`. The subsets are fixed for the whole book, so a number in one chapter can be set beside the next. The window count follows the same logic. Expensive methods use three windows, and cheap methods can use more. Each window of the identifier check costs two global fits, one with the identifier and one without, so its four windows cost eight fits.
 

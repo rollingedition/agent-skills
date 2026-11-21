@@ -3,13 +3,13 @@ title: "Data Governance as Code"
 chapter: "Governance in CI"
 chapter_id: governance-in-ci
 book: data-governance-as-code
-edition: 2026.11.30
+edition: 2026.11.31
 verified: 2026-11-19
-edition_code: N1TW-0DRZ
+edition_code: VJ1S-X2E7
 canonical: https://rollingedition.com/data-governance-as-code/governance-in-ci
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“Governance in CI,” chapter 10 of Data Governance as Code, Edition 2026.11.30, examples passed Nov 19, 2026. By Rolling Edition, https://rollingedition.com/data-governance-as-code/governance-in-ci. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Governance in CI,” chapter 10 of Data Governance as Code, Edition 2026.11.31, examples passed Nov 19, 2026. By Rolling Edition, https://rollingedition.com/data-governance-as-code/governance-in-ci. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Governance in CI
 
@@ -46,7 +46,7 @@ The platform's job runs these checks, in this order:
 
 The first pull request the job sees is the CRM team's. Employers buy team licences for their staff, so the team adds `work_email` to `crm.learners` in one migration, and forgets the column's metadata:
 
-Example `governance-ci-report` (Python 3.12.15 · duckdb 2.0.0 · openlineage-python 1.55.0 · phonenumbers 9.0.43 · presidio-analyzer 2.2.366 · pyarrow 26.0.1 · pyiceberg 0.12.0 · pyyaml 6.0.3 · regopy 1.5.2 · sqlglot 30.33.0 · tldextract 5.4.0), passing in Edition 2026.11.30:
+Example `governance-ci-report` (Python 3.12.15 · duckdb 2.0.0 · openlineage-python 1.55.0 · phonenumbers 9.0.43 · presidio-analyzer 2.2.366 · pyarrow 26.0.1 · pyiceberg 0.12.0 · pyyaml 6.0.3 · regopy 1.5.2 · sqlglot 30.33.0 · tldextract 5.4.0), passing in Edition 2026.11.31:
 
 ```python
 """The platform's governance job on one pull request, run as a CI step runs it: the CRM team adds a work email to
@@ -161,7 +161,7 @@ Which SQL a change breaks is a lineage question, and [chapter 4](#impact-of-a-co
 
 Next comes the learning team's rename of `learning.courses.category` to `subject`, in a migration and in the metadata file. The same pull request also fixes the two pipelines that name the column:
 
-Example `schema-change-impact` (Python 3.12.15 · duckdb 2.0.0 · openlineage-python 1.55.0 · phonenumbers 9.0.43 · presidio-analyzer 2.2.366 · pyarrow 26.0.1 · pyiceberg 0.12.0 · pyyaml 6.0.3 · regopy 1.5.2 · sqlglot 30.33.0 · tldextract 5.4.0), passing in Edition 2026.11.30:
+Example `schema-change-impact` (Python 3.12.15 · duckdb 2.0.0 · openlineage-python 1.55.0 · phonenumbers 9.0.43 · presidio-analyzer 2.2.366 · pyarrow 26.0.1 · pyiceberg 0.12.0 · pyyaml 6.0.3 · regopy 1.5.2 · sqlglot 30.33.0 · tldextract 5.4.0), passing in Edition 2026.11.31:
 
 ```python
 """What the learning team's rename of learning.courses.category reaches, through Iceberg readers, SQL and lineage. The
@@ -256,7 +256,7 @@ Yet every policy reads the classification, so lowering one is among the most con
 
 The data-science team's pull request comes last. It lowers `crm.learners.city` from `personal` to `internal`, so data scientists can group learners by city. The access policy pseudonymizes personal columns for data scientists, and the downgrade takes `city` out of that rule. The run asks the policy before and after, then runs the checks that look at schemas and policies, and the owner rule:
 
-Example `classification-downgrade` (Python 3.12.15 · duckdb 2.0.0 · openlineage-python 1.55.0 · phonenumbers 9.0.43 · presidio-analyzer 2.2.366 · pyarrow 26.0.1 · pyiceberg 0.12.0 · pyyaml 6.0.3 · regopy 1.5.2 · sqlglot 30.33.0 · tldextract 5.4.0), passing in Edition 2026.11.30:
+Example `classification-downgrade` (Python 3.12.15 · duckdb 2.0.0 · openlineage-python 1.55.0 · phonenumbers 9.0.43 · presidio-analyzer 2.2.366 · pyarrow 26.0.1 · pyiceberg 0.12.0 · pyyaml 6.0.3 · regopy 1.5.2 · sqlglot 30.33.0 · tldextract 5.4.0), passing in Edition 2026.11.31:
 
 ```python
 """A pull request from the data-science team lowers crm.learners.city from personal to internal. The prose's point rests
@@ -318,13 +318,13 @@ What settles the owner rule is the owner's approval. Approvals reach `lib.ci.run
 
 ## Deprecate a column before removing it {#deprecate-before-removing}
 
-[The owner rule](#ask-the-owner-before-lowering) guards a change that breaking-change checkers ignore. Removing a column is the change they all catch, but by then the removal is already under review, too late to help the readers it breaks. ODCS 3.2.0 adds a way to warn readers first. Any element of a contract, a schema object or a property, nested ones included, may set the optional `deprecated` boolean to signal that it is no longer recommended for use. The standard also asks that the `description` point to a replacement and give migration guidance ([ODCS v3.2.0 schema](https://github.com/bitol-io/open-data-contract-standard/blob/v3.2.0/docs/schema.md)). Our second rule makes that warning a required step: a column may leave a table only once the main branch has marked it deprecated. That takes two pull requests, one that deprecates the column and one that removes it, and the column's readers have the time between them to move off it.
+[The owner rule](#ask-the-owner-before-lowering) guards a change that breaking-change checkers ignore. Removing a column is the change they all catch, but by then the removal is already under review, too late to help the readers it breaks. ODCS 3.2.0 adds a way to warn readers first. Any element of a contract, a schema object or a property, nested ones included, may set the optional `deprecated` boolean to signal that it is no longer recommended for use. The standard also asks that the `description` point to a replacement and give migration guidance ([ODCS v3.2.0 schema](https://github.com/bitol-io/open-data-contract-standard/blob/v3.2.0/docs/schema.md)). Our second rule makes the deprecation warning a required step: a column may leave a table only once the main branch has marked it deprecated. That takes two pull requests, one that deprecates the column and one that removes it, and the column's readers have the time between them to move off it.
 
 The platform's metadata file had no such field, so this chapter adds one: `deprecated = true` in a column's entry. `lib.metadata.load` reads it as `Column.deprecated`, false when it's absent, and `lib.ci.contract` writes it into the column's contract as ODCS's `deprecated`.
 
 The platform's best candidate is `billing.payments.card_number`. Its own description says it "Should not be stored at all", and [chapter 3](#classify-columns-from-their-values) found that it holds full card numbers. `team-billing` removes it twice, each time by dropping the column in a migration and deleting its metadata entry: once straight away, and once after a pull request that deprecates it has merged:
 
-Example `deprecate-then-remove` (Python 3.12.15 · duckdb 2.0.0 · openlineage-python 1.55.0 · phonenumbers 9.0.43 · presidio-analyzer 2.2.366 · pyarrow 26.0.1 · pyiceberg 0.12.0 · pyyaml 6.0.3 · regopy 1.5.2 · sqlglot 30.33.0 · tldextract 5.4.0), passing in Edition 2026.11.30:
+Example `deprecate-then-remove` (Python 3.12.15 · duckdb 2.0.0 · openlineage-python 1.55.0 · phonenumbers 9.0.43 · presidio-analyzer 2.2.366 · pyarrow 26.0.1 · pyiceberg 0.12.0 · pyyaml 6.0.3 · regopy 1.5.2 · sqlglot 30.33.0 · tldextract 5.4.0), passing in Edition 2026.11.31:
 
 ```python
 """team-billing removes the legacy card_number column from billing.payments: once straight away, and once after a pull
@@ -388,9 +388,9 @@ Straight away, the removal fails, `removed without being deprecated on the main 
 
 The [owner rule](#ask-the-owner-before-lowering) asks a table's team to approve its downgrades, and the repository can route that request. GitHub requests code owners' review automatically when a pull request modifies code they own, and a branch protection rule can require that review ([GitHub's documentation, About code owners](https://github.com/github/docs/blob/d59b2631959db46d71ca5f7748ec04311c6d0870/content/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners.md)). The platform keeps all its metadata in one file, `governance/metadata.toml`, which suits 5 teams in one repository. A file has one set of owners, though, so the request can reach the right team only if each team's metadata lives under a path of its own.
 
-ODCS draws the same lines. A contract names one `domain`, the logical data domain it belongs to ([ODCS v3.2.0 fundamentals](https://github.com/bitol-io/open-data-contract-standard/blob/v3.2.0/docs/fundamentals.md)). ODCS has no owner field: ownership is a free-form `role` on a member of the contract's `team` ([ODCS v3.2.0 team](https://github.com/bitol-io/open-data-contract-standard/blob/v3.2.0/docs/team.md)). `lib.ci.contract` writes each described table as an ODCS contract. It records the domain, the owning team as a member with the role `owner`, and each column as a property whose `id` holds its Iceberg field ID. ODCS defines that `id` as "A unique identifier for the element used to create stable, refactor-safe references". `lib.ci.generate` writes each contract into a folder for its domain, and a CODEOWNERS file in `.github/`, the first place GitHub looks for one. Both are generated from the metadata, never typed. Ask whom GitHub would request for [the data-science team's downgrade of `city`](#ask-the-owner-before-lowering):
+ODCS draws the same lines. A contract names one [`domain`](#keep-metadata-in-a-reviewed-file), the logical data domain it belongs to ([ODCS v3.2.0 fundamentals](https://github.com/bitol-io/open-data-contract-standard/blob/v3.2.0/docs/fundamentals.md)). ODCS has no owner field: ownership is a free-form `role` on a member of the contract's `team` ([ODCS v3.2.0 team](https://github.com/bitol-io/open-data-contract-standard/blob/v3.2.0/docs/team.md)). `lib.ci.contract` writes each described table as an ODCS contract. It records the domain, the owning team as a member with the role `owner`, and each column as a property whose `id` holds its Iceberg field ID. ODCS defines a property's `id` as "A unique identifier for the element used to create stable, refactor-safe references". `lib.ci.generate` writes each contract into a folder for its domain, and a CODEOWNERS file in `.github/`, the first place GitHub looks for one. Both are generated from the metadata, never typed. Ask whom GitHub would request for [the data-science team's downgrade of `city`](#ask-the-owner-before-lowering):
 
-Example `domain-contracts` (Python 3.12.15 · duckdb 2.0.0 · openlineage-python 1.55.0 · phonenumbers 9.0.43 · presidio-analyzer 2.2.366 · pyarrow 26.0.1 · pyiceberg 0.12.0 · pyyaml 6.0.3 · regopy 1.5.2 · sqlglot 30.33.0 · tldextract 5.4.0), passing in Edition 2026.11.30:
+Example `domain-contracts` (Python 3.12.15 · duckdb 2.0.0 · openlineage-python 1.55.0 · phonenumbers 9.0.43 · presidio-analyzer 2.2.366 · pyarrow 26.0.1 · pyiceberg 0.12.0 · pyyaml 6.0.3 · regopy 1.5.2 · sqlglot 30.33.0 · tldextract 5.4.0), passing in Edition 2026.11.31:
 
 ```python
 """Ownership as ODCS contracts, a folder per domain, and who GitHub asks to review the downgrade of crm.learners.city
@@ -461,17 +461,17 @@ With one shared file, the downgrade changes `governance/metadata.toml`, and GitH
 
 When code-owner review is required, an approval from any one of a file's owners meets it ([About code owners](https://github.com/github/docs/blob/d59b2631959db46d71ca5f7748ec04311c6d0870/content/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners.md)). Branch protection asks for one number of approvals for the whole branch, met by reviewers with write permissions ([GitHub, protected branches](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-protected-branches/about-protected-branches)), so any such reviewer counts toward it, and it can't ask for two of `team-crm`'s members. The job can, from the approvals it's given. The owner rule counts them per team, against a number per team in `ci.toml`. With `team-crm` asking for two, [the downgrade of `city`](#ask-the-owner-before-lowering) with one `team-crm` approval reports `failed`, and with two it reports `passed`. Iceberg 1.12.0's REST catalog spec offers another place for classifications, `labels` per table and field ID ([REST catalog spec](https://github.com/apache/iceberg/blob/apache-iceberg-1.12.0/open-api/rest-catalog-open-api.yaml)). Coverage and the contract rules could read a catalog server's labels, but changes to them would need the server's own review, since the spec doesn't require that labels be persisted or versioned.
 
-**Working rule:** Keep each domain's metadata under a path of its own, as one ODCS contract per table with one domain and one owning team, generated from the metadata and checked by the job, with a CODEOWNERS line for that team. Give the platform team the CODEOWNERS file, the job's settings, its global rules, the waivers and the migrations. Require code-owner review, and count approvals per team in the job when one isn't enough.
+**Working rule:** Keep each domain's metadata under a path of its own, as one ODCS contract per table with one domain and one owning team, generated from the metadata and checked by the job, with a CODEOWNERS line for that team. Give the platform team the CODEOWNERS file, the job's settings, its global rules, the [waivers](#count-waived-findings) and the migrations. Require code-owner review, and count approvals per team in the job when one isn't enough.
 
 ## Layer domain rules on the global rules {#run-global-and-domain-rules}
 
 Teams that own [their domains' contracts](#a-folder-and-a-code-owner-per-domain) still share one platform, and some rules have to hold in every domain. Dehghani's description of data mesh calls this federated computational governance, "a set of global rules - rules applied to all data products and their interfaces - to ensure a healthy and interoperable ecosystem". Those global rules sit beside the decisions each domain makes for itself, and the platform executes both ([Dehghani, 2020](https://martinfowler.com/articles/data-mesh-principles.html)). That's a framing, not a measurement, and it maps onto code. The platform team keeps one package of global rules, which the domains agree on, and in Dehghani's version the domain and platform product owners together decide them. Each domain has a package of its own, owned by its team, and one job runs them all.
 
-The OPA project's tool for rules over files is Conftest, which tests structured configuration data with Rego ([Conftest](https://www.conftest.dev/)). `lib.ci` runs the same kind of rules in-process with regopy, as [chapter 5](#access-policies-as-code) runs the access policy. `governance/ci/global.rego` holds the global rules: one owner, whatever the case of its role; one domain, which a missing, empty or blank value fails, since an empty string is a defined value in Rego and `not` alone would pass it; a classification from the four, since ODCS accepts any string; and a description for every column. `governance/ci/domains/crm.rego` holds `team-crm`'s rule: nothing in crm is public, because everything in it describes a learner or an instructor. The `contract-rules` check runs the global package on every contract, and each domain's package on the contracts of that domain on the branch. A rule returns each violation as data, with the rule's name, a subject and a message. The subject and the rule make the finding's ID. These files sit outside `governance/policies/`, the access policy's folder, so changing them never changes the policy revision that [chapter 8](#replay-old-decisions) records with every decision.
+The OPA project's tool for rules over files is Conftest, which tests structured configuration data with Rego ([Conftest](https://www.conftest.dev/)). `lib.ci` runs the same kind of rules in-process with regopy, as [chapter 5](#access-policies-as-code) runs the access policy. `governance/ci/global.rego` holds the global rules: one owner, whatever the case of its role; one domain, which a missing, empty or blank value fails, since an empty string is a defined value in Rego and `not` alone would pass it; a classification from the four, since ODCS accepts any string; and a description for every column. `governance/ci/domains/crm.rego` holds `team-crm`'s rule: nothing in crm is public, because everything in it describes a learner or an instructor. The `contract-rules` check runs the global package on every contract, and each domain's package on the contracts of that domain on the branch. A rule returns each violation as data, with the rule's name, a subject and a message. A violation's subject and the rule's name make the finding's ID. These files sit outside `governance/policies/`, the access policy's folder, so changing them never changes the policy revision that [chapter 8](#replay-old-decisions) records with every decision.
 
 [The CRM team's change](#run-every-rule-as-one-job) comes back, this time with metadata. `work_email` is classified `public`, on the argument that a work address is business information, and its description is empty. The second try adds a description and moves `crm.learners` to the analytics domain, which has no rules of its own:
 
-Example `global-and-domain-rules` (Python 3.12.15 · duckdb 2.0.0 · openlineage-python 1.55.0 · phonenumbers 9.0.43 · presidio-analyzer 2.2.366 · pyarrow 26.0.1 · pyiceberg 0.12.0 · pyyaml 6.0.3 · regopy 1.5.2 · sqlglot 30.33.0 · tldextract 5.4.0), passing in Edition 2026.11.30:
+Example `global-and-domain-rules` (Python 3.12.15 · duckdb 2.0.0 · openlineage-python 1.55.0 · phonenumbers 9.0.43 · presidio-analyzer 2.2.366 · pyarrow 26.0.1 · pyiceberg 0.12.0 · pyyaml 6.0.3 · regopy 1.5.2 · sqlglot 30.33.0 · tldextract 5.4.0), passing in Edition 2026.11.31:
 
 ```python
 """The platform's global rules and the crm domain's own rule, run on the CRM team's two tries at work_email: classified
@@ -543,7 +543,7 @@ On the platform, the decision not to act on a new finding is a waiver. A waiver 
 
 The CRM change needs two waivers. The first covers the unclassified column. The second covers, once the column is classified `personal`, the description it hasn't written yet. The team first asks for the second to run until the summer, then until Oct 31:
 
-Example `waived-findings` (Python 3.12.15 · duckdb 2.0.0 · openlineage-python 1.55.0 · phonenumbers 9.0.43 · presidio-analyzer 2.2.366 · pyarrow 26.0.1 · pyiceberg 0.12.0 · pyyaml 6.0.3 · regopy 1.5.2 · sqlglot 30.33.0 · tldextract 5.4.0), passing in Edition 2026.11.30:
+Example `waived-findings` (Python 3.12.15 · duckdb 2.0.0 · openlineage-python 1.55.0 · phonenumbers 9.0.43 · presidio-analyzer 2.2.366 · pyarrow 26.0.1 · pyiceberg 0.12.0 · pyyaml 6.0.3 · regopy 1.5.2 · sqlglot 30.33.0 · tldextract 5.4.0), passing in Edition 2026.11.31:
 
 ```python
 """Waivers on the CRM team's pull request: one for the unclassified work_email column, which coverage never allows;
@@ -626,7 +626,7 @@ On our judgment, a governance job is switched off more often than it breaks: tea
 
 The support team adds two columns to `support.tickets`: `callback_number`, classified `internal`, and `reply_email`, classified `public`. A team that wants values judged, not only names, then adds [chapter 3](#classify-columns-from-their-values)'s classification of the table to the job, by sample and by every row:
 
-Example `slow-check-every-row` (Python 3.12.15 · duckdb 2.0.0 · openlineage-python 1.55.0 · phonenumbers 9.0.43 · presidio-analyzer 2.2.366 · pyarrow 26.0.1 · pyiceberg 0.12.0 · pyyaml 6.0.3 · regopy 1.5.2 · sqlglot 30.33.0 · tldextract 5.4.0), passing in Edition 2026.11.30:
+Example `slow-check-every-row` (Python 3.12.15 · duckdb 2.0.0 · openlineage-python 1.55.0 · phonenumbers 9.0.43 · presidio-analyzer 2.2.366 · pyarrow 26.0.1 · pyiceberg 0.12.0 · pyyaml 6.0.3 · regopy 1.5.2 · sqlglot 30.33.0 · tldextract 5.4.0), passing in Edition 2026.11.31:
 
 ```python
 """The support team's pull request adds two columns to support.tickets, which coverage judges by their names and chapter
@@ -702,7 +702,7 @@ The sampled check reads 1,000 values and the every-row check reads 10,000. Both 
 
 A cautious team adds a check that treats every column named like an ID as personal data. The platform decided otherwise for the IDs it joins on: [chapter 2](#classify-pseudonymous-ids) classifies `learner_id` as `internal` and protects the table that resolves it. The check's findings are new, so each owning team waives them:
 
-Example `noisy-check-waivers` (Python 3.12.15 · duckdb 2.0.0 · openlineage-python 1.55.0 · phonenumbers 9.0.43 · presidio-analyzer 2.2.366 · pyarrow 26.0.1 · pyiceberg 0.12.0 · pyyaml 6.0.3 · regopy 1.5.2 · sqlglot 30.33.0 · tldextract 5.4.0), passing in Edition 2026.11.30:
+Example `noisy-check-waivers` (Python 3.12.15 · duckdb 2.0.0 · openlineage-python 1.55.0 · phonenumbers 9.0.43 · presidio-analyzer 2.2.366 · pyarrow 26.0.1 · pyiceberg 0.12.0 · pyyaml 6.0.3 · regopy 1.5.2 · sqlglot 30.33.0 · tldextract 5.4.0), passing in Edition 2026.11.31:
 
 ```python
 """A noisy check added to the job: every column named like an ID is personal. The platform decided otherwise for IDs
@@ -771,7 +771,7 @@ The waivers file grows from 0 waivers to 21, and the ID check shows `21 of 21 fi
 
 A support agent's entry goes into `governance/users.toml` with a quote missing. The same pull request changes `crm.learners.country` from text to a number, and it carries the CRM team's unclassified `work_email`:
 
-Example `broken-files-become-findings` (Python 3.12.15 · duckdb 2.0.0 · openlineage-python 1.55.0 · phonenumbers 9.0.43 · presidio-analyzer 2.2.366 · pyarrow 26.0.1 · pyiceberg 0.12.0 · pyyaml 6.0.3 · regopy 1.5.2 · sqlglot 30.33.0 · tldextract 5.4.0), passing in Edition 2026.11.30:
+Example `broken-files-become-findings` (Python 3.12.15 · duckdb 2.0.0 · openlineage-python 1.55.0 · phonenumbers 9.0.43 · presidio-analyzer 2.2.366 · pyarrow 26.0.1 · pyiceberg 0.12.0 · pyyaml 6.0.3 · regopy 1.5.2 · sqlglot 30.33.0 · tldextract 5.4.0), passing in Edition 2026.11.31:
 
 ```python
 """A pull request that breaks two files the job reads: a support agent added to the users file with a quote missing,

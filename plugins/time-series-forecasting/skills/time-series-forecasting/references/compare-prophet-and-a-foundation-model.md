@@ -3,13 +3,13 @@ title: "Time Series Forecasting"
 chapter: "Compare Prophet and a foundation model"
 chapter_id: compare-prophet-and-a-foundation-model
 book: time-series-forecasting
-edition: 2026.11.10
+edition: 2026.11.11
 verified: 2026-11-20
-edition_code: 6387-FADQ
+edition_code: 1RPH-3A4D
 canonical: https://rollingedition.com/time-series-forecasting/compare-prophet-and-a-foundation-model
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“Compare Prophet and a foundation model,” chapter 9 of Time Series Forecasting, Edition 2026.11.10, examples passed Nov 20, 2026. By Rolling Edition, https://rollingedition.com/time-series-forecasting/compare-prophet-and-a-foundation-model. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Compare Prophet and a foundation model,” chapter 9 of Time Series Forecasting, Edition 2026.11.11, examples passed Nov 20, 2026. By Rolling Edition, https://rollingedition.com/time-series-forecasting/compare-prophet-and-a-foundation-model. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Compare Prophet and a foundation model
 
@@ -21,9 +21,9 @@ Readers meet Prophet and neural forecasting models outside this book, each with 
 
 Prophet is the first model a reader tries beyond the baselines, so we test it first, and its assumptions decide where it can help.
 
-Prophet writes a series as a trend, plus Fourier seasonal terms, plus holiday effects, plus an error term. The authors describe it as a modular regression model whose parameters an analyst can read and adjust ([Taylor and Letham (2018)](https://doi.org/10.7287/peerj.preprints.3190v2)). By default the fit is a maximum a posteriori estimate, an optimisation rather than a set of sampled draws. The code of version 1.5.0 sets that default in its optimisation call (`models.py`, lines 165 and 172), and its `mcmc_samples` argument defaults to 0 (`forecaster.py`, line 144). Both are in the [Prophet source distribution for the pinned version](https://files.pythonhosted.org/packages/e3/5b/8f9e2387cefc8fab4071f9ece67d89793f3c13566d6349dd43e9d8a5a3e3/prophet-1.5.0.tar.gz). Each client gets its own fit, so Prophet does not learn from the other clients.
+Prophet writes a series as a trend, plus Fourier seasonal terms, plus holiday effects, plus an error term. The authors describe it as a modular regression model whose parameters an analyst can read and adjust ([Taylor and Letham (2018)](https://doi.org/10.7287/peerj.preprints.3190v2)). By default Prophet's fit is a maximum a posteriori estimate, an optimisation rather than a set of sampled draws. The code of version 1.5.0 sets that default in its optimisation call (`models.py`, lines 165 and 172), and its `mcmc_samples` argument defaults to 0 (`forecaster.py`, line 144). Both are in the [Prophet source distribution for the pinned version](https://files.pythonhosted.org/packages/e3/5b/8f9e2387cefc8fab4071f9ece67d89793f3c13566d6349dd43e9d8a5a3e3/prophet-1.5.0.tar.gz). Each client gets its own fit, so Prophet does not learn from the other clients.
 
-Prophet does several things well. It needs no interpolation of missing observations: the code drops rows whose `y` is missing before the fit (`forecaster.py`, line 1335). The clock-change hours are missing in the history by [the rule in Chapter 3](#mark-clock-change-hours-as-missing), so Prophet leaves them out without any extra code. It takes holidays as a table of dates and effects, and the table this chapter tests holds the Portuguese national holidays for 2013 and 2014. The authors report that, on their own series with default settings, Prophet had lower error than auto.arima, ETS, seasonal naive and TBATS ([Taylor and Letham (2018)](https://doi.org/10.7287/peerj.preprints.3190v2)). That result rests on their data, so we cite it as the authors' result and do not use it as evidence about this case.
+Prophet does several things well. It needs no interpolation of missing observations: the code drops rows whose `y` is missing before the fit (`forecaster.py`, line 1335). The clock-change hours are missing in the history by [the rule in Chapter 3](#mark-clock-change-hours-as-missing), so Prophet leaves them out without any extra code. Prophet takes holidays as a table of dates and effects, and the table this chapter tests holds the Portuguese national holidays for 2013 and 2014. The authors report that, on their own series with default settings, Prophet had lower error than auto.arima, ETS, seasonal naive and TBATS ([Taylor and Letham (2018)](https://doi.org/10.7287/peerj.preprints.3190v2)). That result rests on their data, so we cite it as the authors' result and do not use it as evidence about this case.
 
 Several defaults get in the way here. Yearly seasonality turns on only with at least 730 days of history (`forecaster.py`, line 1187), so it stays off with eight weeks. The default interval is 80%, not 95% (`forecaster.py`, line 145). It covers trend uncertainty and observation noise, not the seasonal pattern, unless the model is fitted with full sampling ([Prophet documentation](https://meta.github.io/prophet/docs/uncertainty_intervals.html)). Its coverage therefore makes a narrower claim than the word "interval" suggests. Prophet also assumes that the future trend changes as often, and by as much, as it did in the history ([Prophet documentation](https://meta.github.io/prophet/docs/uncertainty_intervals.html)). With eight weeks of history there is little to learn trend changes from, so in our reading that assumption carries most of the forecast.
 
@@ -37,7 +37,7 @@ The comparison uses the three standard cutoffs, at 00:00 on Dec 29, Dec 30 and D
 
 We chose the holiday table on decision windows, not on the standard cutoffs. The ordinary decision windows hold no holiday in their scored hours, so they cannot test a holiday table at all, while the holiday decision windows can. So the choice uses both kinds. A run with the table and one without it shows what the table does on those windows for `SUBSET8`: the [four ordinary days](#choose-on-decision-windows) and seven holidays, Apr 18, Apr 20, Apr 25, May 1, Jun 10, Aug 15 and Dec 8, 2014. All of them come before the held-out week, and none has Christmas Day in its history.
 
-Example `prophet-holiday-decision` (Python 3.13.16 · holidays 0.110.dev20261118063242 · lightgbm 4.7.0 · mlforecast 1.1.0 · numpy 2.5.5 · pandas 2.3.3 · prophet 1.5.0 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.10:
+Example `prophet-holiday-decision` (Python 3.13.16 · holidays 0.110.dev20261118063242 · lightgbm 4.7.0 · mlforecast 1.1.0 · numpy 2.5.5 · pandas 2.3.3 · prophet 1.5.0 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.11:
 
 ```python
 """Prophet with and without the Portuguese holiday table, on the eleven decision windows for SUBSET8 (B-9, B-10),
@@ -109,9 +109,9 @@ The standard cutoffs tell a different story, which we report without using it to
 
 Daily and weekly seasonality are on, and yearly is off. These are the choices Prophet makes for itself on eight weeks of hourly data: yearly needs at least 730 days, weekly at least two weeks, and daily at least two days of sub-daily data (`forecaster.py`, lines 1187, 1209 and 1223). We set them explicitly and did not tune them. The interval is 95%, set in code and printed as `Prophet interval level`, so coverage sits beside the recordings' 95% ranges. Prophet draws its interval samples from numpy's global generator, so the code sets the seed (`SEED`) before each predict. The fit itself is deterministic.
 
-Every model is scored on [the book's one MASE scale](#take-the-mase-scale-from-history): the seasonal naive error in sample, over every reading before Dec 29, 2014, with the clock-change hours masked. A MASE below 1 means the model's error on the scored hours is smaller than seasonal naive's in-sample error. Each client has its own scale, so a large client does not outweigh a small one. The next run fits Prophet for all thirty clients and scores it beside seasonal naive and the global model on this scale, which is the comparison every later result in the chapter uses.
+Every model is scored on [the book's one MASE scale](#take-the-mase-scale-from-history): the seasonal naive error in sample, over every reading before Dec 29, 2014, with the clock-change hours masked. A [MASE](#scale-errors-with-mase) below 1 means the model's error on the scored hours is smaller than seasonal naive's in-sample error. Each client has its own scale, so a large client does not outweigh a small one. The next run fits Prophet for all thirty clients and scores it beside seasonal naive and the global model on this scale, which is the comparison every later result in the chapter uses.
 
-Example `prophet-thirty-clients-backtest` (Python 3.13.16 · holidays 0.110.dev20261118063242 · lightgbm 4.7.0 · mlforecast 1.1.0 · numpy 2.5.5 · pandas 2.3.3 · prophet 1.5.0 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.10:
+Example `prophet-thirty-clients-backtest` (Python 3.13.16 · holidays 0.110.dev20261118063242 · lightgbm 4.7.0 · mlforecast 1.1.0 · numpy 2.5.5 · pandas 2.3.3 · prophet 1.5.0 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.11:
 
 ```python
 """Prophet for each of the thirty clients on the three standard cutoffs, with a 95% interval, scored on the book's MASE
@@ -197,7 +197,7 @@ Pooled over every scored hour, Prophet's RMSE is 764.88 kWh, against 780.48 for 
 
 Prophet fits each client from its own eight weeks. A foundation model brings what it learned from other series, and this section shows how the book holds its forecasts.
 
-A foundation model is trained once on many series and then applied to a context, with no fitting on that series. Chronos-2 is one such model. It is an encoder-only transformer that takes a context of past values and outputs quantiles for the next steps ([Ansari et al. (2025)](https://arxiv.org/abs/2510.15821); the earlier Chronos model is described in [Ansari et al. (2024)](https://arxiv.org/abs/2403.07815)). Its weights are published as `amazon/chronos-2` on Hugging Face under the Apache-2.0 licence, not gated ([model card](https://huggingface.co/amazon/chronos-2)).
+A foundation model is trained once on many series and then applied to a context, with no fitting on that series. Chronos-2 is one such model. Chronos-2 is an encoder-only transformer that takes a context of past values and outputs quantiles for the next steps ([Ansari et al. (2025)](https://arxiv.org/abs/2510.15821); the earlier Chronos model is described in [Ansari et al. (2024)](https://arxiv.org/abs/2403.07815)). Its weights are published as `amazon/chronos-2` on Hugging Face under the Apache-2.0 licence, not gated ([model card](https://huggingface.co/amazon/chronos-2)).
 
 Its pretraining covers this dataset, which limits how far its score can be read. The Chronos-2 report lists the electricity dataset in its pretraining corpus. Appendix A, Table 6 gives "Electricity", with 370 series in the energy domain ([Ansari et al. (2025)](https://arxiv.org/abs/2510.15821)). Those series match the UCI ElectricityLoadDiagrams20112014 dataset the book reads, and the book's thirty clients are drawn from them. The report notes partial overlap with some GIFT-Eval training portions. For strictly zero-shot results it points to a variant trained only on synthetic data, in its Section 5.4. We have not run that variant. The report does not show which readings of these clients the model saw, so the scores below are upper bounds, not out-of-sample results.
 
@@ -211,7 +211,7 @@ Not every requested quantile is trained. The package is trained on 21 levels, fr
 
 Before any score reads the recording, run the check. It hashes each output and compares it with `manifest.json`, counts the rows, clients and cutoffs in the forecast file, and looks for quantiles that run out of order.
 
-Example `recorded-chronos2-check` (Python 3.13.16 · holidays 0.110.dev20261118063242 · lightgbm 4.7.0 · mlforecast 1.1.0 · numpy 2.5.5 · pandas 2.3.3 · prophet 1.5.0 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.10:
+Example `recorded-chronos2-check` (Python 3.13.16 · holidays 0.110.dev20261118063242 · lightgbm 4.7.0 · mlforecast 1.1.0 · numpy 2.5.5 · pandas 2.3.3 · prophet 1.5.0 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.11:
 
 ```python
 """Checks the recorded Chronos-2 outputs before any score reads them: each file's SHA-256 against manifest.json, the
@@ -250,11 +250,11 @@ A later edition can run Chronos-2 live once its weights and package fit the rele
 
 The recordings mean something only when they are scored on the same hours as Prophet and the baselines.
 
-A forecast with five quantiles can be scored in two ways. The median, the 0.5 quantile, is a point forecast, scored with MASE on the book's scale. The 0.1 and 0.9 quantiles form an 80% range, and the 0.025 and 0.975 quantiles form a 95% range. Each range is scored by coverage, the share of readings inside it, and by the interval score, which adds the width to a penalty for each reading outside it. The penalty is 2 divided by the nominal miss rate, 0.05 for a 95% range, times the distance outside. [Chapter 8](#calibrate-on-earlier-windows) defines the interval score with its source. Each quantile is also scored by its quantile loss, which charges tau for each kWh a reading falls above the quantile and one minus tau for each kWh below it ([Chapter 8](#choose-the-level-from-the-cost-of-error)).
+A forecast with five quantiles can be scored in two ways. The median, the 0.5 quantile, is a point forecast, scored with MASE on the book's scale. The 0.1 and 0.9 quantiles form an 80% range, and the 0.025 and 0.975 quantiles form a 95% range. Each range is scored by [coverage](#why-one-number-is-not-enough), the share of readings inside it, and by the [interval score](#calibrate-on-earlier-windows), which adds the width to a penalty for each reading outside it. The penalty is 2 divided by the nominal miss rate, 0.05 for a 95% range, times the distance outside. [Chapter 8](#calibrate-on-earlier-windows) defines the interval score with its source. Each quantile is also scored by its [quantile loss](#choose-the-level-from-the-cost-of-error), which charges tau for each kWh a reading falls above the quantile and one minus tau for each kWh below it ([Chapter 8](#choose-the-level-from-the-cost-of-error)).
 
 Two examples score the recordings, one for each model, on the same thirty clients, cutoffs and MASE scale as [the Prophet run](#run-prophet-on-the-same-cutoffs). Each rebuilds the global model and seasonal naive instead of copying them from [Chapter 6](#score-thirty-clients-on-the-same-cutoffs), so every model goes through one scoring path.
 
-Example `recorded-chronos2-score` (Python 3.13.16 · holidays 0.110.dev20261118063242 · lightgbm 4.7.0 · mlforecast 1.1.0 · numpy 2.5.5 · pandas 2.3.3 · prophet 1.5.0 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.10:
+Example `recorded-chronos2-score` (Python 3.13.16 · holidays 0.110.dev20261118063242 · lightgbm 4.7.0 · mlforecast 1.1.0 · numpy 2.5.5 · pandas 2.3.3 · prophet 1.5.0 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.11:
 
 ```python
 """Scores the recorded Chronos-2 forecasts on the three standard cutoffs and the MASE scale of the other models: the
@@ -322,7 +322,7 @@ coverage 95 Chronos: 0.944
 interval score 95 Chronos: 958.19
 ```
 
-Example `recorded-nhits-score` (Python 3.13.16 · holidays 0.110.dev20261118063242 · lightgbm 4.7.0 · mlforecast 1.1.0 · numpy 2.5.5 · pandas 2.3.3 · prophet 1.5.0 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.10:
+Example `recorded-nhits-score` (Python 3.13.16 · holidays 0.110.dev20261118063242 · lightgbm 4.7.0 · mlforecast 1.1.0 · numpy 2.5.5 · pandas 2.3.3 · prophet 1.5.0 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.11:
 
 ```python
 """Scores the recorded NHITS forecasts on the same three cutoffs and MASE scale as Chronos-2 and the other models: the
@@ -426,7 +426,7 @@ NHITS is a neural forecaster from the neuralforecast library, which packages neu
 
 NHITS gets the same check, against the hashes in its own manifest.
 
-Example `recorded-nhits-check` (Python 3.13.16 · holidays 0.110.dev20261118063242 · lightgbm 4.7.0 · mlforecast 1.1.0 · numpy 2.5.5 · pandas 2.3.3 · prophet 1.5.0 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.10:
+Example `recorded-nhits-check` (Python 3.13.16 · holidays 0.110.dev20261118063242 · lightgbm 4.7.0 · mlforecast 1.1.0 · numpy 2.5.5 · pandas 2.3.3 · prophet 1.5.0 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.11:
 
 ```python
 """Checks the recorded NHITS outputs before any score reads them: each file's SHA-256 against manifest.json, the shape

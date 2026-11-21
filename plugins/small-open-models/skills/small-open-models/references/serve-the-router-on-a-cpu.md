@@ -3,13 +3,13 @@ title: "Small Open Models"
 chapter: "Serve the router on a CPU, with the hand-off inside the route"
 chapter_id: serve-the-router-on-a-cpu
 book: small-open-models
-edition: 2026.11.8
+edition: 2026.11.9
 verified: 2026-11-20
-edition_code: HZX4-S3DE
+edition_code: ND0S-78AT
 canonical: https://rollingedition.com/small-open-models/serve-the-router-on-a-cpu
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“Serve the router on a CPU, with the hand-off inside the route,” chapter 8 of Small Open Models, Edition 2026.11.8, examples passed Nov 20, 2026. By Rolling Edition, https://rollingedition.com/small-open-models/serve-the-router-on-a-cpu. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Serve the router on a CPU, with the hand-off inside the route,” chapter 8 of Small Open Models, Edition 2026.11.9, examples passed Nov 20, 2026. By Rolling Edition, https://rollingedition.com/small-open-models/serve-the-router-on-a-cpu. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Serve the router on a CPU, with the hand-off inside the route
 
@@ -31,7 +31,7 @@ The route calls the classifier once per request. One forward pass gives the team
 
 Each message of `test_40`, a [fixed sample](measure-the-routing-task#dev-test-and-fixed-samples) of 40 that the book uses for quick checks, goes to the route, and the test counts the flags and the teams. It prints counts and never the text of a message.
 
-Example `serve-route-testclient` (Python 3.12.15 · fastapi 0.163.2 · peft 0.21.3 · pydantic 2.14.4 · torch 2.15.0+cpu · torchao 0.18.0+cpu · transformers 5.23.0), passing in Edition 2026.11.8:
+Example `serve-route-testclient` (Python 3.12.15 · fastapi 0.163.2 · peft 0.21.3 · pydantic 2.14.4 · torch 2.15.0+cpu · torchao 0.18.0+cpu · transformers 5.23.0), passing in Edition 2026.11.9:
 
 ```python
 """Send the test_40 messages to the one POST /route through TestClient, in process, and print counts that tie the
@@ -110,7 +110,7 @@ The route test builds the app once and sends all 40 messages to that one app, so
 
 Threads are the other setting that belongs at startup. `make_app` takes the thread count as its `threads` argument, which defaults to two, and it calls `torch.set_num_threads` with that count before it loads the model. So every process that builds the app sets its threads before the first model call. The PyTorch documentation says the call sets the intra-op thread count on the CPU, and that "set_num_threads must be called before running eager, JIT or autograd code" if the count is to hold ([torch 2.15.0+cpu documentation](https://docs.pytorch.org/docs/2.15/generated/torch.set_num_threads.html)).
 
-The setting covers the threads used inside one operation, the intra-op threads the documentation names. Two threads is the book's choice, not a measured best. The book's examples have a budget of two vCPUs, so the book sets two threads for them, and a reader on a different machine should choose a count and measure it. The choice is labelled as the book's, because no output in this chapter compares one thread count with another.
+The `set_num_threads` setting covers the threads used inside one operation, the intra-op threads the documentation names. Two threads is the book's choice, not a measured best. The book's examples have a budget of two vCPUs, so the book sets two threads for them, and a reader on a different machine should choose a count and measure it. The choice is labelled as the book's, because no output in this chapter compares one thread count with another.
 
 **Working rule:** Build the app once per process, with the thread count that process should use, and before the first request. On a two-vCPU budget, as this book uses, keep the default of two threads, and choose another count only after you have measured your own machine with your own messages.
 
@@ -122,7 +122,7 @@ The second kind of request is a message too long to read in full. The model read
 
 A shorter cut, at 64 tokens, is a common choice, and the count below shows what it would touch on the test sample of 200 messages, the sample that [chapter 5](fine-tune-with-lora) compared models on. The example prints how many of the 200 messages are longer than each cut. Only the tokenizer loads here, and no model runs.
 
-Example `truncation-count` (Python 3.12.15 · torch 2.15.0+cpu · transformers 5.23.0), passing in Edition 2026.11.8:
+Example `truncation-count` (Python 3.12.15 · torch 2.15.0+cpu · transformers 5.23.0), passing in Edition 2026.11.9:
 
 ```python
 """Count the test_200 messages over 64 tokens and over the 128 that classify() cuts at, then show the cut on one long

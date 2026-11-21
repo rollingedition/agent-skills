@@ -3,13 +3,13 @@ title: "Model Context Protocol in Practice"
 chapter: "Ask the user in the middle of a call"
 chapter_id: multi-round-trip-requests
 book: model-context-protocol-in-practice
-edition: 2026.11.13
+edition: 2026.11.14
 verified: 2026-11-19
-edition_code: P21J-Z4WN
+edition_code: VS53-BS53
 canonical: https://rollingedition.com/model-context-protocol-in-practice/multi-round-trip-requests
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“Ask the user in the middle of a call,” chapter 5 of Model Context Protocol in Practice, Edition 2026.11.13, examples passed Nov 19, 2026. By Rolling Edition, https://rollingedition.com/model-context-protocol-in-practice/multi-round-trip-requests. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Ask the user in the middle of a call,” chapter 5 of Model Context Protocol in Practice, Edition 2026.11.14, examples passed Nov 19, 2026. By Rolling Edition, https://rollingedition.com/model-context-protocol-in-practice/multi-round-trip-requests. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Ask the user in the middle of a call
 
@@ -17,7 +17,7 @@ By the end of this chapter you can make the shop's refund tool stop in the middl
 
 At [the shop](#the-shop), where refunds come in as tickets for the support team's host, the refund policy requires a support lead to confirm any refund above €150.00 before it's issued. The shop's API enforces that limit by holding such a refund with the status `needs_confirmation`. In [Design tools a model can use](#design-tools), the `issue_refund` tool passes that hold back to the model and stops there, so a refund the model was right to make waits until someone finds it in the back office.
 
-The person who could confirm the refund is already at the host, reading the conversation. The tool needs a way to put one question to that person in the middle of the call and carry on with the answer. The Model Context Protocol (MCP) has a name for that, **elicitation**: a structured question that a server sends and the client shows the user. At the pinned revision, the question travels inside a **Multi Round-Trip Request**. The server answers the call with an **input request** instead of a result, and the client calls again with the answer.
+The person who could confirm the refund is already at the host, reading the conversation. The tool needs a way to put one question to that person in the middle of the call and carry on with the answer. The Model Context Protocol (MCP) has a name for that, **elicitation**: a structured question that a server sends and the client shows the user. At the pinned revision, the question travels inside a **Multi Round-Trip Request**, a pattern in which one call can end with a question instead of a result. The server answers the call with an **input request** instead of a result, and the client calls again with the answer.
 
 Each server example in this chapter runs itself, as the earlier chapters' examples do. Run with no arguments, the file starts a client, and that client launches the same file with `--serve` over stdio. The shop's API runs on loopback beside them.
 
@@ -25,13 +25,13 @@ Each server example in this chapter runs itself, as the earlier chapters' exampl
 
 Before the pinned revision, a server that needed the user's input sent its own request to the client, `elicitation/create`, and waited for the reply while the tool call stayed open. The pinned revision removed that pattern. The specification says servers MUST send their requests to the client, `elicitation/create` among them, through the Multi Round-Trip Request pattern. It calls the old pattern a breaking change that is no longer supported ([Multi Round-Trip Requests](https://modelcontextprotocol.io/specification/2026-07-28/basic/patterns/mrtr)). Elicitation is one of the requests this chapter uses, and it isn't deprecated. The other two, `sampling/createMessage` and `roots/list`, are deprecated, and [Replace sampling, roots and logging](#replace-deprecated-features) gives their replacements: a direct call to a model provider's API, and tool parameters, resource URIs or server configuration ([deprecated features](https://modelcontextprotocol.io/specification/2026-07-28/deprecated)).
 
-The reason is statelessness. At the pinned revision there's no handshake and no session, and each request carries its own version and capabilities in `_meta` ([Carry the version and capabilities on every request](#request-meta)). A request that waits on a reply from the client ties one server process to one open connection for as long as a person takes to answer. The specification's aim is a server that can ask for input without a shared storage layer across server instances or stateful load balancing ([Multi Round-Trip Requests](https://modelcontextprotocol.io/specification/2026-07-28/basic/patterns/mrtr)). The proposal behind the change, SEP-2322, says that Streamable HTTP then depends less on long-lived streams, which cause problems in many environments ([SEP-2322](https://modelcontextprotocol.io/seps/2322-MRTR)).
+The reason is statelessness. At the pinned revision there's no handshake and no session, and each request carries its own version and capabilities in `_meta` ([Carry the version and capabilities on every request](#request-meta)). A request that waits on a reply from the client ties one server process to one open connection for as long as a person takes to answer. The specification's aim is a server that can ask for input without a shared storage layer across server instances or stateful load balancing ([Multi Round-Trip Requests](https://modelcontextprotocol.io/specification/2026-07-28/basic/patterns/mrtr)). The proposal behind the change, SEP-2322, says that [Streamable HTTP](#streamable-http) then depends less on long-lived streams, which cause problems in many environments ([SEP-2322](https://modelcontextprotocol.io/seps/2322-MRTR)).
 
 The Python SDK still offers the old call. `ctx.elicit()` sends `elicitation/create` as a request from the server, and on a connection at the pinned revision it fails with `NoBackChannelError`, an Invalid Request error, because the protocol forbids server-initiated requests there (`mcp/shared/transport_context.py`, `mcp/shared/exceptions.py`).
 
 The first attempt at a confirmation is written that way. Its server takes chapter 3's tools from a shared module, `lib.confirmations`, which holds what this chapter's servers have in common: those tools, the key that protects round-trip state, and a record of answers already used. Its `issue_refund` calls chapter 3's version, which posts the refund to the shop's API. If the API holds the refund, the tool calls `ctx.elicit()` and waits. The client has an elicitation callback that plays a scripted user, who would release the refund if asked. The client quotes order O-2289, whose whole refund is above the limit, and calls `issue_refund`.
 
-Example `refund-needs-confirmation` (Python 3.12.15 · cryptography 50.0.2 · httpx2 2.16.2 · jsonschema 4.26.0 · mcp 2.3.0 · mcp-types 2.3.0 · pydantic 2.14.3 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.13:
+Example `refund-needs-confirmation` (Python 3.12.15 · cryptography 50.0.2 · httpx2 2.16.2 · jsonschema 4.26.0 · mcp 2.3.0 · mcp-types 2.3.0 · pydantic 2.14.3 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.14:
 
 ```python
 """The 2025 way to confirm a refund, which fails at revision 2026-07-28: issue_refund calls ctx.elicit() and waits,
@@ -111,7 +111,7 @@ Three rules limit what a server may ask, and when. Only `tools/call`, `prompts/g
 
 The server passes `request_state_security=` to `MCPServer`, with the policy that `confirmations.state_security()` builds, so that several replicas can later share one key. In these examples that policy is the SDK's default, a key made when the process starts. A client declares elicitation by passing a callback, and calls the tool through `client.session.call_tool(..., allow_input_required=True)`, which hands back the input request instead of answering it.
 
-Example `refund-asks-to-confirm` (Python 3.12.15 · cryptography 50.0.2 · httpx2 2.16.2 · jsonschema 4.26.0 · mcp 2.3.0 · mcp-types 2.3.0 · pydantic 2.14.3 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.13:
+Example `refund-asks-to-confirm` (Python 3.12.15 · cryptography 50.0.2 · httpx2 2.16.2 · jsonschema 4.26.0 · mcp 2.3.0 · mcp-types 2.3.0 · pydantic 2.14.3 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.14:
 
 ```python
 """issue_refund answers a held refund with an input request instead of a result, which asks a person to confirm it.
@@ -196,7 +196,7 @@ The second round is where a lead's yes becomes a refund. The tool from [the prev
 
 The loop runs twice, once by hand and once through the SDK. The file launches the server through `lib.wire`, the book's relay that records every JSON-RPC message, and plays the lead with a scripted answer. For order O-2289 it drives the loop by hand: one call, then one retry carrying the answer and the state. For order O-1145 it calls `Client.call_tool`, with an elicitation callback that prints the question and answers yes.
 
-Example `refund-confirmed-round-trip` (Python 3.12.15 · cryptography 50.0.2 · httpx2 2.16.2 · jsonschema 4.26.0 · mcp 2.3.0 · mcp-types 2.3.0 · pydantic 2.14.3 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.13:
+Example `refund-confirmed-round-trip` (Python 3.12.15 · cryptography 50.0.2 · httpx2 2.16.2 · jsonschema 4.26.0 · mcp 2.3.0 · mcp-types 2.3.0 · pydantic 2.14.3 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.14:
 
 ```python
 """Finish the refund that refund-asks-to-confirm asks about, by retrying with the answer and the echoed requestState:
@@ -271,7 +271,7 @@ A retry repeats the original request, so it isn't a fresh tool call. In the SDK,
 
 ## Ask for structured input with elicitation {#elicitation-forms}
 
-The confirmation in [the previous section](#resume-with-the-answer) asks one yes-or-no question, and elicitation can ask for more. It has two modes ([elicitation](https://modelcontextprotocol.io/specification/2026-07-28/client/elicitation)). In **form mode**, the server sends a message and a schema, the client renders a form, and the answer returns through the client. In **URL mode**, which [the next subsection](#url-elicitation) covers, the server sends the user to a web page instead.
+The confirmation in [the previous section](#resume-with-the-answer) asks one yes-or-no question, and elicitation can ask for more. It has two modes ([elicitation](https://modelcontextprotocol.io/specification/2026-07-28/client/elicitation)). In **form mode**, the server sends a message and a schema, the client renders a form, and the answer returns through the client. In **URL mode**, the server sends the user to a web page, not a form ([the next subsection](#url-elicitation)).
 
 A form's schema is a flat object with primitive properties only: strings, including the formats `email`, `uri`, `date` and `date-time`; numbers and integers; booleans; and single- or multiple-choice enums. Any of these can carry a `default`. The user answers `accept` with the content, `decline` for an explicit no, or `cancel` for a dismissed form. Servers MUST handle both refusals. The client MUST show which server is asking, offer decline and cancel, and let the user review a form before it's sent ([elicitation](https://modelcontextprotocol.io/specification/2026-07-28/client/elicitation); [Answer input requests for the user](#answer-input-requests)).
 
@@ -279,7 +279,7 @@ The SDK offers a shorter route. A tool parameter declared as `Annotated[T, Resol
 
 Only the person who opens a returned parcel knows whether the item inside arrived damaged or wrong, and whether it can go back on sale. The policy's reason also decides whether shipping is refunded. The tool `record_return` asks with a resolver, for the line of KG-1043 on order O-1145. The form has three fields: `reason`, one of the refund policy's five reasons; `restock`, a boolean; and an optional free-text `note` of at most 200 characters. A scripted user accepts, declines, then cancels, and a client without a callback calls last.
 
-Example `elicit-a-refund-reason` (Python 3.12.15 · mcp 2.3.0 · pydantic 2.14.3), passing in Edition 2026.11.13:
+Example `elicit-a-refund-reason` (Python 3.12.15 · mcp 2.3.0 · pydantic 2.14.3), passing in Edition 2026.11.14:
 
 ```python
 """record_return asks the person who opened a returned parcel what they found, through a form that a resolver builds
@@ -369,7 +369,7 @@ URL mode isn't how a client gets authorized to an MCP server; [Find the authoriz
 
 Paying out comes after a release. `pay_refund` pays a released refund, one with status `requested`, back to the order's card, and the provider pays only under a lead's own account, signed in on the provider's page. The tool makes a random ID for the flow, puts it in `requestState`, and sends the lead to `https://pay.fernhill.example/connect/` followed by that ID, on a reserved domain that never resolves. An in-memory set stands in for the provider's record of finished flows, and the example adds this flow before the third call.
 
-Example `elicit-by-url` (Python 3.12.15 · cryptography 50.0.2 · httpx2 2.16.2 · jsonschema 4.26.0 · mcp 2.3.0 · mcp-types 2.3.0 · pydantic 2.14.3 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.13:
+Example `elicit-by-url` (Python 3.12.15 · cryptography 50.0.2 · httpx2 2.16.2 · jsonschema 4.26.0 · mcp 2.3.0 · mcp-types 2.3.0 · pydantic 2.14.3 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.14:
 
 ```python
 """pay_refund sends the support lead to the payment provider's page to connect an account, through URL mode, so the
@@ -450,7 +450,7 @@ A replayed confirmation would mean a second release of money, so the tool has to
 4. as an honest retry;
 5. as the same honest retry, sent a second time.
 
-Example `tampered-round-trip-state` (Python 3.12.15 · cryptography 50.0.2 · httpx2 2.16.2 · jsonschema 4.26.0 · mcp 2.3.0 · mcp-types 2.3.0 · pydantic 2.14.3 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.13:
+Example `tampered-round-trip-state` (Python 3.12.15 · cryptography 50.0.2 · httpx2 2.16.2 · jsonschema 4.26.0 · mcp 2.3.0 · mcp-types 2.3.0 · pydantic 2.14.3 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.14:
 
 ```python
 """Send issue_refund's retry wrongly, then rightly, then again: a changed requestState, an answer with no state, and a
@@ -531,7 +531,7 @@ This is a rule of thumb, not a measurement. If the model can read the value from
 
 A `confirmed` argument on `issue_refund` would let the model confirm its own refund, a decision the refund policy keeps for a person. The order ID goes the other way. Asking the lead to retype an ID the customer already wrote adds a step and a chance for a typo, and the model can read the ID. When a value could come from either place, take the argument and let the tool check it, as chapter 3's tools check every ID's format.
 
-Elicitation is the server asking the user through the host. It isn't the host's own **consent**, the step where the host asks the user before a tool with side effects runs, which [Ask for consent before side effects](#consent-before-side-effects) builds. The shop's confirmation is the server's own check, and a careful host still asks before it calls `issue_refund` at all.
+Elicitation is the server asking the user through the host. It isn't the host's own **[consent](#tasks-not-endpoints)**, the step where the host asks the user before a tool with side effects runs, which [Ask for consent before side effects](#consent-before-side-effects) builds. The shop's confirmation is the server's own check, and a careful host still asks before it calls `issue_refund` at all.
 
 **Working rule:** Make a value a tool argument when the model can know it, and validate it in the tool. Elicit it when only the person can give it, or when the policy says a person must decide, and never accept that kind of value as an argument. Use URL mode for every secret. When you aren't sure, ask who would be at fault if the value were wrong.
 

@@ -3,19 +3,19 @@ title: "Language Models from the Ground Up"
 chapter: "The transformer block"
 chapter_id: the-transformer-block
 book: language-models-from-the-ground-up
-edition: 2026.11.15
+edition: 2026.11.16
 verified: 2026-11-19
-edition_code: ST86-2YTJ
+edition_code: FY8Q-PVVV
 canonical: https://rollingedition.com/language-models-from-the-ground-up/the-transformer-block
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“The transformer block,” chapter 7 of Language Models from the Ground Up, Edition 2026.11.15, examples passed Nov 19, 2026. By Rolling Edition, https://rollingedition.com/language-models-from-the-ground-up/the-transformer-block. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“The transformer block,” chapter 7 of Language Models from the Ground Up, Edition 2026.11.16, examples passed Nov 19, 2026. By Rolling Edition, https://rollingedition.com/language-models-from-the-ground-up/the-transformer-block. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # The transformer block
 
 By the end of this chapter you can assemble a transformer block from its parts, joined by residual connections: attention, normalization, a gated feed-forward layer and position information. You can then stack blocks into a complete language model. You'll check each part on the store's trained model, check the whole model against PyTorch's own implementations, measure what each block and each detail contributes, and count where the parameters go.
 
-[Chapter 6](#attention) built attention: each position looks back at earlier ones and takes a weighted average of what it finds. Attention alone isn't a language model, and the store, an online furniture and home-goods shop, needs more than attention. It moves information between positions but transforms little of it, and it has almost no sense of word order. Layers of it stacked directly also degrade: without the other parts of a block, the output of pure attention tends towards the same vector at every position, faster with every layer ([Dong et al., 2021](https://arxiv.org/abs/2103.03404)). The **transformer block** adds the parts that fix those problems around attention ([Vaswani et al., 2017](https://arxiv.org/abs/1706.03762)).
+[Chapter 6](#attention) built attention: each position looks back at earlier ones and takes a weighted average of what it finds. Attention alone isn't a language model, and the store, an online furniture and home-goods shop, needs more than attention. It moves information between positions but transforms little of it, and it has almost no sense of word order. Layers of it stacked directly also degrade: without the other parts of a block, the output of pure attention tends towards the same vector at every position, faster with every layer ([Dong et al., 2021](https://arxiv.org/abs/2103.03404)). The **transformer block** adds parts around attention that transform each position, give it word order and keep a deep stack from degrading ([Vaswani et al., 2017](https://arxiv.org/abs/1706.03762)).
 
 This chapter builds the block in the form the LLaMA models popularized: normalization of each part's input with RMSNorm, a gated feed-forward layer and rotary position embeddings in every layer ([Touvron et al., 2023](https://arxiv.org/abs/2302.13971), section 2.2). SmolLM2, whose tokenizer [chapter 2](#read-an-open-tokenizer) read, is built the same way. Its 360-million-parameter model has 960 dimensions, 32 layers and 15 heads, and differs from the store's model in two details covered below: its heads share keys and values, and its rotary positions turn more slowly ([configuration](https://huggingface.co/HuggingFaceTB/SmolLM2-360M/blob/f8027fd0eaeea54caa13c31d31b9fdc459c38b49/config.json)).
 
@@ -26,13 +26,13 @@ The store's model, trained on the store's product text, is 4 of these blocks bet
 
 ## Add each part's output to a residual stream {#add-to-the-residual-stream}
 
-In [chapter 5](#a-neural-language-model)'s [window model](#predict-from-a-window), each layer replaced its input: the hidden layer's output was all the output layer saw. A transformer block adds to its input instead. Each part computes something from the current vector and adds its output to it: x ← x + attention(x), then x ← x + feed-forward(x). That's a **residual connection**. It comes from image models, where very deep stacks of layers trained well only once each layer added to its input instead of replacing it ([He et al., 2016](https://arxiv.org/abs/1512.03385)).
+In [chapter 5](#a-neural-language-model)'s [window model](#predict-from-a-window), each layer replaced its input: the hidden layer's output was all the output layer saw. A transformer block adds to its input instead. Each part computes something from the current vector and adds its output to it: x ← x + attention(x), then x ← x + feed-forward(x). Adding a part's output to its input, instead of replacing the input, is a **residual connection**. It comes from image models, where very deep stacks of layers trained well only once each layer added to its input instead of replacing it ([He et al., 2016](https://arxiv.org/abs/1512.03385)).
 
-Two consequences follow. With the additions, the signal can pass "directly from one block to any other block", forwards and, as [gradients](#compute-gradients), backwards, so a deep stack trains far more reliably than it would without them ([He et al., 2016b](https://arxiv.org/abs/1603.05027)). And every position's vector becomes a shared workspace that each part reads from and writes to: the token's embedding goes in at the bottom, each part adds what it computes, and the output layer reads the sum at the top. Elhage and colleagues call this running sum the **residual stream** ([Elhage et al., 2021](https://transformer-circuits.pub/2021/framework/index.html)).
+Two consequences follow. With the additions, the signal can pass "directly from one block to any other block", forwards and, as [gradients](#compute-gradients), backwards, so a deep stack trains far more reliably than it would without them ([He et al., 2016b](https://arxiv.org/abs/1603.05027)). And every position's vector becomes a shared workspace that each part reads from and writes to: the token's embedding goes in at the bottom, each part adds what it computes, and the output layer reads the sum at the top. Elhage and colleagues call this running sum, each position's vector with every part's output added to it, the **residual stream** ([Elhage et al., 2021](https://transformer-circuits.pub/2021/framework/index.html)).
 
-Run the store's model on one validation product and, at every layer, measure the length of what attention adds, of what the feed-forward layer adds, and of the vectors after both additions, averaged over positions. A vector's length here is the square root of the sum of its squared numbers:
+Run the store's model on one validation product and, at every layer, measure the length of what attention adds, of what the [feed-forward layer](#transform-each-position) adds, and of the vectors after both additions, averaged over positions. A vector's length here is the square root of the sum of its squared numbers:
 
-Example `residual-stream` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1), passing in Edition 2026.11.15:
+Example `residual-stream` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1), passing in Edition 2026.11.16:
 
 ```python
 """Runs the store's model on one validation product, one block at a time, and prints how much attention and the
@@ -87,7 +87,7 @@ where ε is a tiny number, 10⁻⁵ here, that keeps the division safe, and g is
 
 Normalize the stream of the same validation product by hand at both ends of the model, entering the first block and leaving the last, with the gain left at 1, and compare every position's vector with `lib.transformer.rms_norm`:
 
-Example `rms-norm-by-hand` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1), passing in Edition 2026.11.15:
+Example `rms-norm-by-hand` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1), passing in Edition 2026.11.16:
 
 ```python
 """Normalizes one validation product's residual stream by hand, entering the first block and leaving the last, and
@@ -135,7 +135,7 @@ So though the stream grew many times longer across the layers, every attention a
 
 Attention moves information between positions; the **feed-forward layer** transforms it, at each position separately. It's the same idea as [chapter 5](#a-neural-language-model)'s [hidden layer](#predict-from-a-window): widen the vector, apply a function that isn't a straight line, and narrow the result back to the stream's width. The store's model widens 128 numbers to 352.
 
-The form the LLaMA models use is **gated**. It computes two widened vectors from the input, passes one through a function called SiLU, and multiplies the two number by number, so the first decides how much of the second gets through ([Shazeer, 2020](https://arxiv.org/abs/2002.05202)):
+The form the LLaMA models use is **gated**. A gated feed-forward layer computes two widened vectors from the input, passes one through a function called SiLU, and multiplies the two number by number, so the first decides how much of the second gets through ([Shazeer, 2020](https://arxiv.org/abs/2002.05202)):
 
 FFN(x) = (SiLU(x W_gate) ⊙ (x W_up)) W_down
 
@@ -143,7 +143,7 @@ where ⊙ multiplies number by number, and SiLU(z) = z · σ(z), with σ the log
 
 What does the gate shut? Compute SiLU at three points, then run the first block's real feed-forward layer on the same validation product and count, at each position, how many of its hidden units the gate nearly shuts:
 
-Example `gated-feed-forward` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1), passing in Edition 2026.11.15:
+Example `gated-feed-forward` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1), passing in Edition 2026.11.16:
 
 ```python
 """Computes SiLU at three points, then runs block 1's feed-forward layer on one validation product and counts the hidden
@@ -189,11 +189,11 @@ Which units the gate shuts depends on the input. At a typical position it nearly
 
 The feed-forward layers hold most of a block's parameters: in the store's model, three matrices of 128 by 352, against attention's four of 128 by 128. Geva and colleagues found that in trained models these layers work like stores of patterns: each hidden unit responds to particular patterns in the text, and pushes the prediction towards particular next tokens ([Geva et al., 2021](https://arxiv.org/abs/2012.14913)).
 
-**Working rule:** Use a gated feed-forward layer with SiLU. Set its width so its three matrices hold as many parameters as a plain layer four times the stream's width, the original transformer's ratio, 2,048 for 512 ([Vaswani et al., 2017](https://arxiv.org/abs/1706.03762), section 3.3): that's about 8/3 times the width. SmolLM2-360M uses exactly 8/3, 2,560 for 960. The store's model rounds 8/3 of its width up to a multiple of 32, a rule of thumb that keeps matrix sizes convenient for hardware. When you load another model, check whether its feed-forward layer is gated, since a gated layer has three matrices where a plain one has two.
+**Working rule:** Use a gated feed-forward layer with SiLU. Set its width so its three matrices hold as many parameters as a plain layer four times the stream's width, the original transformer's ratio, 2,048 for 512 ([Vaswani et al., 2017](https://arxiv.org/abs/1706.03762), section 3.3): that's about 8/3 times the width. [SmolLM2-360M](#inside-an-open-model) uses exactly 8/3, 2,560 for 960. The store's model rounds 8/3 of its width up to a multiple of 32, a rule of thumb that keeps matrix sizes convenient for hardware. When you load another model, check whether its feed-forward layer is gated, since a gated layer has three matrices where a plain one has two.
 
 ## Give attention positions with rotations {#rotary-positions}
 
-A weighted average ignores the order of what it averages, as [chapter 6](#look-back-with-a-weighted-average) showed, so attention gets at most a weak sense of position from the causal mask alone. The original transformer added a vector for each position to each token's embedding ([Vaswani et al., 2017](https://arxiv.org/abs/1706.03762), section 3.5). The LLaMA models instead use **rotary position embeddings**, RoPE, which work inside attention, at each layer ([Su et al., 2021](https://arxiv.org/abs/2104.09864); [Touvron et al., 2023](https://arxiv.org/abs/2302.13971), section 2.2). Before scoring, each query and key is rotated by angles that grow with its position. The vector's d numbers are taken in pairs, number i with number i + d/2 in the store's model, and each pair (a, b) is treated as a point on a plane and turned around the origin. At position p, pair i turns by the angle p·θᵢ, where θᵢ = 10000^(−i/(d/2)):
+A weighted average ignores the order of what it averages, as [chapter 6](#look-back-with-a-weighted-average) showed, so attention gets at most a weak sense of position from the causal mask alone. The original transformer added a vector for each position to each token's embedding ([Vaswani et al., 2017](https://arxiv.org/abs/1706.03762), section 3.5). The LLaMA models instead use **rotary position embeddings**, RoPE, which work inside attention, at each layer ([Su et al., 2021](https://arxiv.org/abs/2104.09864); [Touvron et al., 2023](https://arxiv.org/abs/2302.13971), section 2.2). Before scoring, RoPE rotates each query and key by angles that grow with its position. The vector's d numbers are taken in pairs, number i with number i + d/2 in the store's model, and each pair (a, b) is treated as a point on a plane and turned around the origin. At position p, pair i turns by the angle p·θᵢ, where θᵢ = 10000^(−i/(d/2)):
 
 (a, b) → (a cos pθᵢ − b sin pθᵢ, a sin pθᵢ + b cos pθᵢ)
 
@@ -203,7 +203,7 @@ Rotation has two properties that suit attention. It doesn't change a vector's le
 
 Rotate a random query and key of 32 numbers, the size of the store's heads, for positions 0 to 19, and compare scaled scores, as [chapter 6](#attention) defines them, at three pairs, which tests that:
 
-Example `rope-by-hand` (Python 3.12.15 · numpy 2.5.5), passing in Edition 2026.11.15:
+Example `rope-by-hand` (Python 3.12.15 · numpy 2.5.5), passing in Edition 2026.11.16:
 
 ```python
 """Rotates one random query and key for each of 20 positions, checks that the rotation keeps their lengths, and scores
@@ -264,7 +264,7 @@ def block(x: np.ndarray, layer_weights: dict[str, np.ndarray], heads: int, posit
     logits = rms_norm(streams[-1], weights["final_norm"]) @ weights["embedding"].T
 ```
 
-The last line holds one more idea: the output layer reuses the embedding table, turned on its side, instead of learning a matrix of its own. A token's logit is the dot product of the final vector with that token's embedding. Press and Wolf found that this **weight tying** lowers perplexity as well as saving the output layer's parameters ([Press and Wolf, 2017](https://arxiv.org/abs/1608.05859)). SmolLM2 ties them too (`"tie_word_embeddings": true` in its configuration), since for a model of its size a separate output layer would be a large share of the whole. The [parameter count](#count-the-parameters) shows what tying saves in the store's model.
+The last line holds one more idea, **weight tying**: the output layer reuses the embedding table, turned on its side, instead of learning a matrix of its own. A token's logit is the dot product of the final vector with that token's embedding. Press and Wolf found that tying lowers perplexity as well as saving the output layer's parameters ([Press and Wolf, 2017](https://arxiv.org/abs/1608.05859)). SmolLM2 ties them too (`"tie_word_embeddings": true` in its configuration), since for a model of its size a separate output layer would be a large share of the whole. The [parameter count](#count-the-parameters) shows what tying saves in the store's model.
 
 **Working rule:** Tie the output layer to the embeddings in a small model, and check whether a model you load ties them before you look for a separate output matrix. Keep your own forward pass short enough to read whole, as `lib.transformer` is, so that every detail the next sections test is visible.
 
@@ -274,7 +274,7 @@ PyTorch trained the store's model once, in `recordings/transformer.py`, as it tr
 
 To test the whole forward pass, recompute the saved product's logits in NumPy and compare every position with PyTorch's:
 
-Example `transformer-same-as-pytorch` (Python 3.12.15 · numpy 2.5.5), passing in Edition 2026.11.15:
+Example `transformer-same-as-pytorch` (Python 3.12.15 · numpy 2.5.5), passing in Edition 2026.11.16:
 
 ```python
 """Recomputes the store's model's logits in NumPy for the validation product the training script saved, and checks every
@@ -310,11 +310,11 @@ The NumPy model reproduces all 550,886 of PyTorch's logits, for 133 positions, t
 
 ## Leave out a block to see what it does {#leave-out-a-block}
 
-The model is checked; now measure what its blocks contribute. Because every block adds to the residual stream, a block can be left out and the model still runs: the stream passes through it unchanged, and the next block reads it as before. That allows a simple experiment, called an **ablation**: remove one part, and measure what the model loses. It shows how much each block contributes to the trained model's predictions, which reading its weights can't.
+The model is checked; now measure what its blocks contribute. Because every block adds to the residual stream, a block can be left out and the model still runs: the stream passes through it unchanged, and the next block reads it as before. Leaving a part out allows a simple experiment, called an **ablation**: remove one part, and measure what the model loses. It shows how much each block contributes to the trained model's predictions, which reading its weights can't.
 
 Which block's removal hurts most? Predict one, then score the names and descriptions of the first 100 validation products, 7,624 predictions in all, with the full model and with each block left out in turn:
 
-Example `skip-a-block` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1), passing in Edition 2026.11.15:
+Example `skip-a-block` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1), passing in Edition 2026.11.16:
 
 ```python
 """Scores the names and descriptions of the first 100 validation products with the full model, and with each block left
@@ -378,7 +378,7 @@ Every detail of a block has to match the weights it runs with, and a mismatch do
 
 One wrong detail of RoPE at a time shows what each costs: score the same 100 validation products with the trained weights, pairing neighbouring numbers instead of halves, a base of 100,000, SmolLM2's, instead of the store's 10,000, and no RoPE at all:
 
-Example `mismatched-details` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1), passing in Edition 2026.11.15:
+Example `mismatched-details` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1), passing in Edition 2026.11.16:
 
 ```python
 """Scores the same 100 validation products with the trained weights, changing one detail of RoPE at a time: how it pairs
@@ -421,7 +421,7 @@ Two mismatches would be caught by the first sample of generated text. Pairing ne
 
 The base is the dangerous one. At 100,000 the perplexity is 26.4, slightly worse than 24.3, with no error and fluent-looking output, a mistake that could ship.
 
-The other difference from SmolLM2 is **grouped-query attention**: its 15 query heads share 5 sets of keys and values, so its key and value matrices are a third of the size of its query matrix ([Ainslie et al., 2023](https://arxiv.org/abs/2305.13245)). Loading such weights into a model that expects a key and value for every head fails with a shape error, which is the kind of mismatch you want.
+The other difference from SmolLM2 is [grouped-query attention](#parameters-at-scale): its 15 query heads share 5 sets of keys and values, so its key and value matrices are a third of the size of its query matrix ([Ainslie et al., 2023](https://arxiv.org/abs/2305.13245)). Loading such weights into a model that expects a key and value for every head fails with a shape error, which is the kind of mismatch you want.
 
 **Working rule:** Check another model's configuration against your code, line by line, when you load its weights: normalization and its ε, RoPE's pairing and base, the feed-forward layer's gating, tied outputs, and how many heads share keys and values. Then score text you know against the original implementation's outputs; a small loss with no error is the case to fear.
 
@@ -429,7 +429,7 @@ The other difference from SmolLM2 is **grouped-query attention**: its 15 query h
 
 With every part built, count what the model learns, and where. A model's parameters are its capacity to learn, and where they sit says what it spends that capacity on. The trained model's count, by part:
 
-Example `transformer-parameters` (Python 3.12.15 · numpy 2.5.5), passing in Edition 2026.11.15:
+Example `transformer-parameters` (Python 3.12.15 · numpy 2.5.5), passing in Edition 2026.11.16:
 
 ```python
 """Counts the store's model's parameters by part from its saved weights, and prints its settings. The prose's point

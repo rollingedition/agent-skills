@@ -3,13 +3,13 @@ title: "Language Models from the Ground Up"
 chapter: "Inside an open model"
 chapter_id: inside-an-open-model
 book: language-models-from-the-ground-up
-edition: 2026.11.15
+edition: 2026.11.16
 verified: 2026-11-19
-edition_code: ST86-2YTJ
+edition_code: FY8Q-PVVV
 canonical: https://rollingedition.com/language-models-from-the-ground-up/inside-an-open-model
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“Inside an open model,” chapter 10 of Language Models from the Ground Up, Edition 2026.11.15, examples passed Nov 19, 2026. By Rolling Edition, https://rollingedition.com/language-models-from-the-ground-up/inside-an-open-model. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Inside an open model,” chapter 10 of Language Models from the Ground Up, Edition 2026.11.16, examples passed Nov 19, 2026. By Rolling Edition, https://rollingedition.com/language-models-from-the-ground-up/inside-an-open-model. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Inside an open model
 
@@ -25,7 +25,7 @@ The parts are familiar, so the first question is where the parameters sit. [Chap
 
 Run the same count on SmolLM2's recorded weights, and watch which part now holds the most:
 
-Example `open-model-parameters` (Python 3.12.15), passing in Edition 2026.11.15:
+Example `open-model-parameters` (Python 3.12.15), passing in Edition 2026.11.16:
 
 ```python
 """Counts SmolLM2-360M's recorded weights by part, with the embedding table shared with the output counted once.
@@ -90,7 +90,7 @@ SmolLM2 comes in three sizes, each built from the same parts, and their configur
 
 Count all three sizes from their recorded configurations, and check the 360M count against the weights the first recording saved:
 
-Example `open-model-family` (Python 3.12.15), passing in Edition 2026.11.15:
+Example `open-model-family` (Python 3.12.15), passing in Edition 2026.11.16:
 
 ```python
 """Counts all three SmolLM2 sizes from their recorded configurations, part by part, and checks the 360M model's count
@@ -153,7 +153,7 @@ The embedding table's share falls as the models grow, from 21% to 13% to 6%, bec
 
 ## Count what it costs to run {#cost-to-run}
 
-Parameters set what a model can learn; they also set what it costs to run. Its weights have to sit in memory, at two bytes each in 16-bit formats, the form SmolLM2's weights are stored in ([model card](https://huggingface.co/HuggingFaceTB/SmolLM2-360M/blob/f8027fd0eaeea54caa13c31d31b9fdc459c38b49/README.md)). And during generation, as [chapter 9](#decoding-in-production) noted, every layer keeps a key and a value for every earlier token, so each new token doesn't redo the work for the text before it. That **key and value cache** grows with the length of the text:
+Parameters set what a model can learn; they also set what it costs to run. Its weights have to sit in memory, at two bytes each in 16-bit formats, the form SmolLM2's weights are stored in ([model card](https://huggingface.co/HuggingFaceTB/SmolLM2-360M/blob/f8027fd0eaeea54caa13c31d31b9fdc459c38b49/README.md)). And during generation, as [chapter 9](#decoding-in-production) noted, every layer keeps a key and a value for every earlier token, so each new token doesn't redo the work for the text before it. The **key and value cache**, every layer's keys and values for the earlier tokens, grows with the length of the text:
 
 cache per token, in bytes = layers × 2 × key and value heads × head size × 2
 
@@ -161,7 +161,7 @@ counting a key and a value per layer, and two bytes per number.
 
 Budgeting needs, for each size, the weights, the cache per token and the cache for the longest text the models are set up for, 8,192 tokens, with and without grouped keys and values:
 
-Example `open-model-memory` (Python 3.12.15), passing in Edition 2026.11.15:
+Example `open-model-memory` (Python 3.12.15), passing in Edition 2026.11.16:
 
 ```python
 """Works out each size's weights and key and value cache, with and without grouped keys and values, in decimal gigabytes
@@ -210,7 +210,7 @@ A service writing many descriptions at once keeps one cache per text, so with lo
 
 ## Score the store's text with a general model {#score-the-store-text}
 
-A model with two hundred times the parameters, trained on more than a million times as many tokens as the store's catalog holds, might be expected to predict the store's text better than the store's own small model. Testing that takes care, because the two models use different tokenizers: SmolLM2's vocabulary of 49,152 tokens splits text differently from the store's, so their [perplexities per token](#score-with-perplexity) count different things. What they share is the text, so divide each model's total log-probability of the same text by the number of words in it, a **perplexity per word**. In symbols, for a text of W words whose tokens the model gives probabilities p₁ to pₙ, however many tokens that takes:
+A model with two hundred times the parameters, trained on more than a million times as many tokens as the store's catalog holds, might be expected to predict the store's text better than the store's own small model. Testing that takes care, because the two models use different tokenizers: SmolLM2's vocabulary of 49,152 tokens splits text differently from the store's, so their [perplexities per token](#score-with-perplexity) count different things. What they share is the text. A **perplexity per word** divides a model's total log-probability of a text by the number of words in it, instead of by its number of tokens. In symbols, for a text of W words whose tokens the model gives probabilities p₁ to pₙ, however many tokens that takes:
 
 perplexity per word = exp(−(log p₁ + … + log pₙ) / W)
 
@@ -220,7 +220,7 @@ Each model scores the same events. For a name, the store's model starts from `<s
 
 Which model scores the store's names better per word, and by how much? Decide before reading on. Then compute the store's model's scores in NumPy, read SmolLM2's from the recording, and compare them per token and per word:
 
-Example `open-model-on-the-store` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1), passing in Edition 2026.11.15:
+Example `open-model-on-the-store` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1), passing in Edition 2026.11.16:
 
 ```python
 """Scores the store's model and SmolLM2-360M on the same names and the same descriptions, per word, the unit the two share.
@@ -288,11 +288,11 @@ The lesson isn't that small models are better. A model predicts best the kind of
 
 ## Find the same heads at scale {#same-heads-at-scale}
 
-[Chapter 6](#attend-to-the-previous-token) measured the store's model's heads by their habits, against an **even spread**, which puts 1 / (i + 1) of a position's weight on each of the i + 1 tokens position i can see. The same measures work on any model, and SmolLM2 has 480 heads to measure.
+[Chapter 6](#attend-to-the-previous-token) measured the store's model's heads by their habits, against an [even spread](#attend-to-the-previous-token), which puts 1 / (i + 1) of a position's weight on each of the i + 1 tokens position i can see. The same measures work on any model, and SmolLM2 has 480 heads to measure.
 
 Look at each head's recorded average weight on the previous token and on the first token, over the first 50 of the 446 products scored above, each text a name, a newline and its description. The even spread is averaged the same way, so the two can be set side by side:
 
-Example `open-model-heads` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1 · tokenizers 0.23.3), passing in Edition 2026.11.15:
+Example `open-model-heads` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1 · tokenizers 0.23.3), passing in Edition 2026.11.16:
 
 ```python
 """Reads SmolLM2's recorded head averages over the recorded texts, and compares them with an even spread averaged the same way.
@@ -344,7 +344,7 @@ an even spread's weight on the previous token, and on the first: 0.05
 
 A few heads specialize sharply. 3 heads put more than half their weight on the previous token, and the strongest puts 0.79 there, against an even spread's 0.05. The store's model's most previous-token head, measured the same way, put 0.35 on the previous token. With hundreds of heads, a model can afford to give a few of them one narrow job.
 
-The first token's weight is the larger surprise. In the first four layers, heads put 0.13 of their weight on it on average; from layer 5 on, 0.61, against an even spread's 0.05, and 286 heads put more than half there. That's the **attention sink** that Xiao and colleagues found in large models ([Xiao et al., 2024](https://arxiv.org/abs/2309.17453)). They explain it by softmax: a head with nothing useful to attend to still has to put its weight somewhere, and the first token is always there. [Chapter 6](#reach-past-the-window) found the pattern only weakly in the store's model, whose description tokens put 0.11 of their attention on its two markers, against an even spread's 0.05.
+The first token's weight is the larger surprise. In the first four layers, heads put 0.13 of their weight on it on average; from layer 5 on, 0.61, against an even spread's 0.05, and 286 heads put more than half there. That's the [attention sink](#reach-past-the-window) that Xiao and colleagues found in large models ([Xiao et al., 2024](https://arxiv.org/abs/2309.17453)). They explain it by softmax: a head with nothing useful to attend to still has to put its weight somewhere, and the first token is always there. [Chapter 6](#reach-past-the-window) found the pattern only weakly in the store's model, whose description tokens put 0.11 of their attention on its two markers, against an even spread's 0.05.
 
 **Working rule:** Describe a large model's heads by the same measured averages you'd use on a small one, compared with an even spread. Expect a few specialized heads and many that put their weight on the first token, and keep that token when you cut a model's context to save memory.
 
@@ -354,7 +354,7 @@ The first token's weight is the larger surprise. In the first four layers, heads
 
 Check SmolLM2's recorded probabilities of `cover` and `set` at one point in the description of `double chaise patio furniture cover`, after `this outdoor patio furniture`, with the name as sold, without `cover`, and ending in `set`:
 
-Example `open-model-copying` (Python 3.12.15), passing in Edition 2026.11.15:
+Example `open-model-copying` (Python 3.12.15), passing in Edition 2026.11.16:
 
 ```python
 """Prints SmolLM2's recorded probabilities of cover and set after the same words of a description, under three versions of the name.
@@ -392,7 +392,7 @@ The search box is where the store's text matters most. [Chapter 8](#autocomplete
 
 Here are SmolLM2's three likeliest next tokens after the same five prefixes, each given with nothing before it, the way the store's model got them:
 
-Example `open-model-autocomplete` (Python 3.12.15), passing in Edition 2026.11.15:
+Example `open-model-autocomplete` (Python 3.12.15), passing in Edition 2026.11.16:
 
 ```python
 """Prints SmolLM2's three likeliest next tokens after five search-box prefixes, and its probability of stool after outdoor bar.

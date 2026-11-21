@@ -3,13 +3,13 @@ title: "Evaluating LLM Applications"
 chapter: "Decline when the docs don't say, and measure both kinds of error"
 chapter_id: declining-when-the-docs-dont-say
 book: evaluating-llm-applications
-edition: 2026.11.2
+edition: 2026.11.3
 verified: 2026-11-21
-edition_code: G0M7-3TW7
+edition_code: 4V0Y-VKTV
 canonical: https://rollingedition.com/evaluating-llm-applications/declining-when-the-docs-dont-say
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“Decline when the docs don't say, and measure both kinds of error,” chapter 10 of Evaluating LLM Applications, Edition 2026.11.2, examples passed Nov 21, 2026. By Rolling Edition, https://rollingedition.com/evaluating-llm-applications/declining-when-the-docs-dont-say. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Decline when the docs don't say, and measure both kinds of error,” chapter 10 of Evaluating LLM Applications, Edition 2026.11.3, examples passed Nov 21, 2026. By Rolling Edition, https://rollingedition.com/evaluating-llm-applications/declining-when-the-docs-dont-say. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Decline when the docs don't say, and measure both kinds of error
 
@@ -21,11 +21,11 @@ This chapter counts both errors on the book's own replies. It then tests the obv
 
 ## Two errors, both counted {#two-errors}
 
-Every question in the test set has a kind. An answerable question is one that the docs of the asked version answer. An unanswerable question is one they don't. A reply that declines an answerable question makes a false refusal, and a reply that answers an unanswerable question makes a false answer. The first chapter defined both in its [decline check](measure-before-you-change#declines-in-code), and this chapter uses the same definitions on more items.
+Every question in the test set has a kind. An answerable question is one that the docs of the asked version answer. An unanswerable question is one they don't. A reply that declines an answerable question makes a [false refusal](#declines-in-code), and a reply that answers an unanswerable question makes a [false answer](#declines-in-code). The first chapter defined both in its [decline check](measure-before-you-change#declines-in-code), and this chapter uses the same definitions on more items.
 
 The two rates have different denominators, and the denominators carry the point. The false refusal rate is the number of answerable items declined, over the number of answerable items. The false answer rate is the number of unanswerable items answered, over the number of unanswerable items. Put both errors over one total, and a set with many answerable items makes the refusal count look small, while the answers that should have been declines get lost in the sum. Each rate needs its own count, and each count needs its own denominator.
 
-Two kinds of item stay out of both rates. A version-dependent item asks about something that differs between versions, so its reply is judged against the reference for the asked version, and its own rate, version-correctness, is covered in [chapter 9](grounded-answers#version-correctness). An ambiguous item has two readings and is judged by the pass rate, not by either decline rate. A decline on either kind is not an error here. The code still counts those declines and prints them, so a decline on one of them can't go unnoticed.
+Two kinds of item stay out of both rates. A [version-dependent item](#the-twenty-items) asks about something that differs between versions, so its reply is judged against the reference for the asked version, and its own rate, version-correctness, is covered in [chapter 9](grounded-answers#version-correctness). An ambiguous item has two readings and is judged by the pass rate, not by either decline rate. A decline on either kind is not an error here. The code still counts those declines and prints them, so a decline on one of them can't go unnoticed.
 
 The code counts a reply as a decline only when the reply is the decline sentence and nothing more. A reply that gives the sentence and then an answer is not a decline, so it counts as an answer in both rates. The same holds for a refusal in other words: the code matches the sentence exactly, so a refusal worded differently counts as an answer. On an answerable item that is not an error here, and on an unanswerable item it is a false answer, which is why the sentence is fixed in the prompt.
 
@@ -39,7 +39,7 @@ Three variants change one thing each. `prompt-b` runs prompt P2, which quotes th
 
 Counting both errors for each recording takes one example, decline-rates. It reads all four recordings on the dev split and on the held-out split, prints each rate with its counts, and names the items behind each error. Its output shows which answerable items each recording declined and which unanswerable items it answered.
 
-Example `decline-rates` (Python 3.12.15 · numpy 2.5.5 · pydantic 2.14.3 · typing-extensions 4.16.0), passing in Edition 2026.11.2:
+Example `decline-rates` (Python 3.12.15 · numpy 2.5.5 · pydantic 2.14.3 · typing-extensions 4.16.0), passing in Edition 2026.11.3:
 
 ```python
 """Counts the two decline errors for each recording, on dev and on held-out: answerable items declined (false refusals)
@@ -160,7 +160,7 @@ The held-out figures are reported for completeness. The false refusal rate for `
 
 ## A guard on recorded replies {#a-guard}
 
-The guard rests on a plain idea. BM25 scores each section by the words it shares with the question. When the docs have nothing on a question, the best-matching section should share few words with it, so its score should be low. A guard reads that top score and declines when it falls below a threshold. The idea is a hypothesis, and it can fail. A question may share many words with a section that doesn't answer it, and the sweep below is the test.
+The guard rests on a plain idea. BM25 scores each section by the words it shares with the question. When the docs have nothing on a question, the best-matching section should share few words with it, so its score should be low. A guard reads the best-matching section's score and declines when it falls below a threshold. The idea is a hypothesis, and it can fail. A question may share many words with a section that doesn't answer it, and the sweep below is the test.
 
 The guard can be measured without running the model again. Retrieval is deterministic: the same question gives the same top sections and the same scores each time. So the top score for every item can be computed from the index, and the guard becomes a rule applied to replies that have already been recorded. Its grid and rule are constants in `lib/guard.py`. The guard only turns answers into declines. It can never undo a decline, so it can lower false answers and can only raise false refusals.
 
@@ -170,7 +170,7 @@ The grid runs from 0.00 to 10.00 in steps of a quarter, above every dev score. F
 
 The sweep runs in tune-guard-dev, which prints both rates at every step of the grid and then the rule's pick. It opens with the check that matters most: the recorded sections of each item must match what the index returns, or the scores would describe a retrieval that never made the replies.
 
-Example `tune-guard-dev` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pydantic 2.14.3 · typing-extensions 4.16.0), passing in Edition 2026.11.2:
+Example `tune-guard-dev` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pydantic 2.14.3 · typing-extensions 4.16.0), passing in Edition 2026.11.3:
 
 ```python
 """Sweeps the decline guard's threshold over dev replies of the unfiltered recording, printing both rates at each
@@ -345,7 +345,7 @@ The threshold also belongs to the assistant that produced the replies. The score
 
 The held-out split was run once, with the threshold frozen at 0.00. The run is guard-held-out, and it first asserts that the dev rule (described in [the guard](#a-guard)) still picks that value. A change to the dev data or to the rule therefore stops the run before any held-out number prints.
 
-Example `guard-held-out` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pydantic 2.14.3 · typing-extensions 4.16.0), passing in Edition 2026.11.2:
+Example `guard-held-out` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pydantic 2.14.3 · typing-extensions 4.16.0), passing in Edition 2026.11.3:
 
 ```python
 """Applies the decline guard, with its threshold frozen from dev, to the held-out items of the unfiltered recording, and

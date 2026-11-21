@@ -3,13 +3,13 @@ title: "Model Context Protocol in Practice"
 chapter: "Migrate a 2025-era server"
 chapter_id: migrate-from-2025
 book: model-context-protocol-in-practice
-edition: 2026.11.13
+edition: 2026.11.14
 verified: 2026-11-19
-edition_code: P21J-Z4WN
+edition_code: VS53-BS53
 canonical: https://rollingedition.com/model-context-protocol-in-practice/migrate-from-2025
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“Migrate a 2025-era server,” chapter 12 of Model Context Protocol in Practice, Edition 2026.11.13, examples passed Nov 19, 2026. By Rolling Edition, https://rollingedition.com/model-context-protocol-in-practice/migrate-from-2025. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Migrate a 2025-era server,” chapter 12 of Model Context Protocol in Practice, Edition 2026.11.14, examples passed Nov 19, 2026. By Rolling Edition, https://rollingedition.com/model-context-protocol-in-practice/migrate-from-2025. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Migrate a 2025-era server
 
@@ -79,13 +79,13 @@ The listing is the 2025-era shop server, and a shared module for this chapter, `
 
 A migration starts with a list, because the pinned revision treats each old feature in one of three ways, and each way sets its own deadline. The first group was **removed** at revision 2026-07-28, with no window: the `initialize` handshake, protocol sessions and the `Mcp-Session-Id` header, requests a server sends to the client in the middle of a call, whatever they ask for, the HTTP GET stream, `resources/subscribe`, `ping`, `logging/setLevel` and stream resumability ([changelog](https://modelcontextprotocol.io/specification/2026-07-28/changelog)). A client at the pinned revision never uses any of them, so code that depends on one fails for that client the first time it runs.
 
-The second group is **deprecated**: roots, sampling, logging, the HTTP+SSE transport and Dynamic Client Registration. The changelog says that roots, sampling and logging stay "fully functional during the deprecation window" (same source), and the specification's registry gives each deprecated feature a migration path and an earliest removal ([deprecated features](https://modelcontextprotocol.io/specification/2026-07-28/deprecated)). That date is when a feature becomes eligible to go, not when it goes. Removal is a decision the core maintainers make when they prepare a revision, so a feature may stay deprecated much longer ([feature lifecycle](https://modelcontextprotocol.io/community/feature-lifecycle)). The window runs at least twelve months from the release of the revision that first marks the feature deprecated, and it can be cut to ninety days for an active security risk, so the windows differ from feature to feature. Dropping a feature from the specification doesn't oblige an SDK to drop it, because each SDK's own policy decides (same source).
+The second group is **deprecated**: roots, sampling, logging, the HTTP+SSE transport and Dynamic Client Registration. The changelog says that roots, sampling and logging stay "fully functional during the deprecation window" (same source), and the specification's registry gives each deprecated feature a migration path and an earliest removal ([deprecated features](https://modelcontextprotocol.io/specification/2026-07-28/deprecated)). An earliest removal is the date when a feature becomes eligible to go, not when it goes. Removal is a decision the core maintainers make when they prepare a revision, so a feature may stay deprecated much longer ([feature lifecycle](https://modelcontextprotocol.io/community/feature-lifecycle)). The window runs at least twelve months from the release of the revision that first marks the feature deprecated, and it can be cut to ninety days for an active security risk, so the windows differ from feature to feature. Dropping a feature from the specification doesn't oblige an SDK to drop it, because each SDK's own policy decides (same source).
 
 The third kind isn't a protocol change at all. SDK 2.x renamed and moved parts of the 1.x API, so a 1.x server fails to start on 2.x even where the protocol didn't change ([migration guide](https://py.sdk.modelcontextprotocol.io/v2/migration/)).
 
 We parse the server listing in this chapter and the host's OAuth setup, shown in [Replace dynamic client registration](#replace-dynamic-registration), with Python's `ast` module, and match each node against `lib.legacy.RULES`. Each rule names a dependency, its status at the pinned revision, its replacement and, for a deprecated feature, the registry's earliest removal. The scan then prints them grouped by status, with the function each one sits in.
 
-Example `scan-a-2025-server` (Python 3.12.15), passing in Edition 2026.11.13:
+Example `scan-a-2025-server` (Python 3.12.15), passing in Edition 2026.11.14:
 
 ```python
 """Sorts the 2025-era server's dependencies, and its host's OAuth setup, into removed, deprecated and SDK changes, each
@@ -166,7 +166,7 @@ The pinned revision removes the handshake and the sessions. Each request carries
 
 The 2025-era server keeps one piece of state per session. `quote_refund` stores the quote under `ctx.session`, the SDK's object for the connection, and `issue_refund` takes no argument and refunds whatever quote that connection made last. Under SDK 1.x one object serves every request of a connection (`mcp/server/lowlevel/server.py` in 1.x), so this worked. We move the two tools to 2.x unchanged, around chapter 3's quote and refund functions, and call each once from one client at the pinned revision. Then we call chapter 3's server, whose `quote_refund` returns a `quote_id` that `issue_refund` takes, the same way.
 
-Example `stateless-after-migration` (Python 3.12.15 · cryptography 50.0.2 · httpx2 2.16.2 · jsonschema 4.26.0 · mcp 2.3.0 · mcp-types 2.3.0 · pydantic 2.14.3 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.13:
+Example `stateless-after-migration` (Python 3.12.15 · cryptography 50.0.2 · httpx2 2.16.2 · jsonschema 4.26.0 · mcp 2.3.0 · mcp-types 2.3.0 · pydantic 2.14.3 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.14:
 
 ```python
 """Ports the 2025 server's per-connection quote to SDK 2.x unchanged, then with the handle the pinned revision asks for.
@@ -255,7 +255,7 @@ So a Multi Round-Trip Request replaces the push, not sampling. A server that mov
 
 The 2025-era `issue_refund` pushes its confirmation with `ctx.elicit`, which fails at the pinned revision, as [See why a stateless server can't wait for an answer](#why-calls-cannot-wait) showed. The port asks with a resolver. A parameter declared `Annotated[Release, Resolve(confirm)]` is filled by running `confirm` before the tool, and when `confirm` returns `Elicit(...)`, the SDK asks the person at the host ([Ask for structured input with elicitation](#elicitation-forms)). `confirm` asks only when the shop's API holds the refund for confirmation. We quote order O-2289, whose refund is above the policy's limit, call `issue_refund` once by hand to see the first round, and then let `Client` run the rounds with the scripted lead from chapter 5, who says yes.
 
-Example `replace-pushed-requests` (Python 3.12.15 · cryptography 50.0.2 · httpx2 2.16.2 · jsonschema 4.26.0 · mcp 2.3.0 · mcp-types 2.3.0 · pydantic 2.14.3 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.13:
+Example `replace-pushed-requests` (Python 3.12.15 · cryptography 50.0.2 · httpx2 2.16.2 · jsonschema 4.26.0 · mcp 2.3.0 · mcp-types 2.3.0 · pydantic 2.14.3 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.14:
 
 ```python
 """Ports the 2025 server's pushed confirmation to a resolver that serves both eras, and its log line to stderr. The prose's
@@ -329,7 +329,7 @@ Sampling goes entirely. The 2025-era `triage_ticket` asked the host's model, thr
 
 `save_restock_report` asked the client for its roots and wrote to the first one. Its port takes the folder as a parameter and checks it against the folders the server's configuration allows, in `SHOP_EXPORT_DIRS`, after resolving the path, so that `..` can't climb out.
 
-Example `roots-to-a-parameter` (Python 3.12.15 · cryptography 50.0.2 · httpx2 2.16.2 · jsonschema 4.26.0 · mcp 2.3.0 · mcp-types 2.3.0 · pydantic 2.14.3 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.13:
+Example `roots-to-a-parameter` (Python 3.12.15 · cryptography 50.0.2 · httpx2 2.16.2 · jsonschema 4.26.0 · mcp 2.3.0 · mcp-types 2.3.0 · pydantic 2.14.3 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.14:
 
 ```python
 """Replaces the 2025 server's roots with a folder parameter that the server checks against its own allow-list. The prose's
@@ -416,7 +416,7 @@ The guide lists the breaks. Those that touch a server like the shop's: `mcp.serv
 
 Most of these fail loudly, which is the kind you want. One doesn't. We run the 2025-era server's setup lines on 2.3.0 and see the import, the exception it raised, and the constructor. Then we build the server twice, once with the arguments as written and once ported, and ask each what a client sees.
 
-Example `port-to-sdk-2` (Python 3.12.15 · mcp 2.3.0), passing in Edition 2026.11.13:
+Example `port-to-sdk-2` (Python 3.12.15 · mcp 2.3.0), passing in Edition 2026.11.14:
 
 ```python
 """Tries the 2025 server's setup lines on SDK 2.x: two breaks fail with an error, and one fails silently. The prose's point,
@@ -477,13 +477,13 @@ The silent breaks share a shape: an argument that still type-checks, or a settin
 
 ## Serve old and new clients through the window {#serve-both-revisions}
 
-The ported server from [Replace sampling, roots and logging](#replace-deprecated-features) answers clients at the pinned revision. The support team's hosts don't all move on one day, and a 2025-era host can't move forward on its own: it sends `initialize` and expects an answer. The pinned revision allows a **dual-era** server, which serves both on the same endpoint. An `initialize` request selects the 2025 semantics for that process on stdio or that session on HTTP, and a request with the pinned revision's `_meta` is served statelessly. A server that serves only the pinned revision SHOULD name the versions it supports in its error to `initialize`, because a 2025 client can't discover them any other way ([versioning](https://modelcontextprotocol.io/specification/2026-07-28/basic/versioning.md)). On the other side, a 2.x `Client` in its default mode tries `server/discover` first and falls back to `initialize` (`mcp/client/_probe.py`; [Call the tool from a client](#call-a-tool-from-a-client)).
+The ported server from [Replace sampling, roots and logging](#replace-deprecated-features) answers clients at the pinned revision. The support team's hosts don't all move on one day, and a 2025-era host can't move forward on its own: it sends `initialize` and expects an answer. The pinned revision allows a **dual-era** server, which serves both eras on the same endpoint. An `initialize` request selects the 2025 semantics for that process on stdio or that session on HTTP, and a request with the pinned revision's `_meta` is served statelessly. A server that serves only the pinned revision SHOULD name the versions it supports in its error to `initialize`, because a 2025 client can't discover them any other way ([versioning](https://modelcontextprotocol.io/specification/2026-07-28/basic/versioning.md)). On the other side, a 2.x `Client` in its default mode tries `server/discover` first and falls back to `initialize` (`mcp/client/_probe.py`; [Call the tool from a client](#call-a-tool-from-a-client)).
 
 At 2.3.0, `MCPServer.streamable_http_app()` is dual-era with nothing to configure. It reads each request's `MCP-Protocol-Version` header: a request with no header, or with a version from 2024-11-05 to 2025-11-25, goes to the 2025 handler with its sessions, and anything else goes to the stateless handler (`mcp/server/streamable_http_manager.py`). The 2025 path keeps its sessions in the memory of the process that made them, so 2025-era clients keep their stickiness requirements ([what's new](https://py.sdk.modelcontextprotocol.io/v2/whats-new/)).
 
 We serve the ported server's app as replica a, recorded with chapter 6's `lib.wire.record_http`, and a second copy of it as replica b. A client in the default mode and a client in `mode="legacy"`, which speaks the 2025 handshake, each quote a refund above the policy's limit and issue it on replica a, with the scripted lead saying yes. Then we send the 2025 client's session ID to each replica.
 
-Example `serve-two-revisions` (Python 3.12.15 · cryptography 50.0.2 · httpx2 2.16.2 · jsonschema 4.26.0 · mcp 2.3.0 · mcp-types 2.3.0 · pydantic 2.14.3 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.13:
+Example `serve-two-revisions` (Python 3.12.15 · cryptography 50.0.2 · httpx2 2.16.2 · jsonschema 4.26.0 · mcp 2.3.0 · mcp-types 2.3.0 · pydantic 2.14.3 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.14:
 
 ```python
 """Serves the ported refund confirmation from one app to a 2026-07-28 client and a 2025-11-25 client, then sends the 2025

@@ -3,13 +3,13 @@ title: "Evaluating LLM Applications"
 chapter: "Write checks in code for the failures you found"
 chapter_id: checks-in-code
 book: evaluating-llm-applications
-edition: 2026.11.2
+edition: 2026.11.3
 verified: 2026-11-21
-edition_code: G0M7-3TW7
+edition_code: 4V0Y-VKTV
 canonical: https://rollingedition.com/evaluating-llm-applications/checks-in-code
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“Write checks in code for the failures you found,” chapter 4 of Evaluating LLM Applications, Edition 2026.11.2, examples passed Nov 21, 2026. By Rolling Edition, https://rollingedition.com/evaluating-llm-applications/checks-in-code. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Write checks in code for the failures you found,” chapter 4 of Evaluating LLM Applications, Edition 2026.11.3, examples passed Nov 21, 2026. By Rolling Edition, https://rollingedition.com/evaluating-llm-applications/checks-in-code. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Write checks in code for the failures you found
 
@@ -37,13 +37,13 @@ Here is chapter 2's list of modes, each with what a code check can see of it.
 
 ## Format checks {#format-checks}
 
-The format check asks whether a reply has the shape the prompt asks for, before anyone reads what it says. The function `format_problems` in `lib/contract.py` returns a sorted list of fixed names, one for each defect it finds. There are five. `empty` is a reply with no text. `declined-with-text` is a reply that contains the decline sentence along with other text. `no-citation` is an answer that cites nothing. `unknown-section` is a citation to a section the prompt didn't give. `answered-declined-expected` is an answer to an item that has to be declined. A second function, `order_problems`, reads the order of a reply's lines and returns two names: `citation-first`, for a reply whose first line opens with a citation, and `stray-line`, for a line that ends no sentence once its citations are taken out.
+The format check asks whether a reply has the shape the prompt asks for, before anyone reads what it says. The function `format_problems` in `lib/contract.py` returns a sorted list of fixed names, one for each defect it finds. There are five. `empty` is a reply with no text. `declined-with-text` is a reply that contains the decline sentence along with other text. `no-citation` is an answer that cites nothing. [`unknown-section`](#citations-in-code) is a citation to a section the prompt didn't give. `answered-declined-expected` is an answer to an item that has to be declined. A second function, `order_problems`, reads the order of a reply's lines and returns two names: `citation-first`, for a reply whose first line opens with a citation, and `stray-line`, for a line that ends no sentence once its citations are taken out.
 
 The format check reads the reply, the list of sections the prompt gave, and whether the item is unanswerable. The order check reads only the reply's lines. Neither reads what the answer says, so a correct answer and a wrong one with the same shape pass alike.
 
 Run the format check on the baseline's reply to each item, and count each name, with the dev items and the held-out items kept apart.
 
-Example `format-problems-baseline` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pydantic 2.14.3 · typing-extensions 4.16.0), passing in Edition 2026.11.2:
+Example `format-problems-baseline` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pydantic 2.14.3 · typing-extensions 4.16.0), passing in Edition 2026.11.3:
 
 ```python
 """Runs format_problems over the baseline replies to every item, and counts each problem by its fixed name.
@@ -102,7 +102,7 @@ held-out problem unknown-section: 0
 
 The baseline has no format problem on the dev items, 0.0% (0 of 80), or on the held-out items, 0.0% (0 of 40). A zero counts only if the check could have fired, and the next example shows that these checks do fire, on other recordings.
 
-Example `format-problems-variants` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pydantic 2.14.3 · typing-extensions 4.16.0), passing in Edition 2026.11.2:
+Example `format-problems-variants` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pydantic 2.14.3 · typing-extensions 4.16.0), passing in Edition 2026.11.3:
 
 ```python
 """Runs the format check and the order check over the unfiltered and second-model replies to the dev items. The baseline
@@ -190,11 +190,11 @@ A check that never fires on the baseline still earns its place, because it costs
 
 [Chapter 1](measure-before-you-change#citations-in-code) wrote the first citation check: every ID a reply cites must be one the prompt gave. That check says whether a citation is inside the prompt. It doesn't say whether the citation is the right one for the item. This section asks two more questions of each cited ID. Does it exist in the docs for the version the item asks about? And is it a section the item lists as supporting the answer?
 
-`citation_outcome` gives each cited ID one of four outcomes. `supported` means the ID is on the item's list for the asked version. `unlisted` means a section of the asked version that the item doesn't list. `wrong-version` means a section that exists in another version only. `missing` means no version has a section with that ID. Two rules apply to all four. A reply carries IDs and not versions, so an ID that appears in two versions can't be wrong-version, and it's judged against the version asked. And `unlisted` is never called wrong. The item's list was written by hand, and a section it doesn't list may still support the answer.
+`citation_outcome` gives each cited ID one of four outcomes. `supported` means the ID is on the item's list for the asked version. `unlisted` means a section of the asked version that the item doesn't list. `wrong-version` means a section that exists in another version only. `missing` means no version has a section with the cited ID. Two rules apply to all four. A reply carries IDs and not versions, so an ID that appears in two versions can't be wrong-version, and it's judged against the version asked. And `unlisted` is never called wrong. The item's list was written by hand, and a section it doesn't list may still support the answer.
 
 The check runs over the dev items for three recordings: the baseline; the unfiltered variant, which uses the same prompt but retrieves from every version and shows the versions to the model; and prompt-b, chapter 1's quote-first prompt P2 ([two prompts](measure-before-you-change#two-prompts)), which asks the model to quote first the sentence its answer relies on and cites on each line. Its 117 citations come from the same items, so its shares are per citation. Each recording's citations are sorted the same way.
 
-Example `check-citation-support` (Python 3.12.15 · numpy 2.5.5 · pydantic 2.14.3 · typing-extensions 4.16.0), passing in Edition 2026.11.2:
+Example `check-citation-support` (Python 3.12.15 · numpy 2.5.5 · pydantic 2.14.3 · typing-extensions 4.16.0), passing in Edition 2026.11.3:
 
 ```python
 """Sorts each section ID that a reply cites into one outcome, for three recordings, over the dev items.
@@ -288,7 +288,7 @@ A fuzzy match scores how alike two strings are. Python's standard library diffli
 - It counts matches, not meaning. A one-letter typo in a flag scores 0.933 against the right flag, although the flag is wrong. A reply can keep a high score while its one wrong fact changes.
 - It can skip parts of long strings. For sequences of 200 items or more, the documentation treats an item as junk when its repeats make up more than one per cent of the sequence, unless `autojunk` is turned off. For strings, the items are characters, so a reply of 200 characters or more can be affected. The heuristic is built from the second argument, which is the reply when the reference goes first. On the long pair, the default score is 0.480, and with `autojunk=False` it is 0.861.
 
-Example `fuzzy-match` (Python 3.12.15 · numpy 2.5.5), passing in Edition 2026.11.2:
+Example `fuzzy-match` (Python 3.12.15 · numpy 2.5.5), passing in Edition 2026.11.3:
 
 ```python
 """Compares three pairs of sablefile answers with an exact match and with difflib's ratio(), a score from 0 to 1.
@@ -352,7 +352,7 @@ Lin defined ROUGE-N as an n-gram recall: the share of the reference's word runs 
 
 Three questions about sablefile 2.0 show the problem most plainly. Each has a written reference answer, a wrong answer that copies most of the reference's words, and a right answer that says the same thing in few of them. The answers are written for this example, not taken from a recording, so they show that the failure can happen, not how often. The BLEU-style score takes clipped 1- to 4-gram precision, its geometric mean and a brevity penalty. ROUGE-1 F1 counts single words. Both formulas are written out in the example's code. No BLEU or ROUGE package is pinned in this book, and the example reports F1, which combines recall with precision, not the recall Lin defined.
 
-Example `overlap-misleads` (Python 3.12.15 · numpy 2.5.5), passing in Edition 2026.11.2:
+Example `overlap-misleads` (Python 3.12.15 · numpy 2.5.5), passing in Edition 2026.11.3:
 
 ```python
 """Scores a wrong answer that shares most of its words with the reference above a right answer that shares few.

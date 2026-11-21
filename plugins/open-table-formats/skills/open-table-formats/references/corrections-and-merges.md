@@ -3,13 +3,13 @@ title: "Open Table Formats"
 chapter: "Correct rows with deletes, updates and merges"
 chapter_id: corrections-and-merges
 book: open-table-formats
-edition: 2026.11.9
+edition: 2026.11.10
 verified: 2026-11-20
-edition_code: 0GY7-XEMW
+edition_code: 27Y3-9R88
 canonical: https://rollingedition.com/open-table-formats/corrections-and-merges
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“Correct rows with deletes, updates and merges,” chapter 5 of Open Table Formats, Edition 2026.11.9, examples passed Nov 20, 2026. By Rolling Edition, https://rollingedition.com/open-table-formats/corrections-and-merges. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Correct rows with deletes, updates and merges,” chapter 5 of Open Table Formats, Edition 2026.11.10, examples passed Nov 20, 2026. By Rolling Edition, https://rollingedition.com/open-table-formats/corrections-and-merges. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Correct rows with deletes, updates and merges
 
@@ -21,7 +21,7 @@ So far the table only grows. Every write in [chapter 1](#append-each-hour) appen
 
 The first delivery of hour 02 reached the table in [chapter 1](#append-each-hour) with the counts the source sent at the time. A later delivery of the same hour carries corrected counts for some pages, and one page the first delivery left out. The pages in the correction are the same pages as before, so the table needs to change rows in place. Appending the corrected hour would store every page twice, once with each count.
 
-Here a row is identified by its key: `hour_utc`, `domain_code` and `page_title` together. A correction is a set of rows with keys, and for each key the table either already holds a row, which should change, or does not, which should be added. Writing a correction is therefore a question about keys, and the write answers it with one rule: a key must identify one row in the batch you write. pyiceberg and DuckLake both enforce that rule. This chapter does not test a repeated key in a deltalake merge.
+In this book, a row is identified by its key: `hour_utc`, `domain_code` and `page_title` together. A correction is a set of rows with keys, and for each key the table either already holds a row, which should change, or does not, which should be added. Writing a correction is therefore a question about keys, and the write answers it with one rule: a key must identify one row in the batch you write. pyiceberg and DuckLake both enforce that rule. This chapter does not test a repeated key in a deltalake merge.
 
 A correction usually arrives as the whole hour, re-delivered, and not as a few rows. Sending the whole hour keeps the batch self-contained, because the write decides row by row what changed. The cost is that every row of the hour is compared, not only the corrected ones. Because every row is compared, pyiceberg can count only the rows whose values differ, and a rerun of the same batch changes nothing.
 
@@ -37,7 +37,7 @@ The two libraries take the predicate in different forms. pyiceberg takes an expr
 
 The delete removes the hour 02 rows with fewer than 180 views, a threshold this chapter chose. The cut in [chapter 1](#land-three-hours) keeps only the most-viewed rows in each hour, so a predicate for fewer than two views matches nothing. pyiceberg then warns with `UserWarning: Delete operation did not match any records` and writes no snapshot, as its [source](https://raw.githubusercontent.com/apache/iceberg-python/pyiceberg-0.12.0/pyiceberg/table/__init__.py) shows. A threshold of 180 catches a few of the least-viewed rows in hour 02, which is enough to show what a delete writes.
 
-Example `delete-low-views` (Python 3.12.15 · deltalake 1.6.6 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.9:
+Example `delete-low-views` (Python 3.12.15 · deltalake 1.6.6 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.10:
 
 ```python
 """Runs one delete through Iceberg, Delta Lake and DuckLake and prints what each format removed and rewrote. The data-file lines carry the point; the deleted-row lines beside them are for comparison."""
@@ -142,7 +142,7 @@ Delta Lake also has deletion vectors, which record deleted row positions in a fi
 
 ## Upsert a corrected hour {#upsert-corrected-hour}
 
-An upsert updates the row whose key matches and inserts the row whose key does not. It is the right write for a correction, because the corrected hour holds the keys that the table already has, and the late row holds a key the table does not have yet. A plain append would store the corrected rows next to the originals, so every page in the hour would appear twice.
+An upsert updates the row whose [key](#late-data-as-correction) matches and inserts the row whose key does not. It is the right write for a correction, because the corrected hour holds the keys that the table already has, and the late row holds a key the table does not have yet. A plain append would store the corrected rows next to the originals, so every page in the hour would appear twice.
 
 The next two subsections show pyiceberg's method and DuckLake's SQL `MERGE` with the same batch.
 
@@ -154,7 +154,7 @@ pyiceberg's `upsert` takes an Arrow table of rows and the columns that form the 
 
 Send the corrected hour and the late row through one `upsert`, and count what the call leaves in the table's history.
 
-Example `redeliver-hour-upsert` (Python 3.12.15 · deltalake 1.6.6 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.9:
+Example `redeliver-hour-upsert` (Python 3.12.15 · deltalake 1.6.6 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.10:
 
 ```python
 """Upserts the corrected hour 02, with its late row, into the Iceberg table, then upserts the same batch again. The snapshot lines carry the point, in the order the commits were made."""
@@ -238,7 +238,7 @@ Running the same upsert again changes nothing: it reports 0 updated rows and 0 i
 
 ### MERGE in DuckLake {#merge-in-ducklake}
 
-DuckLake takes the same correction as a `MERGE` statement in SQL. The statement names the target table, the source batch and the key in its `ON` clause, and each `WHEN` clause says what to do with a matched or an unmatched row. The statement below is the one the example after it runs.
+DuckLake takes the same correction as a `MERGE` statement in SQL. A `MERGE` statement names the target table, the source batch and the key in its `ON` clause, and each `WHEN` clause says what to do with a matched or an unmatched row. The statement below is the one the example after it runs.
 
 ```sql
 MERGE INTO lake.wiki.pageviews_hourly AS t
@@ -253,7 +253,7 @@ The `WHEN NOT MATCHED` branch also inserts `response_bytes`, which is 0 in every
 
 The `AND t.views <> s.views` condition matters. Without it, the `MERGE` would update and count every matched row, so a rerun would count them all again. With it, a matched row whose counts already agree is left alone and not counted. No example runs the statement without the condition, so the claim about a rerun without it is a reading of the statement, not a measured count.
 
-Example `merge-correction-ducklake` (Python 3.12.15 · deltalake 1.6.6 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.9:
+Example `merge-correction-ducklake` (Python 3.12.15 · deltalake 1.6.6 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.10:
 
 ```python
 """Merges the corrected hour 02 and its late row into the DuckLake copy with a SQL MERGE, then runs the same MERGE again. The matched-row line splits the changed count into inserts and updates; the second changed-row line is the rerun."""
@@ -329,7 +329,7 @@ The second table in this book, `wiki.domains`, maps each domain code to a langua
 
 An `UPDATE` would change the label. The `MERGE` shape also has a `WHEN NOT MATCHED` clause, which inserts a domain code the table does not hold yet, so a feed that adds a domain can use the same statement. This table lives only in DuckLake, so the merge runs there. The pageviews table is merged in DuckLake in [MERGE in DuckLake](#merge-in-ducklake). In a pipeline, the label you merge here is the label that [chapter 8's join](#join-tables-from-two-catalogs) returns.
 
-Example `merge-domains-label` (Python 3.12.15 · deltalake 1.6.6 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.9:
+Example `merge-domains-label` (Python 3.12.15 · deltalake 1.6.6 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.10:
 
 ```python
 """Merges one changed language label into the DuckLake copy of the domains table, then runs the same MERGE again. Read the second changed-row line against the sorted table, which shows the label that merged in."""
@@ -392,7 +392,7 @@ Corrections go wrong in practice through a repeated key, a loop of single-row de
 
 **A repeated key in the batch.** A correction sent twice, or two rows with the same key from a bad join, makes the batch invalid. This example sends one corrected row twice, and pyiceberg refuses the upsert before it writes anything.
 
-Example `duplicate-source-keys` (Python 3.12.15 · deltalake 1.6.6 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.9:
+Example `duplicate-source-keys` (Python 3.12.15 · deltalake 1.6.6 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.10:
 
 ```python
 """Sends a batch with one key twice to an Iceberg upsert and to a DuckLake MERGE, and prints each refusal with the row count after it. The two error lines carry the point: each names the cause of its refusal."""

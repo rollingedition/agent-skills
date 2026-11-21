@@ -3,13 +3,13 @@ title: "Time Series Forecasting"
 chapter: "Keep the forecast running"
 chapter_id: keep-the-forecast-running
 book: time-series-forecasting
-edition: 2026.11.10
+edition: 2026.11.11
 verified: 2026-11-20
-edition_code: 6387-FADQ
+edition_code: 1RPH-3A4D
 canonical: https://rollingedition.com/time-series-forecasting/keep-the-forecast-running
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“Keep the forecast running,” chapter 10 of Time Series Forecasting, Edition 2026.11.10, examples passed Nov 20, 2026. By Rolling Edition, https://rollingedition.com/time-series-forecasting/keep-the-forecast-running. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Keep the forecast running,” chapter 10 of Time Series Forecasting, Edition 2026.11.11, examples passed Nov 20, 2026. By Rolling Edition, https://rollingedition.com/time-series-forecasting/keep-the-forecast-running. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Keep the forecast running
 
@@ -19,7 +19,7 @@ The stake is the next buying round. The supplier commits to power for the next d
 
 The earlier chapters checked the supplier's forecast on past data. Each method was scored after the fact on the last days of 2014, with every reading in hand. In operation the order runs the other way. The supplier buys power for Dec 29, 2014 from a forecast made at 00:00 on Dec 29, the day's cutoff, using only what it knows at that time, and it learns what happened a day later. A forecast that held up on the backtest can drift. The clients change, a holiday falls inside the window, or a meter feed stops for a few hours. The supplier needs to see that before the next buying round, not in a review at the end of the quarter.
 
-This chapter runs the loop for the last seven days of 2014, from Dec 25 to Dec 31. Each day gets one forecast for each of the thirty clients, made from its own midnight cutoff. Every time in this chapter is a data time. A cutoff is 00:00 of its day, and a reading arrives at the end of its hour. The decision and calibration runs start on Nov 25 and Dec 9, 2014, and the refit cycle is anchored to Monday, Nov 24, 2014. All of these start after Jan 16, 2014. That is the first midnight at which the start rule admits all thirty clients into one model: `MT_115`'s first reading is at 00:00 on Jan 14, 2014, and the rule needs 48 hours of history from it, as [Chapter 6](#apply-the-start-rule-to-every-client) sets out.
+This chapter runs the loop for the last seven days of 2014, from Dec 25 to Dec 31. Each day gets one forecast for each of the thirty clients, made from its own midnight cutoff. Every time in this chapter is a data time. A [cutoff](#the-case-and-its-data) is 00:00 of its day, and a reading arrives at the end of its hour. The decision and calibration runs start on Nov 25 and Dec 9, 2014, and the refit cycle is anchored to Monday, Nov 24, 2014. All of these start after Jan 16, 2014. That is the first midnight at which the start rule admits all thirty clients into one model: `MT_115`'s first reading is at 00:00 on Jan 14, 2014, and the rule needs 48 hours of history from it, as [Chapter 6](#apply-the-start-rule-to-every-client) sets out.
 
 A forecast says what the readings will do. It does not say why they do it. The loop can tell the supplier that demand has moved away from the forecast. It cannot tell the supplier which habit, price or weather caused the move, and this chapter does not try. A forecast that holds up is not a causal claim, and no flag in this chapter turns into one.
 
@@ -39,7 +39,7 @@ We choose between the cadences on the four ordinary [decision windows](#choose-o
 
 Both cadences run on the four decision windows. Because the weekly model is one or two days old there, a model of each age from 0 to 6 days also forecasts those days.
 
-Example `refit-cadence-decision` (Python 3.13.16 · holidays 0.110.dev20261118063242 · lightgbm 4.7.0 · mlforecast 1.1.0 · numpy 2.5.5 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.10:
+Example `refit-cadence-decision` (Python 3.13.16 · holidays 0.110.dev20261118063242 · lightgbm 4.7.0 · mlforecast 1.1.0 · numpy 2.5.5 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.11:
 
 ```python
 """Choose the refit cadence on the four decision days, Nov 25 to Dec 3, 2014: a refit every day or every seven days on
@@ -119,7 +119,7 @@ The band in each row is built the way [Chapter 8](#build-intervals-from-residual
 
 A log proves less than it appears to unless its checks can fail. The rule is that a model and a forecast read only readings that had arrived by the time they were made. The log therefore records two arrival times for each row. `fit_read_by` is the last arrival among the readings the model was fitted on, and it must be no later than the model's refit day. `read_by` is the last arrival among the readings the forecast read, and it must be no later than the cutoff. A comparison of `written_at` with the arrival of a reading would not test this. The replay writes `written_at` as the cutoff, so that comparison passes for any code. In production, `written_at` would come from the append-only store's clock. A replay can only label it. Both checks run on every row of the held-out week, and the model's check runs again on a deliberately leaky week, which it must catch.
 
-Example `rolling-refit-seven-days` (Python 3.13.16 · holidays 0.110.dev20261118063242 · lightgbm 4.7.0 · mlforecast 1.1.0 · numpy 2.5.5 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.10:
+Example `rolling-refit-seven-days` (Python 3.13.16 · holidays 0.110.dev20261118063242 · lightgbm 4.7.0 · mlforecast 1.1.0 · numpy 2.5.5 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.11:
 
 ```python
 """Runs the held-out week, Dec 25 to Dec 31, 2014: one forecast a day from its own midnight cutoff, with the weekly refit
@@ -208,7 +208,7 @@ A check that never fails tells you little, so the week also runs with a leak. In
 
 ## Score the log as actuals arrive {#score-the-log-as-actuals-arrive}
 
-A reading scores the forecast logged for its hour when it arrives. The day's score is its daily MASE. For each client, take the mean absolute error over the day's 24 hours and divide it by the client's scale. Then take the mean of those values over the thirty clients:
+A reading scores the forecast logged for its hour when it arrives. The day's score is its daily MASE. The daily MASE takes each client's mean absolute error over the day's 24 hours, divides it by the client's scale, and averages the results over the thirty clients:
 
 `daily MASE = mean over clients of (MAE over the day's 24 hours / scale)`
 
@@ -229,7 +229,7 @@ ValueError: y column contains null values.
 
 There are two ways to fill the gap. Forward fill repeats the last reading that arrived. That flattens the evening, because the lead client's 18:00 to 23:00 values all become the 17:00 value, and lag 24 carries that flat evening into the next day's evening forecast. Filling from the same hour a week earlier keeps the evening's shape. We picked the fill on the decision windows, not the held-out week. There the same six readings are made late before each decision cutoff, and both fills forecast from them.
 
-Example `late-fill-decision` (Python 3.13.16 · holidays 0.110.dev20261118063242 · lightgbm 4.7.0 · mlforecast 1.1.0 · numpy 2.5.5 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.10:
+Example `late-fill-decision` (Python 3.13.16 · holidays 0.110.dev20261118063242 · lightgbm 4.7.0 · mlforecast 1.1.0 · numpy 2.5.5 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.11:
 
 ```python
 """Chooses how a late reading is filled on the decision windows, Nov 25 to Dec 3, 2014: the lead client's last six readings
@@ -286,7 +286,7 @@ The daily scores from the [last section](#score-the-log-as-actuals-arrive) need 
 
 The factor of two is the book's rule of thumb. We know of no published threshold for this kind of flag, so the number is ours, and we label it as one. We checked it on the decision windows, where the four ordinary days test whether the flag fires without a known cause.
 
-Example `drift-flag-rolling` (Python 3.13.16 · holidays 0.110.dev20261118063242 · lightgbm 4.7.0 · mlforecast 1.1.0 · numpy 2.5.5 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.10:
+Example `drift-flag-rolling` (Python 3.13.16 · holidays 0.110.dev20261118063242 · lightgbm 4.7.0 · mlforecast 1.1.0 · numpy 2.5.5 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.11:
 
 ```python
 """Flags drift against the backtest: a day is flagged when its daily MASE is above FLAG_FACTOR times the reference, the
@@ -345,13 +345,13 @@ One day is not a verdict. A single high day can come from a holiday, a storm or 
 
 ## Know when to retire a model {#know-when-to-retire-a-model}
 
-Retiring a model means stopping its use and replacing it. A refit is the lighter move, and it comes first. This chapter names three triggers for either move, and each one reads a number the loop already logs. The first is sustained drift: flags on consecutive days with no calendar cause. The second is an uncovered band: the 80% band covers well under 80% of readings on several days. The third is a change in a library the model depends on.
+Retiring a model means stopping its use and replacing it. A refit is the lighter move, and it comes first. This chapter names three triggers for either move, and each one reads a number the loop already logs. The first retirement trigger is sustained drift: flags on consecutive days with no calendar cause. The second retirement trigger is an uncovered band: the 80% band covers well under 80% of readings on several days. The third is a change in a library the model depends on.
 
 The second trigger needs a sense of what ordinary coverage looks like. On the ordinary days, Dec 27 to Dec 31, coverage at 80% stays between 0.701 and 0.790. Dec 29, when the late readings arrive, and Dec 31, New Year's Eve, count as ordinary days here. Dec 25 is lower, at 0.232, and Dec 26 is at 0.431, for the reason the flags gave. Dec 25 is the holiday, and Dec 26 reads it through lag 24. The bands are a little narrow even on ordinary days, as [Chapter 8](#calibrate-on-earlier-windows) found. So a day between 0.70 and 0.80 is normal here, and a day far below that is not.
 
 To show what the flags and bands do, the chapter stages a change. It is invented for the test, not a fact about the supplier's data. From Dec 27, 2014, every reading of all thirty clients is multiplied by 0.6, as if demand had dropped by 40%. The held-out week then runs on the changed readings, with the same cadence, reference, rule and bands as before.
 
-Example `drift-after-a-change` (Python 3.13.16 · holidays 0.110.dev20261118063242 · lightgbm 4.7.0 · mlforecast 1.1.0 · numpy 2.5.5 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.10:
+Example `drift-after-a-change` (Python 3.13.16 · holidays 0.110.dev20261118063242 · lightgbm 4.7.0 · mlforecast 1.1.0 · numpy 2.5.5 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.11:
 
 ```python
 """Shows how a change appears in the flags: a stated test, not a fact about the data, in which every reading from Dec 27,
@@ -416,7 +416,7 @@ A run of flags like this, with coverage that low, is a case for an early refit, 
 
 The third trigger is a library change. Libraries release often, and a later release can change an output even when the code stays the same. The loop depends on 1.1.0 and 4.7.0. Prophet, which Chapter 9 pins at 1.5.0, is not part of this loop, but it is another pinned library, and its release history shows how often such a library moves ([PyPI release history](https://pypi.org/pypi/prophet/json)). A release is a reason to run this chapter's checks again. It is not, by itself, a reason to retire a model.
 
-These checks are the forecast log, the flags and the coverage of the bands. They are not a monitoring system, which covers alerts, dashboards, data quality across many feeds and the people who respond. A later book on monitoring models in production can continue this case, and this chapter ends where that book would begin.
+These checks are the forecast log, the flags and the coverage of the bands. They are not a monitoring system. A monitoring system covers alerts, dashboards, data quality across many feeds and the people who respond. A later book on monitoring models in production can continue this case, and this chapter ends where that book would begin.
 
 **Working rule:** Refit early when flags run on several days in a row with no calendar cause, or when the 80% band covers far below 80% of readings on several days, and record the trigger with the log. Retire the model when an early refit does not clear the flags. Re-run this chapter's checks when a pinned library is released, and keep the pins until the checks pass on the new version.
 
