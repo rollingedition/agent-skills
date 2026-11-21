@@ -3,13 +3,13 @@ title: "Evaluating LLM Applications"
 chapter: "Write a rubric a judge can apply"
 chapter_id: a-judge-with-a-rubric
 book: evaluating-llm-applications
-edition: 2026.11.3
+edition: 2026.11.4
 verified: 2026-11-21
-edition_code: 4V0Y-VKTV
+edition_code: TVZC-TMQC
 canonical: https://rollingedition.com/evaluating-llm-applications/a-judge-with-a-rubric
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“Write a rubric a judge can apply,” chapter 5 of Evaluating LLM Applications, Edition 2026.11.3, examples passed Nov 21, 2026. By Rolling Edition, https://rollingedition.com/evaluating-llm-applications/a-judge-with-a-rubric. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Write a rubric a judge can apply,” chapter 5 of Evaluating LLM Applications, Edition 2026.11.4, examples passed Nov 21, 2026. By Rolling Edition, https://rollingedition.com/evaluating-llm-applications/a-judge-with-a-rubric. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Write a rubric a judge can apply
 
@@ -25,7 +25,7 @@ The judge's reply goes to code, and the code reads the first line of it as the v
 
 The book has five rubrics. The answer judge checks a reply about sablefile against the written reference answer for its question. The calibration rubric checks correctness with no reference, on rows from [HelpSteer2](https://huggingface.co/datasets/nvidia/HelpSteer2), a public dataset of human ratings of other models' replies to general prompts, which [chapter 6](calibrate-the-judge#human-ratings) describes. Its dataset card was read on 20 November 2026. Rubric B is a second wording of the calibration task. The pairwise rubric chooses the better of two replies. The faithfulness rubric checks whether an answer is supported by the sections it was given. Each rubric is written as text and carries a hash, and the first example prints the name and the hash of all five. For an item the docs do not cover, the reference is the word none, and the rubric is what tells the judge that a reply passes only when it is the decline sentence.
 
-Example `rubric-text` (Python 3.12.15 · numpy 2.5.5), passing in Edition 2026.11.3:
+Example `rubric-text` (Python 3.12.15 · numpy 2.5.5), passing in Edition 2026.11.4:
 
 ```python
 """The five rubrics the book's judges use, each with the sha256 its recording's manifest holds, and how many lines its system
@@ -102,6 +102,8 @@ A pass or fail rubric gives the judge two answers. A scale gives the judge sever
 
 The answer rubric and both [calibration rubrics](#what-a-judge-is-asked) give pass or fail. The search for this chapter looked for a study that compares a scale with pass and fail on binary human labels, and it found none. So this choice is the book's design, not a finding from a source, and a reader should weigh it as a design.
 
+A scale also brings a caution of its own, because a judge's verdicts can move with the scale it scores on. Two preprints from one group, both listed as accepted to the Findings of EACL 2027, report this. In [*Same Judgement, Different Scores*](https://arxiv.org/abs/2611.26077) (arXiv 2611.26077, v1, read on 21 November 2026), Kim and colleagues report that the width and offset of a scale shift the scores that zero-shot judges give, across several benchmarks and judge models. In [*Rubric Semantics or Numerical Priors?*](https://arxiv.org/abs/2611.25588) (arXiv 2611.25588, v1, read on 21 November 2026), the same authors report that reversing the direction of a scale's anchors changes the scores of seven judges on five benchmarks. So a rubric's scale is part of the judge, and a team that scores on one calibrates the judge on that scale, as [chapter 6](calibrate-the-judge) calibrates this book's judge. This book's judge returns PASS or FAIL, so its recordings hold no scale to vary, and neither paper tests a pass or fail rubric.
+
 The question this book asks is whether a reply is right, and that question has two answers. A reply can be almost right and still wrong on one fact or one command. A scale would give it a middle grade, and the team would then have to turn that grade into a yes or no before it could read any rate. The [pass rate](#a-pass-rate-and-its-interval) is the share of items the judge passes, over every item in the set, and a correct decline counts as a pass, as [chapter 10](declining-when-the-docs-dont-say) explains. A scale would need a different summary, such as a mean, and a mean hides which replies sit at which point. Take the decline item. A reply either declines or it does not. A scale would let a judge give a middle grade to a reply that declines and then adds a guess, which is the reply that [chapter 10](declining-when-the-docs-dont-say) counts as an error, and the team would then have to decide which side of the scale counts as passing.
 
 **Working rule:** Use pass and fail when the team needs a yes or no on correctness, and report only rates of such decisions. Use a scale only when each step means something the team will act on, and when human ratings exist at each step to check the judge against. Say in the text which form the team chose and why, because that choice sets every rate the team reports. [Chapter 6](calibrate-the-judge) shows how the judge is compared with human ratings.
@@ -114,7 +116,7 @@ A pairwise judge has no scale points to define, and it only has to say which of 
 
 The pairwise example uses human preference pairs from HelpSteer2. Each pair is judged twice: once with the first response shown as A, and once with the second response shown as A. Each verdict is then mapped back to the response it picked, so the two orders can be compared. A pair is consistent when the same response wins in both orders. It is order-changed when the same letter wins in both orders, which means the position decided the verdict; the example's output calls these flipped. Tie and unreadable are the two other kinds.
 
-Example `pairwise-both-orders` (Python 3.12.15 · numpy 2.5.5), passing in Edition 2026.11.3:
+Example `pairwise-both-orders` (Python 3.12.15 · numpy 2.5.5), passing in Edition 2026.11.4:
 
 ```python
 """How the pairwise judge's verdict on each HelpSteer2 preference pair depends on which response is shown as A. Each pair is
@@ -185,7 +187,7 @@ The rubric asks for the verdict on the first line and one short sentence of reas
 
 Fixed replies go through the parser, one line of output each, which prints the verdict, or the label `refused` for a reply with no readable verdict.
 
-Example `parse-verdicts` (Python 3.12.15 · numpy 2.5.5), passing in Edition 2026.11.3:
+Example `parse-verdicts` (Python 3.12.15 · numpy 2.5.5), passing in Edition 2026.11.4:
 
 ```python
 """What lib.contract.parse_verdict accepts and refuses: the verdict on a reply's first non-empty line, PASS or FAIL in capitals,

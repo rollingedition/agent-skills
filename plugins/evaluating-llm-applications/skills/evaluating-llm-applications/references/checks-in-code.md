@@ -3,13 +3,13 @@ title: "Evaluating LLM Applications"
 chapter: "Write checks in code for the failures you found"
 chapter_id: checks-in-code
 book: evaluating-llm-applications
-edition: 2026.11.3
+edition: 2026.11.4
 verified: 2026-11-21
-edition_code: 4V0Y-VKTV
+edition_code: TVZC-TMQC
 canonical: https://rollingedition.com/evaluating-llm-applications/checks-in-code
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“Write checks in code for the failures you found,” chapter 4 of Evaluating LLM Applications, Edition 2026.11.3, examples passed Nov 21, 2026. By Rolling Edition, https://rollingedition.com/evaluating-llm-applications/checks-in-code. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Write checks in code for the failures you found,” chapter 4 of Evaluating LLM Applications, Edition 2026.11.4, examples passed Nov 21, 2026. By Rolling Edition, https://rollingedition.com/evaluating-llm-applications/checks-in-code. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Write checks in code for the failures you found
 
@@ -33,6 +33,8 @@ Here is chapter 2's list of modes, each with what a code check can see of it.
 - **Citation problems.** Visible in two parts: a citation outside the prompt, and a citation to a section the item doesn't list. The second part needs a reader, as [the support section](#citation-support) explains.
 - **Malformed replies.** Partly. Empty replies, declines with text, uncited answers and replies whose parts come out in the wrong order can be found. The order check in the next section finds the last kind.
 
+A program can also do a judge's work when the rule it applies can be written down. In the preprint [*Can Programs Replace LLM Judges?*](https://arxiv.org/abs/2611.24849) (arXiv 2611.24849, v1, read on 21 November 2026), Agichtein and colleagues have a frontier model turn relevance guidelines into one program per topic, for a task this book leaves to other books: labelling which documents answer a search. The authors report that on TREC DL 2019 to 2021 these programs agree with the NIST assessors at the level of Claude Sonnet 5.5 used as a judge. A program like that is written once, gives the same answer on every run and can be read line by line, which are the strengths this section claims for a code check.
+
 **Working rule:** Write a code check for a failure only when the reply and the item already hold the fact the check needs. For a failure whose evidence is the claim itself, send it to a judge with a written rubric, as [chapter 5](a-judge-with-a-rubric) does, and keep the code check for the parts of the failure that can be read.
 
 ## Format checks {#format-checks}
@@ -43,7 +45,7 @@ The format check reads the reply, the list of sections the prompt gave, and whet
 
 Run the format check on the baseline's reply to each item, and count each name, with the dev items and the held-out items kept apart.
 
-Example `format-problems-baseline` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pydantic 2.14.3 · typing-extensions 4.16.0), passing in Edition 2026.11.3:
+Example `format-problems-baseline` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pydantic 2.14.3 · typing-extensions 4.16.0), passing in Edition 2026.11.4:
 
 ```python
 """Runs format_problems over the baseline replies to every item, and counts each problem by its fixed name.
@@ -102,7 +104,7 @@ held-out problem unknown-section: 0
 
 The baseline has no format problem on the dev items, 0.0% (0 of 80), or on the held-out items, 0.0% (0 of 40). A zero counts only if the check could have fired, and the next example shows that these checks do fire, on other recordings.
 
-Example `format-problems-variants` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pydantic 2.14.3 · typing-extensions 4.16.0), passing in Edition 2026.11.3:
+Example `format-problems-variants` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pydantic 2.14.3 · typing-extensions 4.16.0), passing in Edition 2026.11.4:
 
 ```python
 """Runs the format check and the order check over the unfiltered and second-model replies to the dev items. The baseline
@@ -194,7 +196,7 @@ A check that never fires on the baseline still earns its place, because it costs
 
 The check runs over the dev items for three recordings: the baseline; the unfiltered variant, which uses the same prompt but retrieves from every version and shows the versions to the model; and prompt-b, chapter 1's quote-first prompt P2 ([two prompts](measure-before-you-change#two-prompts)), which asks the model to quote first the sentence its answer relies on and cites on each line. Its 117 citations come from the same items, so its shares are per citation. Each recording's citations are sorted the same way.
 
-Example `check-citation-support` (Python 3.12.15 · numpy 2.5.5 · pydantic 2.14.3 · typing-extensions 4.16.0), passing in Edition 2026.11.3:
+Example `check-citation-support` (Python 3.12.15 · numpy 2.5.5 · pydantic 2.14.3 · typing-extensions 4.16.0), passing in Edition 2026.11.4:
 
 ```python
 """Sorts each section ID that a reply cites into one outcome, for three recordings, over the dev items.
@@ -288,7 +290,7 @@ A fuzzy match scores how alike two strings are. Python's standard library diffli
 - It counts matches, not meaning. A one-letter typo in a flag scores 0.933 against the right flag, although the flag is wrong. A reply can keep a high score while its one wrong fact changes.
 - It can skip parts of long strings. For sequences of 200 items or more, the documentation treats an item as junk when its repeats make up more than one per cent of the sequence, unless `autojunk` is turned off. For strings, the items are characters, so a reply of 200 characters or more can be affected. The heuristic is built from the second argument, which is the reply when the reference goes first. On the long pair, the default score is 0.480, and with `autojunk=False` it is 0.861.
 
-Example `fuzzy-match` (Python 3.12.15 · numpy 2.5.5), passing in Edition 2026.11.3:
+Example `fuzzy-match` (Python 3.12.15 · numpy 2.5.5), passing in Edition 2026.11.4:
 
 ```python
 """Compares three pairs of sablefile answers with an exact match and with difflib's ratio(), a score from 0 to 1.
@@ -352,7 +354,7 @@ Lin defined ROUGE-N as an n-gram recall: the share of the reference's word runs 
 
 Three questions about sablefile 2.0 show the problem most plainly. Each has a written reference answer, a wrong answer that copies most of the reference's words, and a right answer that says the same thing in few of them. The answers are written for this example, not taken from a recording, so they show that the failure can happen, not how often. The BLEU-style score takes clipped 1- to 4-gram precision, its geometric mean and a brevity penalty. ROUGE-1 F1 counts single words. Both formulas are written out in the example's code. No BLEU or ROUGE package is pinned in this book, and the example reports F1, which combines recall with precision, not the recall Lin defined.
 
-Example `overlap-misleads` (Python 3.12.15 · numpy 2.5.5), passing in Edition 2026.11.3:
+Example `overlap-misleads` (Python 3.12.15 · numpy 2.5.5), passing in Edition 2026.11.4:
 
 ```python
 """Scores a wrong answer that shares most of its words with the reference above a right answer that shares few.

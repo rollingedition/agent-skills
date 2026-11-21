@@ -3,13 +3,13 @@ title: "Evaluating LLM Applications"
 chapter: "Build a test set you can defend, and read public benchmarks"
 chapter_id: build-the-test-set
 book: evaluating-llm-applications
-edition: 2026.11.3
+edition: 2026.11.4
 verified: 2026-11-21
-edition_code: 4V0Y-VKTV
+edition_code: TVZC-TMQC
 canonical: https://rollingedition.com/evaluating-llm-applications/build-the-test-set
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“Build a test set you can defend, and read public benchmarks,” chapter 3 of Evaluating LLM Applications, Edition 2026.11.3, examples passed Nov 21, 2026. By Rolling Edition, https://rollingedition.com/evaluating-llm-applications/build-the-test-set. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Build a test set you can defend, and read public benchmarks,” chapter 3 of Evaluating LLM Applications, Edition 2026.11.4, examples passed Nov 21, 2026. By Rolling Edition, https://rollingedition.com/evaluating-llm-applications/build-the-test-set. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Build a test set you can defend, and read public benchmarks
 
@@ -59,7 +59,7 @@ Twins can drift into different splits when they are written at different times, 
 
 The schema check below runs both groups of rules and prints the problem count, with the counts by kind and by split.
 
-Example `check-item-schema` (Python 3.12.15 · numpy 2.5.5 · pydantic 2.14.3 · typing-extensions 4.16.0), passing in Edition 2026.11.3:
+Example `check-item-schema` (Python 3.12.15 · numpy 2.5.5 · pydantic 2.14.3 · typing-extensions 4.16.0), passing in Edition 2026.11.4:
 
 ```python
 """Loads all 120 test-set items, runs the per-item and the cross-item rules, and prints the problem count with the
@@ -110,7 +110,7 @@ Each kind tests something the assistant must do. An [answerable item](#the-twent
 
 The kinds table below prints the set by kind and by split.
 
-Example `kinds-by-split` (Python 3.12.15 · numpy 2.5.5 · pydantic 2.14.3 · typing-extensions 4.16.0), passing in Edition 2026.11.3:
+Example `kinds-by-split` (Python 3.12.15 · numpy 2.5.5 · pydantic 2.14.3 · typing-extensions 4.16.0), passing in Edition 2026.11.4:
 
 ```python
 """Prints the stratification of plan section 3.4 as counts: kind by split, then planted items by split, with totals.
@@ -176,7 +176,7 @@ Coverage asks which parts of the tool the set exercises. The sablefile tool has 
 
 The coverage check stops if its mapping misses an item.
 
-Example `behaviour-coverage` (Python 3.12.15 · numpy 2.5.5 · pydantic 2.14.3 · typing-extensions 4.16.0), passing in Edition 2026.11.3:
+Example `behaviour-coverage` (Python 3.12.15 · numpy 2.5.5 · pydantic 2.14.3 · typing-extensions 4.16.0), passing in Edition 2026.11.4:
 
 ```python
 """Shows how many items of the test set exercise each behaviour B1 to B6, and which ones. The mapping in data/behaviours.json
@@ -283,7 +283,7 @@ Both samples are seeded samples of one hundred items, and their cards were read 
 
 GSM8K is grade-school math word problems, each with a worked solution that ends in one number. The score is an exact match on that number. The prompt asks for a "Final answer:" line the scorer never reads. It takes the number after the last `####` marker in the reply, or else the last number in the reply. No reply contains `####`, so every verdict came from the last number, which for a finished reply is its "Final answer:" number. The paper describes 8.5K problems, with 1K for testing ([Cobbe and colleagues, 2021](https://arxiv.org/abs/2110.14168)). The [dataset card](https://huggingface.co/datasets/openai/gsm8k) gives its second split 1,319 rows, which the viewer calls "test" and the splits table calls "validation". The book does not reconcile them, and the sample uses the viewer's "test" split. The card gives the licence as MIT.
 
-Example `score-gsm8k` (Python 3.12.15 · numpy 2.5.5), passing in Edition 2026.11.3:
+Example `score-gsm8k` (Python 3.12.15 · numpy 2.5.5), passing in Edition 2026.11.4:
 
 ```python
 """Scores the recorded replies on the 100-item GSM8K sample by exact match on the final number. The accuracy line rests on
@@ -370,7 +370,7 @@ The book uses GSM8K to check the harness, not to rank the assistant.
 
 TruthfulQA asks questions on which people often answer falsely, such as a common myth. Its paper describes 817 questions in 38 categories ([Lin and colleagues, 2022](https://arxiv.org/abs/2109.07958)). The book uses TruthfulQA's multiple-choice version, MC1: exactly one option is correct, and the model answers with a letter. The [dataset card](https://huggingface.co/datasets/truthfulqa/truthful_qa) has one split, named validation, and gives the licence as Apache-2.0.
 
-Example `score-truthfulqa` (Python 3.12.15 · numpy 2.5.5), passing in Edition 2026.11.3:
+Example `score-truthfulqa` (Python 3.12.15 · numpy 2.5.5), passing in Edition 2026.11.4:
 
 ```python
 """Scores the recorded replies on the 100-item TruthfulQA MC1 sample by the option letter each reply gives. Beside the
@@ -466,7 +466,7 @@ The chance share averages one over each item's option count. A random choice wou
 Because the correct option is always first, a reply is right exactly when it chose the first option. So accuracy and the first-option share are one number here, and this sample can't separate a lean toward the first position from knowledge.
 A second recording asks the same questions with each item's options in a seeded random order, so the correct option lands first only by chance.
 
-Example `score-truthfulqa-shuffled` (Python 3.12.15 · numpy 2.5.5), passing in Edition 2026.11.3:
+Example `score-truthfulqa-shuffled` (Python 3.12.15 · numpy 2.5.5), passing in Edition 2026.11.4:
 
 ```python
 """Scores the shuffled-options recording on the 100-item TruthfulQA MC1 sample. Each item's options are in a

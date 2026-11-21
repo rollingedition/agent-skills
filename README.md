@@ -13,7 +13,7 @@ This repository is generated from the books, so changes made here are overwritte
 | [Agent Harnesses](https://rollingedition.com/agent-harnesses) | `agent-harnesses` | 2026.11.4 | 64 of 64 examples pass |
 | [Business Intelligence with Agents](https://rollingedition.com/business-intelligence-with-agents) | `business-intelligence-with-agents` | 2026.11.15 | 78 of 78 examples pass |
 | [Data Governance as Code](https://rollingedition.com/data-governance-as-code) | `data-governance-as-code` | 2026.11.31 | 108 of 108 examples pass |
-| [Evaluating LLM Applications](https://rollingedition.com/evaluating-llm-applications) | `evaluating-llm-applications` | 2026.11.3 | 54 of 54 examples pass |
+| [Evaluating LLM Applications](https://rollingedition.com/evaluating-llm-applications) | `evaluating-llm-applications` | 2026.11.4 | 54 of 54 examples pass |
 | [Language Models from the Ground Up](https://rollingedition.com/language-models-from-the-ground-up) | `language-models-from-the-ground-up` | 2026.11.16 | 86 of 86 examples pass |
 | [Model Context Protocol in Practice](https://rollingedition.com/model-context-protocol-in-practice) | `model-context-protocol-in-practice` | 2026.11.15 | 70 of 70 examples pass |
 | [Open Table Formats](https://rollingedition.com/open-table-formats) | `open-table-formats` | 2026.11.10 | 39 of 39 examples pass |
