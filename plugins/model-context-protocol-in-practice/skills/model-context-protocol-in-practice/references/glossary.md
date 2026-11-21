@@ -1,13 +1,13 @@
 ---
 title: "Glossary"
 book: "Model Context Protocol in Practice"
-edition: "2026.11.14"
+edition: "2026.11.15"
 canonical: "https://rollingedition.com/model-context-protocol-in-practice/glossary"
 ---
 
 # Glossary of *Model Context Protocol in Practice*
 
-The 68 terms this book defines, as Edition 2026.11.14 has them, each in the book's own sentence. When a task this skill covers uses one, it means what it says here: read its section before you rely on it, and cite the section. Where a definition depends on a package, it says the version this edition pins and runs its examples on. On the web: https://rollingedition.com/model-context-protocol-in-practice/glossary
+The 69 terms this book defines, as Edition 2026.11.15 has them, each in the book's own sentence. When a task this skill covers uses one, it means what it says here: read its section before you rely on it, and cite the section. Where a definition depends on a package, it says the version this edition pins and runs its examples on. On the web: https://rollingedition.com/model-context-protocol-in-practice/glossary
 
 ## access token
 
@@ -51,6 +51,13 @@ A capability is something a client or server declares it supports, such as a ser
 
 - Defined in: [Separate the host, the client and the server](what-mcp-adds.md#host-client-server)
 - Address: https://rollingedition.com/concepts/model-context-protocol/capability
+
+## capability laundering
+
+Capability laundering is hiding what a tool's code can do behind a description that leaves it out
+
+- Defined in: [Draw the trust boundaries](mcp-security.md#trust-boundaries)
+- Address: https://rollingedition.com/concepts/ai-agents/capability-laundering
 
 ## client
 

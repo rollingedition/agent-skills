@@ -3,13 +3,13 @@ title: "Time Series Forecasting"
 chapter: "Quantify forecast uncertainty"
 chapter_id: quantify-forecast-uncertainty
 book: time-series-forecasting
-edition: 2026.11.11
+edition: 2026.11.12
 verified: 2026-11-20
-edition_code: 1RPH-3A4D
+edition_code: SA1E-WHBD
 canonical: https://rollingedition.com/time-series-forecasting/quantify-forecast-uncertainty
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“Quantify forecast uncertainty,” chapter 8 of Time Series Forecasting, Edition 2026.11.11, examples passed Nov 20, 2026. By Rolling Edition, https://rollingedition.com/time-series-forecasting/quantify-forecast-uncertainty. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Quantify forecast uncertainty,” chapter 8 of Time Series Forecasting, Edition 2026.11.12, examples passed Nov 20, 2026. By Rolling Edition, https://rollingedition.com/time-series-forecasting/quantify-forecast-uncertainty. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Quantify forecast uncertainty
 
@@ -44,7 +44,7 @@ The library that does this for the book's model is mlforecast, at version 1.1.0.
 
 To see what the library does with a short calibration history, run its class with three calibration windows. It scores the three standard cutoffs, Dec 29 to Dec 31, 2014, each at 00:00. Those are the held-out week's last three days, and the days this chapter scores. mlforecast refits the global model at each cutoff and calibrates each one on the three before it.
 
-Example `conformal-three-windows` (Python 3.13.16 · holidays 0.110.dev20261118063242 · lightgbm 4.7.0 · mlforecast 1.1.0 · numpy 2.5.5 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.11:
+Example `conformal-three-windows` (Python 3.13.16 · holidays 0.110.dev20261118063242 · lightgbm 4.7.0 · mlforecast 1.1.0 · numpy 2.5.5 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.12:
 
 ```python
 """mlforecast's own conformal intervals, with three calibration windows, refitted at each of the three standard cutoffs.
@@ -124,7 +124,7 @@ Twelve windows with thirty clients give 360 residuals for each hour of the day. 
 
 Two choices in this design were made on the decision windows, not on the held-out evaluation. The [decision windows](#choose-on-decision-windows) are the four cutoffs from Nov 25 to Dec 3, 2014. Their calibration is Nov 9 to 20, 2014, twelve holiday-free days that end four days before the first decision cutoff, the same shape as the held-out design. The windows are scored on their own, and the held-out evaluation is not read. The choices are judged by the interval score and the lowest client's coverage. The interval score adds a band's width to a penalty for each reading that misses the band, the penalty growing with the distance of the miss and scaled by 2 over the miss rate ([Gneiting and Raftery (2007)](https://sites.stat.washington.edu/raftery/Research/PDF/Gneiting2007jasa.pdf), eq. 43). Those windows settle both choices, as the measurements below show.
 
-Example `conformal-decision-windows` (Python 3.13.16 · holidays 0.110.dev20261118063242 · lightgbm 4.7.0 · mlforecast 1.1.0 · numpy 2.5.5 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.11:
+Example `conformal-decision-windows` (Python 3.13.16 · holidays 0.110.dev20261118063242 · lightgbm 4.7.0 · mlforecast 1.1.0 · numpy 2.5.5 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.12:
 
 ```python
 """The two calibration choices, scaling each client's residuals and the finite-sample levels, decided on the four decision
@@ -209,7 +209,7 @@ The finite-sample levels stay out of the bands. Each new residual is one more am
 
 The held-out evaluation applies the same design to the standard cutoffs, which are the days the rest of the chapter scores.
 
-Example `conformal-earlier-windows` (Python 3.13.16 · holidays 0.110.dev20261118063242 · lightgbm 4.7.0 · mlforecast 1.1.0 · numpy 2.5.5 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.11:
+Example `conformal-earlier-windows` (Python 3.13.16 · holidays 0.110.dev20261118063242 · lightgbm 4.7.0 · mlforecast 1.1.0 · numpy 2.5.5 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.12:
 
 ```python
 """Conformal bands for every client, calibrated on twelve holiday-free days before the scored week, with each client's
@@ -312,6 +312,72 @@ The finite-sample levels would change the total's figure. On the scored days the
 
 [Angelopoulos and Bates (2022)](https://arxiv.org/pdf/2107.07511) show that split conformal prediction covers the test point with probability at least `1 - alpha` when the calibration and test points are independent and identically distributed, or more generally exchangeable. They also note that adjacent points in a time series are not exchangeable, using a temperature series as the example. The same holds for hourly load: each hour carries the one before it, and a day's hours share the weather and the calendar. [Barber and co-authors (2023)](https://arxiv.org/abs/2202.13415) call the loss in coverage when exchangeability fails a coverage gap. Their bound does not assume a particular joint distribution. It is small when recent calibration points are weighted in a way that matches the test point's distribution, as in slow drift. That result is theoretical, and this chapter does not test it. A 2026 preprint, [a survey of conformal methods for dependent series](https://arxiv.org/abs/2601.18509), states that temporal dependence violates the exchangeability assumption. It is not peer reviewed, and we cite it only for that point.
 
+Dependence also decides when the misses fall, which a coverage figure cannot show. A band can cover close to its label on average and still miss in long stretches. A 2026 preprint on gridded temperature forecasts, [Distribution-Free Uncertainty Quantification for Weather Forecasting](https://arxiv.org/abs/2611.24329) (arXiv:2611.24329v1, read Nov 21, 2026), measures this. Its author reports that conformal bands fitted cell by cell reach near their nominal coverage of 2 m temperature from the ERA5 reanalysis. Yet the share of cells covered varies from day to day about 3 to 10 times as much as independent cells would give, and the misses cluster in time, both for a small CNN and for the ECMWF HRES forecast. It is one preprint, on one variable and one coarse grid, so we take only the caution from it and test it on the total's bands at 80.
+
+Example `total-band-miss-runs` (Python 3.13.16 · holidays 0.110.dev20261118063242 · lightgbm 4.7.0 · mlforecast 1.1.0 · numpy 2.5.5 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.12:
+
+```python
+"""Whether the total's misses at 80 come in runs: the longest run of missed hours and the share of misses whose next
+hour also misses, on the scored days in time order and on the same hours shuffled. The longest run is the line to read."""
+import numpy as np
+import pandas as pd
+
+from lib.electricity import load
+from lib.intervals import CAL_CUTOFFS, bounds, paired, total_of
+from lib.panel import ALL30
+from lib.quirks import mask_clock_changes
+from lib.settings import EVAL_CUTOFFS, SEED, show
+
+df = mask_clock_changes(load(ALL30))[["unique_id", "ds", "y"]]
+cal = total_of(paired(df, CAL_CUTOFFS))
+# The three scored days are 72 hours back to back, so the sort puts them in time order.
+sc = total_of(paired(df, pd.to_datetime(EVAL_CUTOFFS))).sort_values("ds")
+lo, hi = bounds(sc, cal, 80)
+missed = ~((sc["y"] >= lo) & (sc["y"] <= hi)).to_numpy()
+
+
+def longest_run(m):
+    """The most consecutive hours outside the band."""
+    best = run = 0
+    for x in m:
+        run = run + 1 if x else 0
+        best = max(best, run)
+    return best
+
+
+def miss_after_miss(m):
+    """The share of missed hours, the last hour aside, whose next hour also misses."""
+    return float(m[1:][m[:-1]].mean())
+
+
+rng = np.random.default_rng(SEED)
+# 10,000 orderings of the same hours: as many misses, with any order in time broken.
+shuffles = [rng.permutation(missed) for _ in range(10_000)]
+show("scored hours", len(missed), 0)
+show("hours missed at 80", int(missed.sum()), 0)
+show("longest run of missed hours", longest_run(missed), 0)
+show("longest run of missed hours, shuffled, mean", np.mean([longest_run(s) for s in shuffles]), 1)
+show("share of shuffles with a run this long", np.mean([longest_run(s) >= longest_run(missed) for s in shuffles]), 3)
+show("misses followed by a miss", miss_after_miss(missed), 3)
+show("misses followed by a miss, shuffled, mean", np.mean([miss_after_miss(s) for s in shuffles]), 3)
+```
+
+Output:
+
+```text
+scored hours: 72
+hours missed at 80: 24
+longest run of missed hours: 8
+longest run of missed hours, shuffled, mean: 3.5
+share of shuffles with a run this long: 0.002
+misses followed by a miss: 0.478
+misses followed by a miss, shuffled, mean: 0.324
+```
+
+The total's misses come in runs. The longest is 8 hours outside the band in a row. The same hours in shuffled order give a longest run of 3.5 on average, and only 0.002 of the shuffles reach one that long.
+
+The hour after a miss points the same way, because it missed too in 0.478 of cases, against 0.324 once the order is broken. So report how misses persist beside the coverage, such as the longest run of missed hours, since a supplier short for several hours in a row pays for all of them before the next day's purchase can respond.
+
 So the book promises nothing about coverage that it does not measure. The coverage in this chapter is what three days showed, under the calibration described in [Calibrate on earlier windows](#calibrate-on-earlier-windows).
 
 **Working rule:** Report coverage on windows that the calibration never used, with the number of windows and the coverage of each. Keep the same measure in a running log once the forecast runs every day, as [Chapter 10](#keep-the-forecast-running) does. Read three scored days as a warning, not as a measurement of the level you were promised.
@@ -324,7 +390,7 @@ With the illustrative costs from [Why one number is not enough](#why-one-number-
 
 Does buying at the critical fractile cost less than buying at the median or higher, on days the bands never saw? Below, the purchase is set for each hour from these costs, and the scored days answer the question. The level 0.95 is not offered, as [Measure coverage on held-out days](#measure-coverage-on-held-out-days) explains.
 
-Example `buy-ahead-level-by-cost` (Python 3.13.16 · holidays 0.110.dev20261118063242 · lightgbm 4.7.0 · mlforecast 1.1.0 · numpy 2.5.5 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.11:
+Example `buy-ahead-level-by-cost` (Python 3.13.16 · holidays 0.110.dev20261118063242 · lightgbm 4.7.0 · mlforecast 1.1.0 · numpy 2.5.5 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.12:
 
 ```python
 """The buy level for the total, set from the two costs: the critical fractile, cu / (cu + co), is the quantile that minimises

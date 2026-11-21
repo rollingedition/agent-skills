@@ -1,0 +1,7 @@
+scored hours: 72
+hours missed at 80: 24
+longest run of missed hours: 8
+longest run of missed hours, shuffled, mean: 3.5
+share of shuffles with a run this long: 0.002
+misses followed by a miss: 0.478
+misses followed by a miss, shuffled, mean: 0.324

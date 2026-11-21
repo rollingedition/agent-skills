@@ -3,13 +3,13 @@ title: "Agent Harnesses"
 chapter: "Give a model tools and a loop"
 chapter_id: tools-and-a-loop
 book: agent-harnesses
-edition: 2026.11.3
+edition: 2026.11.4
 verified: 2026-11-20
-edition_code: 1CW4-SHG5
+edition_code: QTC9-C576
 canonical: https://rollingedition.com/agent-harnesses/tools-and-a-loop
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“Give a model tools and a loop,” chapter 1 of Agent Harnesses, Edition 2026.11.3, examples passed Nov 20, 2026. By Rolling Edition, https://rollingedition.com/agent-harnesses/tools-and-a-loop. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Give a model tools and a loop,” chapter 1 of Agent Harnesses, Edition 2026.11.4, examples passed Nov 20, 2026. By Rolling Edition, https://rollingedition.com/agent-harnesses/tools-and-a-loop. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Give a model tools and a loop
 
@@ -33,7 +33,7 @@ The rule also closes one shortcut a model can take. It can edit the visible test
 
 Loading T-01 from the task file and listing the case's files takes one short example.
 
-Example `read-the-issue` (Python 3.12.15), passing in Edition 2026.11.3:
+Example `read-the-issue` (Python 3.12.15), passing in Edition 2026.11.4:
 
 ```python
 """The issue the agent starts from, task T-01, and the case's files in sorted order. The model reads only the
@@ -90,7 +90,7 @@ The output prints the issue, then the case's files in sorted order. The issue is
 
 A model produces text, and the harness turns some of that text into actions. Each step sends the messages so far, along with the tool schemas, to the model. The reply comes back as text. The harness reads the tool call inside it, runs the tool on the scratch copy, appends the result to the messages, and goes around again. The model never runs anything itself. Anthropic's documentation for tool use states the contract in those terms: the model emits a structured request, the application runs the operation, and the result goes back into the conversation ([*How tool use works*](https://platform.claude.com/docs/en/agents-and-tools/tool-use/how-tool-use-works)).
 
-The loop is `_loop` in [`examples/lib/loop.py`](https://github.com/rollingedition/book-agent-harnesses/blob/661879fe5a78f938f7b5c33652e27ad82d9f7c13/examples/lib/loop.py), about seventy lines. The file also holds rules for later chapters: the optional stops in `Stops` are off by default, and a reply cut off at the token limit is refused whatever the settings. None of this chapter's runs reach either. A step is one model call. A tool call is one request inside a step, and a reply can hold more than one. The loop acts on the first request and answers each other one with an error that says it was not run. Each request gets an ID from a counter, and the ID goes on the tool-result message that answers it. The assistant message that holds the reply carries no ID, and the trace keeps none. The [trace](#traces-and-cost), in `lib/trace.py`, holds one line per step: the step's number, the tool it called and what came back. Every reply stays in the messages too, which is why the model sees its own earlier steps on the next call, and why the request grows with each step.
+The loop is `_loop` in [`examples/lib/loop.py`](https://github.com/rollingedition/book-agent-harnesses/blob/d2f0905d2282297f27cc09af7669fb5c5cf02f54/examples/lib/loop.py), about seventy lines. The file also holds rules for later chapters: the optional stops in `Stops` are off by default, and a reply cut off at the token limit is refused whatever the settings. None of this chapter's runs reach either. A step is one model call. A tool call is one request inside a step, and a reply can hold more than one. The loop acts on the first request and answers each other one with an error that says it was not run. Each request gets an ID from a counter, and the ID goes on the tool-result message that answers it. The assistant message that holds the reply carries no ID, and the trace keeps none. The [trace](#traces-and-cost), in `lib/trace.py`, holds one line per step: the step's number, the tool it called and what came back. Every reply stays in the messages too, which is why the model sees its own earlier steps on the next call, and why the request grows with each step.
 
 The model's reply is plain text, and its tool call has a fixed shape: JSON inside `<tool_call>` tags. The chat template in the model file asks for that shape, a JSON object with a function name and arguments inside the tags ([the model file at its pinned revision](https://huggingface.co/unsloth/Qwen3-4B-Instruct-2507-GGUF/resolve/a06e946bb6b655725eafa393f4a9745d460374c9/Qwen3-4B-Instruct-2507-Q4_K_M.gguf)). The recorded replies use this shape, and the harness reads only what is inside the tags:
 
@@ -124,7 +124,7 @@ In this chapter the tools run inside the harness's own process, on the copy. [Ch
 
 A tool that reads files has to decide which paths it will read. Calling `read_file` with two paths outside the case shows what the model gets back when it asks for one.
 
-Example `tool-refusal` (Python 3.12.15 · pydantic 2.14.3), passing in Edition 2026.11.3:
+Example `tool-refusal` (Python 3.12.15 · pydantic 2.14.3), passing in Edition 2026.11.4:
 
 ```python
 """The read tool refuses a path outside the case, and the refusal comes back as text the model can read. Only reads
@@ -165,7 +165,7 @@ A call to a tool that doesn't exist comes back as an error result, and the run g
 
 With [the loop](#the-loop), its tools and its budget in place, the first run uses a model whose replies you write yourself. A scripted model gives back the replies you give it, in order, and nothing else. That makes it a clean test of the loop: any fault in the run is the loop's and not the model's, and the run shows what the loop does with correct replies, not what a model would choose. Four scripted replies for [T-01](#one-task) read the implementation, read its test, run the visible suite, and finish with a corrected file.
 
-Example `scripted-loop` (Python 3.12.15 · pydantic 2.14.3), passing in Edition 2026.11.3:
+Example `scripted-loop` (Python 3.12.15 · pydantic 2.14.3), passing in Edition 2026.11.4:
 
 ```python
 """Four scripted replies solve T-01 through the step loop: read the file, read its test, run the visible suite,
@@ -208,7 +208,7 @@ Read the output in order. Each line names one call and what came back from it, s
 
 The recorded run comes from Qwen3-4B-Instruct-2507, an open model quantised to Q4_K_M and run on a CPU at temperature 0 with a fixed seed. Its replies were saved as the raw text it produced, in a recording whose manifest names the model, its revision, the prompt's hash and the token counts. Replay checks that each request matches the one the recording holds, where a request is the messages and tool schemas sent at one step, and then returns the recorded reply.
 
-Example `recorded-run` (Python 3.12.15 · pydantic 2.14.3), passing in Edition 2026.11.3:
+Example `recorded-run` (Python 3.12.15 · pydantic 2.14.3), passing in Edition 2026.11.4:
 
 ```python
 """The recorded run of T-01, replayed step by step: each request must match the one recorded, and the replies are

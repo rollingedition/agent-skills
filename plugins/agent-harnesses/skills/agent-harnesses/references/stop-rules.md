@@ -3,13 +3,13 @@ title: "Agent Harnesses"
 chapter: "Stop the loop when it's done or stuck"
 chapter_id: stop-rules
 book: agent-harnesses
-edition: 2026.11.3
+edition: 2026.11.4
 verified: 2026-11-20
-edition_code: 1CW4-SHG5
+edition_code: QTC9-C576
 canonical: https://rollingedition.com/agent-harnesses/stop-rules
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“Stop the loop when it's done or stuck,” chapter 2 of Agent Harnesses, Edition 2026.11.3, examples passed Nov 20, 2026. By Rolling Edition, https://rollingedition.com/agent-harnesses/stop-rules. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Stop the loop when it's done or stuck,” chapter 2 of Agent Harnesses, Edition 2026.11.4, examples passed Nov 20, 2026. By Rolling Edition, https://rollingedition.com/agent-harnesses/stop-rules. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Stop the loop when it's done or stuck
 
@@ -52,7 +52,7 @@ The [task set](#testing-the-agent), the 20 tasks this chapter's last example cou
 
 The chapter 1 recording of T-01 shows the budget at work. The model, Qwen3-4B-Instruct-2507, is an open model, and its replies were recorded and are replayed here, so every run in this chapter gets the same output on every machine. In that recording the model did not finish within eight steps. Its last step was a malformed tool call, which the harness refused. Replay the run under the budget, with no other rule, and the output shows where the cap ends it:
 
-Example `budget-stops-a-loop` (Python 3.12.15 · pydantic 2.14.3), passing in Edition 2026.11.3:
+Example `budget-stops-a-loop` (Python 3.12.15 · pydantic 2.14.3), passing in Edition 2026.11.4:
 
 ```python
 """The chapter 1 recorded run of T-01 under its step budget of 8. The budget ends the run as step_cap, with no finish;
@@ -102,7 +102,7 @@ Three is this book's threshold, not a fixed one. It is a judgement, and the work
 
 T-01 never sends the same call three times in a row, so this example replays T-02, where the model does:
 
-Example `repeated-call-stops` (Python 3.12.15 · pydantic 2.14.3), passing in Edition 2026.11.3:
+Example `repeated-call-stops` (Python 3.12.15 · pydantic 2.14.3), passing in Edition 2026.11.4:
 
 ```python
 """The recorded run of T-02 with and without the repeated-call rule. Three identical calls in a row end the run as
@@ -164,7 +164,7 @@ The rule keeps a count of edits in a row that leave the counts unchanged. The fi
 
 Run T-01 from the task-set recording, which uses tool set v1 and whose edits fail, twice: once with no rules and once with the no-progress rule set to two edits. Read where each run ends:
 
-Example `no-progress-stops` (Python 3.12.15 · pydantic 2.14.3), passing in Edition 2026.11.3:
+Example `no-progress-stops` (Python 3.12.15 · pydantic 2.14.3), passing in Edition 2026.11.4:
 
 ```python
 """The recorded run of T-01 under the no-progress rule. Two edits in a row that leave the test counts where they
@@ -223,7 +223,7 @@ Only `ask_user` asks. The model calls it with a question, the harness hands the 
 
 The last check in this chapter runs all 20 tasks twice, once as recorded and once with both rules, [repeated calls](#repeated-calls) and [no progress](#no-progress). It prints counts only:
 
-Example `stop-rules-over-task-set` (Python 3.12.15 · pydantic 2.14.3), passing in Edition 2026.11.3:
+Example `stop-rules-over-task-set` (Python 3.12.15 · pydantic 2.14.3), passing in Edition 2026.11.4:
 
 ```python
 """The task-set recording's 20 runs, replayed as recorded and again with both stop rules. Counts only: which runs hit

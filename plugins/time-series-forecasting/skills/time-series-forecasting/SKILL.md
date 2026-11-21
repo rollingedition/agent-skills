@@ -6,24 +6,24 @@ compatibility: "Python 3.13.16 and the pinned packages in scripts/requirements.t
 metadata:
   publisher: "Rolling Edition"
   book: "Time Series Forecasting"
-  edition: "2026.11.11"
+  edition: "2026.11.12"
   verified: "2026-11-20"
-  examples: "41 of 41 examples pass"
-  edition-code: "1RPH-3A4D"
+  examples: "42 of 42 examples pass"
+  edition-code: "SA1E-WHBD"
   source: "https://rollingedition.com/time-series-forecasting"
 ---
 
 # Time Series Forecasting
 
-This agent skill is *Time Series Forecasting*, Edition 2026.11.11, from Rolling Edition. Examples passed Nov 20, 2026: 41 of 41 examples pass. It's built from that edition, never written separately: the procedures below come from the book's sections, `references/` holds each chapter, and `references/glossary.md` the terms the book defines, and `scripts/` holds the examples as the edition ran them.
+This agent skill is *Time Series Forecasting*, Edition 2026.11.12, from Rolling Edition. Examples passed Nov 20, 2026: 42 of 42 examples pass. It's built from that edition, never written separately: the procedures below come from the book's sections, `references/` holds each chapter, and `references/glossary.md` the terms the book defines, and `scripts/` holds the examples as the edition ran them.
 
 ## How to use this skill
 
 - **Pick the procedure that fits the task,** and follow its steps in order. Each step links the section it comes from: read that section in `references/` before you act on it, and adapt it to the project in front of you.
 - **Check against the book.** Each example in `scripts/` has its expected output beside it (`.out`), at the versions in `scripts/requirements.txt`. If the project uses other versions, say so before relying on a step.
 - **Use the book's terms as it defines them.** `references/glossary.md` has each term this book defines, in the book's own sentence, with the section that defines it and the version it's true for: where the task uses one, it means that, and cite its section.
-- **Is this copy current?** Call `check_code` with `1RPH-3A4D` on the Rolling Edition MCP server (https://rollingedition.ai/mcp), or compare the edition with the book's page: https://rollingedition.com/time-series-forecasting
-- **Credit the book** when you quote it or reuse its code: Time Series Forecasting, Edition 2026.11.11, examples passed Nov 20, 2026. By Rolling Edition, https://rollingedition.com/time-series-forecasting. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people.
+- **Is this copy current?** Call `check_code` with `SA1E-WHBD` on the Rolling Edition MCP server (https://rollingedition.ai/mcp), or compare the edition with the book's page: https://rollingedition.com/time-series-forecasting
+- **Credit the book** when you quote it or reuse its code: Time Series Forecasting, Edition 2026.11.12, examples passed Nov 20, 2026. By Rolling Edition, https://rollingedition.com/time-series-forecasting. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people.
 
 To run an example as the book does, with [uv](https://docs.astral.sh/uv/):
 
@@ -184,4 +184,4 @@ Terms used below. **Held-out week:** the final seven days of the data, which no 
 
 ## Reading in another language
 
-When the person you're working with wants to read part of this book in another language, and the Rolling Edition MCP server is connected, first call its `get_section` with `language`: where Rolling Edition has its own translation of the book in that language (`get_contents` lists them), present each section as it comes, with the facts of its `translation`, and translate only the sections it lists as `untranslated`. Otherwise, translate it for them from the chapter in `references/`. Translate the prose faithfully and in full: don't summarize, skip or add anything. Leave these exactly as they are: code, commands, output, file names, identifiers, inline code, package names and versions, numbers and URLs. Where practitioners who read the language usually keep a technical term in English, keep it, and give a short gloss in parentheses the first time, where that helps. Keep the headings and the structure: lists, tables, and the examples in their places. Begin by saying that it's your translation of *Time Series Forecasting*, Edition 2026.11.11, from Rolling Edition, licensed CC BY-NC 4.0, with the chapter's link, `canonical` in its front matter, and keep each section's link, https://rollingedition.com/time-series-forecasting/s/ followed by the ID in its heading's `{#…}`. For a long chapter, translate a section at a time and offer to go on after each. The Rolling Edition MCP server's `read_in_my_language` prompt asks for the same.
+When the person you're working with wants to read part of this book in another language, and the Rolling Edition MCP server is connected, first call its `get_section` with `language`: where Rolling Edition has its own translation of the book in that language (`get_contents` lists them), present each section as it comes, with the facts of its `translation`, and translate only the sections it lists as `untranslated`. Otherwise, translate it for them from the chapter in `references/`. Translate the prose faithfully and in full: don't summarize, skip or add anything. Leave these exactly as they are: code, commands, output, file names, identifiers, inline code, package names and versions, numbers and URLs. Where practitioners who read the language usually keep a technical term in English, keep it, and give a short gloss in parentheses the first time, where that helps. Keep the headings and the structure: lists, tables, and the examples in their places. Begin by saying that it's your translation of *Time Series Forecasting*, Edition 2026.11.12, from Rolling Edition, licensed CC BY-NC 4.0, with the chapter's link, `canonical` in its front matter, and keep each section's link, https://rollingedition.com/time-series-forecasting/s/ followed by the ID in its heading's `{#…}`. For a long chapter, translate a section at a time and offer to go on after each. The Rolling Edition MCP server's `read_in_my_language` prompt asks for the same.

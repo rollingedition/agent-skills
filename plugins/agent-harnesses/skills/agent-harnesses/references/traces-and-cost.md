@@ -3,13 +3,13 @@ title: "Agent Harnesses"
 chapter: "Trace each run and count what it cost"
 chapter_id: traces-and-cost
 book: agent-harnesses
-edition: 2026.11.3
+edition: 2026.11.4
 verified: 2026-11-20
-edition_code: 1CW4-SHG5
+edition_code: QTC9-C576
 canonical: https://rollingedition.com/agent-harnesses/traces-and-cost
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“Trace each run and count what it cost,” chapter 11 of Agent Harnesses, Edition 2026.11.3, examples passed Nov 20, 2026. By Rolling Edition, https://rollingedition.com/agent-harnesses/traces-and-cost. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Trace each run and count what it cost,” chapter 11 of Agent Harnesses, Edition 2026.11.4, examples passed Nov 20, 2026. By Rolling Edition, https://rollingedition.com/agent-harnesses/traces-and-cost. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Trace each run and count what it cost
 
@@ -25,7 +25,7 @@ A trace is a file with one JSON object per line. The format has a name, JSON Lin
 
 Replaying the [chapter 1](#tools-and-a-loop) run on T-01 writes its steps in this form. The replay reads the recorded reply for each step, so the trace is the same on every run.
 
-Example `trace-one-run` (Python 3.12.15 · pydantic 2.14.3), passing in Edition 2026.11.3:
+Example `trace-one-run` (Python 3.12.15 · pydantic 2.14.3), passing in Edition 2026.11.4:
 
 ```python
 """The chapter 1 recorded run of T-01 as JSON lines: one record per step, with run-scoped IDs and the recorded token
@@ -114,7 +114,7 @@ Each record in the [trace](#one-line-per-event) carries two token counts, in the
 
 Summing the stored step counts per task, and for the set, is the job of the next example. It checks each task's sums against the totals the manifest stores for that task, and it checks the set's prompt sum against the sum of those task totals.
 
-Example `token-counts-from-recording` (Python 3.12.15), passing in Edition 2026.11.3:
+Example `token-counts-from-recording` (Python 3.12.15), passing in Edition 2026.11.4:
 
 ```python
 """The token counts of the task-set recording, summed per task and for the set, read from the stored counts. Replay
@@ -191,7 +191,7 @@ The recording's manifest stores the model file and its SHA-256, but not the sett
 
 Here a parent starts a child on T-04, a task that asks for an inch unit. The child's recorded run ends with a finish that changes files. A scripted person says no to that change, so the gate holds the finish, and the child hands back with a question.
 
-Example `child-trace-under-parent` (Python 3.12.15 · pydantic 2.14.3), passing in Edition 2026.11.3:
+Example `child-trace-under-parent` (Python 3.12.15 · pydantic 2.14.3), passing in Edition 2026.11.4:
 
 ```python
 """A parent starts a child on T-04, whose recorded run ends with a finish that changes files. The gate holds that finish
@@ -279,7 +279,7 @@ With the stored counts [summed per task](#token-counts), a run's cost is three n
 
 Grouping the stored counts by how each run ended puts the step-capped runs beside the others, so the cost of each stop reason shows in the same output.
 
-Example `cost-as-counts` (Python 3.12.15), passing in Edition 2026.11.3:
+Example `cost-as-counts` (Python 3.12.15), passing in Edition 2026.11.4:
 
 ```python
 """The cost of the task-set runs as counts only: steps, tool calls and tokens, summed per way a run ended. The cost is
