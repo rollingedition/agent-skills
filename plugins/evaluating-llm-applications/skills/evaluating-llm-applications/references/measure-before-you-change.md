@@ -3,13 +3,13 @@ title: "Evaluating LLM Applications"
 chapter: "Measure an assistant before you change it"
 chapter_id: measure-before-you-change
 book: evaluating-llm-applications
-edition: 2026.11.1
-verified: 2026-11-20
-edition_code: 6AK2-SSG2
+edition: 2026.11.2
+verified: 2026-11-21
+edition_code: G0M7-3TW7
 canonical: https://rollingedition.com/evaluating-llm-applications/measure-before-you-change
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“Measure an assistant before you change it,” chapter 1 of Evaluating LLM Applications, Edition 2026.11.1, examples passed Nov 20, 2026. By Rolling Edition, https://rollingedition.com/evaluating-llm-applications/measure-before-you-change. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Measure an assistant before you change it,” chapter 1 of Evaluating LLM Applications, Edition 2026.11.2, examples passed Nov 21, 2026. By Rolling Edition, https://rollingedition.com/evaluating-llm-applications/measure-before-you-change. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Measure an assistant before you change it
 
@@ -25,7 +25,7 @@ An evaluation is only as steady as the thing it measures. The sablefile docs com
 
 Start with the docs. Load the three versions, count the sections in each, and count the section IDs that all three share.
 
-Example `list-the-docs` (Python 3.12.15 · numpy 2.5.4), passing in Edition 2026.11.1:
+Example `list-the-docs` (Python 3.12.15 · numpy 2.5.5), passing in Edition 2026.11.2:
 
 ```python
 """Loads the three doc versions and prints each one's section count, and how many section IDs all three share.
@@ -74,7 +74,7 @@ The items fall into four kinds. Answerable items have their answer on the page. 
 
 Each item is printed in ID order, with its version, kind, twin and whether it was planted.
 
-Example `twenty-questions` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.4 · pydantic 2.14.3 · typing-extensions 4.16.0), passing in Edition 2026.11.1:
+Example `twenty-questions` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pydantic 2.14.3 · typing-extensions 4.16.0), passing in Edition 2026.11.2:
 
 ```python
 """Prints the twenty chapter items in id order: version, kind, planted flag and question, then the counts by kind.
@@ -142,7 +142,7 @@ The assistant doesn't read all the docs for every question. For each question it
 
 The index is built with BM25, which scores each section by the words it shares with the question. The scoring runs through bm25s at 0.3.16. Take one question: whether an ignore entry such as `docs/**/*.tmp` catches a file two folders down in 1.1. Its output shows the words the index keeps from the question, and the top three sections, ordered by score and then by section ID.
 
-Example `retrieve-top-sections` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.4 · pydantic 2.14.3 · typing-extensions 4.16.0), passing in Edition 2026.11.1:
+Example `retrieve-top-sections` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pydantic 2.14.3 · typing-extensions 4.16.0), passing in Edition 2026.11.2:
 
 ```python
 """Shows BM25 retrieval for one question (q-0007, version 1.1): the words kept, then the top three sections.
@@ -194,7 +194,7 @@ A model's reply to the same question can change with its runtime, its settings a
 
 The recording is a folder of replies, one per item. It was made with a 4-bit build of Qwen3-4B-Instruct-2507, an open model pinned to one file and one revision, run at temperature zero on a CPU. It holds a reply for every item in the full set, and this chapter reads twenty of them by ID. Replay one of them: the reply to `q-0006`, which asks whether `check` can exit with status 0 when a file has drifted in 2.0.
 
-Example `replay-one-answer` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.4 · pydantic 2.14.3 · typing-extensions 4.16.0), passing in Edition 2026.11.1:
+Example `replay-one-answer` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pydantic 2.14.3 · typing-extensions 4.16.0), passing in Edition 2026.11.2:
 
 ```python
 """Replays the recorded baseline reply to q-0006 and parses it: the sections it was given, the reply, its citations.
@@ -250,7 +250,7 @@ The assistant must cite every statement with the citation form, a section ID in 
 
 The citation and format checks run over the twenty baseline replies, and the output counts each kind of failure.
 
-Example `check-citations` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.4 · pydantic 2.14.3 · typing-extensions 4.16.0), passing in Edition 2026.11.1:
+Example `check-citations` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pydantic 2.14.3 · typing-extensions 4.16.0), passing in Edition 2026.11.2:
 
 ```python
 """Runs the citation and format checks on the baseline replies to the twenty chapter items, and counts each problem.
@@ -325,7 +325,7 @@ When the docs don't answer a question, the assistant must reply with the decline
 
 Both decline errors are counted over the baseline's replies.
 
-Example `check-declines` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.4 · pydantic 2.14.3 · typing-extensions 4.16.0), passing in Edition 2026.11.1:
+Example `check-declines` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pydantic 2.14.3 · typing-extensions 4.16.0), passing in Edition 2026.11.2:
 
 ```python
 """Counts the two decline errors over the baseline replies: answerable items declined, and unanswerable items answered.
@@ -384,7 +384,7 @@ The judge's rules are short, and they're worth reading in full. A reply is corre
 
 Here is the judge's verdict on `q-0005`, the near miss. The assistant's reply to it says that 2.0 does not read `sablefile.lock`, and points vaguely at migration.
 
-Example `judge-one-answer` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.4 · pydantic 2.14.3 · typing-extensions 4.16.0), passing in Edition 2026.11.1:
+Example `judge-one-answer` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pydantic 2.14.3 · typing-extensions 4.16.0), passing in Edition 2026.11.2:
 
 ```python
 """Reads the reference-guided judge's verdict on the baseline reply to q-0005, a planted near-miss item, from its recording.
@@ -441,7 +441,7 @@ An interval answers a different question: how far would the rate move if the set
 
 Compute the rate and its interval for the baseline, then break the rate down by kind.
 
-Example `pass-rate-interval` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.4 · pydantic 2.14.3 · typing-extensions 4.16.0), passing in Edition 2026.11.1:
+Example `pass-rate-interval` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pydantic 2.14.3 · typing-extensions 4.16.0), passing in Edition 2026.11.2:
 
 ```python
 """The baseline's pass rate over the twenty chapter items, judged by the reference-guided judge, with its 95% interval.
@@ -496,7 +496,7 @@ The team's proposed prompt is the change to measure. P1 is the baseline prompt. 
 
 Both prompts run over the same twenty items, and the output reports the difference with its interval.
 
-Example `compare-two-prompts` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.4 · pydantic 2.14.3 · typing-extensions 4.16.0), passing in Edition 2026.11.1:
+Example `compare-two-prompts` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pydantic 2.14.3 · typing-extensions 4.16.0), passing in Edition 2026.11.2:
 
 ```python
 """Compares the baseline prompt (P1) with prompt-b (P2) on the twenty chapter items: each pass rate, the paired difference, its interval and n.
@@ -548,7 +548,7 @@ The paired view shows what sits under the tie. P2 passes 1 item that P1 fails, a
 
 Here the judge's verdicts on `q-0019` are read under both prompts, and the rule the PASS breaks is printed beside them.
 
-Example `judge-gets-one-wrong` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.4 · pydantic 2.14.3 · typing-extensions 4.16.0), passing in Edition 2026.11.1:
+Example `judge-gets-one-wrong` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pydantic 2.14.3 · typing-extensions 4.16.0), passing in Edition 2026.11.2:
 
 ```python
 """Shows one judge verdict that breaks the judge's own rule: on q-0019, the judge passes P2's reply, which answers only one of the
@@ -613,7 +613,7 @@ Read this output as a record of the judge's verdicts. The reference for `q-0019`
 
 This last example takes the same two prompts and asks what the twenty items can show about them. Twenty items turn out to say very little about these two prompts.
 
-Example `twenty-cannot-tell` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.4 · pydantic 2.14.3 · typing-extensions 4.16.0), passing in Edition 2026.11.1:
+Example `twenty-cannot-tell` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pydantic 2.14.3 · typing-extensions 4.16.0), passing in Edition 2026.11.2:
 
 ```python
 """Shows that twenty items cannot tell the two prompts apart: the interval of the paired difference includes zero.

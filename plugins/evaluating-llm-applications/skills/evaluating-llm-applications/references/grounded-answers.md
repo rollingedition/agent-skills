@@ -3,13 +3,13 @@ title: "Evaluating LLM Applications"
 chapter: "Check that answers rest on the cited docs, in the asked version"
 chapter_id: grounded-answers
 book: evaluating-llm-applications
-edition: 2026.11.1
-verified: 2026-11-20
-edition_code: 6AK2-SSG2
+edition: 2026.11.2
+verified: 2026-11-21
+edition_code: G0M7-3TW7
 canonical: https://rollingedition.com/evaluating-llm-applications/grounded-answers
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“Check that answers rest on the cited docs, in the asked version,” chapter 9 of Evaluating LLM Applications, Edition 2026.11.1, examples passed Nov 20, 2026. By Rolling Edition, https://rollingedition.com/evaluating-llm-applications/grounded-answers. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Check that answers rest on the cited docs, in the asked version,” chapter 9 of Evaluating LLM Applications, Edition 2026.11.2, examples passed Nov 21, 2026. By Rolling Edition, https://rollingedition.com/evaluating-llm-applications/grounded-answers. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Check that answers rest on the cited docs, in the asked version
 
@@ -37,7 +37,7 @@ The code prints two counts from the same replies. The citation rate counts every
 
 Run it on both splits, and read the item line before the citation line.
 
-Example `citation-accuracy-counts` (Python 3.12.15 · numpy 2.5.4 · pydantic 2.14.3 · typing-extensions 4.16.0), passing in Edition 2026.11.1:
+Example `citation-accuracy-counts` (Python 3.12.15 · numpy 2.5.5 · pydantic 2.14.3 · typing-extensions 4.16.0), passing in Edition 2026.11.2:
 
 ```python
 """Counts the baseline's answered items that cite a supporting section of the asked version, dev and held-out apart.
@@ -139,7 +139,7 @@ The difference from citation accuracy shows up in the middle of an answer. Suppo
 
 Nobody has checked this judge's verdicts against a person's, so every faithfulness rate here is uncalibrated. The judge is also the assistant's own model, Qwen3-4B-Instruct-2507, so it grades answers that model wrote. [Self-preference](when-the-judge-stops-being-reliable#self-preference) explains why that matters, and why this book cannot test it. Calibrating the judge would need human ratings of these replies, which this book doesn't have. [Calibrate the judge](calibrate-the-judge) describes the method, which compares the judge with ratings made by hand. Because these rates are not calibrated, there is nothing for the [transfer assumption](calibrate-the-judge#transfer-assumption) to carry over, and the limits in [where to stop](when-the-judge-stops-being-reliable#where-to-stop) apply to them in full.
 
-Example `faithfulness-rate` (Python 3.12.15 · numpy 2.5.4 · pydantic 2.14.3 · typing-extensions 4.16.0), passing in Edition 2026.11.1:
+Example `faithfulness-rate` (Python 3.12.15 · numpy 2.5.5 · pydantic 2.14.3 · typing-extensions 4.16.0), passing in Edition 2026.11.2:
 
 ```python
 """The faithfulness rate of assistant-baseline's answered items, as judged in judge-faithfulness-baseline, dev and held-out apart.
@@ -233,7 +233,7 @@ This check sees only what the ID tells it. A citation carries an ID, not a versi
 
 Two variants are read here. The baseline retrieves from the index of the asked version only. The unfiltered variant retrieves from the indexes of every version together, and shows each section's version in its header, so the model can see where a section comes from. The unfiltered variant is the one that could cite another version, since it is shown them.
 
-Example `version-correct-answers` (Python 3.12.15 · numpy 2.5.4 · pydantic 2.14.3 · typing-extensions 4.16.0), passing in Edition 2026.11.1:
+Example `version-correct-answers` (Python 3.12.15 · numpy 2.5.5 · pydantic 2.14.3 · typing-extensions 4.16.0), passing in Edition 2026.11.2:
 
 ```python
 """Reads the 25 version-dependent items for two variants: whether the judge passed the answer for the asked version, and whether a
@@ -318,7 +318,7 @@ items where the wrong-version flag differs: 0
 
 Across every version-dependent item, the wrong-version share is 0.0% (0 of 25) for the baseline and 0.0% (0 of 25) for the unfiltered variant. A zero says only that the check flagged no ID. The next example shows how few IDs it could have flagged.
 
-Example `version-check-detail` (Python 3.12.15 · numpy 2.5.4 · pydantic 2.14.3 · typing-extensions 4.16.0), passing in Edition 2026.11.1:
+Example `version-check-detail` (Python 3.12.15 · numpy 2.5.5 · pydantic 2.14.3 · typing-extensions 4.16.0), passing in Edition 2026.11.2:
 
 ```python
 """The two counts behind the version check, and the version-dependent items where the variants' verdicts differ, by split.
@@ -396,7 +396,7 @@ Retrieval is BM25 over the sections of the asked version. It is deterministic: t
 
 Dev items with no supporting section of the asked version are left out of the table. Those are the unanswerable items, since no section of their asked version exists for retrieval to find. Their count is 13.
 
-Example `retrieval-path` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.4 · pydantic 2.14.3 · typing-extensions 4.16.0), passing in Edition 2026.11.1:
+Example `retrieval-path` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pydantic 2.14.3 · typing-extensions 4.16.0), passing in Edition 2026.11.2:
 
 ```python
 """Sets the baseline's judge verdict against whether a supporting section reached the top k, for each dev item that has one.
@@ -480,7 +480,7 @@ Read the PASS row first. The cell for passes with the section in the top k holds
 
 The FAIL row is where the other checks come in. Of the failures with the section in the top k, 5 are declines, and the rest are answers. [Declining when the docs don't say](declining-when-the-docs-dont-say) covers what a decline means when the docs hold the answer. The example below splits the cell.
 
-Example `fail-with-section` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.4 · pydantic 2.14.3 · typing-extensions 4.16.0), passing in Edition 2026.11.1:
+Example `fail-with-section` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pydantic 2.14.3 · typing-extensions 4.16.0), passing in Edition 2026.11.2:
 
 ```python
 """The dev items the baseline failed although a listed section of the asked version was in its top k, split into declines and answers.

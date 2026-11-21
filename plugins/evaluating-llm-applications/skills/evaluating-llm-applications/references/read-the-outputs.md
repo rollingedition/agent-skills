@@ -3,13 +3,13 @@ title: "Evaluating LLM Applications"
 chapter: "Read the replies to find what to measure"
 chapter_id: read-the-outputs
 book: evaluating-llm-applications
-edition: 2026.11.1
-verified: 2026-11-20
-edition_code: 6AK2-SSG2
+edition: 2026.11.2
+verified: 2026-11-21
+edition_code: G0M7-3TW7
 canonical: https://rollingedition.com/evaluating-llm-applications/read-the-outputs
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“Read the replies to find what to measure,” chapter 2 of Evaluating LLM Applications, Edition 2026.11.1, examples passed Nov 20, 2026. By Rolling Edition, https://rollingedition.com/evaluating-llm-applications/read-the-outputs. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Read the replies to find what to measure,” chapter 2 of Evaluating LLM Applications, Edition 2026.11.2, examples passed Nov 21, 2026. By Rolling Edition, https://rollingedition.com/evaluating-llm-applications/read-the-outputs. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Read the replies to find what to measure
 
@@ -35,7 +35,7 @@ Reading one item takes three steps. Start with the question and its version, sin
 
 The example that follows is where the chapter starts. It prints every dev item with its reference answer and each variant's reply, grouped by kind and sorted by ID, so the three replies to one question sit on adjacent lines. Read across an item's lines, not down one variant's column. The variants fail in different ways on the same question, and that difference is what to see. Each reply is cut to its first 120 characters, and its line says whether the reply declined and what it cited. A reply that holds the decline phrase inside other text is marked as a phrase, not a decline, so you can see where the parser draws the line.
 
-Example `read-replies-dev` (Python 3.12.15 · numpy 2.5.4 · pydantic 2.14.3 · typing-extensions 4.16.0), passing in Edition 2026.11.1:
+Example `read-replies-dev` (Python 3.12.15 · numpy 2.5.5 · pydantic 2.14.3 · typing-extensions 4.16.0), passing in Edition 2026.11.2:
 
 ```python
 """Prints the dev items, grouped by kind and sorted by ID, with each item's reference answer and the baseline,
@@ -520,7 +520,7 @@ The counts carry the label "coded by the drafting model (one coder; not human la
 
 The tally example turns the notes into counts, and it checks the codes first. Each dev item has exactly one code per variant, no code names a mode the file doesn't define, and the file carries the label. Then it prints one row per mode and one column per variant, and one labelled line for each count, which are the numbers the prose below quotes.
 
-Example `tally-failure-modes` (Python 3.12.15 · numpy 2.5.4 · pydantic 2.14.3 · typing-extensions 4.16.0), passing in Edition 2026.11.1:
+Example `tally-failure-modes` (Python 3.12.15 · numpy 2.5.5 · pydantic 2.14.3 · typing-extensions 4.16.0), passing in Edition 2026.11.2:
 
 ```python
 """Counts the drafting model's failure codes over the dev items, per variant, and prints one table and one labelled line
