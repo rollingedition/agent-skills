@@ -3,13 +3,13 @@ title: "Agent Harnesses"
 chapter: "Give the model tools it can't misuse"
 chapter_id: tool-schemas
 book: agent-harnesses
-edition: 2026.11.2
+edition: 2026.11.3
 verified: 2026-11-20
-edition_code: ZZGV-NEGC
+edition_code: 1CW4-SHG5
 canonical: https://rollingedition.com/agent-harnesses/tool-schemas
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“Give the model tools it can't misuse,” chapter 3 of Agent Harnesses, Edition 2026.11.2, examples passed Nov 20, 2026. By Rolling Edition, https://rollingedition.com/agent-harnesses/tool-schemas. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Give the model tools it can't misuse,” chapter 3 of Agent Harnesses, Edition 2026.11.3, examples passed Nov 20, 2026. By Rolling Edition, https://rollingedition.com/agent-harnesses/tool-schemas. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Give the model tools it can't misuse
 
@@ -17,7 +17,7 @@ By the end of this chapter you can give a model tools whose arguments the harnes
 
 The agent's job is to fix `unitcraft`, a small Python library that formats and converts quantities. Its edits are where this chapter's problem shows, since one missing quote makes one fail. The agent works on a scratch copy of the library. In [chapter 1](#what-goes-wrong), its first recorded run broke on a single call. The open model, Qwen3-4B replayed from its recording, read the right file, misread the issue as asking it to drop the zeros, and then wrote each change as a whole file, in Python triple quotes, inside the JSON of a `finish` call. Triple quotes are not valid inside a JSON string, so those arguments never parsed. No tool ran, and the run ended at its step cap.
 
-This chapter compares two tool sets. **Tool set v1** is the seven tools the task-set recording was made with: `list_files`, `read_file`, `run_tests`, `write_file`, `edit_file`, `ask_user` and `finish`. **Tool set v2** has the same tools, with the same sentences and the same system prompt, and three changes: strict argument models, the error type named in each refusal, and nearest-line errors for a failed edit.
+This chapter compares two tool sets. **Tool set v1** is the seven tools the task-set recording was made with: `list_files`, `read_file`, `run_tests`, `write_file`, `edit_file`, `ask_user` and `finish`. **Tool set v2** has the same seven tools as tool set v1, with the same sentences and the same system prompt, and three changes: strict argument models, the error type named in each refusal, and nearest-line errors for a failed edit.
 
 The misreading is the model's own, and no tool design fixes it. The malformed calls have two parts. The call had a shape the harness could not read, and the change travelled inside a string the model had to escape correctly. This chapter deals with both. Each tool gets an argument schema that the harness checks before it runs, and a refusal goes back to the model as text it can act on. In tool set v1 the change also leaves `finish`: the model edits its copy with `edit_file` and `write_file`, and `finish` carries only a summary. Small edits bring their own quoting trouble, which the last section takes up.
 
@@ -25,11 +25,11 @@ The misreading is the model's own, and no tool design fixes it. The malformed ca
 
 A model writes a tool call from what it has been told about the tool, and the harness can refuse a bad call only by checking it against the same description. Each tool in the set has three parts: a name, one sentence of description, and an argument model, a small pydantic class that lists the fields the tool takes. The harness sends each tool's schema with the request, and the schema is built from that class, so the text the model reads and the check the harness runs come from one place.
 
-That single place matters because a schema holds more than field names. Think of it as the form the model fills in before it makes a call. Each line of the form names a field, says what kind of answer it wants, and may say how large an answer may be. A form can guide the person filling it in, but it cannot stop a wrong answer from being written. That is where the form stops being useful as a guard, and the harness has to do the checking that the form cannot.
+That single place matters because a schema holds more than field names. Think of a tool's schema as the form the model fills in before it makes a call. Each line of the form names a field, says what kind of answer it wants, and may say how large an answer may be. A form can guide the person filling it in, but it cannot stop a wrong answer from being written. That is where the form stops being useful as a guard, and the harness has to do the checking that the form cannot.
 
 Pydantic writes each field's type, its description, its default and its bounds into the schema. The case's tools take only paths and strings, so this section uses a different read, one with a line limit that no tool in the set uses. It is a teaching model, chosen to show what a bound looks like. Printing its schema is the quickest way to see what the model is told, and the bounds and the default are the lines to read.
 
-Example `schema-from-model` (Python 3.12.15 · pydantic 2.14.3), passing in Edition 2026.11.2:
+Example `schema-from-model` (Python 3.12.15 · pydantic 2.14.3), passing in Edition 2026.11.3:
 
 ```python
 """The JSON schema pydantic makes for a read with a line limit: its bounds, its default and the descriptions the
@@ -68,7 +68,7 @@ A default in a schema is a note, not a rule. The [JSON Schema validation specifi
 
 The other half of what the model reads is each tool's sentence. Those sentences sit beside their schemas in every request, so the example below prints them. Two lines are worth checking: the one that says which chapter 1 tools share a sentence with this set, and the one that says `finish` does not.
 
-Example `tool-descriptions` (Python 3.12.15 · pydantic 2.14.3), passing in Edition 2026.11.2:
+Example `tool-descriptions` (Python 3.12.15 · pydantic 2.14.3), passing in Edition 2026.11.3:
 
 ```python
 """The one-sentence description of each tool in the v1 set, the text the model reads beside each schema. The point
@@ -100,13 +100,13 @@ ch1 tools with the same sentence in v1: read_file, run_tests
 ch1 finish has the same sentence in v1: False
 ```
 
-Tool set v1 has 7 tools, each with one sentence. The printout confirms that chapter 1's tools keep their sentences in this set, and they do for read_file, run_tests. Its `finish` is the one that changed, because its job did. A sentence says what a tool is for. It cannot carry a rule the harness does not check.
+Tool set v1 has 7 tools, each with one sentence. The printout confirms that chapter 1's tools keep their sentences in this set, and they do for read_file, run_tests. Its `finish` is the one that changed, because its job did. A tool's sentence says what the tool is for. It cannot carry a rule the harness does not check.
 
 **Working rule:** Write each bound, type and default in the argument model, where the harness checks it, and give each field a description the model can read. Keep the tool's sentence to what the tool is for. A rule that lives only in the sentence is a hint the harness will never enforce.
 
 ## Lax by default, strict on purpose {#lax-or-strict}
 
-A model asked for a number may write `"50"`, and a flag may arrive as `true`. The harness has to decide whether to take those values as meant, and pydantic answers by mode. In its default, lax mode, a value is converted when the conversion is clear and refused when it is not. In strict mode, a value must already have the declared type. The tool set v1 argument models use the default, and tool set v2's copies of them are strict.
+A model asked for a number may write `"50"`, and a flag may arrive as `true`. The harness has to decide whether to take those values as meant, and pydantic answers by mode. In pydantic's default, lax mode, a value is converted when the conversion is clear and refused when it is not. In strict mode, a value must already have the declared type. The tool set v1 argument models use the default, and tool set v2's copies of them are strict.
 
 The schema is a hint, not a guarantee. OpenAI's [function-calling guide](https://developers.openai.com/api/docs/guides/function-calling) describes a setting also called `strict`, which constrains what the model generates: with it on, calls follow the schema reliably, and without it they are best effort. Pydantic's strict mode is a different mechanism. It checks a call after it arrives and does not constrain generation. This harness does not constrain what the model writes while it writes it, so every call is checked after it arrives, whatever the schema said.
 
@@ -114,7 +114,7 @@ A model that writes `"50"` for a line limit most likely means fifty, so refusing
 
 The next example sends the same values through both modes. Compare what each mode does with each value.
 
-Example `lax-and-strict` (Python 3.12.15 · pydantic 2.14.3), passing in Edition 2026.11.2:
+Example `lax-and-strict` (Python 3.12.15 · pydantic 2.14.3), passing in Edition 2026.11.3:
 
 ```python
 """Pydantic's default (lax) mode and strict mode, given the same values for an int field: lax takes the string "50"
@@ -213,7 +213,7 @@ Bad calls fail at different points, and the harness has to check them in order. 
 
 Each of the bad calls in this example is wrong in a different way. They go through tool set v2 and then through tool set v1, and the printout shows what each set hands back:
 
-Example `bad-arguments-handed-back` (Python 3.12.15 · pydantic 2.14.3), passing in Edition 2026.11.2:
+Example `bad-arguments-handed-back` (Python 3.12.15 · pydantic 2.14.3), passing in Edition 2026.11.3:
 
 ```python
 """Five bad calls, sent by a ScriptedModel. Each parsed call is run through the v2 tool set and through v1, and each
@@ -292,7 +292,7 @@ The first version of the change, in chapter 1, put the whole file inside one JSO
 
 The task-set recording shows the copy going wrong. It holds the replies of the same open model, Qwen3-4B-Instruct-2507, over twenty tasks, run with tool set v1, a step cap of 16 and temperature 0; [chapter 1](#replayed-run) explains the model's setup. In T-01's third reply, the model copied a few lines into `old` and dropped the quotes around two f-strings and the closing quote of `separator = "."`. The file has those quotes. The stored `old` text is printed first, then that one reply is replayed through both tool sets, so the difference shows:
 
-Example `edit-error-nearest-lines` (Python 3.12.15 · pydantic 2.14.3), passing in Edition 2026.11.2:
+Example `edit-error-nearest-lines` (Python 3.12.15 · pydantic 2.14.3), passing in Edition 2026.11.3:
 
 ```python
 """The edit_file call from step 3 of the task-set recording's T-01 run, read from its stored reply. Its old text drops

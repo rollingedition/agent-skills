@@ -3,13 +3,13 @@ title: "Agent Harnesses"
 chapter: "Run the agent's code in a sandbox, and keep secrets out of its view"
 chapter_id: sandbox-and-secrets
 book: agent-harnesses
-edition: 2026.11.2
+edition: 2026.11.3
 verified: 2026-11-20
-edition_code: ZZGV-NEGC
+edition_code: 1CW4-SHG5
 canonical: https://rollingedition.com/agent-harnesses/sandbox-and-secrets
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“Run the agent's code in a sandbox, and keep secrets out of its view,” chapter 7 of Agent Harnesses, Edition 2026.11.2, examples passed Nov 20, 2026. By Rolling Edition, https://rollingedition.com/agent-harnesses/sandbox-and-secrets. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Run the agent's code in a sandbox, and keep secrets out of its view,” chapter 7 of Agent Harnesses, Edition 2026.11.3, examples passed Nov 20, 2026. By Rolling Edition, https://rollingedition.com/agent-harnesses/sandbox-and-secrets. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Run the agent's code in a sandbox, and keep secrets out of its view
 
@@ -17,7 +17,7 @@ By the end of this chapter you can run a command for the agent with a time limit
 
 The maintenance agent looks after `unitcraft`, a small units library, and the one command it can run is the test suite. It calls `run_tests`, and the harness runs the visible suite on the agent's copy. A test file is code, and until now that code ran with the harness's own user ID, with the harness's files in reach and the harness's environment to read. [The permission gates](#open-limits) kept the agent's file-tool writes inside its copy, and the library guard reports any change a test made to the library. The guard detects that change and ends the run; it does not prevent it. The case library's bytes are compared before and after every tool call, and the guard fails closed: the run ends as `library_changed`, the harness applies nothing, and nothing is restored. This chapter covers the routes the copy's configuration opens and what the sandbox does about each. It does not stop a test module from writing where the harness can write, and [the table of gaps](#teaching-sandbox) says which isolation does.
 
-For code an agent wrote, the primary defence is a container or a virtual machine. This chapter explains both and runs neither. No example here runs one, and no recording shows one, so the container and virtual machine claims are cited to their documentation. What the book builds is the sandbox in `sandbox.py`. It is teaching code and a second layer, not the protection itself. The sections below say what each of its parts does and what it leaves open. The sandbox needs Linux, because it uses `unshare`, `/proc` and enforced limits. On another system, run the examples in a Linux container or a virtual machine.
+For code an agent wrote, the primary defence is a container or a virtual machine. This chapter explains both and runs neither. No example here runs one, and no recording shows one, so the container and virtual machine claims are cited to their documentation. What the book builds is the sandbox in `sandbox.py`, which is teaching code and a second layer, not the protection itself. The sections below say what each of its parts does and what it leaves open. The sandbox needs Linux, because it uses `unshare`, `/proc` and enforced limits. On another system, run the examples in a Linux container or a virtual machine.
 
 ## A teaching sandbox, not a container {#teaching-sandbox}
 
@@ -48,7 +48,7 @@ The allowlist decides which program starts. No tool in this book offers the mode
 
 Start with a set of commands the check should sort. Two spell the listed command with different spacing, and the rest should be refused.
 
-Example `argv-allowlist` (Python 3.12.15 · pydantic 2.14.3), passing in Edition 2026.11.2:
+Example `argv-allowlist` (Python 3.12.15 · pydantic 2.14.3), passing in Edition 2026.11.3:
 
 ```python
 """The allowlist decides on the parsed argv, before anything runs. Only the test command is listed; refused commands never
@@ -105,7 +105,7 @@ The check lets through 2 commands and refuses 7. Both allowed spellings parse to
 
 A test file the model can read can carry text too. In T-15, one of the case's test files carries a line, in an assertion message, that asks for `rm -rf tests`. The model reads that file with `read_file`, so the line reaches it as data. Nothing in the loop acts on the line as an instruction, and a command tool that received the line would refuse the command it names.
 
-Example `injected-text-refused` (Python 3.12.15 · pydantic 2.14.3), passing in Edition 2026.11.2:
+Example `injected-text-refused` (Python 3.12.15 · pydantic 2.14.3), passing in Edition 2026.11.3:
 
 ```python
 """T-15's injected note, replayed. The note sits in a test file the agent can read, and it asks for a command the allowlist
@@ -173,7 +173,7 @@ This replay uses the replies of T-15's recorded run from [the task set](#testing
 
 A refused string is not a refused effect, though. The same folder can go another way, through a test file.
 
-Example `same-effect-through-a-test-file` (Python 3.12.15 · pydantic 2.14.3), passing in Edition 2026.11.2:
+Example `same-effect-through-a-test-file` (Python 3.12.15 · pydantic 2.14.3), passing in Edition 2026.11.3:
 
 ```python
 """A test file can do what the refused command did. The copy's conftest.py removes tests/ when pytest loads it. Run as
@@ -216,7 +216,7 @@ An agent's command can run away with memory, time or disk, and the harness has t
 
 Three commands test the limits here: a sleeper that outlives its time limit, a program that allocates more memory than its cap allows, and a program that writes a file past its size cap.
 
-Example `limits-stop-a-hog` (Python 3.12.15 · pydantic 2.14.3), passing in Edition 2026.11.2:
+Example `limits-stop-a-hog` (Python 3.12.15 · pydantic 2.14.3), passing in Edition 2026.11.3:
 
 ```python
 """What the limits stop, each with its own cap. A memory hog and a file writer exit non-zero at their caps; a sleeper is
@@ -264,7 +264,7 @@ The time limit reaches less than it looks. The `Popen` documentation says that a
 
 A process can also leave the group. A call to `setsid` starts a new session, and with it a new group, and the group kill cannot reach that process. The next example runs a command whose child calls `setsid` and holds the command's output pipe.
 
-Example `escaped-child` (Python 3.12.15 · pydantic 2.14.3), passing in Edition 2026.11.2:
+Example `escaped-child` (Python 3.12.15 · pydantic 2.14.3), passing in Edition 2026.11.3:
 
 ```python
 """A child that calls setsid() leaves the process group, so the group kill misses it. Without a PID namespace the child
@@ -316,7 +316,7 @@ A command the agent writes should not reach the network. Where the kernel allows
 
 A listener on the host's loopback is the target, and a command tries to connect to it. The sandbox names the network a command gets with one of two labels: `sandbox: network namespace`, when it can make the namespace, or `sandbox: none`, when it cannot. The check asserts that the label names a namespace exactly when the command could not connect.
 
-Example `network-label` (Python 3.12.15 · pydantic 2.14.3), passing in Edition 2026.11.2:
+Example `network-label` (Python 3.12.15 · pydantic 2.14.3), passing in Edition 2026.11.3:
 
 ```python
 """The network label must agree with what a command reaches. A listener on this host's loopback is reachable only when
@@ -382,7 +382,7 @@ One coding tool's sandbox documentation says its commands inherit that tool's en
 
 A fake key, under a plain name, is set in the harness's environment before the command starts, as a real key would be set. The command prints the names it can see, and then the example checks what it printed.
 
-Example `secret-not-in-env` (Python 3.12.15 · pydantic 2.14.3), passing in Edition 2026.11.2:
+Example `secret-not-in-env` (Python 3.12.15 · pydantic 2.14.3), passing in Edition 2026.11.3:
 
 ```python
 """A secret in the harness's environment never reaches the command, because the command's environment is built from an

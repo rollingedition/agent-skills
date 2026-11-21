@@ -3,19 +3,19 @@ title: "Agent Harnesses"
 chapter: "Stop the loop when it's done or stuck"
 chapter_id: stop-rules
 book: agent-harnesses
-edition: 2026.11.2
+edition: 2026.11.3
 verified: 2026-11-20
-edition_code: ZZGV-NEGC
+edition_code: 1CW4-SHG5
 canonical: https://rollingedition.com/agent-harnesses/stop-rules
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“Stop the loop when it's done or stuck,” chapter 2 of Agent Harnesses, Edition 2026.11.2, examples passed Nov 20, 2026. By Rolling Edition, https://rollingedition.com/agent-harnesses/stop-rules. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Stop the loop when it's done or stuck,” chapter 2 of Agent Harnesses, Edition 2026.11.3, examples passed Nov 20, 2026. By Rolling Edition, https://rollingedition.com/agent-harnesses/stop-rules. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Stop the loop when it's done or stuck
 
 By the end of this chapter you can say why any run stopped, from the one word the harness records for it, and add the two rules that end a run which has stopped making progress.
 
-[Chapter 1](#tools-and-a-loop) built a loop that ends a run in one of three ways: the model calls `finish`, the run reaches its step cap of 8, or the model gives no call twice. That covers a model that finishes. It doesn't cover a model that keeps sending the same edit, which is what an edit that can't find its text invites. Chapter 1's tools have no edit, so that case comes from the task set: the 20 tasks that [testing the agent](#testing-the-agent) scores, run with tool set v1, whose tools include edits. In the running case, unitcraft, a small units library whose visible suite gives a count after each change, a stuck run of that kind goes to the cap, and the only record of its end is that the cap ended it. Each lost step is a model call and a line in the transcript that a reviewer has to read. This chapter names the ways the loop ends a run, adds two rules that end a stuck run early, and measures what they do on the task set.
+[Chapter 1](#tools-and-a-loop) built a loop that ends a run in one of three ways: the model calls `finish`, the run reaches its step cap of 8, or the model gives no call twice. That covers a model that finishes. It doesn't cover a model that keeps sending the same edit, which is what an edit that can't find its text invites. Chapter 1's tools have no edit, so that case comes from the task set: the 20 tasks that [testing the agent](#testing-the-agent) scores, run with [tool set v1](#tool-schemas), whose tools include edits. In the running case, unitcraft, a small units library whose visible suite gives a count after each change, a stuck run of that kind goes to the cap, and the only record of its end is that the cap ended it. Each lost step is a model call and a line in the transcript that a reviewer has to read. This chapter names the ways the loop ends a run, adds two rules that end a stuck run early, and measures what they do on the task set.
 
 ## Ways a run ends {#ways-to-end}
 
@@ -46,13 +46,13 @@ We list the endings the harness can observe, not every reason a run can fail. A 
 
 ## The budget counts steps {#step-budget}
 
-A model that never calls `finish` gives the loop no reason to stop, so the loop needs a count that does. A step is one call to the model and the reply it returns. The step budget is the most steps a run may take, and the loop stops when it reaches that number. Steps are counted, not timed: the loop reads no clock.
+A model that never calls `finish` gives the loop no reason to stop, so the loop needs a count that does. A [step](#the-loop) is one call to the model and the reply it returns. The step budget is the most steps a run may take, and the loop stops when it reaches that number. Steps are counted, not timed: the loop reads no clock.
 
 The [task set](#testing-the-agent), the 20 tasks this chapter's last example counts, runs on tool set v1 with a budget of 16 steps. Chapter 1 uses a smaller budget, 8.
 
 The chapter 1 recording of T-01 shows the budget at work. The model, Qwen3-4B-Instruct-2507, is an open model, and its replies were recorded and are replayed here, so every run in this chapter gets the same output on every machine. In that recording the model did not finish within eight steps. Its last step was a malformed tool call, which the harness refused. Replay the run under the budget, with no other rule, and the output shows where the cap ends it:
 
-Example `budget-stops-a-loop` (Python 3.12.15 · pydantic 2.14.3), passing in Edition 2026.11.2:
+Example `budget-stops-a-loop` (Python 3.12.15 · pydantic 2.14.3), passing in Edition 2026.11.3:
 
 ```python
 """The chapter 1 recorded run of T-01 under its step budget of 8. The budget ends the run as step_cap, with no finish;
@@ -102,7 +102,7 @@ Three is this book's threshold, not a fixed one. It is a judgement, and the work
 
 T-01 never sends the same call three times in a row, so this example replays T-02, where the model does:
 
-Example `repeated-call-stops` (Python 3.12.15 · pydantic 2.14.3), passing in Edition 2026.11.2:
+Example `repeated-call-stops` (Python 3.12.15 · pydantic 2.14.3), passing in Edition 2026.11.3:
 
 ```python
 """The recorded run of T-02 with and without the repeated-call rule. Three identical calls in a row end the run as
@@ -164,7 +164,7 @@ The rule keeps a count of edits in a row that leave the counts unchanged. The fi
 
 Run T-01 from the task-set recording, which uses tool set v1 and whose edits fail, twice: once with no rules and once with the no-progress rule set to two edits. Read where each run ends:
 
-Example `no-progress-stops` (Python 3.12.15 · pydantic 2.14.3), passing in Edition 2026.11.2:
+Example `no-progress-stops` (Python 3.12.15 · pydantic 2.14.3), passing in Edition 2026.11.3:
 
 ```python
 """The recorded run of T-01 under the no-progress rule. Two edits in a row that leave the test counts where they
@@ -223,7 +223,7 @@ Only `ask_user` asks. The model calls it with a question, the harness hands the 
 
 The last check in this chapter runs all 20 tasks twice, once as recorded and once with both rules, [repeated calls](#repeated-calls) and [no progress](#no-progress). It prints counts only:
 
-Example `stop-rules-over-task-set` (Python 3.12.15 · pydantic 2.14.3), passing in Edition 2026.11.2:
+Example `stop-rules-over-task-set` (Python 3.12.15 · pydantic 2.14.3), passing in Edition 2026.11.3:
 
 ```python
 """The task-set recording's 20 runs, replayed as recorded and again with both stop rules. Counts only: which runs hit

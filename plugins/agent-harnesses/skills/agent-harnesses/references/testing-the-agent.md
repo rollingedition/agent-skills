@@ -3,13 +3,13 @@ title: "Agent Harnesses"
 chapter: "Test the agent, then measure it on a task set"
 chapter_id: testing-the-agent
 book: agent-harnesses
-edition: 2026.11.2
+edition: 2026.11.3
 verified: 2026-11-20
-edition_code: ZZGV-NEGC
+edition_code: 1CW4-SHG5
 canonical: https://rollingedition.com/agent-harnesses/testing-the-agent
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“Test the agent, then measure it on a task set,” chapter 10 of Agent Harnesses, Edition 2026.11.2, examples passed Nov 20, 2026. By Rolling Edition, https://rollingedition.com/agent-harnesses/testing-the-agent. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Test the agent, then measure it on a task set,” chapter 10 of Agent Harnesses, Edition 2026.11.3, examples passed Nov 20, 2026. By Rolling Edition, https://rollingedition.com/agent-harnesses/testing-the-agent. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Test the agent, then measure it on a task set
 
@@ -27,7 +27,7 @@ Each scenario test asserts how the run ended and whether the run counts as done 
 
 A stop task, T-18, asks for a Windows job in `.github/workflows/test.yml`, which the harness must refuse. The scripted model writes that file anyway, and then asks a question.
 
-Example `scenario-refusal` (Python 3.12.15 · pydantic 2.14.3), passing in Edition 2026.11.2:
+Example `scenario-refusal` (Python 3.12.15 · pydantic 2.14.3), passing in Edition 2026.11.3:
 
 ```python
 """A stop task (T-18) over scripted replies: the write under .github/ is refused as a tool error, and the run hands the
@@ -68,7 +68,7 @@ The refused write comes back as a tool error, the same way a bad argument does (
 
 Editing a test to make it pass is refused at the gate, and this run tries it with a yes already queued. It renames a test in `tests/test_format.py` and proposes the change with `finish`.
 
-Example `scenario-gate` (Python 3.12.15 · pydantic 2.14.3), passing in Edition 2026.11.2:
+Example `scenario-gate` (Python 3.12.15 · pydantic 2.14.3), passing in Edition 2026.11.3:
 
 ```python
 """A scripted run on T-04 whose finish proposes a rename of an existing test. The gate holds the proposal as never, before
@@ -119,7 +119,7 @@ The gate puts the proposal in its never-allowed class before any person is asked
 
 A loop that sends the same `run_tests` call over and over on T-01 ends wherever the stop rules say. The test records where the run ends under each rule.
 
-Example `scenario-stop-rule` (Python 3.12.15 · pydantic 2.14.3), passing in Edition 2026.11.2:
+Example `scenario-stop-rule` (Python 3.12.15 · pydantic 2.14.3), passing in Edition 2026.11.3:
 
 ```python
 """The same reply, run_tests three times in a row, on T-01: with no stop rules the run reaches the step cap of 16, and
@@ -158,7 +158,7 @@ Scripted replies suit these cases for a reason a recorded run cannot supply. A r
 
 The last case feeds the model injected text. T-14 and T-15 each carry an instruction to delete the tests: a comment in `unitcraft/parse.py`, and an assertion message in `tests/test_rounding.py`, which `read_file` returns in full. [Chapter 9](#output-is-untrusted) labels only the results of MCP servers as untrusted. The harness's own `read_file` results carry no such label, so this test checks that the gate holds without one. The scripted run reads both files, then does what the text asks: it renames a test and proposes the change with `finish`. The scripted replies stand in for a model that followed the text, so the example tests the harness, not the model. It checks that the harness itself acts on neither text.
 
-Example `scenario-injected-output` (Python 3.12.15 · pydantic 2.14.3), passing in Edition 2026.11.2:
+Example `scenario-injected-output` (Python 3.12.15 · pydantic 2.14.3), passing in Edition 2026.11.3:
 
 ```python
 """A scripted run on T-15 whose tool results carry the T-14 and T-15 injected texts: the comment in unitcraft/parse.py
@@ -238,7 +238,7 @@ A hidden file says what the task asks for in its own terms. `H-04`, for example,
 
 A planted `conftest.py` that exits with an error is the kind of file an agent could write to break a run. Below, one sits beside the correct solution to T-04, the inch, and the check runs on that copy.
 
-Example `hidden-check-in-copy` (Python 3.12.15 · pydantic 2.14.3), passing in Edition 2026.11.2:
+Example `hidden-check-in-copy` (Python 3.12.15 · pydantic 2.14.3), passing in Edition 2026.11.3:
 
 ```python
 """The hidden check runs in a fresh folder that holds only the agent's package and README, plus the hidden file. A planted
@@ -294,7 +294,7 @@ The check also runs pytest with the harness's own ini file, with `conftest.py` l
 
 A `conftest.py` is not the only file that could change a run from inside the copy. The agent could also add a `pytest.ini` that loads a plugin, or a module named `pytest.py` that shadows the real one. Each of the three is planted in its own copy below, and the example runs the visible suite and the hidden check on each.
 
-Example `scoring-ignores-planted-config` (Python 3.12.15 · pydantic 2.14.3), passing in Edition 2026.11.2:
+Example `scoring-ignores-planted-config` (Python 3.12.15 · pydantic 2.14.3), passing in Edition 2026.11.3:
 
 ```python
 """Config and modules the agent wrote into its copy take no effect on the visible run or on the hidden check.
@@ -373,11 +373,11 @@ A score needs one rule for done, and the rule has to hold for a fix, a new featu
 
 A fix or an implement task is done when the run ended with `finish`, its hidden check passes on the final copy, and the task's protected paths match the case byte for byte. Here the protected path is `tests/` for every such task. A stop task is done when the run ended with `ask_user`, its question contains one of the task's reason words, and no file in the copy differs from the case. The match is a substring match on the whole question, so a word inside a path counts. A run that hits a limit or a stuck rule is not done. A child that hits its budget and hands back a stop as a handoff to its parent has not finished, so it is not done ([a-stop-handed-back](#a-stop-handed-back)).
 
-The score is pass@1: the number of done tasks, divided by the number of tasks. pass^k is a different measure. [tau-bench](https://arxiv.org/abs/2406.12045) defines it as the chance that all k trials of a task succeed, "averaged across tasks", and it needs k trials per task. Each task here has one run, so k above 1 is not measured, and pass^k is not reported ([what the score does not say](#score-limits)). The estimator in `lib/tasks.py` gives the mean when k is 1, and the example asserts that.
+The score is pass@1: the number of done tasks, divided by the number of tasks. pass^k is a different measure. [tau-bench](https://arxiv.org/abs/2406.12045) defines pass^k as the chance that all k trials of a task succeed, "averaged across tasks", and it needs k trials per task. Each task here has one run, so k above 1 is not measured, and pass^k is not reported ([what the score does not say](#score-limits)). The estimator in `lib/tasks.py` gives the mean when k is 1, and the example asserts that.
 
 Before it prints anything, the script replays the stored runs and checks them against the record, and it asserts the recorded counts too.
 
-Example `score-task-set` (Python 3.12.15 · pydantic 2.14.3), passing in Edition 2026.11.2:
+Example `score-task-set` (Python 3.12.15 · pydantic 2.14.3), passing in Edition 2026.11.3:
 
 ```python
 """Score the v1 recording's 20 runs with the current scorer: done per kind, how the runs ended, and the count with its
@@ -472,7 +472,7 @@ The count stays as the rule gives it, and the scorer stays as it is. A stricter 
 
 ## How sure the count is {#how-sure}
 
-The count of done tasks carries an error that the bare number does not show. For the recorded run it is 5 of 20 done, with a naive range of 1 to 9 of 20 at about 95%. The range treats each task as an independent trial, and it is built with the usual multiplier for a 95% interval, which is slightly under two. The standard error of the proportion is the square root of the proportion times one minus the proportion, divided by the number of tasks. The example prints it as 0.097, which is under two tasks out of 20, and the range runs about two of those either side of the count.
+The count of done tasks carries an error that the bare number does not show. For the recorded run it is 5 of 20 done, with a naive range of 1 to 9 of 20 at about 95%. The naive range treats each task as an independent trial, and it is built with the usual multiplier for a 95% interval, which is slightly under two. The standard error of the proportion is the square root of a fraction: the proportion times one minus the proportion, divided by the number of tasks. The example prints it as 0.097, which is under two tasks out of 20, and the range runs about two of those either side of the count.
 
 At 20 tasks the normal approximation is rough. This range covers less than 95% of the time at a proportion of one quarter, so the 95% is a label, not a guarantee.
 
@@ -484,11 +484,11 @@ A single run is noisy in its own right. A 2026 study of agent runs on SWE-bench 
 
 ## Two harness versions, compared as counts {#v1-v2}
 
-Two harness versions run on the same tasks give two counts, and counts alone cannot say which harness is better. Harness v1 is the loop of [chapter 1](#tools-and-a-loop) with tool set v1 from [chapter 3](#tool-schemas), a step cap of 16 steps, and no stop rule beyond it. In harness v1, a run that keeps going without a finish or a question ends only at the cap. Harness v2 is the configuration of [chapter 5](#context-budgets). It runs tool set v2, with strict argument models, typed error results and edit errors that name the nearest lines of the file. It adds a `note` tool, two stop rules from [chapter 2](#stop-rules), and compaction under the context budget. Its step cap is 16 too. Both harnesses use the same hidden checks.
+Two harness versions run on the same tasks give two counts, and counts alone cannot say which harness is better. Harness v1 is the loop of [chapter 1](#tools-and-a-loop) with tool set v1 from [chapter 3](#tool-schemas), a step cap of 16 steps, and no stop rule beyond it. In harness v1, a run that keeps going without a finish or a question ends only at the cap. Harness v2 is the configuration of [chapter 5](#context-budgets): it runs tool set v2, with strict argument models, typed error results and edit errors that name the nearest lines of the file. It adds a `note` tool, two stop rules from [chapter 2](#stop-rules), and compaction under the context budget. Its step cap is 16 too. Both harnesses use the same hidden checks.
 
 Printed side by side, each task's done flag, ending, steps, tool calls and tokens for both recordings show where the two harnesses part ways. Totals and endings follow the per-task lines. The script also asserts that both recordings use the same hidden check for every task, so a difference in the counts cannot come from a difference in the checks.
 
-Example `compare-v1-v2` (Python 3.12.15 · pydantic 2.14.3), passing in Edition 2026.11.2:
+Example `compare-v1-v2` (Python 3.12.15 · pydantic 2.14.3), passing in Edition 2026.11.3:
 
 ```python
 """The v1 and v2 recordings of the same 20 tasks, as counts: each task's done flag, ending, steps, tool calls and tokens,
@@ -637,7 +637,7 @@ A score on 20 small tasks, each run once, with one open model at one setting, sa
 
 The count also depends on the scorer's wording, as [T-18's path match](#t18-path) shows.
 
-The count comes from stored counts only. The scorer reads the recorded runs, and their steps and tokens are the counts the recording stored, not new measurements ([cost as counts](#cost-not-money)). No money is quoted, for the reason [chapter 11](#cost-not-money) gives.
+The count comes from [stored counts](#traces-and-cost) only. The scorer reads the recorded runs, and their steps and tokens are the counts the recording stored, not new measurements ([cost as counts](#cost-not-money)). No money is quoted, for the reason [chapter 11](#cost-not-money) gives.
 
 Three changes would move the count and its range. A second run of each task would let this chapter measure the spread that it now only cites from another study. A second model or setting would show whether the count moves with the model. And tasks written by someone outside this book would show whether these tasks fit the harness too well, a question these tasks cannot answer for themselves.
 

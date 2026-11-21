@@ -3,19 +3,19 @@ title: "Agent Harnesses"
 chapter: "Hand a subtask to a child, and hand back a stop"
 chapter_id: subagents-and-handoffs
 book: agent-harnesses
-edition: 2026.11.2
+edition: 2026.11.3
 verified: 2026-11-20
-edition_code: ZZGV-NEGC
+edition_code: 1CW4-SHG5
 canonical: https://rollingedition.com/agent-harnesses/subagents-and-handoffs
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“Hand a subtask to a child, and hand back a stop,” chapter 8 of Agent Harnesses, Edition 2026.11.2, examples passed Nov 20, 2026. By Rolling Edition, https://rollingedition.com/agent-harnesses/subagents-and-handoffs. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Hand a subtask to a child, and hand back a stop,” chapter 8 of Agent Harnesses, Edition 2026.11.3, examples passed Nov 20, 2026. By Rolling Edition, https://rollingedition.com/agent-harnesses/subagents-and-handoffs. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Hand a subtask to a child, and hand back a stop
 
 By the end of this chapter you can give a subtask to a child loop with a step budget of its own, and get back a summary and a stop reason in place of the child's whole transcript. You'll also make a stop reach a person: a run that the stop rules end as stuck goes to a parent, which puts the stop's question to the maintainer who filed the issue.
 
-Take task T-02 from the case: in `unitcraft`, a small units library, a negative amount loses its thousands separator, and the maintenance agent has to fix it. The run reads `unitcraft/format.py` and makes two edits to it. Both edits fail, because the old text they name isn't in the file as written, so the test result stays where it was. [Chapter 2](#stop-rules) ends a run like that once the rules see no progress. Harness v1 ran T-02 to its step cap in the `task-set` recording. Replayed with both of chapter 2's stop rules, the same replies end this run as `no_progress at step 5 of 16`. The stop does its job, but it leaves the maintainer with a log and no account of what the agent was trying. Someone has to read the log to find out.
+Take task T-02 from the case: in `unitcraft`, a small units library, a negative amount loses its thousands separator, and the maintenance agent has to fix it. The run reads `unitcraft/format.py` and makes two edits to it. Both edits fail, because the old text they name isn't in the file as written, so the test result stays where it was. [Chapter 2](#stop-rules) ends a run like that once the rules see no progress. [Harness v1](#v1-v2) ran T-02 to its step cap in the `task-set` recording. Replayed with both of chapter 2's stop rules, the same replies end this run as `no_progress at step 5 of 16`. The stop does its job, but it leaves the maintainer with a log and no account of what the agent was trying. Someone has to read the log to find out.
 
 Size is the second problem. Finding where a rounding rule lives means reading several files, and every file the agent reads stays in the context its next step carries. A side task like that is better done in a context of its own, which returns only what the parent needs. [Anthropic's subagent documentation](https://code.claude.com/docs/en/sub-agents) describes that split for its product: the subagent does the work in its own context and returns only the summary.
 
@@ -27,7 +27,7 @@ A side task in the case, such as finding where a rounding rule lives, can take s
 
 Give the child 4 steps and run it on T-01. The `task-set` recording's first steps, from the model of [chapter 1](#tools-and-a-loop), replay for it, so the child does what the recorded run did at the start.
 
-Example `child-with-budget` (Python 3.12.15 · pydantic 2.14.3), passing in Edition 2026.11.2:
+Example `child-with-budget` (Python 3.12.15 · pydantic 2.14.3), passing in Edition 2026.11.3:
 
 ```python
 """A child loop on T-01 with a budget of 4 steps. The budget counts the child's own model calls, and it ends the child
@@ -70,7 +70,7 @@ Those `4` steps are the child's whole run. It lists the files, reads one, tries 
 
 A parent can start the same child itself, through a tool. In the next example the parent is a loop with two tools, `start_child` and `ask_user`. It starts the child on T-02 under both stop rules, reads the child's handoff as the tool's result, and asks the person the question the handoff carries.
 
-Example `parent-starts-child` (Python 3.12.15 · pydantic 2.14.3), passing in Edition 2026.11.2:
+Example `parent-starts-child` (Python 3.12.15 · pydantic 2.14.3), passing in Edition 2026.11.3:
 
 ```python
 """A parent loop starts the child on T-02 through a tool, reads the child's handoff and asks the person the child's
@@ -161,7 +161,7 @@ The T-02 run leaves a transcript of every file it read, every failed edit and ev
 
 Run T-02 as a child under both stop rules, with the task set's step cap, and print what the parent receives beside the size of the child's transcript.
 
-Example `summary-to-parent` (Python 3.12.15 · pydantic 2.14.3), passing in Edition 2026.11.2:
+Example `summary-to-parent` (Python 3.12.15 · pydantic 2.14.3), passing in Edition 2026.11.3:
 
 ```python
 """T-02's recorded run as a child, with both stop rules and the task set's step cap. The parent gets the
@@ -240,7 +240,7 @@ A child that ends some other way is not handed back. A run that ends as `no_tool
 
 Run every task-set run as a child under both stop rules. Each child that ends stuck goes to a parent, which asks the person its question.
 
-Example `handoff-on-stuck` (Python 3.12.15 · pydantic 2.14.3), passing in Edition 2026.11.2:
+Example `handoff-on-stuck` (Python 3.12.15 · pydantic 2.14.3), passing in Edition 2026.11.3:
 
 ```python
 """The 20 task-set runs as children, with both stop rules. Each child that ended stuck is handed to a parent, which

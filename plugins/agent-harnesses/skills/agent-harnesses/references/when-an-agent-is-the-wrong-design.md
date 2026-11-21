@@ -3,13 +3,13 @@ title: "Agent Harnesses"
 chapter: "When an agent is the wrong design"
 chapter_id: when-an-agent-is-the-wrong-design
 book: agent-harnesses
-edition: 2026.11.2
+edition: 2026.11.3
 verified: 2026-11-20
-edition_code: ZZGV-NEGC
+edition_code: 1CW4-SHG5
 canonical: https://rollingedition.com/agent-harnesses/when-an-agent-is-the-wrong-design
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“When an agent is the wrong design,” chapter 12 of Agent Harnesses, Edition 2026.11.2, examples passed Nov 20, 2026. By Rolling Edition, https://rollingedition.com/agent-harnesses/when-an-agent-is-the-wrong-design. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“When an agent is the wrong design,” chapter 12 of Agent Harnesses, Edition 2026.11.3, examples passed Nov 20, 2026. By Rolling Edition, https://rollingedition.com/agent-harnesses/when-an-agent-is-the-wrong-design. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # When an agent is the wrong design
 
@@ -17,13 +17,13 @@ By the end of this chapter you can take any task in the case, sort it into a fix
 
 ## Start with the fixed pipeline {#fixed-pipeline-first}
 
-The first question for T-02 is which steps it needs when nothing in the run has to be decided. Read the formatting module, replace the line that builds the number's text so that negative values keep the separator, run the visible tests, and finish with a sentence describing the change. None of those steps waits on what a model thinks of the file, so none needs a model. A fixed pipeline is that list, written as code before the run starts.
+The first question for T-02 is which steps it needs when nothing in the run has to be decided. Read the formatting module, replace the line that builds the number's text so that negative values keep the separator, run the visible tests, and finish with a sentence describing the change. None of those steps waits on what a model thinks of the file, so none needs a model. A fixed pipeline is a task's list of steps, written as code before the run starts.
 
 Anthropic's engineering post on building agents draws a similar line. It calls a system a workflow when LLMs and tools are orchestrated through predefined code paths, and an agent when an LLM dynamically directs its own processes and tool use ([Anthropic, "Building effective agents"](https://www.anthropic.com/engineering/building-effective-agents), published 19 December 2024). A workflow in that sense still runs a model at its steps. The pipeline in this chapter goes one step further, because none of its steps needs a model. The same post recommends finding the simplest solution possible and adding complexity only when it is needed. The rule this chapter takes from that advice is a rule of thumb, not a measurement: if the steps can be written down before the run, write them down first.
 
-Each pipeline is a list of exact edits and a summary, kept in `lib/pipeline.py`. An edit names the text it replaces and the text that replaces it, and it fails when the old text is not in the file exactly once. The pipeline runs its list through tool set v1, so each call behaves as it does for the agent, and it scores the result with [the same done rule](#score). Only three pipelines are written, for T-02, T-04 and T-05. The example runs them and prints each one beside the agent's stored run on the same task.
+Each pipeline is a list of exact edits and a summary, kept in `lib/pipeline.py`. An [edit](#edit-errors) names the text it replaces and the text that replaces it, and it fails when the old text is not in the file exactly once. The pipeline runs its list through tool set v1, so each call behaves as it does for the agent, and it scores the result with [the same done rule](#score). Only three pipelines are written, for T-02, T-04 and T-05. The example runs them and prints each one beside the agent's stored run on the same task.
 
-Example `fixed-pipeline-same-task` (Python 3.12.15 · pydantic 2.14.3), passing in Edition 2026.11.2:
+Example `fixed-pipeline-same-task` (Python 3.12.15 · pydantic 2.14.3), passing in Edition 2026.11.3:
 
 ```python
 """The fixed pipeline on the tasks where one known edit works (T-02, T-04, T-05), with no model, beside the recorded
@@ -113,7 +113,7 @@ T-04 missing anchor done: no
 T-04 missing anchor result: error: old text not found in unitcraft/units.py
 ```
 
-The pipeline finishes all three tasks, and it makes no model call. In this chapter a step is a model call, as it is everywhere in the book, so the pipeline has no steps. It has actions, which are its tool calls, and the line that counts them is `4` for T-02. The recorded agent on T-02 made `16` model calls, one for each step, and its prompt tokens add up to `43904`. The pipeline sent no prompt at all. On T-04 and T-05, where the agent finished, the agent still made more model calls than the pipeline had actions, and the example prints both counts for each. Chapter 11 explains why the book counts calls and tokens rather than money ([cost as counts](#cost-not-money)).
+The pipeline finishes all three tasks, and it makes no model call. In this chapter a [step](#the-loop) is a model call, as it is everywhere in the book, so the pipeline has no steps. A pipeline has actions, which are its tool calls, and the line that counts them is `4` for T-02. The recorded agent on T-02 made `16` model calls, one for each step, and its prompt tokens add up to `43904`. The pipeline sent no prompt at all. On T-04 and T-05, where the agent finished, the agent still made more model calls than the pipeline had actions, and the example prints both counts for each. Chapter 11 explains why the book counts calls and tokens rather than money ([cost as counts](#cost-not-money)).
 
 Replaying the agent's T-02 run from the recording shows the result of each call. Its edits failed, 9 of 9, each with the same message: `error: old text not found in unitcraft/format.py`. The agent read the file again and tried again, with the same error, and it never ran the tests: its test-run count is 0. The step cap stopped a run that could not make its change match the file. Nothing in the run checked whether a change had worked, so the count says how long the agent was stuck and nothing about why.
 
@@ -149,7 +149,7 @@ The stop tasks fail in another way. On T-17 and T-19 the agent asked a person a 
 
 T-18 is the other stop task, and its record is a warning about the scorer. The scorer counts its run as done through a word inside a file path, and [chapter 10](#t18-path) explains how. This book leaves the scorer as it is, and it reports T-18 as a limit of the scorer, not as a good handoff.
 
-Reliability is the failure a single run hides. tau-bench defines pass^k as the chance that all k independent trials of a task succeed, averaged across tasks ([Yao et al., arXiv:2406.12045](https://arxiv.org/abs/2406.12045)). In its 2024 setup, function-calling agents, gpt-4o among them, succeeded on fewer than half of its tasks, and pass^8 in its retail domain stayed under 25%. One passing run is one trial. This book runs each task once, so it cannot report pass^k, and [chapter 10](#testing-the-agent) describes what it reports in its place.
+Reliability is the failure a single run hides. tau-bench defines [pass^k](#score) as the chance that all k independent trials of a task succeed, averaged across tasks ([Yao et al., arXiv:2406.12045](https://arxiv.org/abs/2406.12045)). In its 2024 setup, function-calling agents, gpt-4o among them, succeeded on fewer than half of its tasks, and pass^8 in its retail domain stayed under 25%. One passing run is one trial. This book runs each task once, so it cannot report pass^k, and [chapter 10](#testing-the-agent) describes what it reports in its place.
 
 **Working rule:** Before you trust an agent's design, sort its stopped runs by how they ended and read the record of each kind. A count of failures without their kinds does not say which part to fix, and one passing run does not predict the next.
 
@@ -167,11 +167,11 @@ The stop check is weaker. A stop task is scored from the question the agent wrot
 
 ## The decision table {#which-design}
 
-The table sorts each task by three readings: whether its steps are known before the run, whether a check can decide the result without a person, and whether a person has to say yes. A fourth matter comes before all three, which is whether the harness refuses the change outright. The readings are the author's judgement of each task, not measurements, and the rules are rules of thumb. Each row sits beside the recorded end of that task's run, and no model is called.
+The decision table sorts each task by three readings: whether its steps are known before the run, whether a check can decide the result without a person, and whether a person has to say yes. A fourth matter comes before all three, which is whether the harness refuses the change outright. The readings are the author's judgement of each task, not measurements, and the rules are rules of thumb. Each row sits beside the recorded end of that task's run, and no model is called.
 
 The rules run in one order, and the order is the point. First, a change the harness forbids is not a design question. Chapter 6's gate refuses any change under `.github/`, and it refuses a rename that removes a public name, because no yes can lift a rule of that kind ([never-class changes](#never-class)). Second, a person's yes means an agent behind a gate, because the gate must ask before it applies a change. Third, known steps mean a pipeline when a check decides the result, and one model call when no check does. Open steps mean an agent. The order matters for T-16, which the second rule alone would send to a gate, and which the first rule refuses.
 
-Example `decision-table` (Python 3.12.15 · pydantic 2.14.3), passing in Edition 2026.11.2:
+Example `decision-table` (Python 3.12.15 · pydantic 2.14.3), passing in Edition 2026.11.3:
 
 ```python
 """The decision table for chapter 12: every task in the set, with the author's readings (judgement, not measured), the

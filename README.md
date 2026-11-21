@@ -10,7 +10,7 @@ This repository is generated from the books, so changes made here are overwritte
 
 | Book | Skill | Edition | Examples |
 | --- | --- | --- | --- |
-| [Agent Harnesses](https://rollingedition.com/agent-harnesses) | `agent-harnesses` | 2026.11.2 | 64 of 64 examples pass |
+| [Agent Harnesses](https://rollingedition.com/agent-harnesses) | `agent-harnesses` | 2026.11.3 | 64 of 64 examples pass |
 | [Business Intelligence with Agents](https://rollingedition.com/business-intelligence-with-agents) | `business-intelligence-with-agents` | 2026.11.15 | 78 of 78 examples pass |
 | [Data Governance as Code](https://rollingedition.com/data-governance-as-code) | `data-governance-as-code` | 2026.11.31 | 108 of 108 examples pass |
 | [Evaluating LLM Applications](https://rollingedition.com/evaluating-llm-applications) | `evaluating-llm-applications` | 2026.11.3 | 54 of 54 examples pass |

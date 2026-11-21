@@ -3,19 +3,19 @@ title: "Agent Harnesses"
 chapter: "One interface for scripted, replayed, local and hosted models"
 chapter_id: model-adapters
 book: agent-harnesses
-edition: 2026.11.2
+edition: 2026.11.3
 verified: 2026-11-20
-edition_code: ZZGV-NEGC
+edition_code: 1CW4-SHG5
 canonical: https://rollingedition.com/agent-harnesses/model-adapters
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“One interface for scripted, replayed, local and hosted models,” chapter 4 of Agent Harnesses, Edition 2026.11.2, examples passed Nov 20, 2026. By Rolling Edition, https://rollingedition.com/agent-harnesses/model-adapters. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“One interface for scripted, replayed, local and hosted models,” chapter 4 of Agent Harnesses, Edition 2026.11.3, examples passed Nov 20, 2026. By Rolling Edition, https://rollingedition.com/agent-harnesses/model-adapters. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # One interface for scripted, replayed, local and hosted models
 
 By the end of this chapter you can run the same loop on a scripted model, a replayed run, a local model and an OpenAI-compatible endpoint, without changing the loop. You can also say what each adapter keeps from a reply, and what it reads out of the reply's text.
 
-Chapter 1 ran the maintenance agent for `unitcraft` on a scripted model, then on a stored run, and the loop took both without a change. The next question is what a model has to hand over for that to work. For T-01, the issue that `format_quantity` drops trailing zeros, so `3.5 kg` prints as `3.5 kg` where the default of two places gives `3.50 kg`, every step needs the same three things back: the model's text, the tool calls the harness can read from that text, and the counts of tokens the request and the reply used. A scripted list of strings can supply all three. So can a file on disk, a model loaded in memory, or an HTTP endpoint. The adapter is the code that makes each of those sources look the same to the loop, and the rest of this chapter takes the four adapters in the order the loop meets them.
+Chapter 1 ran the maintenance agent for `unitcraft` on a scripted model, then on a stored run, and the loop took both without a change. The next question is what a model has to hand over for that to work. For T-01, the issue that `format_quantity` drops trailing zeros, so `3.5 kg` prints as `3.5 kg` where the default of two places gives `3.50 kg`, every step needs the same three things back: the model's text, the tool calls the harness can read from that text, and the counts of tokens the request and the reply used. A scripted list of strings can supply all three. So can a file on disk, a model loaded in memory, or an HTTP endpoint. The adapter is the code that makes each source, from a scripted list of strings to an HTTP endpoint, look the same to the loop, and the rest of this chapter takes the four adapters in the order the loop meets them.
 
 ## Ask every model the same question {#model-protocol}
 
@@ -26,7 +26,7 @@ class Model(Protocol):
     def reply(self, messages: list[dict], tools: list[dict]) -> Reply: ...
 ```
 
-The `Reply` is a small dataclass. It holds the model's raw `text`, the tool calls the adapter read from that text, any malformed blocks it could not read, the prompt and completion token counts, and the finish reason, which says whether the model stopped on its own or ran out of tokens. A token here is the unit that [chapter 1](#what-goes-wrong) counts, from the pinned model's own tokenizer, so the counts belong to that model and mean nothing for another. The adapter never edits `text`. The loop acts on the calls, but the transcript keeps the text as the model wrote it, so a reader can see what the model actually said.
+The `Reply` is a small dataclass. It holds the model's raw `text`, the tool calls the adapter read from that text, any malformed blocks it could not read, the prompt and completion token counts, and the finish reason, which says whether the model stopped on its own or ran out of tokens. A [token](#token-counts) here is the unit that [chapter 1](#what-goes-wrong) counts, from the pinned model's own tokenizer, so the counts belong to that model and mean nothing for another. The adapter never edits `text`. The loop acts on the calls, but the transcript keeps the text as the model wrote it, so a reader can see what the model actually said.
 
 Keeping both the text and the calls matters because parsing can fail. A reply may hold a `<tool_call>` block whose JSON does not parse, or a block that is never closed. The adapter cannot quietly turn such a reply into a call, and it cannot throw the reply away, because the loop has to tell the model what went wrong. So the parse leaves the text as it is, records a short reason for each bad block beside it, and lets the loop decide what the model sees next. [The local model section](#local-model) shows the parser at work.
 
@@ -46,7 +46,7 @@ The rows come from a logger, not from a script. `LoggedModel` wraps a live model
 
 Chapter 1's T-01 run goes through the loop twice in the first example: once on a `ScriptedModel` that holds the stored reply texts, and once on the `ReplayModel` for the same run. The scripted replies are read from the stored file, so both runs start from the same source.
 
-Example `same-loop-two-models` (Python 3.12.15 · pydantic 2.14.3), passing in Edition 2026.11.2:
+Example `same-loop-two-models` (Python 3.12.15 · pydantic 2.14.3), passing in Edition 2026.11.3:
 
 ```python
 """Chapter-1-t01 runs through the loop twice: once with a ScriptedModel holding the stored reply texts, once with a
@@ -100,7 +100,7 @@ The loop made the same calls both times, and the example stops if the two runs d
 
 The second example checks the recording itself, against its manifest, and then replays it.
 
-Example `replay-byte-for-byte` (Python 3.12.15 · pydantic 2.14.3), passing in Edition 2026.11.2:
+Example `replay-byte-for-byte` (Python 3.12.15 · pydantic 2.14.3), passing in Edition 2026.11.3:
 
 ```python
 """The stored chapter-1 run is the recording its manifest describes, and replaying it hands the loop each stored reply text
@@ -198,7 +198,7 @@ No example in this book sends a request that returns a structured `tool_calls` f
 
 The recording used the same file and the same sampling as the local model. It ran the pinned llama-cpp-python's own server on loopback, and sent T-01's first step through the adapter twice. The stored file holds each request as sent and each raw response body. A loopback `http.server` serves those bodies in order, and it answers `409` to any request whose body differs from the recorded one. The stub compares the request body, every message and every setting. It does not compare the path, the method or the headers, so a change to the endpoint's path or to the `Authorization` header would pass. If a change to the adapter alters the body it sends, the request fails before any reply is read. The stored bodies keep the server's own `id` and `created` fields. Nothing compares or prints them. Because no model is loaded, the adapter's HTTP and parsing code runs every time the book's examples are checked.
 
-Example `openai-compatible-loopback` (Python 3.12.15 · pydantic 2.14.3), passing in Edition 2026.11.2:
+Example `openai-compatible-loopback` (Python 3.12.15 · pydantic 2.14.3), passing in Edition 2026.11.3:
 
 ```python
 """The OpenAI-compatible adapter, run live against a loopback stub that serves the bodies recorded from llama.cpp's own
@@ -255,7 +255,7 @@ The helper that builds the adapter for the recordings and the example, `loopback
 
 The proxy works as it does for any `urllib` request, except for loopback hosts, `127.0.0.1`, `::1` and `localhost`, which are reached directly. A remote `http` URL goes through the proxy the environment names. A stub stands in for the proxy in the refusal example, and it shows both halves: the loopback requests never reach it, and the remote request arrives with its full URL.
 
-Example `adapter-refuses-unsafe-endpoints` (Python 3.12.15), passing in Edition 2026.11.2:
+Example `adapter-refuses-unsafe-endpoints` (Python 3.12.15), passing in Edition 2026.11.3:
 
 ```python
 """The OpenAI-compatible adapter refuses a redirect, a key over plain http to a remote host, and a non-http scheme. It sends

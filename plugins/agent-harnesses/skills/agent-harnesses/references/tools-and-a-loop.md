@@ -3,19 +3,19 @@ title: "Agent Harnesses"
 chapter: "Give a model tools and a loop"
 chapter_id: tools-and-a-loop
 book: agent-harnesses
-edition: 2026.11.2
+edition: 2026.11.3
 verified: 2026-11-20
-edition_code: ZZGV-NEGC
+edition_code: 1CW4-SHG5
 canonical: https://rollingedition.com/agent-harnesses/tools-and-a-loop
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“Give a model tools and a loop,” chapter 1 of Agent Harnesses, Edition 2026.11.2, examples passed Nov 20, 2026. By Rolling Edition, https://rollingedition.com/agent-harnesses/tools-and-a-loop. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Give a model tools and a loop,” chapter 1 of Agent Harnesses, Edition 2026.11.3, examples passed Nov 20, 2026. By Rolling Edition, https://rollingedition.com/agent-harnesses/tools-and-a-loop. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Give a model tools and a loop
 
 By the end of this chapter you can run a model in a loop that gives it three tools: one reads a file, one runs the tests, and one finishes with a changed file. The loop stops when the model finishes, when it runs out of steps, or when it stops making calls. You'll run it on a scripted model that solves the task, then on a recorded open model that doesn't, and you'll see where that model goes wrong.
 
-This chapter's agent maintains `unitcraft`, a small Python library that reads, converts and formats physical quantities written as text, such as `3.5 kg`. The agent takes an issue that a maintainer filed and proposes a change to the library's code. It can run the visible tests on its own copy, but it never sees the hidden check that decides whether a change counts as done. That split is deliberate. An agent that can read its own grader will learn the grader, and the book's measurements in chapter 10 would mean nothing.
+This chapter's agent maintains `unitcraft`, a small Python library that reads, converts and formats physical quantities written as text, such as `3.5 kg`. The agent takes an issue that a maintainer filed and proposes a change to the library's code. It can run the visible tests on its own copy, but it never sees the [hidden check](#testing-the-agent) that decides whether a change counts as done. That split is deliberate. An agent that can read its own grader will learn the grader, and the book's measurements in chapter 10 would mean nothing.
 
 Andrew Ng's letter in [*The Batch*, issue 379](https://www.deeplearning.ai/the-batch/how-to-build-an-agent-harness-in-one-prompt), dated 13 Nov 2026, describes an agent harness as the code that wraps around an LLM and gives it context, tools and guardrails. This book uses the word for the same thing. The model makes the decisions. The harness supplies the loop, the tools and the limits on what those tools may do, and most of this book is about that second part.
 
@@ -27,13 +27,13 @@ This chapter covers one task from start to finish. It explains what the agent st
 
 The agent starts with two messages: a system prompt that names its tools and their arguments, and the issue text. Nothing else about the task reaches the model. The agent never touches the case itself. The harness makes a scratch copy of the library for each run, and every write the agent makes lands only in that copy. When the run ends, the copy is scored and then discarded, so one run can't leave changes behind for the next.
 
-A fix counts as done when two things are true. The hidden check passes on the copy, and the run ended with a `finish` call. For T-01 the hidden check is H-01, a pytest file written from the issue text. It asserts one thing: that `format_quantity` pads 3.5, 0 and 12 kg to two places, as `3.50 kg`, `0.00 kg` and `12.00 kg`. The harness copies it into a fresh copy of the library after the run, so the agent never reads it. Chapter 10 applies the same rule to the whole task set. Applying a change to the case library is a separate decision, and chapter 6 is where an approval gate makes it.
+A fix counts as [done](#score) when two things are true. The hidden check passes on the copy, and the run ended with a `finish` call. For T-01 the hidden check is H-01, a pytest file written from the issue text. It asserts one thing: that `format_quantity` pads 3.5, 0 and 12 kg to two places, as `3.50 kg`, `0.00 kg` and `12.00 kg`. The harness copies it into a fresh copy of the library after the run, so the agent never reads it. Chapter 10 applies the same rule to the whole [task set](#stop-rules). Applying a change to the case library is a separate decision, and chapter 6 is where an approval gate makes it.
 
 The rule also closes one shortcut a model can take. It can edit the visible tests until they pass. For T-01 the task file says the `tests` folder must stay unchanged, so the scorer compares that folder with the case byte for byte, and an edited test makes the run not done, even when the hidden check passes. A model that is guessing at a fix can reach for that shortcut without any intent to cheat, and the rule is what stops it from counting.
 
 Loading T-01 from the task file and listing the case's files takes one short example.
 
-Example `read-the-issue` (Python 3.12.15), passing in Edition 2026.11.2:
+Example `read-the-issue` (Python 3.12.15), passing in Edition 2026.11.3:
 
 ```python
 """The issue the agent starts from, task T-01, and the case's files in sorted order. The model reads only the
@@ -90,7 +90,7 @@ The output prints the issue, then the case's files in sorted order. The issue is
 
 A model produces text, and the harness turns some of that text into actions. Each step sends the messages so far, along with the tool schemas, to the model. The reply comes back as text. The harness reads the tool call inside it, runs the tool on the scratch copy, appends the result to the messages, and goes around again. The model never runs anything itself. Anthropic's documentation for tool use states the contract in those terms: the model emits a structured request, the application runs the operation, and the result goes back into the conversation ([*How tool use works*](https://platform.claude.com/docs/en/agents-and-tools/tool-use/how-tool-use-works)).
 
-The loop is `_loop` in [`examples/lib/loop.py`](https://github.com/rollingedition/book-agent-harnesses/blob/6a0b7bc3347a010d7a19595c1430a1b76b62b244/examples/lib/loop.py), about seventy lines. The file also holds rules for later chapters: the optional stops in `Stops` are off by default, and a reply cut off at the token limit is refused whatever the settings. None of this chapter's runs reach either. A step is one model call. A tool call is one request inside a step, and a reply can hold more than one. The loop acts on the first request and answers each other one with an error that says it was not run. Each request gets an ID from a counter, and the ID goes on the tool-result message that answers it. The assistant message that holds the reply carries no ID, and the trace keeps none. The trace, in `lib/trace.py`, holds one line per step: the step's number, the tool it called and what came back. Every reply stays in the messages too, which is why the model sees its own earlier steps on the next call, and why the request grows with each step.
+The loop is `_loop` in [`examples/lib/loop.py`](https://github.com/rollingedition/book-agent-harnesses/blob/661879fe5a78f938f7b5c33652e27ad82d9f7c13/examples/lib/loop.py), about seventy lines. The file also holds rules for later chapters: the optional stops in `Stops` are off by default, and a reply cut off at the token limit is refused whatever the settings. None of this chapter's runs reach either. A step is one model call. A tool call is one request inside a step, and a reply can hold more than one. The loop acts on the first request and answers each other one with an error that says it was not run. Each request gets an ID from a counter, and the ID goes on the tool-result message that answers it. The assistant message that holds the reply carries no ID, and the trace keeps none. The [trace](#traces-and-cost), in `lib/trace.py`, holds one line per step: the step's number, the tool it called and what came back. Every reply stays in the messages too, which is why the model sees its own earlier steps on the next call, and why the request grows with each step.
 
 The model's reply is plain text, and its tool call has a fixed shape: JSON inside `<tool_call>` tags. The chat template in the model file asks for that shape, a JSON object with a function name and arguments inside the tags ([the model file at its pinned revision](https://huggingface.co/unsloth/Qwen3-4B-Instruct-2507-GGUF/resolve/a06e946bb6b655725eafa393f4a9745d460374c9/Qwen3-4B-Instruct-2507-Q4_K_M.gguf)). The recorded replies use this shape, and the harness reads only what is inside the tags:
 
@@ -100,7 +100,7 @@ The model's reply is plain text, and its tool call has a fixed shape: JSON insid
 </tool_call>
 ```
 
-Text outside the tags is ignored, so a reply may carry prose before the call. A block that doesn't parse isn't run. The harness records it as a malformed call and hands the reason back to the model as an error result, so the model can try again.
+Text outside the tags is ignored, so a reply may carry prose before the call. The harness never runs a block that doesn't parse: it records it as a malformed call and hands the reason back to the model as an error result, so the model can try again.
 
 Across the run the messages grow in a fixed order: the system prompt, the issue, then each reply followed by the result of its call. Nothing is summarised and nothing is dropped. That makes the transcript readable, and it makes the cost of each step grow with the one before it. [Chapter 5](#context-budgets) takes up what to do when that growth reaches the model's window. The runs in this chapter are short, and they don't need that yet.
 
@@ -124,7 +124,7 @@ In this chapter the tools run inside the harness's own process, on the copy. [Ch
 
 A tool that reads files has to decide which paths it will read. Calling `read_file` with two paths outside the case shows what the model gets back when it asks for one.
 
-Example `tool-refusal` (Python 3.12.15 · pydantic 2.14.3), passing in Edition 2026.11.2:
+Example `tool-refusal` (Python 3.12.15 · pydantic 2.14.3), passing in Edition 2026.11.3:
 
 ```python
 """The read tool refuses a path outside the case, and the refusal comes back as text the model can read. Only reads
@@ -153,7 +153,7 @@ Both paths are refused, and each refusal is a tool result. The model reads it in
 
 ## Stop when it's finished, or when the budget runs out {#stop-rule}
 
-A loop with no exit runs until somebody stops it, and every step costs tokens. So each run ends in one of three ways, and the run records which as `ended`. The model calls `finish`, and the run ends with its change. Or the run reaches the step budget, which is eight steps for [this chapter's tool set](#two-tools), and it ends as `step_cap`. Or the model replies twice in a row with no tool call at all. The first such reply gets a retry, with a message that asks for one tool call. The second ends the run as `no_tool_call`.
+A loop with no exit runs until somebody stops it, and every step costs tokens. So each run ends in one of three ways, and the run records which as `ended`. The model calls `finish`, and the run ends with its change. Or the run reaches the [step budget](#step-budget), which is eight steps for [this chapter's tool set](#two-tools), and it ends as `step_cap`. Or the model replies twice in a row with no tool call at all. The first such reply gets a retry, with a message that asks for one tool call. The second ends the run as `no_tool_call`.
 
 A call to a tool that doesn't exist comes back as an error result, and the run goes on. The loop doesn't stop on a bad call. It counts the call, hands back the error and waits for the next step. The budget is what stops a model that keeps making bad calls from running forever. The budget counts model calls, not seconds, so the same run ends at the same step on any machine. The budget is also a separate limit from the size of the context: a run can hit the step budget with room left in the window, or run out of window first. The window is not a limit this chapter enforces.
 
@@ -165,7 +165,7 @@ A call to a tool that doesn't exist comes back as an error result, and the run g
 
 With [the loop](#the-loop), its tools and its budget in place, the first run uses a model whose replies you write yourself. A scripted model gives back the replies you give it, in order, and nothing else. That makes it a clean test of the loop: any fault in the run is the loop's and not the model's, and the run shows what the loop does with correct replies, not what a model would choose. Four scripted replies for [T-01](#one-task) read the implementation, read its test, run the visible suite, and finish with a corrected file.
 
-Example `scripted-loop` (Python 3.12.15 · pydantic 2.14.3), passing in Edition 2026.11.2:
+Example `scripted-loop` (Python 3.12.15 · pydantic 2.14.3), passing in Edition 2026.11.3:
 
 ```python
 """Four scripted replies solve T-01 through the step loop: read the file, read its test, run the visible suite,
@@ -206,9 +206,9 @@ Read the output in order. Each line names one call and what came back from it, s
 
 ## Run it on the recorded model {#replayed-run}
 
-The recorded run comes from Qwen3-4B-Instruct-2507, an open model quantised to Q4_K_M and run on a CPU at temperature 0 with a fixed seed. Its replies were saved as the raw text it produced, in a recording whose manifest names the model, its revision, the prompt's hash and the token counts. Replay checks that each request matches the one the recording holds, where a request is the messages and tool schemas sent at that step, and then returns the recorded reply.
+The recorded run comes from Qwen3-4B-Instruct-2507, an open model quantised to Q4_K_M and run on a CPU at temperature 0 with a fixed seed. Its replies were saved as the raw text it produced, in a recording whose manifest names the model, its revision, the prompt's hash and the token counts. Replay checks that each request matches the one the recording holds, where a request is the messages and tool schemas sent at one step, and then returns the recorded reply.
 
-Example `recorded-run` (Python 3.12.15 · pydantic 2.14.3), passing in Edition 2026.11.2:
+Example `recorded-run` (Python 3.12.15 · pydantic 2.14.3), passing in Edition 2026.11.3:
 
 ```python
 """The recorded run of T-01, replayed step by step: each request must match the one recorded, and the replies are
@@ -281,7 +281,7 @@ The example asserts that the run did not count as done, and that from the third 
 
 The recorded run from [the replayed run](#replayed-run) fails in two ways. The loop catches the first and doesn't repair it: each malformed call came back as an error result the model could read, and the step budget ended the run. The second is the wrong change. The loop never sees it, because no `finish` call parses and so no change runs. In this recording the model never called a wrong tool, and it never stopped early with a reply that had no call. The format failure repeated until the budget ran out, and it hid the misreading.
 
-Four counts describe every run in this book. Steps count model calls, and tool calls count requests, including malformed ones. The two token counts are the prompt tokens, summed over every request in the run, and the completion tokens the model produced. Tokens are counted by the pinned model's own tokenizer when the recording is made, and the count is stored in the recording's manifest. Replay reads the stored count and does not tokenize again. For the recorded run, the prompt tokens are 13009 and the completion tokens are 2128. The prompt total is high because each step sends the whole transcript again.
+Four counts describe every run in this book. Steps count model calls, and tool calls count requests, including malformed ones. The two token counts are the [prompt tokens](#token-counts), summed over every request in the run, and the completion tokens the model produced. Tokens are counted by the pinned model's own tokenizer when the recording is made, and the count is stored in the recording's manifest. Replay reads the stored count and does not tokenize again. For the recorded run, the prompt tokens are 13009 and the completion tokens are 2128. The prompt total is high because each step sends the whole transcript again.
 
 **Working rule:** Count steps and tool calls the same way on every run, so that two runs can be compared. When a run ends at its budget, read its error lines before you change the prompt or the model. The error lines show whether the model is repeating one mistake, and that tells you which part of the harness to look at.
 

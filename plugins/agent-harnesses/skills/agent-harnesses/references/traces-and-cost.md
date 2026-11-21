@@ -3,21 +3,21 @@ title: "Agent Harnesses"
 chapter: "Trace each run and count what it cost"
 chapter_id: traces-and-cost
 book: agent-harnesses
-edition: 2026.11.2
+edition: 2026.11.3
 verified: 2026-11-20
-edition_code: ZZGV-NEGC
+edition_code: 1CW4-SHG5
 canonical: https://rollingedition.com/agent-harnesses/traces-and-cost
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“Trace each run and count what it cost,” chapter 11 of Agent Harnesses, Edition 2026.11.2, examples passed Nov 20, 2026. By Rolling Edition, https://rollingedition.com/agent-harnesses/traces-and-cost. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Trace each run and count what it cost,” chapter 11 of Agent Harnesses, Edition 2026.11.3, examples passed Nov 20, 2026. By Rolling Edition, https://rollingedition.com/agent-harnesses/traces-and-cost. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Trace each run and count what it cost
 
 By the end of this chapter, you can make every run write one record per step to a file that a later reader can parse, give each record IDs that tie it to its run and its call, and say what the run cost in tokens. Cost here means counts. It never means money.
 
-The maintenance agent makes its runs on `unitcraft` in a scratch copy. A run can end well, badly or not at all, and its stop reason says only how it ended. Take the [chapter 1](#tools-and-a-loop) run on T-01, one of the tasks in the task set. It reads the right file and runs the tests, then makes a string of malformed calls until it reaches the step cap. The stop reason reads `step_cap`, and that is all the stop reason says. It does not say what the malformed calls had in common, what the harness did with each one, or how many tokens each step used. Those answers sit in the steps, so the harness has to keep the steps.
+The maintenance agent makes its runs on `unitcraft` in a scratch copy. A run can end well, badly or not at all, and its [stop reason](#ways-to-end) says only how it ended. Take the [chapter 1](#tools-and-a-loop) run on T-01, one of the tasks in the task set. It reads the right file and runs the tests, then makes a string of malformed calls until it reaches the step cap. The stop reason reads `step_cap`, and that is all the stop reason says. It does not say what the malformed calls had in common, what the harness did with each one, or how many tokens each step used. Those answers sit in the steps, so the harness has to keep the steps.
 
-The record of each step is the trace. [Chapter 10](#testing-the-agent)'s score already reads the stored counts, and a reader who asks why a run stopped needs the steps before the stop. This chapter writes the trace as data, gives its IDs a fixed form, and counts what it holds. Every count here is read from a recording or printed by a script. None is taken from a live model, so the counts are stored counts, and the one check that would re-derive them from the model has not been run.
+The record of each step is the trace. [Chapter 10](#testing-the-agent)'s score already reads the stored counts, and a reader who asks why a run stopped needs the steps before the stop. This chapter writes the trace as data, gives its IDs a fixed form, and counts what it holds. Every count in this chapter is read from a recording or printed by a script, and none is taken from a live model, so the counts are stored counts, and the one check that would re-derive them from the model has not been run.
 
 ## One line per event {#one-line-per-event}
 
@@ -25,7 +25,7 @@ A trace is a file with one JSON object per line. The format has a name, JSON Lin
 
 Replaying the [chapter 1](#tools-and-a-loop) run on T-01 writes its steps in this form. The replay reads the recorded reply for each step, so the trace is the same on every run.
 
-Example `trace-one-run` (Python 3.12.15 · pydantic 2.14.3), passing in Edition 2026.11.2:
+Example `trace-one-run` (Python 3.12.15 · pydantic 2.14.3), passing in Edition 2026.11.3:
 
 ```python
 """The chapter 1 recorded run of T-01 as JSON lines: one record per step, with run-scoped IDs and the recorded token
@@ -114,7 +114,7 @@ Each record in the [trace](#one-line-per-event) carries two token counts, in the
 
 Summing the stored step counts per task, and for the set, is the job of the next example. It checks each task's sums against the totals the manifest stores for that task, and it checks the set's prompt sum against the sum of those task totals.
 
-Example `token-counts-from-recording` (Python 3.12.15), passing in Edition 2026.11.2:
+Example `token-counts-from-recording` (Python 3.12.15), passing in Edition 2026.11.3:
 
 ```python
 """The token counts of the task-set recording, summed per task and for the set, read from the stored counts. Replay
@@ -191,7 +191,7 @@ The recording's manifest stores the model file and its SHA-256, but not the sett
 
 Here a parent starts a child on T-04, a task that asks for an inch unit. The child's recorded run ends with a finish that changes files. A scripted person says no to that change, so the gate holds the finish, and the child hands back with a question.
 
-Example `child-trace-under-parent` (Python 3.12.15 · pydantic 2.14.3), passing in Edition 2026.11.2:
+Example `child-trace-under-parent` (Python 3.12.15 · pydantic 2.14.3), passing in Edition 2026.11.3:
 
 ```python
 """A parent starts a child on T-04, whose recorded run ends with a finish that changes files. The gate holds that finish
@@ -279,7 +279,7 @@ With the stored counts [summed per task](#token-counts), a run's cost is three n
 
 Grouping the stored counts by how each run ended puts the step-capped runs beside the others, so the cost of each stop reason shows in the same output.
 
-Example `cost-as-counts` (Python 3.12.15), passing in Edition 2026.11.2:
+Example `cost-as-counts` (Python 3.12.15), passing in Edition 2026.11.3:
 
 ```python
 """The cost of the task-set runs as counts only: steps, tool calls and tokens, summed per way a run ended. The cost is
@@ -337,7 +337,7 @@ None of the step-capped runs is done: the count reads 0 of 7. A step-capped run 
 
 Judgement, not a measurement: the step-capped line is the cost of runs that spent their tokens and did not finish. A token budget on the run's total tokens, not the per-request prompt budget of [chapter 5](#context-budgets), would have stopped those runs sooner. Its price is the chance of stopping a run that would have finished on a later step, and this recording cannot show that chance, because each step-capped run stopped at the cap and wrote no later step. The prompt count is what makes the cost grow: the loop sends the whole transcript again at every step. Counting the step-capped runs whose prompt count rises at every step gives 7 of 7. A step budget counts steps, so for a long run it says less about the cost than the tokens do. If a token budget is set, the harness should end the run with its own stop reason and its own counts, so that a cut by the budget can be told apart from a cut by the step cap.
 
-[Chapter 12](#when-an-agent-is-the-wrong-design) compares an agent with a fixed pipeline in these same units, and the units are only useful if every run reports them the same way.
+[Chapter 12](#when-an-agent-is-the-wrong-design) compares an agent with a [fixed pipeline](#fixed-pipeline-first) in these same units, and the units are only useful if every run reports them the same way.
 
 **Working rule:** Report a cost as the steps, tool calls and tokens of each run, grouped by how it ended, with the groups printed beside each other. Quote no money. Read a step-capped group as tokens spent without a finish, and not as evidence about the task until a second measure says otherwise.
 

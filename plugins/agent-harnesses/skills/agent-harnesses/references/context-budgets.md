@@ -3,13 +3,13 @@ title: "Agent Harnesses"
 chapter: "Keep the context useful as the task grows"
 chapter_id: context-budgets
 book: agent-harnesses
-edition: 2026.11.2
+edition: 2026.11.3
 verified: 2026-11-20
-edition_code: ZZGV-NEGC
+edition_code: 1CW4-SHG5
 canonical: https://rollingedition.com/agent-harnesses/context-budgets
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“Keep the context useful as the task grows,” chapter 5 of Agent Harnesses, Edition 2026.11.2, examples passed Nov 20, 2026. By Rolling Edition, https://rollingedition.com/agent-harnesses/context-budgets. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Keep the context useful as the task grows,” chapter 5 of Agent Harnesses, Edition 2026.11.3, examples passed Nov 20, 2026. By Rolling Edition, https://rollingedition.com/agent-harnesses/context-budgets. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Keep the context useful as the task grows
 
@@ -25,9 +25,9 @@ The recorded model is Qwen3-4B-Instruct-2507, run from the GGUF file that [chapt
 
 The manifest also stores `max_tokens`, the most the reply may take: 1024 tokens. The reply comes out of the same window as the prompt, so the prompt gets whatever the reply leaves.
 
-The arithmetic is short. 8192 tokens, less 1024 for the reply, leaves 7168 tokens for everything the model reads on one step. The prompt holds the system prompt, the tool schemas, the issue, the notes, the earlier steps and the last tool result, and all of it counts against that budget. A refusal is a tool result like any other: the harness returns its text to the model as a tool message, so it counts against the budget too. This chapter calls it the prompt budget.
+The arithmetic is short. 8192 tokens, less 1024 for the reply, leaves 7168 tokens for everything the model reads on one step. The prompt holds the system prompt, the tool schemas, the issue, the notes, the earlier steps and the last tool result, and all of it counts against that budget. A refusal is a tool result like any other: the harness returns its text to the model as a tool message, so it counts against the budget too. This chapter calls the tokens left for everything the model reads on one step the prompt budget.
 
-Example `budget-counts-tokens` (Python 3.12.15 · pydantic 2.14.3), passing in Edition 2026.11.2:
+Example `budget-counts-tokens` (Python 3.12.15 · pydantic 2.14.3), passing in Edition 2026.11.3:
 
 ```python
 """The context the harness loads the model with, the room the reply keeps, and each run's largest prompt against them.
@@ -101,7 +101,7 @@ A hosted API has a much larger window. The context editing page of the Anthropic
 
 ## Where the recorded runs came closest to the budget {#where-tokens-go}
 
-The recording stores the prompt count the model reported for every step, in `replies.jsonl`. The adapter returns that count as `prompt_tokens`, as [chapter 4](#model-adapters) defines the reply, so these are the model's own counts. The harness did not estimate them.
+The recording stores the [prompt count](#token-counts) the model reported for every step, in `replies.jsonl`. The adapter returns that count as `prompt_tokens`, as [chapter 4](#model-adapters) defines the reply, so these are the model's own counts. The harness did not estimate them.
 
 On those counts, no recorded step reached the [prompt budget](#window). Of the 220 recorded steps, 0 went over it. The largest was T-16's last step, and it left 612 tokens of the window spare once the reply's room was set aside. The check reads the recording and loads no model, so anyone can run it without the hardware that made the recording. The same check, run on any new recording, shows at once whether its prompts still fit the budget, which makes it the first thing to rerun after a model change.
 
@@ -111,13 +111,13 @@ That result says less than it seems. The recorded task set ran tool set v1 with 
 
 ## Estimate the prompt when the harness can't count it {#estimate}
 
-The exact count comes from the model's own tokenizer, which is part of the model file. This book's examples run offline and never open that file, which is about 2.5 GB and not in the book. So the harness estimates. It counts the characters of every message and of the tool schemas, and divides by three, rounding up: one token for every 3 characters.
+The exact count comes from the model's own tokenizer, which is part of the model file. This book's examples run offline and never open that file, which is about 2.5 GB and not in the book. So the harness estimates. The estimate counts the characters of every message and of the tool schemas, and divides by three, rounding up: one token for every 3 characters.
 
 We chose three by looking at the task-set recording. The first rule we tried was four characters per token. On the 220 task-set steps, four came out under the true count on 216 of them. An estimate under the count is the dangerous direction, because the harness would believe it had room the model did not have. So we moved to three.
 
 Each step's estimate can be set against the count the model reported for that same step.
 
-Example `estimate-vs-recorded` (Python 3.12.15 · pydantic 2.14.3), passing in Edition 2026.11.2:
+Example `estimate-vs-recorded` (Python 3.12.15 · pydantic 2.14.3), passing in Edition 2026.11.3:
 
 ```python
 """The estimate of each recorded request against the prompt count the model reported for it. The rule was chosen on
@@ -221,7 +221,7 @@ The cut rule is the one that matters for a local harness. The vendor's guide to 
 
 Four reads and a finish, under a budget of 2000 estimated tokens, are enough to cross it. That budget is far below the real 7168, on purpose, so that compaction happens on a small task. The real budget is not reached by this task.
 
-Example `compact-keeps-last-result` (Python 3.12.15 · pydantic 2.14.3), passing in Edition 2026.11.2:
+Example `compact-keeps-last-result` (Python 3.12.15 · pydantic 2.14.3), passing in Edition 2026.11.3:
 
 ```python
 """Four reads of the case, then finish, under a small budget that the reads cross. The point rests on the calls
@@ -299,9 +299,9 @@ Two cuts are printed last. A cut before the last result on its own is refused, a
 
 Compaction loses detail by design. Anthropic's engineering post on context engineering puts it as a choice: "The art of compaction lies in the selection of what to keep versus what to discard, as overly aggressive compaction can result in the loss of subtle but critical context whose importance only becomes apparent later" ([Effective context engineering for AI agents](https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents)). The same post describes the way round it, with notes kept outside the window, and it reports no measurement of them.
 
-The harness adds a `note` tool. The model writes one line per fact, and the harness sends the notes after the issue at every step. Compaction does not cut them, because they are not part of the older steps. A fact the model writes as a note survives every compaction. A fact that stays only in an older result is kept at most as the first line of that result.
+The harness adds a `note` tool: the model writes one line per fact, and the harness sends the notes after the issue at every step. Compaction does not cut them, because they are not part of the older steps. A fact the model writes as a note survives every compaction. A fact that stays only in an older result is kept at most as the first line of that result.
 
-Example `notes-survive` (Python 3.12.15 · pydantic 2.14.3), passing in Edition 2026.11.2:
+Example `notes-survive` (Python 3.12.15 · pydantic 2.14.3), passing in Edition 2026.11.3:
 
 ```python
 """A note the agent writes keeps a fact that an older read result had, after a compaction. The summary keeps only the
@@ -368,7 +368,7 @@ That shows the mechanism. It does not show that a model will write the notes. Th
 
 The recording `chapter-5-notes` was made with tool set v2 from [chapter 3](#tool-schemas), the note tool, and the stop rules from [chapter 2](#stop-rules). Its three runs are T-01, T-02 and T-06. Seven task-set runs reached the step cap of 16 (T-01, T-02, T-06, T-10, T-11, T-13, T-16), and the recording's script names these three as the long runs that each hit that cap. It does not run the other four. We replayed the three runs with compaction on, to see what the model did with the tools and the budget.
 
-Example `recorded-context-use` (Python 3.12.15 · pydantic 2.14.3), passing in Edition 2026.11.2:
+Example `recorded-context-use` (Python 3.12.15 · pydantic 2.14.3), passing in Edition 2026.11.3:
 
 ```python
 """The three recorded runs of chapter 5, replayed with the compaction on: how each ended, whether its check passed,
@@ -450,7 +450,7 @@ Three runs on three tasks show what happened on those tasks, and nothing about t
 
 A July 2025 technical report from Chroma, "Context Rot" by Hong, Troynikov and Huber, found that "model performance varies significantly as input length changes, even on simple tasks" ([Context Rot](https://www.trychroma.com/research/context-rot)). The report evaluates 18 LLMs from several vendors, including Qwen3, on its own tasks. This chapter does not re-run those tasks, so it quotes no effect size from them.
 
-The book measures its own runs instead. [Chapter 10](#testing-the-agent) runs the task set on two harness versions and compares them as counts of finished tasks. Harness v2 adds the budget among several other changes, so that comparison cannot credit the budget alone. A child run in [chapter 8](#subagents-and-handoffs) keeps a budget of its own, counted on its own steps.
+The book measures its own runs instead. [Chapter 10](#testing-the-agent) runs the task set on two harness versions and compares them as counts of finished tasks. [Harness v2](#v1-v2) adds the budget among several other changes, so that comparison cannot credit the budget alone. A child run in [chapter 8](#subagents-and-handoffs) keeps a budget of its own, counted on its own steps.
 
 Each example here measures something else. The budget example measures where the recorded prompts sat, and the compaction and notes examples measure what the harness keeps. None measures how length affects a model's answers, so this chapter does not say that a long prompt costs accuracy.
 
