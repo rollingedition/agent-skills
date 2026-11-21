@@ -3,13 +3,13 @@ title: "Small Open Models"
 chapter: "Prompt a small model and constrain its answers to the teams"
 chapter_id: prompt-and-constrain
 book: small-open-models
-edition: 2026.11.11
-verified: 2026-11-20
-edition_code: 2BZS-KAEW
+edition: 2026.11.12
+verified: 2026-11-21
+edition_code: 8EBB-2VV3
 canonical: https://rollingedition.com/small-open-models/prompt-and-constrain
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“Prompt a small model and constrain its answers to the teams,” chapter 4 of Small Open Models, Edition 2026.11.11, examples passed Nov 20, 2026. By Rolling Edition, https://rollingedition.com/small-open-models/prompt-and-constrain. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Prompt a small model and constrain its answers to the teams,” chapter 4 of Small Open Models, Edition 2026.11.12, examples passed Nov 21, 2026. By Rolling Edition, https://rollingedition.com/small-open-models/prompt-and-constrain. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Prompt a small model and constrain its answers to the teams
 
@@ -27,7 +27,7 @@ The list of teams in the prompt is the same list the constraint uses. The trie i
 
 The raw form passes the router prompt's text to the model as it stands. The chat form wraps the router prompt's text in the model's chat template, which adds a default system prompt. To see what the template changes, run the chat form on the same six messages:
 
-Example `constrained-decode-135m-chat` (Python 3.12.15 · torch 2.15.0+cpu · torchao 0.18.0+cpu · transformers 5.23.0), passing in Edition 2026.11.11:
+Example `constrained-decode-135m-chat` (Python 3.12.15 · torch 2.15.0+cpu · torchao 0.18.0+cpu · transformers 5.23.0), passing in Edition 2026.11.12:
 
 ```python
 """Route the first 6 messages of test_40 with the 135M model through its chat template, decoding only team names.
@@ -119,7 +119,7 @@ Two details of that code shape the callback. The processor calls it as `self._pr
 
 First, the 135M model with the trie, on those six messages.
 
-Example `constrained-decode-135m` (Python 3.12.15 · torch 2.15.0+cpu · torchao 0.18.0+cpu · transformers 5.23.0), passing in Edition 2026.11.11:
+Example `constrained-decode-135m` (Python 3.12.15 · torch 2.15.0+cpu · torchao 0.18.0+cpu · transformers 5.23.0), passing in Edition 2026.11.12:
 
 ```python
 """Route the first 6 messages of test_40 with the 135M model, decoding only team names, and count how many right answers that gives.
@@ -201,7 +201,7 @@ The [live examples](#a-token-trie-allows-only-team-names) cover six messages. Th
 
 The 360M run is the same program with the larger model.
 
-Example `constrained-decode-360m` (Python 3.12.15 · torch 2.15.0+cpu · torchao 0.18.0+cpu · transformers 5.23.0), passing in Edition 2026.11.11:
+Example `constrained-decode-360m` (Python 3.12.15 · torch 2.15.0+cpu · torchao 0.18.0+cpu · transformers 5.23.0), passing in Edition 2026.11.12:
 
 ```python
 """Decode team names for the first 6 messages of test_40 with the 360M model, and count how many of them are right.
@@ -271,7 +271,7 @@ For the comparison, each variant answered 200 messages. The recording's counts a
 
 This example reads the table's counts from the recording:
 
-Example `prompting-on-test-200` (Python 3.12.15 · torch 2.15.0+cpu · transformers 5.23.0), passing in Edition 2026.11.11:
+Example `prompting-on-test-200` (Python 3.12.15 · torch 2.15.0+cpu · transformers 5.23.0), passing in Edition 2026.11.12:
 
 ```python
 """Compare the three prompting variants on test_200, from the recording only. No model is loaded.
@@ -372,7 +372,7 @@ Constrained decoding returns one answer and no scores. Label scoring gives every
 
 Run it on three messages and read the top team of each:
 
-Example `label-scoring-prior` (Python 3.12.15 · torch 2.15.0+cpu · torchao 0.18.0+cpu · transformers 5.23.0), passing in Edition 2026.11.11:
+Example `label-scoring-prior` (Python 3.12.15 · torch 2.15.0+cpu · torchao 0.18.0+cpu · transformers 5.23.0), passing in Edition 2026.11.12:
 
 ```python
 """Score every team for the first 3 messages of test_40 with the 135M model, by the summed log-probability of its tokens.
