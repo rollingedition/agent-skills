@@ -3,13 +3,13 @@ title: "Small Open Models"
 chapter: "Serve the router on a CPU, with the hand-off inside the route"
 chapter_id: serve-the-router-on-a-cpu
 book: small-open-models
-edition: 2026.11.12
-verified: 2026-11-21
-edition_code: 8EBB-2VV3
+edition: 2026.11.13
+verified: 2026-11-22
+edition_code: 4RW6-5Z6V
 canonical: https://rollingedition.com/small-open-models/serve-the-router-on-a-cpu
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“Serve the router on a CPU, with the hand-off inside the route,” chapter 8 of Small Open Models, Edition 2026.11.12, examples passed Nov 21, 2026. By Rolling Edition, https://rollingedition.com/small-open-models/serve-the-router-on-a-cpu. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Serve the router on a CPU, with the hand-off inside the route,” chapter 8 of Small Open Models, Edition 2026.11.13, examples passed Nov 22, 2026. By Rolling Edition, https://rollingedition.com/small-open-models/serve-the-router-on-a-cpu. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Serve the router on a CPU, with the hand-off inside the route
 
@@ -23,7 +23,7 @@ This chapter serves the float32 adapter that [chapter 5](fine-tune-with-lora#use
 
 ## One route that returns the hand-off {#one-route-that-returns-the-hand-off}
 
-A route is a function that a web framework calls when a request arrives at a path with a method. The framework here is FastAPI, pinned at 0.164.0 in `examples/requirements.txt`. The router has one route, `POST /route`. A caller sends a JSON object with one field, `message`, which holds the text of one inbox message. The route answers with a JSON object of five fields: `team`, `confidence`, `handed_off`, `adapter` and `version`.
+A route is a function that a web framework calls when a request arrives at a path with a method. The framework here is FastAPI, pinned at 0.165.0 in `examples/requirements.txt`. The router has one route, `POST /route`. A caller sends a JSON object with one field, `message`, which holds the text of one inbox message. The route answers with a JSON object of five fields: `team`, `confidence`, `handed_off`, `adapter` and `version`.
 
 Each field has one source, and that matters for the hand-off. The `confidence` is the softmax probability of the team the model chose, which is the meaning [chapter 5 gave it](fine-tune-with-lora#a-head-that-scores-the-teams). The `handed_off` flag is the result of `handoff(confidence, threshold)`, which is true when the confidence is below the threshold. The comparison is written as `not confidence >= threshold`, so a confidence that is not a number, NaN included, is handed off too. The threshold is not typed into the route. The route reads it from the adapter's manifest, where chapter 5 wrote the value it chose on the dev split, so the route and the chapter cannot disagree about the number. The `team` is `None` when `handed_off` is true, and it is the team's label otherwise. The `adapter` and `version` fields tell the caller which model answered. The manifest has no field for the adapter's version, so the version is the suffix of the adapter's name: `banking77-lora-v1` reports `v1`.
 
@@ -31,7 +31,7 @@ The route calls the classifier once per request. One forward pass gives the team
 
 Each message of `test_40`, a [fixed sample](measure-the-routing-task#dev-test-and-fixed-samples) of 40 that the book uses for quick checks, goes to the route, and the test counts the flags and the teams. It prints counts and never the text of a message.
 
-Example `serve-route-testclient` (Python 3.12.15 · fastapi 0.164.0 · peft 0.21.3 · pydantic 2.14.4 · torch 2.15.0+cpu · torchao 0.18.0+cpu · transformers 5.23.0), passing in Edition 2026.11.12:
+Example `serve-route-testclient` (Python 3.12.15 · fastapi 0.165.0 · peft 0.21.3 · pydantic 2.14.4 · torch 2.15.0+cpu · torchao 0.18.0+cpu · transformers 5.23.0), passing in Edition 2026.11.13:
 
 ```python
 """Send the test_40 messages to the one POST /route through TestClient, in process, and print counts that tie the
@@ -122,7 +122,7 @@ The second kind of request is a message too long to read in full. The model read
 
 A shorter cut, at 64 tokens, is a common choice, and the count below shows what it would touch on the test sample of 200 messages, the sample that [chapter 5](fine-tune-with-lora) compared models on. The example prints how many of the 200 messages are longer than each cut. Only the tokenizer loads here, and no model runs.
 
-Example `truncation-count` (Python 3.12.15 · torch 2.15.0+cpu · transformers 5.23.0), passing in Edition 2026.11.12:
+Example `truncation-count` (Python 3.12.15 · torch 2.15.0+cpu · transformers 5.23.0), passing in Edition 2026.11.13:
 
 ```python
 """Count the test_200 messages over 64 tokens and over the 128 that classify() cuts at, then show the cut on one long
@@ -187,7 +187,7 @@ A reader whose messages run longer than this sample has to count them before ser
 
 ## Test the route in the same process {#test-the-route-without-a-socket}
 
-The route's rule, a team only when the flag is false, has to be checked on real answers, and FastAPI's test client lets a test do that without starting a server. The FastAPI testing tutorial says that its test client is used like `httpx`, and that calls to it are ordinary calls, with no `await` ([FastAPI 0.164.0 testing tutorial](https://raw.githubusercontent.com/fastapi/fastapi/0.162.5/docs/en/docs/tutorial/testing.md)). So a test is an ordinary Python loop, and each call returns an answer it can read.
+The route's rule, a team only when the flag is false, has to be checked on real answers, and FastAPI's test client lets a test do that without starting a server. The FastAPI testing tutorial says that its test client is used like `httpx`, and that calls to it are ordinary calls, with no `await` ([FastAPI 0.165.0 testing tutorial](https://raw.githubusercontent.com/fastapi/fastapi/0.162.5/docs/en/docs/tutorial/testing.md)). So a test is an ordinary Python loop, and each call returns an answer it can read.
 
 The route test uses that client. It builds the route from the recorded folder, sends it each of the 40 messages of `test_40`, and reads back the JSON of every answer. It does not start uvicorn, and it does not print message text. Every answer came back with status 200, and the test prints the keys of the first answer, which are the five fields listed in [the first section](#one-route-that-returns-the-hand-off). The counts it prints are the ones the route's rule predicts: the handed-off count, the flagged messages with no team, the kept messages with the gold team, and the team names outside the list. It also sends a body with no `message`, prints that reply's status, and asserts that its `detail` field is a list.
 

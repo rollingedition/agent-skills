@@ -3,13 +3,13 @@ title: "Small Open Models"
 chapter: "When a small model is the wrong choice"
 chapter_id: when-a-small-model-is-the-wrong-choice
 book: small-open-models
-edition: 2026.11.12
-verified: 2026-11-21
-edition_code: 8EBB-2VV3
+edition: 2026.11.13
+verified: 2026-11-22
+edition_code: 4RW6-5Z6V
 canonical: https://rollingedition.com/small-open-models/when-a-small-model-is-the-wrong-choice
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“When a small model is the wrong choice,” chapter 10 of Small Open Models, Edition 2026.11.12, examples passed Nov 21, 2026. By Rolling Edition, https://rollingedition.com/small-open-models/when-a-small-model-is-the-wrong-choice. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“When a small model is the wrong choice,” chapter 10 of Small Open Models, Edition 2026.11.13, examples passed Nov 22, 2026. By Rolling Edition, https://rollingedition.com/small-open-models/when-a-small-model-is-the-wrong-choice. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # When a small model is the wrong choice
 
@@ -21,7 +21,7 @@ A small router can beat a larger model on most of a set of messages and still be
 
 [Chapter 2](measure-the-routing-task#the-baseline-from-recorded-answers) set the stand-in's score as the baseline. This section puts the router beside it on the same messages: all 1001 messages of `test_1001`, the fixed sample that every chapter's samples come from ([chapter 2](measure-the-routing-task#dev-test-and-fixed-samples)). The router is the classifier `banking77-lora-v1`, run live.
 
-Example `router-on-test-1001` (Python 3.12.15 · peft 0.21.3 · torch 2.15.0+cpu · torchao 0.18.0+cpu · transformers 5.23.0), passing in Edition 2026.11.12:
+Example `router-on-test-1001` (Python 3.12.15 · peft 0.21.3 · torch 2.15.0+cpu · torchao 0.18.0+cpu · transformers 5.23.0), passing in Edition 2026.11.13:
 
 ```python
 """The router and the stand-in on all 1,001 messages of test_1001, the committed test order. The prose rests on the
@@ -70,7 +70,7 @@ On the whole set the router is ahead, right on 847/1001 (84.6%) against the stan
 
 The count that matters most for the inbox is the wrong answers the router sends to a caller: 76/1001 (7.6%). Those are messages it kept, because their confidence cleared the threshold. [Chapter 5](fine-tune-with-lora#choose-the-threshold-on-dev) chose that threshold on the dev split, and [chapter 9](version-watch-and-fall-back#fall-back-to-a-person) says where what the router hands off goes, which is a person.
 
-Example `where-the-router-still-loses` (Python 3.12.15 · peft 0.21.3 · torch 2.15.0+cpu · torchao 0.18.0+cpu · transformers 5.23.0), passing in Edition 2026.11.12:
+Example `where-the-router-still-loses` (Python 3.12.15 · peft 0.21.3 · torch 2.15.0+cpu · torchao 0.18.0+cpu · transformers 5.23.0), passing in Edition 2026.11.13:
 
 ```python
 """Where the router still loses: test_200 scored for the router and the stand-in. The prose rests on the count of
@@ -180,7 +180,7 @@ Throughput is the input that a recording has to supply, because it depends on th
 
 Only the one-per-call pair is like for like. The classifier in batches of 16 takes 16 messages in one forward pass, and the stand-in takes one message per call with its whole router prompt. So the batched ratio of 104.0 mixes model size with batching, and this chapter does not use it for the comparison. The comparison uses the one-per-call ratio of 60.8. Each copy got one timed pass over the 200 messages of `test_200`, after a warm-up of one message, with tokenization inside the timed span. The ratios come from unrounded rates, so they are not exactly the quotient of the printed rates.
 
-Example `cost-ratio-from-recording` (Python 3.12.15 · torch 2.15.0+cpu · transformers 5.23.0), passing in Edition 2026.11.12:
+Example `cost-ratio-from-recording` (Python 3.12.15 · torch 2.15.0+cpu · transformers 5.23.0), passing in Edition 2026.11.13:
 
 ```python
 """The throughput rates and ratios as recorded, and the machine they were measured on. The prose rests on the
@@ -231,7 +231,7 @@ On this machine, at this thread count, the int8 copy was no faster than float32.
 
 The bill needs a rate for the router, and the recording gives one: the classifier at one message per call, timed as the stand-in was. The route handles one message per request, so the bill uses that rate. A reader replaces it with one taken on their own machine.
 
-Example `monthly-bill-from-labelled-inputs` (Python 3.12.15 · torch 2.15.0+cpu · transformers 5.23.0), passing in Edition 2026.11.12:
+Example `monthly-bill-from-labelled-inputs` (Python 3.12.15 · torch 2.15.0+cpu · transformers 5.23.0), passing in Edition 2026.11.13:
 
 ```python
 """The monthly bill for a hosted model and for the router on one machine, from inputs the reader sets. The hosted bill,
@@ -348,7 +348,7 @@ break-even messages per month = machine bill per month ÷ hosted price per messa
 
 The formula does not subtract the machine's cost per message from the hosted price. The machine's cost per message at capacity is its fixed bill divided by its capacity, and that bill is already counted once in the numerator. Subtracting the same cost again would count the machine twice. The formula also holds only within capacity. Above it, one machine cannot carry the volume, and the count is made again for a second machine, with its own bill and its own capacity.
 
-Example `break-even-from-recorded-ratio` (Python 3.12.15 · torch 2.15.0+cpu · transformers 5.23.0), passing in Edition 2026.11.12:
+Example `break-even-from-recorded-ratio` (Python 3.12.15 · torch 2.15.0+cpu · transformers 5.23.0), passing in Edition 2026.11.13:
 
 ```python
 """The monthly volume at which one machine's bill equals the hosted bill for the router's prompts. The break-even line

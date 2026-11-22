@@ -1,13 +1,13 @@
 ---
 title: "Glossary"
 book: "Small Open Models"
-edition: "2026.11.12"
+edition: "2026.11.13"
 canonical: "https://rollingedition.com/small-open-models/glossary"
 ---
 
 # Glossary of *Small Open Models*
 
-The 100 terms this book defines, as Edition 2026.11.12 has them, each in the book's own sentence. When a task this skill covers uses one, it means what it says here: read its section before you rely on it, and cite the section. Where a definition depends on a package, it says the version this edition pins and runs its examples on. On the web: https://rollingedition.com/small-open-models/glossary
+The 100 terms this book defines, as Edition 2026.11.13 has them, each in the book's own sentence. When a task this skill covers uses one, it means what it says here: read its section before you rely on it, and cite the section. Where a definition depends on a package, it says the version this edition pins and runs its examples on. On the web: https://rollingedition.com/small-open-models/glossary
 
 ## accuracy
 
