@@ -3,13 +3,13 @@ title: "Small Open Models"
 chapter: "Distill a larger model's answers into a small one"
 chapter_id: distill-a-larger-model
 book: small-open-models
-edition: 2026.11.13
+edition: 2026.11.14
 verified: 2026-11-22
-edition_code: 4RW6-5Z6V
+edition_code: YVM6-RB7E
 canonical: https://rollingedition.com/small-open-models/distill-a-larger-model
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“Distill a larger model's answers into a small one,” chapter 6 of Small Open Models, Edition 2026.11.13, examples passed Nov 22, 2026. By Rolling Edition, https://rollingedition.com/small-open-models/distill-a-larger-model. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Distill a larger model's answers into a small one,” chapter 6 of Small Open Models, Edition 2026.11.14, examples passed Nov 22, 2026. By Rolling Edition, https://rollingedition.com/small-open-models/distill-a-larger-model. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Distill a larger model's answers into a small one
 
@@ -33,7 +33,7 @@ Two things follow from training on one label per message. A student learns the t
 
 The teacher has to be a model whose terms allow training on its outputs. The stand-in's GGUF build in this book is the repository `unsloth/Qwen3-4B-Instruct-2507-GGUF`, file `Qwen3-4B-Instruct-2507-Q4_K_M.gguf`, at the revision the teacher's manifest records. The model is Qwen3-4B-Instruct-2507, from Qwen, and the build is by unsloth. We credit both. The model card of the build declares `license: apache-2.0` and names `Qwen/Qwen3-4B-Instruct-2507` as its base model ([model card at the pinned revision](https://huggingface.co/unsloth/Qwen3-4B-Instruct-2507-GGUF/raw/a06e946bb6b655725eafa393f4a9745d460374c9/README.md)). The base model's licence, at [a pinned commit](https://huggingface.co/Qwen/Qwen3-4B-Instruct-2507/resolve/cdbee75f17c01a7cc42f958dc650907174af0554/LICENSE), is Apache License 2.0. The Apache License 2.0, in its second section, grants the right "to reproduce, prepare Derivative Works of, publicly display, publicly perform, sublicense, and distribute the Work and such Derivative Works" ([Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0.txt)).
 
-We read Apache-2.0 as placing no restriction on using a model's outputs. Its text governs the Work and such Derivative Works, as section 2 above sets out, and it does not mention outputs. This is our reading of the licence, not a quotation from it, and it holds for this model's licence only. The adapters this book ships are distributed under Apache-2.0, and [the notice](https://github.com/rollingedition/book-small-open-models/blob/5c18426502b0d89091627f675dc8bb3e7b5a83ac/examples/data/recorded/NOTICE.md) beside them gives the licence and the attribution.
+We read Apache-2.0 as placing no restriction on using a model's outputs. Its text governs the Work and such Derivative Works, as section 2 above sets out, and it does not mention outputs. This is our reading of the licence, not a quotation from it, and it holds for this model's licence only. The adapters this book ships are distributed under Apache-2.0, and [the notice](https://github.com/rollingedition/book-small-open-models/blob/b2ee95f3ba7f86b4052e93c8cac7e2d5477e6435/examples/data/recorded/NOTICE.md) beside them gives the licence and the attribution.
 
 Licences differ. An open-weights licence such as Apache-2.0 governs the model's files; a hosted model is governed by its provider's terms of service, which can forbid using the service or its outputs to train a competing model. Terms change, so read the current terms of any model you would train on, on the day you use it. This book never uses a hosted model as a teacher.
 
@@ -49,7 +49,7 @@ The draw is seeded. Labels already saved for a chosen row are kept and not label
 
 The stand-in answers each message with the router prompt from [chapter 1](route-a-message). It decodes greedily, at temperature zero. In a probe on 40 test messages, two runs gave identical answers, and that probe is the only check we made of repeatability. Its answer is constrained by a grammar to the 77 team names, so each label is a real team.
 
-Example `teacher-agreement` (Python 3.12.15 · torch 2.15.0+cpu · transformers 5.23.0), passing in Edition 2026.11.13:
+Example `teacher-agreement` (Python 3.12.15 · torch 2.15.0+cpu · transformers 5.23.0), passing in Edition 2026.11.14:
 
 ```python
 """Measure how often the teacher's label matches gold on the training rows it labelled, and its accuracy on test_200
@@ -127,7 +127,7 @@ Three measures run through this chapter, and each answers its own question. The 
 
 Agreement and accuracy answer different questions. Agreement with the teacher says how much of the teacher the student has learned, whether the teacher is right or wrong. Accuracy against gold says how often the student names the right team. A student can agree with a wrong teacher and be wrong, and it can disagree with a wrong teacher and be right. Printing both lets a reader see which of the two is happening, instead of inferring it from one figure.
 
-Example `student-recorded-adapter` (Python 3.12.15 · peft 0.21.3 · torch 2.15.0+cpu · torchao 0.18.0+cpu · transformers 5.23.0), passing in Edition 2026.11.13:
+Example `student-recorded-adapter` (Python 3.12.15 · peft 0.22.0 · torch 2.15.0+cpu · torchao 0.18.0+cpu · transformers 5.23.0), passing in Edition 2026.11.14:
 
 ```python
 """Score the distilled student banking77-distilled-v1 on test_200 beside the human-labelled adapter, with the student's
@@ -206,7 +206,7 @@ The copy measures come next. The student's answer equals the teacher's on 100/20
 
 The comparison with the adapter alone mixes two things. The adapter learned from the gold labels of the full training split, and the student learned from the teacher's labels on a smaller set of rows. A gap between them could come from the labels, from the number of rows or from both. To separate them, the book records the same recipe on the same rows with gold labels. The control, `banking77-gold-1000-v1`, is the student's recipe trained on gold labels, and its rows are the rows the teacher labelled.
 
-Example `student-vs-gold-control` (Python 3.12.15 · peft 0.21.3 · torch 2.15.0+cpu · torchao 0.18.0+cpu · transformers 5.23.0), passing in Edition 2026.11.13:
+Example `student-vs-gold-control` (Python 3.12.15 · peft 0.22.0 · torch 2.15.0+cpu · torchao 0.18.0+cpu · transformers 5.23.0), passing in Edition 2026.11.14:
 
 ```python
 """Put the student banking77-distilled-v1 beside its control banking77-gold-1000-v1, which has the same recipe and the

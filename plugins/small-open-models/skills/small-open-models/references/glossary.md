@@ -1,13 +1,13 @@
 ---
 title: "Glossary"
 book: "Small Open Models"
-edition: "2026.11.13"
+edition: "2026.11.14"
 canonical: "https://rollingedition.com/small-open-models/glossary"
 ---
 
 # Glossary of *Small Open Models*
 
-The 100 terms this book defines, as Edition 2026.11.13 has them, each in the book's own sentence. When a task this skill covers uses one, it means what it says here: read its section before you rely on it, and cite the section. Where a definition depends on a package, it says the version this edition pins and runs its examples on. On the web: https://rollingedition.com/small-open-models/glossary
+The 100 terms this book defines, as Edition 2026.11.14 has them, each in the book's own sentence. When a task this skill covers uses one, it means what it says here: read its section before you rely on it, and cite the section. Where a definition depends on a package, it says the version this edition pins and runs its examples on. On the web: https://rollingedition.com/small-open-models/glossary
 
 ## accuracy
 
@@ -419,7 +419,7 @@ The paper that introduced LoRA, Hu et al. (2021), says it freezes the pre-traine
 
 - Also: low-rank adaptation
 - Contrasts with: full fine-tuning
-- Implemented by: peft 0.21.3
+- Implemented by: peft 0.22.0
 - The same as: https://rollingedition.com/concepts/large-language-models/lora
 - Defined in: [Adapters train a small part of the model](fine-tune-with-lora.md#adapters-train-a-small-part-of-the-model)
 - Address: https://rollingedition.com/concepts/fine-tuning/lora
@@ -437,9 +437,9 @@ The rank, r, is the inner size of each added matrix, and it is kept small.
 lora_alpha sets how strongly the update counts
 
 - Formula: `self.scaling[adapter_name] = lora_alpha / r`
-- True for: peft 0.21.3
+- True for: peft 0.22.0
 - Part of: LoRA
-- Implemented by: peft 0.21.3
+- Implemented by: peft 0.22.0
 - Defined in: [Adapters train a small part of the model](fine-tune-with-lora.md#adapters-train-a-small-part-of-the-model)
 - Address: https://rollingedition.com/concepts/fine-tuning/lora-alpha
 
@@ -482,9 +482,9 @@ The median is the lower of the two middle values, so it is a whole number of tok
 Merging folds the adapter's update into the base weights, so each layer is one weight matrix, quantized once, and the layer count describes the router.
 
 - Also: merge, merge_and_unload
-- True for: peft 0.21.3
+- True for: peft 0.22.0
 - Comes before: int8 copy
-- Implemented by: peft 0.21.3
+- Implemented by: peft 0.22.0
 - Defined in: [One call to quantize the linear layers](quantize-and-measure.md#one-call-to-quantize-the-linear-layers)
 - Address: https://rollingedition.com/concepts/fine-tuning/merge
 
