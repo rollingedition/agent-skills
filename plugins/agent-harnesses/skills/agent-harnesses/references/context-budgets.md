@@ -3,13 +3,13 @@ title: "Agent Harnesses"
 chapter: "Keep the context useful as the task grows"
 chapter_id: context-budgets
 book: agent-harnesses
-edition: 2026.11.5
-verified: 2026-11-20
-edition_code: ZR7Z-RM4S
+edition: 2026.11.6
+verified: 2026-11-22
+edition_code: 3KM9-2NP7
 canonical: https://rollingedition.com/agent-harnesses/context-budgets
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“Keep the context useful as the task grows,” chapter 5 of Agent Harnesses, Edition 2026.11.5, examples passed Nov 20, 2026. By Rolling Edition, https://rollingedition.com/agent-harnesses/context-budgets. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Keep the context useful as the task grows,” chapter 5 of Agent Harnesses, Edition 2026.11.6, examples passed Nov 22, 2026. By Rolling Edition, https://rollingedition.com/agent-harnesses/context-budgets. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Keep the context useful as the task grows
 
@@ -27,7 +27,7 @@ The manifest also stores `max_tokens`, the most the reply may take: 1024 tokens.
 
 The arithmetic is short. 8192 tokens, less 1024 for the reply, leaves 7168 tokens for everything the model reads on one step. The prompt holds the system prompt, the tool schemas, the issue, the notes, the earlier steps and the last tool result, and all of it counts against that budget. A refusal is a tool result like any other: the harness returns its text to the model as a tool message, so it counts against the budget too. This chapter calls the tokens left for everything the model reads on one step the prompt budget.
 
-Example `budget-counts-tokens` (Python 3.12.15 · pydantic 2.14.3), passing in Edition 2026.11.5:
+Example `budget-counts-tokens` (Python 3.12.15 · pydantic 2.14.4), passing in Edition 2026.11.6:
 
 ```python
 """The context the harness loads the model with, the room the reply keeps, and each run's largest prompt against them.
@@ -117,7 +117,7 @@ We chose three by looking at the task-set recording. The first rule we tried was
 
 Each step's estimate can be set against the count the model reported for that same step.
 
-Example `estimate-vs-recorded` (Python 3.12.15 · pydantic 2.14.3), passing in Edition 2026.11.5:
+Example `estimate-vs-recorded` (Python 3.12.15 · pydantic 2.14.4), passing in Edition 2026.11.6:
 
 ```python
 """The estimate of each recorded request against the prompt count the model reported for it. The rule was chosen on
@@ -221,7 +221,7 @@ The cut rule is the one that matters for a local harness. The vendor's guide to 
 
 Four reads and a finish, under a budget of 2000 estimated tokens, are enough to cross it. That budget is far below the real 7168, on purpose, so that compaction happens on a small task. The real budget is not reached by this task.
 
-Example `compact-keeps-last-result` (Python 3.12.15 · pydantic 2.14.3), passing in Edition 2026.11.5:
+Example `compact-keeps-last-result` (Python 3.12.15 · pydantic 2.14.4), passing in Edition 2026.11.6:
 
 ```python
 """Four reads of the case, then finish, under a small budget that the reads cross. The point rests on the calls
@@ -303,7 +303,7 @@ A 2026 preprint does measure a design of this kind. Semantic Context Handoff, by
 
 The harness adds a `note` tool: the model writes one line per fact, and the harness sends the notes after the issue at every step. Compaction does not cut them, because they are not part of the older steps. A fact the model writes as a note survives every compaction. A fact that stays only in an older result is kept at most as the first line of that result.
 
-Example `notes-survive` (Python 3.12.15 · pydantic 2.14.3), passing in Edition 2026.11.5:
+Example `notes-survive` (Python 3.12.15 · pydantic 2.14.4), passing in Edition 2026.11.6:
 
 ```python
 """A note the agent writes keeps a fact that an older read result had, after a compaction. The summary keeps only the
@@ -370,7 +370,7 @@ That shows the mechanism. It does not show that a model will write the notes. Th
 
 The recording `chapter-5-notes` was made with tool set v2 from [chapter 3](#tool-schemas), the note tool, and the stop rules from [chapter 2](#stop-rules). Its three runs are T-01, T-02 and T-06. Seven task-set runs reached the step cap of 16 (T-01, T-02, T-06, T-10, T-11, T-13, T-16), and the recording's script names these three as the long runs that each hit that cap. It does not run the other four. We replayed the three runs with compaction on, to see what the model did with the tools and the budget.
 
-Example `recorded-context-use` (Python 3.12.15 · pydantic 2.14.3), passing in Edition 2026.11.5:
+Example `recorded-context-use` (Python 3.12.15 · pydantic 2.14.4), passing in Edition 2026.11.6:
 
 ```python
 """The three recorded runs of chapter 5, replayed with the compaction on: how each ended, whether its check passed,

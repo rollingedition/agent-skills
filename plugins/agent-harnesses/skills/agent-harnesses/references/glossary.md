@@ -1,13 +1,13 @@
 ---
 title: "Glossary"
 book: "Agent Harnesses"
-edition: "2026.11.5"
+edition: "2026.11.6"
 canonical: "https://rollingedition.com/agent-harnesses/glossary"
 ---
 
 # Glossary of *Agent Harnesses*
 
-The 86 terms this book defines, as Edition 2026.11.5 has them, each in the book's own sentence. When a task this skill covers uses one, it means what it says here: read its section before you rely on it, and cite the section. Where a definition depends on a package, it says the version this edition pins and runs its examples on. On the web: https://rollingedition.com/agent-harnesses/glossary
+The 86 terms this book defines, as Edition 2026.11.6 has them, each in the book's own sentence. When a task this skill covers uses one, it means what it says here: read its section before you rely on it, and cite the section. Where a definition depends on a package, it says the version this edition pins and runs its examples on. On the web: https://rollingedition.com/agent-harnesses/glossary
 
 ## action
 
@@ -49,9 +49,9 @@ A tool on an allow list runs without a question, and a gate placed at the questi
 an argument model, a small pydantic class that lists the fields the tool takes
 
 - Also: argument models
-- True for: pydantic 2.14.3
+- True for: pydantic 2.14.4
 - Comes before: tool schema
-- Implemented by: pydantic 2.14.3
+- Implemented by: pydantic 2.14.4
 - Defined in: [A schema says what is allowed](tool-schemas.md#schema-says)
 - Address: https://rollingedition.com/concepts/ai-agents/argument-model
 
@@ -282,8 +282,8 @@ The threat is indirect prompt injection: text that an application retrieves from
 
 In pydantic's default, lax mode, a value is converted when the conversion is clear and refused when it is not.
 
-- True for: pydantic 2.14.3
-- Implemented by: pydantic 2.14.3
+- True for: pydantic 2.14.4
+- Implemented by: pydantic 2.14.4
 - Defined in: [Lax by default, strict on purpose](tool-schemas.md#lax-or-strict)
 - Address: https://rollingedition.com/concepts/ai-agents/lax-mode
 
@@ -570,9 +570,9 @@ Every count in this chapter is read from a recording or printed by a script, and
 
 In strict mode, a value must already have the declared type.
 
-- True for: pydantic 2.14.3
+- True for: pydantic 2.14.4
 - Contrasts with: lax mode
-- Implemented by: pydantic 2.14.3
+- Implemented by: pydantic 2.14.4
 - Defined in: [Lax by default, strict on purpose](tool-schemas.md#lax-or-strict)
 - Address: https://rollingedition.com/concepts/ai-agents/strict-mode
 

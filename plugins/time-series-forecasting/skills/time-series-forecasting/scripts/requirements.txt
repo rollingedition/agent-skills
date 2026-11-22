@@ -10,7 +10,7 @@ fonttools==4.68.0
 formulaic==1.2.2
 fsspec==2026.9.0
 fugue==0.9.9
-holidays==0.110.dev20261119030846
+holidays==0.110.dev20261119150447
 interface-meta==2.0.1
 joblib==1.6.0
 kiwisolver==1.5.1

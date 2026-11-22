@@ -46,12 +46,12 @@ pluggy==1.7.0
     # via pytest
 pycparser==3.12
     # via cffi
-pydantic==2.14.3
+pydantic==2.14.4
     # via
     #   -r base.in
     #   mcp
     #   mcp-types
-pydantic-core==2.50.4
+pydantic-core==2.50.5
     # via pydantic
 pygments==2.21.0
     # via pytest

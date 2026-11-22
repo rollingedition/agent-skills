@@ -10,17 +10,17 @@ This repository is generated from the books, so changes made here are overwritte
 
 | Book | Skill | Edition | Examples |
 | --- | --- | --- | --- |
-| [Agent Harnesses](https://rollingedition.com/agent-harnesses) | `agent-harnesses` | 2026.11.5 | 64 of 64 examples pass |
+| [Agent Harnesses](https://rollingedition.com/agent-harnesses) | `agent-harnesses` | 2026.11.6 | 64 of 64 examples pass |
 | [Business Intelligence with Agents](https://rollingedition.com/business-intelligence-with-agents) | `business-intelligence-with-agents` | 2026.11.16 | 78 of 78 examples pass |
 | [Data Governance as Code](https://rollingedition.com/data-governance-as-code) | `data-governance-as-code` | 2026.11.33 | 108 of 108 examples pass |
 | [Evaluating LLM Applications](https://rollingedition.com/evaluating-llm-applications) | `evaluating-llm-applications` | 2026.11.5 | 54 of 54 examples pass |
 | [Language Models from the Ground Up](https://rollingedition.com/language-models-from-the-ground-up) | `language-models-from-the-ground-up` | 2026.11.17 | 86 of 86 examples pass |
-| [Model Context Protocol in Practice](https://rollingedition.com/model-context-protocol-in-practice) | `model-context-protocol-in-practice` | 2026.11.16 | 70 of 70 examples pass |
+| [Model Context Protocol in Practice](https://rollingedition.com/model-context-protocol-in-practice) | `model-context-protocol-in-practice` | 2026.11.17 | 70 of 70 examples pass |
 | [Open Table Formats](https://rollingedition.com/open-table-formats) | `open-table-formats` | 2026.11.12 | 39 of 39 examples pass |
 | [A Primer on Search Relevance](https://rollingedition.com/primer-on-search-relevance) | `primer-on-search-relevance` | 2026.11.12 | 132 of 132 examples pass |
 | [Securing LLM Applications and Agents](https://rollingedition.com/securing-llm-applications-and-agents) | `securing-llm-applications-and-agents` | 2026.11.1 | 56 of 56 examples pass |
 | [Small Open Models](https://rollingedition.com/small-open-models) | `small-open-models` | 2026.11.13 | 36 of 36 examples pass |
-| [Time Series Forecasting](https://rollingedition.com/time-series-forecasting) | `time-series-forecasting` | 2026.11.14 | 42 of 42 examples pass |
+| [Time Series Forecasting](https://rollingedition.com/time-series-forecasting) | `time-series-forecasting` | 2026.11.15 | 42 of 42 examples pass |
 
 ## Install
 

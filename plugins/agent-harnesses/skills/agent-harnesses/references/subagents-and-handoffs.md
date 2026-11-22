@@ -3,13 +3,13 @@ title: "Agent Harnesses"
 chapter: "Hand a subtask to a child, and hand back a stop"
 chapter_id: subagents-and-handoffs
 book: agent-harnesses
-edition: 2026.11.5
-verified: 2026-11-20
-edition_code: ZR7Z-RM4S
+edition: 2026.11.6
+verified: 2026-11-22
+edition_code: 3KM9-2NP7
 canonical: https://rollingedition.com/agent-harnesses/subagents-and-handoffs
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“Hand a subtask to a child, and hand back a stop,” chapter 8 of Agent Harnesses, Edition 2026.11.5, examples passed Nov 20, 2026. By Rolling Edition, https://rollingedition.com/agent-harnesses/subagents-and-handoffs. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Hand a subtask to a child, and hand back a stop,” chapter 8 of Agent Harnesses, Edition 2026.11.6, examples passed Nov 22, 2026. By Rolling Edition, https://rollingedition.com/agent-harnesses/subagents-and-handoffs. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Hand a subtask to a child, and hand back a stop
 
@@ -27,7 +27,7 @@ A side task in the case, such as finding where a rounding rule lives, can take s
 
 Give the child 4 steps and run it on T-01. The `task-set` recording's first steps, from the model of [chapter 1](#tools-and-a-loop), replay for it, so the child does what the recorded run did at the start.
 
-Example `child-with-budget` (Python 3.12.15 · pydantic 2.14.3), passing in Edition 2026.11.5:
+Example `child-with-budget` (Python 3.12.15 · pydantic 2.14.4), passing in Edition 2026.11.6:
 
 ```python
 """A child loop on T-01 with a budget of 4 steps. The budget counts the child's own model calls, and it ends the child
@@ -70,7 +70,7 @@ Those `4` steps are the child's whole run. It lists the files, reads one, tries 
 
 A parent can start the same child itself, through a tool. In the next example the parent is a loop with two tools, `start_child` and `ask_user`. It starts the child on T-02 under both stop rules, reads the child's handoff as the tool's result, and asks the person the question the handoff carries.
 
-Example `parent-starts-child` (Python 3.12.15 · pydantic 2.14.3), passing in Edition 2026.11.5:
+Example `parent-starts-child` (Python 3.12.15 · pydantic 2.14.4), passing in Edition 2026.11.6:
 
 ```python
 """A parent loop starts the child on T-02 through a tool, reads the child's handoff and asks the person the child's
@@ -161,7 +161,7 @@ The T-02 run leaves a transcript of every file it read, every failed edit and ev
 
 Run T-02 as a child under both stop rules, with the task set's step cap, and print what the parent receives beside the size of the child's transcript.
 
-Example `summary-to-parent` (Python 3.12.15 · pydantic 2.14.3), passing in Edition 2026.11.5:
+Example `summary-to-parent` (Python 3.12.15 · pydantic 2.14.4), passing in Edition 2026.11.6:
 
 ```python
 """T-02's recorded run as a child, with both stop rules and the task set's step cap. The parent gets the
@@ -240,7 +240,7 @@ A child that ends some other way is not handed back. A run that ends as `no_tool
 
 Run every task-set run as a child under both stop rules. Each child that ends stuck goes to a parent, which asks the person its question.
 
-Example `handoff-on-stuck` (Python 3.12.15 · pydantic 2.14.3), passing in Edition 2026.11.5:
+Example `handoff-on-stuck` (Python 3.12.15 · pydantic 2.14.4), passing in Edition 2026.11.6:
 
 ```python
 """The 20 task-set runs as children, with both stop rules. Each child that ended stuck is handed to a parent, which
