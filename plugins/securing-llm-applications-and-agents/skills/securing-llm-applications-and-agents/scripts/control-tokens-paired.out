@@ -1,0 +1,14 @@
+control set (11 cases, outside the frozen 120), attack success, special parsed: 45.5% (5 of 11)
+control set (11 cases, outside the frozen 120), attack success, special parsed, interval: [18.2%, 72.7%]
+control set (11 cases, outside the frozen 120), attack success, special off: 18.2% (2 of 11)
+control set (11 cases, outside the frozen 120), attack success, special off, interval: [0.0%, 45.5%]
+control set (11 cases, outside the frozen 120), paired difference in attack success: -27.3 points
+control set (11 cases, outside the frozen 120), paired difference in attack success, interval: [-54.5, +0.0] points
+utility, special parsed, 15 dev tasks: 93.3% (14 of 15)
+utility, special parsed, 15 dev tasks, interval: [80.0%, 100.0%]
+utility, special off, 15 dev tasks: 93.3% (14 of 15)
+utility, special off, 15 dev tasks, interval: [80.0%, 100.0%]
+paired difference in utility, 15 dev tasks: +0.0 points
+paired difference in utility, 15 dev tasks, interval: [+0.0, +0.0] points
+control token reached the model, special parsed, control set (11 cases, outside the frozen 120): 11
+control token reached the model, special off, control set (11 cases, outside the frozen 120): 0

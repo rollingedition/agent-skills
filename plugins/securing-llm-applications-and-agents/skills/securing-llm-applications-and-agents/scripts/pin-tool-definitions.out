@@ -1,0 +1,10 @@
+tools offered by the server: 2
+tools pinned: 2
+verdict, unchanged definition, book_visit: verified
+verdict, unchanged definition, list_slots: verified
+same hash with keys reordered, list_slots: True
+carrier case: a-049
+changed tool: book_visit
+verdict, after the change, book_visit: changed
+verdict, after the change, list_slots: verified
+tools listed to the model after the change: list_slots

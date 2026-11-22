@@ -1,0 +1,29 @@
+unparsed replies: 1 of 400
+dev true positives, injected texts flagged: 43.3% (26 of 60)
+dev true positives, injected texts flagged, interval: [31.7%, 56.7%]
+dev false positives, benign records flagged: 0.0% (0 of 26)
+dev false positives, benign records flagged, interval: [0.0%, 0.0%]
+dev agreement with labels, 86 texts: 60.5% (52 of 86)
+dev agreement with labels, 86 texts, interval: [50.0%, 70.9%]
+held-out true positives, injected texts flagged: 66.7% (40 of 60)
+held-out true positives, injected texts flagged, interval: [55.0%, 78.3%]
+held-out false positives, benign records flagged: 0.0% (0 of 26)
+held-out false positives, benign records flagged, interval: [0.0%, 0.0%]
+deepset injection rows flagged: 35.0% (21 of 60)
+deepset injection rows flagged, interval: [23.3%, 46.7%]
+deepset benign rows flagged: 0.0% (0 of 56)
+deepset benign rows flagged, interval: [0.0%, 0.0%]
+gandalf attack rows flagged (recall only): 82.1% (92 of 112)
+gandalf attack rows flagged (recall only), interval: [75.0%, 89.3%]
+held-out injected texts, true-positive rate, judge minus classifier: -8.3 points
+held-out injected texts, true-positive rate, judge minus classifier, interval: [-20.0, +3.3] points
+held-out benign records, false-positive rate, judge minus classifier: -3.8 points
+held-out benign records, false-positive rate, judge minus classifier, interval: [-11.5, +0.0] points
+held-out classifier flags: 45 injected, 1 benign
+dev true positive rate, TPR: 0.433, 26 of 60 injected
+dev true negative rate, TNR: 1.000, 26 of 26 benign
+denominator, TPR + TNR - 1: 0.433 (the chapter refuses below 0.100)
+held-out observed flag rate, 86 texts: 0.465
+held-out corrected share of injected texts: 1.000
+held-out labelled share of injected texts, for reading the correction: 0.698
+threshold, picked on dev: 0.50

@@ -1,0 +1,36 @@
+utility, baseline, 15 dev benign tasks: 93.3% (14 of 15)
+utility, baseline, 15 dev benign tasks, interval: [80.0%, 100.0%]
+utility, egress-fetch, 15 dev benign tasks: 93.3% (14 of 15)
+utility, egress-fetch, 15 dev benign tasks, interval: [80.0%, 100.0%]
+attack success, baseline, 60 dev cases: 11.7% (7 of 60)
+attack success, baseline, 60 dev cases, interval: [5.0%, 20.0%]
+attack success, egress-fetch, 60 dev cases: 6.7% (4 of 60)
+attack success, egress-fetch, 60 dev cases, interval: [1.7%, 13.3%]
+paired difference in utility, egress minus baseline, dev: +0.0 points
+paired difference in utility, egress minus baseline, dev, interval: [+0.0, +0.0] points
+paired difference in attack success, egress minus baseline, dev: -5.0 points
+paired difference in attack success, egress minus baseline, dev, interval: [-11.7, +0.0] points
+attack success stopped by the rule, dev: 3
+attack success added by the rule, dev: 0
+refusals by allowlist, benign runs, dev: 0
+refusals by query rule, benign runs, dev: 0
+refusals by allowlist, attack runs, dev: 3
+refusals by query rule, attack runs, dev: 0
+utility, baseline, 15 held-out benign tasks: 66.7% (10 of 15)
+utility, baseline, 15 held-out benign tasks, interval: [40.0%, 86.7%]
+utility, egress-fetch, 15 held-out benign tasks: 66.7% (10 of 15)
+utility, egress-fetch, 15 held-out benign tasks, interval: [40.0%, 86.7%]
+attack success, baseline, 60 held-out cases: 11.7% (7 of 60)
+attack success, baseline, 60 held-out cases, interval: [3.3%, 20.0%]
+attack success, egress-fetch, 60 held-out cases: 10.0% (6 of 60)
+attack success, egress-fetch, 60 held-out cases, interval: [3.3%, 18.3%]
+paired difference in utility, egress minus baseline, held-out: +0.0 points
+paired difference in utility, egress minus baseline, held-out, interval: [+0.0, +0.0] points
+paired difference in attack success, egress minus baseline, held-out: -1.7 points
+paired difference in attack success, egress minus baseline, held-out, interval: [-5.0, +0.0] points
+attack success stopped by the rule, held-out: 1
+attack success added by the rule, held-out: 0
+refusals by allowlist, benign runs, held-out: 0
+refusals by query rule, benign runs, held-out: 0
+refusals by allowlist, attack runs, held-out: 1
+refusals by query rule, attack runs, held-out: 0

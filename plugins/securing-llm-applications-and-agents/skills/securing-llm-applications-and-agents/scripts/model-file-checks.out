@@ -1,0 +1,10 @@
+detector files pinned: 7
+cached files match their pins: True
+unpinned files in the snapshot folder: 0
+pinned files with a pickle suffix: 0
+loader patterns matching training_args.bin: 0 of 7
+picklescan files scanned: 1
+picklescan infected files: 0
+picklescan suspicious globals: 1
+picklescan dangerous globals: 0
+picklescan global, __builtin__.print: suspicious

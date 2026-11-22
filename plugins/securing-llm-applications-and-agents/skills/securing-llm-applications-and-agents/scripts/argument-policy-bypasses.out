@@ -1,0 +1,13 @@
+base64, office host: allowed
+base64, attacker host: refused
+in the path, office host: refused
+in the path, attacker host: refused
+partial, office host: allowed
+partial, attacker host: refused
+percent-encoded, office host: refused
+percent-encoded, attacker host: refused
+plain, office host: refused
+plain, attacker host: refused
+with spaces, office host: refused
+with spaces, attacker host: refused
+forms allowed on the office host: 2 of 6

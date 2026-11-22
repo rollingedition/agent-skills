@@ -1,0 +1,53 @@
+tools in SPECS: 8
+tools in the prompt list: 8
+book_visit, reads: bookings, slots
+book_visit, writes: bookings, slots
+book_visit, untrusted output: no
+book_visit, third-party definition (THIRD_PARTY_TOOLS): yes
+book_visit, reaches outside the office: yes, via third-party server
+book_visit, private records: no
+fetch_page, reads: fetch_log, missing, pages
+fetch_page, writes: fetch_log
+fetch_page, untrusted output: yes
+fetch_page, third-party definition (THIRD_PARTY_TOOLS): no
+fetch_page, reaches outside the office: yes, via fetch log
+fetch_page, private records: no
+list_messages, reads: inbox
+list_messages, writes: none
+list_messages, untrusted output: yes
+list_messages, third-party definition (THIRD_PARTY_TOOLS): no
+list_messages, reaches outside the office: no
+list_messages, private records: no
+list_slots, reads: slots
+list_slots, writes: none
+list_slots, untrusted output: yes
+list_slots, third-party definition (THIRD_PARTY_TOOLS): yes
+list_slots, reaches outside the office: yes, via third-party server
+list_slots, private records: no
+lookup_tenant, reads: world.tenants
+lookup_tenant, writes: none
+lookup_tenant, untrusted output: no
+lookup_tenant, third-party definition (THIRD_PARTY_TOOLS): no
+lookup_tenant, reaches outside the office: no
+lookup_tenant, private records: yes
+read_message, reads: inbox
+read_message, writes: none
+read_message, untrusted output: yes
+read_message, third-party definition (THIRD_PARTY_TOOLS): no
+read_message, reaches outside the office: no
+read_message, private records: no
+search_documents, reads: documents
+search_documents, writes: none
+search_documents, untrusted output: yes
+search_documents, third-party definition (THIRD_PARTY_TOOLS): no
+search_documents, reaches outside the office: no
+search_documents, private records: no
+send_message, reads: outbox
+send_message, writes: outbox
+send_message, untrusted output: no
+send_message, third-party definition (THIRD_PARTY_TOOLS): no
+send_message, reaches outside the office: yes, via outbox
+send_message, private records: no
+system prompt holds the portal key: yes
+system prompt holds the office's hidden context: yes
+tool definitions the prompt marks untrusted: book_visit, list_slots

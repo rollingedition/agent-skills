@@ -1,0 +1,55 @@
+status: defences tuned on dev; this is each defence's one held-out run
+baseline, utility, 15 held-out benign tasks: 66.7% (10 of 15)
+baseline, utility interval: [40.0%, 86.7%]
+baseline, attack success, 60 held-out cases: 11.7% (7 of 60)
+baseline, attack success interval: [3.3%, 20.0%]
+prompt-datamark, utility, 15 held-out benign tasks: 53.3% (8 of 15)
+prompt-datamark, utility interval: [26.7%, 80.0%]
+prompt-datamark, attack success, 60 held-out cases: 6.7% (4 of 60)
+prompt-datamark, attack success interval: [1.7%, 13.3%]
+prompt-datamark, paired difference in attack success: -5.0 points
+prompt-datamark, paired difference in attack success, interval: [-11.7, +1.7] points
+prompt-datamark, paired difference in utility: -13.3 points
+prompt-datamark, paired difference in utility, interval: [-33.3, +0.0] points
+prompt-datamark, newly blocked, held-out cases: 4
+prompt-datamark, newly let through, held-out cases: 1
+prompt-delimiters, utility, 15 held-out benign tasks: 66.7% (10 of 15)
+prompt-delimiters, utility interval: [40.0%, 86.7%]
+prompt-delimiters, attack success, 60 held-out cases: 15.0% (9 of 60)
+prompt-delimiters, attack success interval: [6.7%, 25.0%]
+prompt-delimiters, paired difference in attack success: +3.3 points
+prompt-delimiters, paired difference in attack success, interval: [-3.3, +10.0] points
+prompt-delimiters, paired difference in utility: +0.0 points
+prompt-delimiters, paired difference in utility, interval: [+0.0, +0.0] points
+prompt-delimiters, newly blocked, held-out cases: 1
+prompt-delimiters, newly let through, held-out cases: 3
+prompt-encode, utility, 15 held-out benign tasks: 13.3% (2 of 15)
+prompt-encode, utility interval: [0.0%, 33.3%]
+prompt-encode, attack success, 60 held-out cases: 0.0% (0 of 60)
+prompt-encode, attack success interval: [0.0%, 0.0%]
+prompt-encode, paired difference in attack success: -11.7 points
+prompt-encode, paired difference in attack success, interval: [-20.0, -3.3] points
+prompt-encode, paired difference in utility: -53.3 points
+prompt-encode, paired difference in utility, interval: [-80.0, -26.7] points
+prompt-encode, newly blocked, held-out cases: 7
+prompt-encode, newly let through, held-out cases: 0
+prompt-repeat, utility, 15 held-out benign tasks: 33.3% (5 of 15)
+prompt-repeat, utility interval: [13.3%, 60.0%]
+prompt-repeat, attack success, 60 held-out cases: 10.0% (6 of 60)
+prompt-repeat, attack success interval: [3.3%, 18.3%]
+prompt-repeat, paired difference in attack success: -1.7 points
+prompt-repeat, paired difference in attack success, interval: [-8.3, +5.0] points
+prompt-repeat, paired difference in utility: -33.3 points
+prompt-repeat, paired difference in utility, interval: [-53.3, -13.3] points
+prompt-repeat, newly blocked, held-out cases: 3
+prompt-repeat, newly let through, held-out cases: 2
+prompt-warning, utility, 15 held-out benign tasks: 60.0% (9 of 15)
+prompt-warning, utility interval: [33.3%, 86.7%]
+prompt-warning, attack success, 60 held-out cases: 10.0% (6 of 60)
+prompt-warning, attack success interval: [3.3%, 18.3%]
+prompt-warning, paired difference in attack success: -1.7 points
+prompt-warning, paired difference in attack success, interval: [-8.3, +3.3] points
+prompt-warning, paired difference in utility: -6.7 points
+prompt-warning, paired difference in utility, interval: [-20.0, +0.0] points
+prompt-warning, newly blocked, held-out cases: 2
+prompt-warning, newly let through, held-out cases: 1

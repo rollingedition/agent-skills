@@ -1,0 +1,11 @@
+autolink: removed
+data-uri: removed
+encoded-host: removed
+image-in-link: removed
+inline-image: removed
+office-image: kept
+office-tenant-value: removed
+port: removed
+raw-img-tag: removed
+reference-image: removed
+userinfo: removed

@@ -1,0 +1,37 @@
+baseline, attack success, 60 held-out cases: 11.7% (7 of 60)
+baseline, attack success, 60 held-out cases, interval: [3.3%, 20.0%]
+baseline, utility, 15 held-out tasks: 66.7% (10 of 15)
+baseline, utility, 15 held-out tasks, interval: [40.0%, 86.7%]
+baseline successes that made a gated call, held-out: 4 of 7
+enforce-filter, attack success, 60 held-out cases: 11.7% (7 of 60)
+enforce-filter, attack success, 60 held-out cases, interval: [3.3%, 20.0%]
+enforce-filter, utility, 15 held-out tasks: 73.3% (11 of 15)
+enforce-filter, utility, 15 held-out tasks, interval: [46.7%, 93.3%]
+enforce-filter, paired difference in attack success, held-out: +0.0 points
+enforce-filter, paired difference in attack success, held-out, interval: [-8.3, +8.3] points
+enforce-filter, paired difference in utility, held-out: +6.7 points
+enforce-filter, paired difference in utility, held-out, interval: [-13.3, +33.3] points
+enforce-filter, newly blocked, held-out cases: 3
+enforce-filter, newly let through, held-out cases: 3
+enforce-args, attack success, 60 held-out cases: 8.3% (5 of 60)
+enforce-args, attack success, 60 held-out cases, interval: [1.7%, 16.7%]
+enforce-args, utility, 15 held-out tasks: 66.7% (10 of 15)
+enforce-args, utility, 15 held-out tasks, interval: [40.0%, 86.7%]
+enforce-args, paired difference in attack success, held-out: -3.3 points
+enforce-args, paired difference in attack success, held-out, interval: [-8.3, +0.0] points
+enforce-args, paired difference in utility, held-out: +0.0 points
+enforce-args, paired difference in utility, held-out, interval: [+0.0, +0.0] points
+enforce-args, newly blocked, held-out cases: 2
+enforce-args, newly let through, held-out cases: 0
+enforce-approval, attack success, 60 held-out cases: 8.3% (5 of 60)
+enforce-approval, attack success, 60 held-out cases, interval: [1.7%, 16.7%]
+enforce-approval, utility, 15 held-out tasks: 66.7% (10 of 15)
+enforce-approval, utility, 15 held-out tasks, interval: [40.0%, 86.7%]
+enforce-approval, paired difference in attack success, held-out: -3.3 points
+enforce-approval, paired difference in attack success, held-out, interval: [-8.3, +0.0] points
+enforce-approval, paired difference in utility, held-out: +0.0 points
+enforce-approval, paired difference in utility, held-out, interval: [+0.0, +0.0] points
+enforce-approval, newly blocked, held-out cases: 2
+enforce-approval, newly let through, held-out cases: 0
+enforce-approval, held-out successes that used a gated tool: 4
+enforce-approval, held-out gated successes blocked: 2

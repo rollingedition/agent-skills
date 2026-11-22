@@ -1,0 +1,13 @@
+model: protectai/deberta-v3-base-prompt-injection-v2
+model commit: 90c9989b1a342275dd0d1a95aad283c04e075671
+model weights: model.safetensors, SHA-256 checked against the pin
+threshold, picked on dev: 0.50
+deepset injection rows flagged: 36.7% (22 of 60)
+deepset injection rows flagged, interval: [25.0%, 50.0%]
+deepset benign rows flagged: 0.0% (0 of 56)
+deepset benign rows flagged, interval: [0.0%, 0.0%]
+deepset scores within 0.02 of the threshold: 0 of 116
+gandalf attack rows flagged (recall only): 100.0% (112 of 112)
+gandalf attack rows flagged (recall only), interval: [100.0%, 100.0%]
+gandalf scores within 0.02 of the threshold: 0 of 112
+training-data overlap: possible, not stated on the model card or the corpus cards

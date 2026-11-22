@@ -1,0 +1,20 @@
+documents visible to the user: 24 of 40
+k 5, query 'spare key deposit', filter before ranking, results: 3
+k 5, query 'spare key deposit', filter after ranking, results: 3
+k 5, query 'spare key deposit', filter after ranking, scores that differ: 3 of 3
+k 5, query 'key handover', filter before ranking, results: 1
+k 5, query 'key handover', filter after ranking, results: 1
+k 5, query 'key handover', filter after ranking, scores that differ: 1 of 1
+k 5, query 'standard deposit', filter before ranking, results: 3
+k 5, query 'standard deposit', filter after ranking, results: 3
+k 5, query 'standard deposit', filter after ranking, scores that differ: 3 of 3
+k 2, query 'spare key deposit', filter before ranking, results: 2
+k 2, query 'spare key deposit', filter after ranking, results: 2
+k 2, query 'spare key deposit', filter after ranking, scores that differ: 2 of 2
+k 2, query 'key handover', filter before ranking, results: 1
+k 2, query 'key handover', filter after ranking, results: 1
+k 2, query 'key handover', filter after ranking, scores that differ: 1 of 1
+k 2, query 'standard deposit', filter before ranking, results: 2
+k 2, query 'standard deposit', filter after ranking, results: 2
+k 2, query 'standard deposit', filter after ranking, scores that differ: 2 of 2
+short page, documents lost by filtering after ranking: 0

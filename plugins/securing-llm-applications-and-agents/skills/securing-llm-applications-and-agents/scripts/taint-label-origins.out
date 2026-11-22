@@ -1,0 +1,8 @@
+call 1, send_message call: allowed
+call 1, send_message.body: none (typed: False)
+call 1, send_message.to: none (typed: True)
+call 2, send_message call: refused
+call 2, send_message.body: 8-character run (typed: False)
+call 2, send_message.to: none (typed: True)
+call 3, fetch_page call: refused
+call 3, fetch_page.url: host match (typed: False)

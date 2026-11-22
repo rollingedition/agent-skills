@@ -1,0 +1,33 @@
+defences measured: 16
+design-dual-llm, label: design
+design-dual-llm, risks: LLM01:2026 Prompt Injection; LLM03:2026 Excessive Agency
+design-plan-then-execute, label: design
+design-plan-then-execute, risks: LLM01:2026 Prompt Injection; LLM03:2026 Excessive Agency
+design-taint, label: design
+design-taint, risks: LLM01:2026 Prompt Injection; LLM02:2026 Sensitive Information Disclosure
+detector-filter, label: input
+detector-filter, risks: LLM01:2026 Prompt Injection
+egress-fetch, label: harness
+egress-fetch, risks: LLM02:2026 Sensitive Information Disclosure; LLM03:2026 Excessive Agency
+enforce-approval, label: harness
+enforce-approval, risks: LLM03:2026 Excessive Agency; ASI02 Tool Misuse & Exploitation (OWASP Top 10 for Agentic Applications, Dec 9, 2025)
+enforce-args, label: harness
+enforce-args, risks: LLM03:2026 Excessive Agency; ASI02 Tool Misuse & Exploitation (OWASP Top 10 for Agentic Applications, Dec 9, 2025)
+enforce-filter, label: harness
+enforce-filter, risks: LLM03:2026 Excessive Agency; ASI02 Tool Misuse & Exploitation (OWASP Top 10 for Agentic Applications, Dec 9, 2025)
+prompt-datamark, label: prompt
+prompt-datamark, risks: LLM01:2026 Prompt Injection
+prompt-delimiters, label: prompt
+prompt-delimiters, risks: LLM01:2026 Prompt Injection
+prompt-encode, label: prompt
+prompt-encode, risks: LLM01:2026 Prompt Injection
+prompt-repeat, label: prompt
+prompt-repeat, risks: LLM01:2026 Prompt Injection
+prompt-warning, label: prompt
+prompt-warning, risks: LLM01:2026 Prompt Injection
+retrieval-by-role, label: harness
+retrieval-by-role, risks: LLM02:2026 Sensitive Information Disclosure
+rough-allowlist, label: harness
+rough-allowlist, risks: LLM02:2026 Sensitive Information Disclosure; LLM03:2026 Excessive Agency
+secrets-out, label: design
+secrets-out, risks: LLM08:2026 Hidden Context Exposure; LLM02:2026 Sensitive Information Disclosure

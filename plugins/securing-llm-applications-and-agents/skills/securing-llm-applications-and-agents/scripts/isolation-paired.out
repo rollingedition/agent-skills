@@ -1,0 +1,80 @@
+baseline utility, 15 benign tasks: 93.3% (14 of 15)
+baseline utility, 15 benign tasks, interval: [80.0%, 100.0%]
+baseline attack success, 60 cases: 11.7% (7 of 60)
+baseline attack success, 60 cases, interval: [5.0%, 20.0%]
+design: design-dual-llm
+label: design (isolation)
+utility, design-dual-llm, 15 benign tasks: 80.0% (12 of 15)
+utility, design-dual-llm, 15 benign tasks, interval: [60.0%, 100.0%]
+attack success, design-dual-llm, 60 cases: 3.3% (2 of 60)
+attack success, design-dual-llm, 60 cases, interval: [0.0%, 8.3%]
+utility difference from baseline, design-dual-llm: -13.3 points
+utility difference from baseline, design-dual-llm, interval: [-33.3, +0.0] points
+attack success difference from baseline, design-dual-llm: -8.3 points
+attack success difference from baseline, design-dual-llm, interval: [-18.3, +1.7] points
+newly blocked, design-dual-llm: 7
+newly allowed, design-dual-llm: 2
+design: design-plan-then-execute
+label: design (isolation)
+utility, design-plan-then-execute, 15 benign tasks: 6.7% (1 of 15)
+utility, design-plan-then-execute, 15 benign tasks, interval: [0.0%, 20.0%]
+attack success, design-plan-then-execute, 60 cases: 5.0% (3 of 60)
+attack success, design-plan-then-execute, 60 cases, interval: [0.0%, 11.7%]
+utility difference from baseline, design-plan-then-execute: -86.7 points
+utility difference from baseline, design-plan-then-execute, interval: [-100.0, -66.7] points
+attack success difference from baseline, design-plan-then-execute: -6.7 points
+attack success difference from baseline, design-plan-then-execute, interval: [-15.0, +0.0] points
+newly blocked, design-plan-then-execute: 5
+newly allowed, design-plan-then-execute: 1
+design: design-taint
+label: design (isolation), also acts on calls
+utility, design-taint, 15 benign tasks: 26.7% (4 of 15)
+utility, design-taint, 15 benign tasks, interval: [6.7%, 46.7%]
+attack success, design-taint, 60 cases: 8.3% (5 of 60)
+attack success, design-taint, 60 cases, interval: [1.7%, 15.0%]
+utility difference from baseline, design-taint: -66.7 points
+utility difference from baseline, design-taint, interval: [-86.7, -40.0] points
+attack success difference from baseline, design-taint: -3.3 points
+attack success difference from baseline, design-taint, interval: [-10.0, +3.3] points
+newly blocked, design-taint: 3
+newly allowed, design-taint: 1
+held-out baseline utility, 15 benign tasks: 66.7% (10 of 15)
+held-out baseline utility, 15 benign tasks, interval: [40.0%, 86.7%]
+held-out baseline attack success, 60 cases: 11.7% (7 of 60)
+held-out baseline attack success, 60 cases, interval: [3.3%, 20.0%]
+design: design-dual-llm, held-out
+label: design (isolation)
+held-out utility, design-dual-llm, 15 benign tasks: 73.3% (11 of 15)
+held-out utility, design-dual-llm, 15 benign tasks, interval: [46.7%, 93.3%]
+held-out attack success, design-dual-llm, 60 cases: 6.7% (4 of 60)
+held-out attack success, design-dual-llm, 60 cases, interval: [1.7%, 13.3%]
+held-out utility difference from baseline, design-dual-llm: +6.7 points
+held-out utility difference from baseline, design-dual-llm, interval: [+0.0, +20.0] points
+held-out attack success difference from baseline, design-dual-llm: -5.0 points
+held-out attack success difference from baseline, design-dual-llm, interval: [-11.7, +1.7] points
+held-out newly blocked, design-dual-llm: 4
+held-out newly allowed, design-dual-llm: 1
+design: design-plan-then-execute, held-out
+label: design (isolation)
+held-out utility, design-plan-then-execute, 15 benign tasks: 26.7% (4 of 15)
+held-out utility, design-plan-then-execute, 15 benign tasks, interval: [6.7%, 53.3%]
+held-out attack success, design-plan-then-execute, 60 cases: 5.0% (3 of 60)
+held-out attack success, design-plan-then-execute, 60 cases, interval: [0.0%, 11.7%]
+held-out utility difference from baseline, design-plan-then-execute: -40.0 points
+held-out utility difference from baseline, design-plan-then-execute, interval: [-73.3, +0.0] points
+held-out attack success difference from baseline, design-plan-then-execute: -6.7 points
+held-out attack success difference from baseline, design-plan-then-execute, interval: [-15.0, +0.0] points
+held-out newly blocked, design-plan-then-execute: 5
+held-out newly allowed, design-plan-then-execute: 1
+design: design-taint, held-out
+label: design (isolation), also acts on calls
+held-out utility, design-taint, 15 benign tasks: 53.3% (8 of 15)
+held-out utility, design-taint, 15 benign tasks, interval: [26.7%, 80.0%]
+held-out attack success, design-taint, 60 cases: 10.0% (6 of 60)
+held-out attack success, design-taint, 60 cases, interval: [3.3%, 18.3%]
+held-out utility difference from baseline, design-taint: -13.3 points
+held-out utility difference from baseline, design-taint, interval: [-33.3, +0.0] points
+held-out attack success difference from baseline, design-taint: -1.7 points
+held-out attack success difference from baseline, design-taint, interval: [-8.3, +3.3] points
+held-out newly blocked, design-taint: 2
+held-out newly allowed, design-taint: 1

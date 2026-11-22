@@ -1,0 +1,7 @@
+attacker turns repeating the previous injection: 48 of 260
+chains whose attacker turns hold one distinct injection: 7 of 60
+feedback keys: calls, goal_reached
+decisions seen: ran, refused, withheld
+target episodes replayed: 320
+attacker turns replayed: 260
+target model turns recorded: 786

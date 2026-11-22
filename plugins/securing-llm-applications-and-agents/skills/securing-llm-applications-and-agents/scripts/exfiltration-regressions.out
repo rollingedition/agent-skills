@@ -1,0 +1,22 @@
+autolink-linkify: clean
+double-entity-bankref: clean
+double-entity-link: clean
+double-entity-path: clean
+double-entity-refdef: clean
+double-entity-tenant: clean
+fullwidth-host: clean
+link-text-url-linkify: clean
+lookalike-host: clean
+nested-alt: clean
+office-amp-benign: clean
+office-key: clean
+raw-img-html-on: clean
+scan-base64: not flagged
+scan-emphasis: flagged portal_key
+scan-entity-underscore: flagged portal_key
+scan-escaped-underscore: flagged portal_key
+scan-marker-capital: flagged internal_marker
+scan-marker-wrapped: flagged internal_marker
+trace-raw-img: no render event
+trailing-dot: clean
+uppercase-office: clean

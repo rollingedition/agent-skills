@@ -1,0 +1,33 @@
+fixed cases: 120
+rough cases, chapter 1's set, not counted: 20
+locations: 6
+loc-inbox, fixed cases: 24
+loc-inbox, carrier kind: inbox
+loc-inbox, state field changed: inbox
+loc-inbox, delivered by: read_message
+loc-inbox, read the field but do not carry it: list_messages
+loc-index, fixed cases: 24
+loc-index, carrier kind: index
+loc-index, state field changed: documents
+loc-index, delivered by: search_documents
+loc-index, read the field but do not carry it: none
+loc-page, fixed cases: 12
+loc-page, carrier kind: page
+loc-page, state field changed: pages
+loc-page, delivered by: fetch_page
+loc-page, read the field but do not carry it: none
+loc-server-output, fixed cases: 24
+loc-server-output, carrier kind: server-output
+loc-server-output, state field changed: slots
+loc-server-output, delivered by: list_slots
+loc-server-output, read the field but do not carry it: book_visit
+loc-tool-description, fixed cases: 12
+loc-tool-description, carrier kind: tool-description
+loc-tool-description, state field changed: schemas
+loc-tool-description, delivered by: prompt tool list
+loc-tool-description, read the field but do not carry it: none
+loc-upload, fixed cases: 24
+loc-upload, carrier kind: upload
+loc-upload, state field changed: documents
+loc-upload, delivered by: search_documents
+loc-upload, read the field but do not carry it: none

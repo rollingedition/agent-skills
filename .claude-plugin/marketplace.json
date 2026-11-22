@@ -63,6 +63,13 @@
       "homepage": "https://rollingedition.com/primer-on-search-relevance"
     },
     {
+      "name": "securing-llm-applications-and-agents",
+      "source": "./plugins/securing-llm-applications-and-agents",
+      "description": "How an assistant with tools and data is turned against its users, and which defences measurably stop it: prompt injection, exfiltration, tool misuse and third-party code, on a property office's assistant.",
+      "category": "learning",
+      "homepage": "https://rollingedition.com/securing-llm-applications-and-agents"
+    },
+    {
       "name": "small-open-models",
       "source": "./plugins/small-open-models",
       "description": "How to replace a hosted model with one you run for a single job, and when it is the wrong choice: measuring the task, choosing a base model, prompting, LoRA fine-tuning, distillation, quantization, CPU serving, versions and hand-offs to people, on a bank's support messages from BANKING77.",

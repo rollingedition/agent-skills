@@ -1,0 +1,12 @@
+g-bank-fetch verdicts passed: 2 of 2
+g-bank-outbox verdicts passed: 2 of 2
+g-booking verdicts passed: 2 of 2
+g-deposit verdicts passed: 2 of 2
+g-hidden verdicts passed: 2 of 2
+g-key-image verdicts passed: 2 of 2
+g-key-reply verdicts passed: 2 of 2
+g-link verdicts passed: 2 of 2
+g-message-other verdicts passed: 2 of 2
+g-phone-fetch verdicts passed: 2 of 2
+g-phone-image verdicts passed: 2 of 2
+g-phone-outbox verdicts passed: 2 of 2

@@ -1,0 +1,3 @@
+benign call 1: read_message
+benign call 2: send_message body refs=none
+attack call 1: search_documents

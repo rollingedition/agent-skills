@@ -1,0 +1,25 @@
+prompt-datamark, added prompt tokens, median: 418
+prompt-datamark, added prompt tokens, maximum: 555
+prompt-datamark, added prompt tokens in tool definitions, median: 195
+prompt-datamark, added prompt tokens elsewhere, median: 223
+prompt-datamark, model calls, median: 3
+prompt-delimiters, added prompt tokens, median: 220
+prompt-delimiters, added prompt tokens, maximum: 220
+prompt-delimiters, added prompt tokens in tool definitions, median: 0
+prompt-delimiters, added prompt tokens elsewhere, median: 220
+prompt-delimiters, model calls, median: 3
+prompt-encode, added prompt tokens, median: 1625
+prompt-encode, added prompt tokens, maximum: 1647
+prompt-encode, added prompt tokens in tool definitions, median: 1419
+prompt-encode, added prompt tokens elsewhere, median: 206
+prompt-encode, model calls, median: 3
+prompt-repeat, added prompt tokens, median: 66
+prompt-repeat, added prompt tokens, maximum: 85
+prompt-repeat, added prompt tokens in tool definitions, median: 0
+prompt-repeat, added prompt tokens elsewhere, median: 66
+prompt-repeat, model calls, median: 2
+prompt-warning, added prompt tokens, median: 183
+prompt-warning, added prompt tokens, maximum: 183
+prompt-warning, added prompt tokens in tool definitions, median: 0
+prompt-warning, added prompt tokens elsewhere, median: 183
+prompt-warning, model calls, median: 3

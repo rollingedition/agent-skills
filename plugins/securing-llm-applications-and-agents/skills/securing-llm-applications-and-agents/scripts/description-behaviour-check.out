@@ -1,0 +1,25 @@
+declared arguments, book_visit, contractor: contractor_id, slot_id, ticket_id
+observed arguments, book_visit, contractor: contractor_id, slot_id, ticket_id
+declared effect, book_visit, contractor: undeclared
+observed writes, book_visit, contractor: bookings, slots
+verdict, book_visit, contractor: disagrees
+declared arguments, list_slots, contractor: contractor_id, date_from, date_to
+observed arguments, list_slots, contractor: contractor_id, date_from, date_to
+declared effect, list_slots, contractor: undeclared
+observed writes, list_slots, contractor: none
+verdict, list_slots, contractor: undeclared
+declared arguments, book_visit, declared write: contractor_id, slot_id, ticket_id
+observed arguments, book_visit, declared write: contractor_id, slot_id, ticket_id
+declared effect, book_visit, declared write: write
+observed writes, book_visit, declared write: bookings, slots
+verdict, book_visit, declared write: agrees
+declared arguments, book_visit, second table: contractor_id, slot_id, ticket_id
+observed arguments, book_visit, second table: contractor_id, slot_id, ticket_id
+declared effect, book_visit, second table: write
+observed writes, book_visit, second table: bookings, slots
+verdict, book_visit, second table: disagrees
+declared arguments, book_visit, read-only copy: contractor_id, slot_id, ticket_id
+observed arguments, book_visit, read-only copy: contractor_id, slot_id, ticket_id
+declared effect, book_visit, read-only copy: read-only
+observed writes, book_visit, read-only copy: bookings, slots
+verdict, book_visit, read-only copy: disagrees

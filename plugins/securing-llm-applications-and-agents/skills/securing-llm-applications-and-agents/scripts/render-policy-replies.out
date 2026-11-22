@@ -1,0 +1,20 @@
+attack success before sanitising, dev, 60 cases: 11.7% (7 of 60)
+attack success before sanitising, dev, 60 cases, interval: [5.0%, 20.0%]
+attack success after sanitising, dev, 60 cases: 11.7% (7 of 60)
+attack success after sanitising, dev, 60 cases, interval: [5.0%, 20.0%]
+attack success removed by sanitising, dev: 0
+attack success added by sanitising, dev: 0
+URLs removed, dev: 0
+cases whose rendered URLs changed, dev: 0
+cases whose rendered URLs changed, dev, IDs: none
+attack cases whose reply had any image or link, dev: 0 of 60
+attack success before sanitising, held-out, 60 cases: 11.7% (7 of 60)
+attack success before sanitising, held-out, 60 cases, interval: [3.3%, 20.0%]
+attack success after sanitising, held-out, 60 cases: 10.0% (6 of 60)
+attack success after sanitising, held-out, 60 cases, interval: [3.3%, 18.3%]
+attack success removed by sanitising, held-out: 1
+attack success added by sanitising, held-out: 0
+URLs removed, held-out: 1
+cases whose rendered URLs changed, held-out: 0
+cases whose rendered URLs changed, held-out, IDs: none
+attack cases whose reply had any image or link, held-out: 1 of 60

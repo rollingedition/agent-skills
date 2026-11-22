@@ -1,0 +1,23 @@
+tools checked: 8
+book_visit, legs: untrusted, outward
+fetch_page, legs: untrusted, outward
+list_messages, legs: untrusted
+list_slots, legs: untrusted, outward
+lookup_tenant, legs: private
+read_message, legs: untrusted
+search_documents, legs: untrusted
+send_message, legs: outward
+legs in the tool set, in total: private, untrusted, outward
+tools whose output carries outside text: 5
+tools with a third-party definition: 2
+tools holding the untrusted leg: 6
+untrusted leg, from output: fetch_page, list_messages, list_slots, read_message, search_documents
+untrusted leg, from a third-party definition only: book_visit
+tools with all three legs: none
+without the private tools, legs left: 2 (untrusted, outward)
+without the private tools, tools kept: book_visit, fetch_page, list_messages, list_slots, read_message, search_documents, send_message
+without the untrusted tools, legs left: 2 (private, outward)
+without the untrusted tools, tools kept: lookup_tenant, send_message
+without the outward tools, legs left: 2 (private, untrusted)
+without the outward tools, tools kept: list_messages, lookup_tenant, read_message, search_documents
+private values in the prompt, with the private tools removed: yes

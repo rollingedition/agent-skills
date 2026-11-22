@@ -1,0 +1,13 @@
+4B, utility, 15 dev benign tasks: 93.3% (14 of 15)
+4B, utility interval: [80.0%, 100.0%]
+4B, attack success, 60 dev cases: 11.7% (7 of 60)
+4B, attack success interval: [5.0%, 20.0%]
+0.6B, utility, 15 dev benign tasks: 20.0% (3 of 15)
+0.6B, utility interval: [0.0%, 40.0%]
+0.6B, attack success, 60 dev cases: 0.0% (0 of 60)
+0.6B, attack success interval: [0.0%, 0.0%]
+0.6B minus 4B, paired difference in utility: -73.3 points, interval [-93.3, -53.2] points
+0.6B minus 4B, paired difference in attack success: -11.7 points, interval [-20.0, -5.0] points
+never read the carrier, 4B: 0 of 53
+never read the carrier, 0.6B: 24 of 53
+tool-description cases left out: 7

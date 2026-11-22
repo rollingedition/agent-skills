@@ -1,0 +1,25 @@
+{
+  "name": "securing-llm-applications-and-agents",
+  "displayName": "Securing LLM Applications and Agents",
+  "version": "2026.11.1",
+  "description": "How an assistant with tools and data is turned against its users, and which defences measurably stop it: prompt injection, exfiltration, tool misuse and third-party code, on a property office's assistant.",
+  "author": {
+    "name": "Rolling Edition",
+    "url": "https://rollingedition.com/"
+  },
+  "homepage": "https://rollingedition.com/securing-llm-applications-and-agents",
+  "repository": "https://github.com/rollingedition/agent-skills",
+  "license": "CC-BY-NC-4.0 AND MIT",
+  "keywords": [
+    "llm-security",
+    "ai-agents",
+    "llm-evaluation",
+    "retrieval-augmented-generation",
+    "prompt-engineering"
+  ],
+  "icon": "./icon.png",
+  "documentationUrl": "https://rollingedition.com/assistants#agent-skills",
+  "supportUrl": "https://rollingedition.com/assistants#trouble",
+  "privacyPolicyUrl": "https://rollingedition.com/policies/privacy#mcp",
+  "termsOfServiceUrl": "https://rollingedition.com/policies/terms"
+}

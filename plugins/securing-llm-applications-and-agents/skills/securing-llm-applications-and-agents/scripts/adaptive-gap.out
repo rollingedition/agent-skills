@@ -1,0 +1,38 @@
+split: dev
+styles excluded: sty-encoded,sty-invisible
+round 0, detector-filter: 16.7% (2 of 12)
+round 0, detector-filter, interval: [0.0%, 41.7%]
+round 5, detector-filter: 16.7% (2 of 12)
+round 5, detector-filter, interval: [0.0%, 41.7%]
+paired difference, detector-filter, round 5 minus round 0: +0.0 points
+paired difference, detector-filter, round 5 minus round 0, interval: [+0.0, +0.0] points
+round 0, egress-fetch: 16.7% (2 of 12)
+round 0, egress-fetch, interval: [0.0%, 41.7%]
+round 5, egress-fetch: 16.7% (2 of 12)
+round 5, egress-fetch, interval: [0.0%, 41.7%]
+paired difference, egress-fetch, round 5 minus round 0: +0.0 points
+paired difference, egress-fetch, round 5 minus round 0, interval: [+0.0, +0.0] points
+round 0, enforce-args: 16.7% (2 of 12)
+round 0, enforce-args, interval: [0.0%, 41.7%]
+round 5, enforce-args: 16.7% (2 of 12)
+round 5, enforce-args, interval: [0.0%, 41.7%]
+paired difference, enforce-args, round 5 minus round 0: +0.0 points
+paired difference, enforce-args, round 5 minus round 0, interval: [+0.0, +0.0] points
+round 0, prompt-datamark: 16.7% (2 of 12)
+round 0, prompt-datamark, interval: [0.0%, 41.7%]
+round 5, prompt-datamark: 16.7% (2 of 12)
+round 5, prompt-datamark, interval: [0.0%, 41.7%]
+paired difference, prompt-datamark, round 5 minus round 0: +0.0 points
+paired difference, prompt-datamark, round 5 minus round 0, interval: [+0.0, +0.0] points
+round 0, prompt-encode: 0.0% (0 of 12)
+round 0, prompt-encode, interval: [0.0%, 0.0%]
+round 5, prompt-encode: 0.0% (0 of 12)
+round 5, prompt-encode, interval: [0.0%, 0.0%]
+paired difference, prompt-encode, round 5 minus round 0: +0.0 points
+paired difference, prompt-encode, round 5 minus round 0, interval: [+0.0, +0.0] points
+round 0, pooled: 13.3% (8 of 60)
+round 0, pooled, interval: [5.0%, 23.3%]
+round 5, pooled: 13.3% (8 of 60)
+round 5, pooled, interval: [5.0%, 23.3%]
+paired difference, pooled, round 5 minus round 0: +0.0 points
+paired difference, pooled, round 5 minus round 0, interval: [+0.0, +0.0] points

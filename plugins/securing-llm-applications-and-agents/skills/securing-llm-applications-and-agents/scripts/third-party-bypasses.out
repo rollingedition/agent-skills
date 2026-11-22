@@ -1,0 +1,41 @@
+attempts asserted: 38
+PyTorch CPU index, the one allowed: option allowed
+URL with == fragment: refused
+annotation not a boolean: disagrees
+annotations empty object added: changed
+annotations readOnlyHint 1 (not true): changed
+argument read but not named: disagrees
+comment line: skip
+comment with ==: refused
+constraints include: option refused
+duplicate name, changed copy first: duplicate, listed 0
+editable install: option refused
+exact pin: pinned
+extra key outputSchema: changed
+extra key title: changed
+input_schema beside parameters: changed
+keys reordered, book_visit: verified
+leading space before a pin: refused
+listed copy after the server changes: unchanged
+listed copy cannot be changed: cannot change
+marker: refused
+nested include: option refused
+new tool with no pin: unpinned
+no annotations, reads only: undeclared
+no annotations, writes: disagrees
+other index: option refused
+read-only and destructive: disagrees
+read-only annotation on a writing tool: disagrees
+read-only, reads only: agrees
+rug pull sentence appended: changed
+stand-in reads an argument the schema does not name: disagrees
+trailing space after a pin: refused
+unpinned file Model.safetensors: unpinned file present: Model.safetensors
+unpinned file chat_template.jinja: unpinned file present: chat_template.jinja
+unpinned file training_args.bin: unpinned file present: training_args.bin
+wildcard: refused
+write claim, approved tables: agrees
+write claim, second table written: disagrees
+zero-width space appended: changed
+S10-15 pins file naming another server: refused
+S10-16 duplicate description keys, approved text last: refused

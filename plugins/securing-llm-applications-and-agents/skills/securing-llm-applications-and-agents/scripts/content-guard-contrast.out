@@ -1,0 +1,28 @@
+unparsed replies: 0 of 400
+dev injected texts, labelled unsafe: 15.0% (9 of 60)
+dev injected texts, labelled unsafe, interval: [6.7%, 23.3%]
+dev injected texts, with any category: 35.0% (21 of 60)
+dev injected texts, with any category, interval: [23.3%, 46.7%]
+held-out injected texts, labelled unsafe: 11.7% (7 of 60)
+held-out injected texts, labelled unsafe, interval: [5.0%, 20.0%]
+held-out injected texts, with any category: 38.3% (23 of 60)
+held-out injected texts, with any category, interval: [26.7%, 50.0%]
+dev benign records, labelled unsafe: 0.0% (0 of 26)
+dev benign records, labelled unsafe, interval: [0.0%, 0.0%]
+dev benign records, with any category: 0.0% (0 of 26)
+dev benign records, with any category, interval: [0.0%, 0.0%]
+held-out benign records, labelled unsafe: 0.0% (0 of 26)
+held-out benign records, labelled unsafe, interval: [0.0%, 0.0%]
+held-out benign records, with any category: 0.0% (0 of 26)
+held-out benign records, with any category, interval: [0.0%, 0.0%]
+injected texts flagged by the classifier, dev and held-out: 73.3% (88 of 120)
+injected texts flagged by the classifier, dev and held-out, interval: [65.0%, 80.8%]
+injected texts flagged by the guard, dev and held-out: 36.7% (44 of 120)
+injected texts flagged by the guard, dev and held-out, interval: [28.3%, 45.8%]
+guard minus classifier, injected texts flagged: -36.7 points
+guard minus classifier, injected texts flagged, interval: [-47.5, -25.8] points
+flagged by both: 36
+flagged by the guard only: 8
+flagged by the classifier only: 52
+benign records flagged by the guard, 52: 0.0% (0 of 52)
+benign records flagged by the guard, 52, interval: [0.0%, 0.0%]
