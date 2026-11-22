@@ -3,13 +3,13 @@ title: "Open Table Formats"
 chapter: "Read a table as it was at an earlier snapshot"
 chapter_id: snapshots-and-time-travel
 book: open-table-formats
-edition: 2026.11.11
-verified: 2026-11-21
-edition_code: 8X07-G1CT
+edition: 2026.11.12
+verified: 2026-11-22
+edition_code: CYAZ-TM3D
 canonical: https://rollingedition.com/open-table-formats/snapshots-and-time-travel
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“Read a table as it was at an earlier snapshot,” chapter 2 of Open Table Formats, Edition 2026.11.11, examples passed Nov 21, 2026. By Rolling Edition, https://rollingedition.com/open-table-formats/snapshots-and-time-travel. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Read a table as it was at an earlier snapshot,” chapter 2 of Open Table Formats, Edition 2026.11.12, examples passed Nov 22, 2026. By Rolling Edition, https://rollingedition.com/open-table-formats/snapshots-and-time-travel. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Read a table as it was at an earlier snapshot
 
@@ -25,7 +25,7 @@ A commit changes the table's metadata in one atomic step, so a reader sees the t
 
 Before any scan, read the history: the example lists the three commits in order, each with its operation and the rows it added, first for Iceberg and then for Delta Lake.
 
-Example `snapshot-history` (Python 3.12.15 · deltalake 1.6.6 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.11:
+Example `snapshot-history` (Python 3.12.15 · deltalake 1.6.6 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.12:
 
 ```python
 """Commit three hours to an Iceberg table and a Delta Lake table, then list each commit with its operation and rows added.
@@ -84,7 +84,7 @@ version 2 operation: WRITE
 version 2 rows added: 500
 ```
 
-All three commits used `append`, so none of them rewrote or removed a file. Hour 00 added 499 rows, one fewer than the others because the data cut dropped one row from it, as the [data README](https://github.com/rollingedition/book-open-table-formats/blob/d9bd7ed7cb3f78ebe15811953c012ac88a4f3070/examples/data/README.md) explains. Hours 01 and 02 each added 500. The owner's question starts here: the table has three states to choose from, and the history names them.
+All three commits used `append`, so none of them rewrote or removed a file. Hour 00 added 499 rows, one fewer than the others because the data cut dropped one row from it, as the [data README](https://github.com/rollingedition/book-open-table-formats/blob/8063656c9e0652d673076ad498411b49110ae2d5/examples/data/README.md) explains. Hours 01 and 02 each added 500. The owner's question starts here: the table has three states to choose from, and the history names them.
 
 pyiceberg gives each snapshot a long integer ID. We do not print those IDs. Instead, `snapshot_labels` maps them, in commit order, to the labels "snapshot 1", "snapshot 2" and "snapshot 3", and the output prints only the labels.
 
@@ -116,7 +116,7 @@ The owner's first question is what the total was before the third hour landed. T
 
 In pyiceberg 0.12.0, `scan(snapshot_id=...)` reads the table as of that snapshot, and a scan with no snapshot ID reads the current snapshot. Two scans by ID answer the owner's first question from the table's own history, and the example also reads the current table and compares it with snapshot 3.
 
-Example `read-as-of-snapshot` (Python 3.12.15 · deltalake 1.6.6 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.11:
+Example `read-as-of-snapshot` (Python 3.12.15 · deltalake 1.6.6 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.12:
 
 ```python
 """Read an Iceberg table as of snapshot 2 and snapshot 3, by ID, then compare the current table with snapshot 3.
@@ -191,7 +191,7 @@ DuckLake keeps a snapshot for each change to the catalog, and the change include
 
 The three-version example makes the numbers diverge while the row counts agree: it writes the same three hours to a Delta table and a DuckLake table, one commit per hour in each format. It reads each commit back by its number, prints both row counts, counts the DuckLake snapshots before the first insert, and shows one failure.
 
-Example `three-version-numbers` (Python 3.12.15 · deltalake 1.6.6 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.11:
+Example `three-version-numbers` (Python 3.12.15 · deltalake 1.6.6 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.12:
 
 ```python
 """Commit the same three hours to Delta Lake and DuckLake, then read each commit back by its own number.
