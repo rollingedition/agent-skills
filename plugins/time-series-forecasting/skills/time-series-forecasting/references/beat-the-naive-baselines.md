@@ -3,13 +3,13 @@ title: "Time Series Forecasting"
 chapter: "Set the baselines a model must beat"
 chapter_id: beat-the-naive-baselines
 book: time-series-forecasting
-edition: 2026.11.13
-verified: 2026-11-20
-edition_code: AVAY-NYWJ
+edition: 2026.11.14
+verified: 2026-11-22
+edition_code: 63J0-VQVZ
 canonical: https://rollingedition.com/time-series-forecasting/beat-the-naive-baselines
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“Set the baselines a model must beat,” chapter 2 of Time Series Forecasting, Edition 2026.11.13, examples passed Nov 20, 2026. By Rolling Edition, https://rollingedition.com/time-series-forecasting/beat-the-naive-baselines. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Set the baselines a model must beat,” chapter 2 of Time Series Forecasting, Edition 2026.11.14, examples passed Nov 22, 2026. By Rolling Edition, https://rollingedition.com/time-series-forecasting/beat-the-naive-baselines. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Set the baselines a model must beat
 
@@ -45,7 +45,7 @@ Each rule fails in a known way. Naive gives every hour of the day the same value
 
 Naive and seasonal naive come from statsforecast (2.1.1), whose classes `Naive` and `SeasonalNaive` are in `statsforecast/models.py`. The seasonal naive rule is the one [Hyndman and Athanasopoulos](https://otexts.com/fpp3/toolbox.html#sec-simple-methods) give for seasonal data: the forecast is the last observed value from the same season. Average of weeks is not a library method, so `examples/lib/baselines.py` computes it in pandas, where the rule can be read, and each window reads only its own history. A lag missing from that history raises an error instead of being skipped. One script scores all three rules through those seven windows, and its first lines count the windows, scored hours and missing forecasts, so you can check them before you read a score.
 
-Example `naive-baselines-held-out-week` (Python 3.13.16 · numpy 2.5.5 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.13:
+Example `naive-baselines-held-out-week` (Python 3.13.16 · numpy 2.5.5 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.14:
 
 ```python
 """Score the three baselines for the lead client over the held-out week, on the same seven windows. The point rests on the missing-forecasts line, which must be zero for the scores to compare, and on the three MAE lines."""
@@ -130,7 +130,7 @@ The two formulas are these:
 
 The scale reads every reading before the first test day, 17352 hours, about two years. That is longer than each window's eight-week history, and a longer history gives a steadier estimate of the client's usual swing. One scale for the week also means every window is read against the same number. The function `seasonal_scale` in `examples/lib/baselines.py` computes it for one client or for many, and returns one value per client. To see whether the cut matters, score the three baselines on the held-out week twice: with the scale from history, and with the scale from the whole series, both with the clock-change readings masked.
 
-Example `mase-scale-leak-check` (Python 3.13.16 · numpy 2.5.5 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.13:
+Example `mase-scale-leak-check` (Python 3.13.16 · numpy 2.5.5 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.14:
 
 ```python
 """Score the lead client's held-out week in MASE with a scale from history and with one from the whole series, both with the clock-change readings masked. The point rests on the two last-reading lines, which show where each scale stops, and on the MASE ratio lines."""
@@ -222,7 +222,7 @@ The scales are 7.1005 kWh from history and 7.1126 kWh from the whole series, and
 
 The leak is small on this week because the held-out week is a small share of the series. It makes up 0.959 percent of the whole-series readings, so the whole-series scale is roughly the history scale moved toward the held-out week's own swing by that share. The held-out week's own mean day-to-day difference is 8.3607 kWh, against 7.1005 kWh for the history, so the week swings more than the history does. The share times that gap is the leak, and the ratio above is its size. The leak grows in two ways. It grows when more of the scale's rows are test hours, as in a test period much longer than one week, such as the year of cutoffs in Chapter 3. It also grows when the held-out week's swing sits further from the history's. A quieter week would pull the whole-series scale down and make every MASE larger, so the same leak can flatter a model in one week and penalise it in another.
 
-The clock changes are a second, smaller point, and this chapter handles them as Chapter 3 does. The history holds 4 clock-change readings: the two gap hours and the two repeat hours of the March and October changes in 2013 and 2014. The gap hours read zero, and the repeat hours hold the energy of two, as the [data card](https://github.com/rollingedition/book-time-series-forecasting/blob/03fdfebf9b8c8406afff47064570d83f78402c0a/examples/data/README.md) describes; [Chapter 3](#the-october-hour-that-holds-two) shows the effect. Kept as recorded, those pairs give a scale of 7.1121 kWh. Masked, the scale is 7.1005 kWh, because the pairs that touch a masked reading drop out of the mean. A masked reading is neither zero nor a copy; it is missing. The chapter's scale masks them, and [Chapter 3 gives the reason](#meet-the-clock-changes), which sets them to missing in every training set and every score.
+The clock changes are a second, smaller point, and this chapter handles them as Chapter 3 does. The history holds 4 clock-change readings: the two gap hours and the two repeat hours of the March and October changes in 2013 and 2014. The gap hours read zero, and the repeat hours hold the energy of two, as the [data card](https://github.com/rollingedition/book-time-series-forecasting/blob/ed9583050e39a76cf647c43df90c13b4d43e1b49/examples/data/README.md) describes; [Chapter 3](#the-october-hour-that-holds-two) shows the effect. Kept as recorded, those pairs give a scale of 7.1121 kWh. Masked, the scale is 7.1005 kWh, because the pairs that touch a masked reading drop out of the mean. A masked reading is neither zero nor a copy; it is missing. The chapter's scale masks them, and [Chapter 3 gives the reason](#meet-the-clock-changes), which sets them to missing in every training set and every score.
 
 **Working rule:** Pass a scale only the readings before the first test day, mask its clock-change readings, and print the last reading it uses. Check that this reading is the hour before the first test day. A small difference between the two scales does not show the procedure is right. The row check does.
 

@@ -3,13 +3,13 @@ title: "A Primer on Search Relevance"
 chapter: "Understanding queries"
 chapter_id: understanding-queries
 book: primer-on-search-relevance
-edition: 2026.11.11
+edition: 2026.11.12
 verified: 2026-11-19
-edition_code: BR8A-JH1B
+edition_code: 0JN6-X3DH
 canonical: https://rollingedition.com/primer-on-search-relevance/understanding-queries
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“Understanding queries,” chapter 8 of A Primer on Search Relevance, Edition 2026.11.11, examples passed Nov 19, 2026. By Rolling Edition, https://rollingedition.com/primer-on-search-relevance/understanding-queries. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Understanding queries,” chapter 8 of A Primer on Search Relevance, Edition 2026.11.12, examples passed Nov 19, 2026. By Rolling Edition, https://rollingedition.com/primer-on-search-relevance/understanding-queries. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Understanding queries
 
@@ -43,7 +43,7 @@ The **lexicon**, the list of words that count as correct, decides what gets corr
 
 The corrector here uses the crudest error model: a word in the lexicon stays, one edit beats two, and P(c), how common each candidate is, breaks ties between candidates the same number of edits away. Run it on all 80 queries, and see which ones it changes:
 
-Example `catalog-spelling-corrector` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1 · scikit-learn 1.9.1 · scipy 1.18.1), passing in Edition 2026.11.11:
+Example `catalog-spelling-corrector` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1 · scikit-learn 1.9.1 · scipy 1.18.1), passing in Edition 2026.11.12:
 
 ```python
 """A spelling corrector built from the catalog's word counts, run on every query and checked against
@@ -118,7 +118,7 @@ The corrector leaves the brands alone, because the catalog uses them: `kohler` 7
 
 The corrector's failures are in test queries. `tye dye duvet cover` becomes `the dye duvet cover`: `tye` is one edit from `tie` (45 times in the catalog) and from `the` (20389), and P(c) picks the common word. And `refrigerator with ice an water in door` keeps its `an`. That `an` is a **real-word error**, a typo in which every word is spelled right, as in "flew form Heathrow" ([Manning et al., 2008](https://nlp.stanford.edu/IR-book/html/htmledition/context-sensitive-spelling-correction-1.html)). Both need context. For `tye` and for `an`, count how often each catalog word within one edit of it comes right before the next word of the query, `dye` or `water`:
 
-Example `spelling-context-counts` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1 · scikit-learn 1.9.1 · scipy 1.18.1), passing in Edition 2026.11.11:
+Example `spelling-context-counts` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1 · scikit-learn 1.9.1 · scipy 1.18.1), passing in Edition 2026.11.12:
 
 ```python
 """For the misspelled word in two test queries, `tye` and the real-word error `an`, counts how often each nearby catalog word comes before the query's next
@@ -163,7 +163,7 @@ catalog count of an water, the corrector's choice: 0
 
 Before `dye`, the catalog's text has `tie` 18 times, and the corrector's choice, `the`, 0. Before `water`, `and` comes 59 times, ahead of `a` at 20, while `an`, the corrector's choice, has 0. For these two queries, a corrector that scored each candidate with its neighbouring word would pick `tie` and `and`. Each corrected query can now be scored against its own judgments, which shows whether the change helps:
 
-Example `measure-spelling-corrections` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pandas 3.1.1 · scikit-learn 1.9.1 · scipy 1.18.1), passing in Edition 2026.11.11:
+Example `measure-spelling-corrections` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pandas 3.1.1 · scikit-learn 1.9.1 · scipy 1.18.1), passing in Edition 2026.11.12:
 
 ```python
 """Scores each typo query, and the variant spelling tye dye, with BM25, and with recorded embeddings where the corrected
@@ -248,7 +248,7 @@ A typo has one right spelling; a size, as in `7qt slow cooker`, often has severa
 
 A rule written from the queries would cover `qt`, `in`, `inch` and `"`. Before you trust it, count how the catalog writes inches. We count them first, print the terms the tokenizer makes of a few normalized texts, and build BM25 three times: over the text as written, normalized by that first rule, and normalized by `normalize_units`, which also handles the catalog's two apostrophes, `''`, for inches. We score every query, train or test, that gives a number with a unit:
 
-Example `normalize-units-both-sides` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pandas 3.1.1 · pystemmer 3.1.0 · scikit-learn 1.9.1 · scipy 1.18.1), passing in Edition 2026.11.11:
+Example `normalize-units-both-sides` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pandas 3.1.1 · pystemmer 3.1.0 · scikit-learn 1.9.1 · scipy 1.18.1), passing in Edition 2026.11.12:
 
 ```python
 """Counts how the catalog writes inches, prints the terms the tokenizer makes of normalized texts, and scores BM25 on
@@ -342,7 +342,7 @@ Some gaps are neither typos nor units but different words for one thing, as when
 
 Here `lib.queries.SYNONYMS` holds 14 groups of interchangeable words, such as `stand` and `unit`, written by reading the train queries whose exact products miss a query word. When a query contains a word or phrase from a group, `expand` appends the group's other members, and BM25 searches the result. Measure it on the train queries, then make the first of the chapter's [planned comparisons](#understanding-queries) on the test queries:
 
-Example `synonym-expansion-train-and-test` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pandas 3.1.1 · scikit-learn 1.9.1 · scipy 1.18.1), passing in Edition 2026.11.11:
+Example `synonym-expansion-train-and-test` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pandas 3.1.1 · scikit-learn 1.9.1 · scipy 1.18.1), passing in Edition 2026.11.12:
 
 ```python
 """Expands each query with the synonym list, scores BM25 on the train and test queries as typed and expanded, and
@@ -453,7 +453,7 @@ P(w | c)        = (count of w in class c's text + 1) / (number of words in class
 
 We build it by hand from word counts of the product text, check it against scikit-learn's `MultinomialNB` at 1.9.1, then compare its predictions with `query_class` and with the classes of each query's exact products:
 
-Example `query-classes-by-hand` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1 · scikit-learn 1.9.1 · scipy 1.18.1), passing in Edition 2026.11.11:
+Example `query-classes-by-hand` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1 · scikit-learn 1.9.1 · scipy 1.18.1), passing in Edition 2026.11.12:
 
 ```python
 """A naive Bayes query classifier built by hand from product text, checked against scikit-learn's MultinomialNB and
@@ -533,7 +533,7 @@ Here the predicted class comes from [the naive Bayes classifier](#classify-queri
 
 The store's train judgments show how much a filter would cost: for the train queries, 501 of 1937 exact products lie outside their query's predicted class. We add a boost to the similarities of semantic retrieval, the store's best ranker and so its [ranker to beat](#compare-runs-in-a-harness), and try five boost weights and a filter on the train queries. We take the best boost to the test queries for the second of the chapter's [planned comparisons](#understanding-queries):
 
-Example `class-boost-train-and-test` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1 · scikit-learn 1.9.1 · scipy 1.18.1), passing in Edition 2026.11.11:
+Example `class-boost-train-and-test` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1 · scikit-learn 1.9.1 · scipy 1.18.1), passing in Edition 2026.11.12:
 
 ```python
 """Counts the exact train products outside each query's predicted class, scores a class filter and several boosts on
@@ -624,7 +624,7 @@ On the test queries, judged@10 is 0.990 without the boost and 0.993 with it, and
 
 The rewrites that the examples read were recorded with the store's LLM, the open model named in [the chapter's opening](#understanding-queries), run locally on each query alone. The prompt's instruction is: "Rewrite this search query from an online furniture and home-goods store so that a search engine finds what the shopper wants. Fix spelling, expand abbreviations and add common synonyms for the product type, but keep every requirement the shopper stated and add none of your own. Return a single line." The rest of the prompt gives the query and asks for JSON, and the recording's manifest holds it in full. The recording script embedded each rewrite as a query, with the same embedding model as the products. BM25 searches the rewrite's text, and semantic retrieval its embedding. The train queries come first, to see what the rewrites change before any test:
 
-Example `llm-rewrites-on-train` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.11:
+Example `llm-rewrites-on-train` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.12:
 
 ```python
 """Prints the store's recorded LLM rewrites for a few train queries, then scores BM25 and semantic retrieval on the
@@ -703,7 +703,7 @@ The losses aren't one bad query: the numbers of queries that score better and wo
 
 These train numbers shape expectations and prove nothing. The third and fourth of the chapter's 5 [planned comparisons](#understanding-queries) were fixed in advance, so they go to the test queries whatever the train queries show, and each counts as established if p is below 0.01. Before the test numbers arrive, pick one: does the rewrite help BM25, the weaker retriever, hurt semantic retrieval, the stronger one, or do neither?
 
-Example `llm-rewrites-on-test` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pandas 3.1.1 · scikit-learn 1.9.1 · scipy 1.18.1), passing in Edition 2026.11.11:
+Example `llm-rewrites-on-test` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pandas 3.1.1 · scikit-learn 1.9.1 · scipy 1.18.1), passing in Edition 2026.11.12:
 
 ```python
 """Scores BM25 and semantic retrieval on the test queries, as typed and rewritten, as the chapter's planned comparisons,
@@ -795,7 +795,7 @@ The rewrite didn't help BM25: it moved the other way from what Weller et al. and
 
 The queries that move most show what a rewrite does. Read them with the number of unjudged products in each rewritten top 10, which the metric counts as irrelevant:
 
-Example `rewrite-largest-changes` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pandas 3.1.1 · scikit-learn 1.9.1 · scipy 1.18.1), passing in Edition 2026.11.11:
+Example `rewrite-largest-changes` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pandas 3.1.1 · scikit-learn 1.9.1 · scipy 1.18.1), passing in Edition 2026.11.12:
 
 ```python
 """For each retriever, finds the test queries whose nDCG@10 moves most under the rewrite, and counts the unjudged
@@ -880,7 +880,7 @@ hyde(query) = (embedding(hypothetical product) + embedding(query)) / 2,  then sc
 
 On the train queries, we also try the hypothetical product's embedding alone, and, for BM25, the hypothetical product's text alone and with the query repeated five times before it, as query2doc weights it. Then we run the last of the chapter's [planned comparisons](#understanding-queries):
 
-Example `hyde-train-and-test` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pandas 3.1.1 · scikit-learn 1.9.1 · scipy 1.18.1), passing in Edition 2026.11.11:
+Example `hyde-train-and-test` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pandas 3.1.1 · scikit-learn 1.9.1 · scipy 1.18.1), passing in Edition 2026.11.12:
 
 ```python
 """Scores HyDE, its parts and their combinations with BM25 and semantic retrieval on the train queries, then runs HyDE
@@ -979,7 +979,7 @@ The last gap from [the chapter's opening](#understanding-queries) comes from con
 
 WANDS has no conversations, so we wrote the store's conversations for the book: 12 follow-ups, each refining a test query by one attribute, a color, shape, size or finish. The store's LLM, which saw only the two turns, rewrote each to stand alone. For example, after `coat rack for bedroom` comes `something in black`, rewritten as `black coat rack for bedroom`. The judgments grade products for the first query, not for the refined one, so nDCG can't score the follow-up. Instead, count three kinds of product in each top 10: those that keep the refinement, because their `attributes` or text contain the value, such as `black` (the example also prints the count from `attributes` alone); those of the right kind, which the judges graded [exact or partial](#store-data) for the first query; and those that are both. We set the follow-up alone against the two turns joined and against the standalone query, each embedded as a query, with the first query as a baseline. We add a filter on the standalone query's top 100 that keeps products stating the value, taking the value from the recorded conversation; a live system would have to extract it from the follow-up.
 
-Example `follow-up-refinements` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1 · scikit-learn 1.9.1 · scipy 1.18.1), passing in Edition 2026.11.11:
+Example `follow-up-refinements` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1 · scikit-learn 1.9.1 · scipy 1.18.1), passing in Edition 2026.11.12:
 
 ```python
 """Counts, in each conversation's top 10, the products that keep the refinement and the products of the right kind, for
