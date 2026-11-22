@@ -30,7 +30,7 @@ show("log rows whose model read only readings in by its refit day", int((bands["
 show("log rows whose forecast read only readings in by its cutoff", int((bands["read_by"] <= bands["cutoff"]).sum()))
 show("leaky log rows whose model read only readings in by its refit day", int((leaky["fit_read_by"] <= leaky["refit"]).sum()))
 # a reading arrives at the end of its hour, so any other arrival is late
-show("readings that arrived late", int((bands["arrives"] != bands["ds"] + pd.Timedelta(hours=1)).sum()))
+show("readings that arrived late", int((bands["arrives"] != bands["ds"] + pd.Timedelta(1, unit="h")).sum()))
 # every row of a cutoff has the same count, so the first row gives it
 show("forecast inputs filled, Dec 29", int(bands.loc[bands["cutoff"] == "2014-12-29", "filled"].iloc[0]))
 # the last of Dec 28's readings to arrive

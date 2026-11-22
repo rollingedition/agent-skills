@@ -1,0 +1,25 @@
+prompt-warning, attack success, 60 dev cases: 11.7% (7 of 60)
+prompt-warning, attack success, 60 dev cases, interval: [5.0%, 20.0%]
+prompt-warning, utility, 15 dev benign tasks: 93.3% (14 of 15)
+prompt-warning, utility, 15 dev benign tasks, interval: [80.0%, 100.0%]
+prompt-delimiters, attack success, 60 dev cases: 10.0% (6 of 60)
+prompt-delimiters, attack success, 60 dev cases, interval: [3.3%, 18.3%]
+prompt-delimiters, utility, 15 dev benign tasks: 93.3% (14 of 15)
+prompt-delimiters, utility, 15 dev benign tasks, interval: [80.0%, 100.0%]
+prompt-datamark, attack success, 60 dev cases: 5.0% (3 of 60)
+prompt-datamark, attack success, 60 dev cases, interval: [0.0%, 11.7%]
+prompt-datamark, utility, 15 dev benign tasks: 86.7% (13 of 15)
+prompt-datamark, utility, 15 dev benign tasks, interval: [66.7%, 100.0%]
+prompt-encode, attack success, 60 dev cases: 0.0% (0 of 60)
+prompt-encode, attack success, 60 dev cases, interval: [0.0%, 0.0%]
+prompt-encode, utility, 15 dev benign tasks: 66.7% (10 of 15)
+prompt-encode, utility, 15 dev benign tasks, interval: [40.0%, 86.7%]
+prompt-repeat, attack success, 60 dev cases: 6.7% (4 of 60)
+prompt-repeat, attack success, 60 dev cases, interval: [1.7%, 13.3%]
+prompt-repeat, utility, 15 dev benign tasks: 20.0% (3 of 15)
+prompt-repeat, utility, 15 dev benign tasks, interval: [0.0%, 40.0%]
+baseline, attack success, 60 dev cases: 11.7% (7 of 60)
+baseline, attack success, 60 dev cases, interval: [5.0%, 20.0%]
+baseline, utility, 15 dev benign tasks: 93.3% (14 of 15)
+baseline, utility, 15 dev benign tasks, interval: [80.0%, 100.0%]
+figure: figures/prompt-defence-tradeoff.svg

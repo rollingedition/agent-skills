@@ -1,0 +1,3 @@
+windows: 7
+changes of lowest baseline between neighbouring windows: 3
+figure: figures/baseline-window-errors.svg

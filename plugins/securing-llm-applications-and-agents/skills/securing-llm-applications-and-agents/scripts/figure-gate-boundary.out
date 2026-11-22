@@ -1,0 +1,7 @@
+ceiling, stored: 17.0%
+largest count that passes, of 60 cases: 5
+smallest count that fails, of 60 cases: 6
+upper bound at the largest passing count: 16.7%
+upper bound at the smallest failing count: 20.0%
+count at which the rate alone reaches the ceiling: 11
+figure: figures/gate-boundary.svg

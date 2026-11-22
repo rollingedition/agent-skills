@@ -1,13 +1,13 @@
 ---
 title: "Glossary"
 book: "Time Series Forecasting"
-edition: "2026.11.15"
+edition: "2026.11.16"
 canonical: "https://rollingedition.com/time-series-forecasting/glossary"
 ---
 
 # Glossary of *Time Series Forecasting*
 
-The 97 terms this book defines, as Edition 2026.11.15 has them, each in the book's own sentence. When a task this skill covers uses one, it means what it says here: read its section before you rely on it, and cite the section. Where a definition depends on a package, it says the version this edition pins and runs its examples on. On the web: https://rollingedition.com/time-series-forecasting/glossary
+The 97 terms this book defines, as Edition 2026.11.16 has them, each in the book's own sentence. When a task this skill covers uses one, it means what it says here: read its section before you rely on it, and cite the section. Where a definition depends on a package, it says the version this edition pins and runs its examples on. On the web: https://rollingedition.com/time-series-forecasting/glossary
 
 ## AICc
 
@@ -98,10 +98,10 @@ Calendar features, unlike lags, are facts about the target hour itself: its hour
 
 ## calibration window
 
-A calibration window is a cutoff whose residuals size the bands.
+A calibration window is a window whose residuals size the bands.
 
 - Also: calibration windows
-- A kind of: cutoff
+- A kind of: window
 - Defined in: [Build intervals from residuals](quantify-forecast-uncertainty.md#build-intervals-from-residuals)
 - Address: https://rollingedition.com/concepts/time-series-forecasting/calibration-window
 
@@ -203,7 +203,7 @@ Decision windows are the windows the feature set is chosen on, never the standar
 
 ## differencing
 
-differencing: subtracting a reading from the reading one season earlier
+differencing: subtracting an earlier reading from each reading, the one immediately before it or the one a season earlier
 
 - Part of: ARIMA
 - Defined in: [Fit a fixed seasonal ARIMA](fit-statistical-models-per-client.md#fit-a-fixed-seasonal-arima)
@@ -254,7 +254,7 @@ the features: the readings and facts the model may use for the row's hour.
 
 ## feature table
 
-A feature table has one row for each hour a model must predict.
+A feature table has one row for each client and hour that a model learns from or must predict.
 
 - Defined in: [Turn history into features](add-calendar-and-lag-features.md#turn-history-into-features)
 - Address: https://rollingedition.com/concepts/feature-engineering/feature-table
@@ -316,7 +316,7 @@ Forward fill repeats the last reading that arrived.
 
 ## foundation model
 
-A foundation model is trained once on many series and then applied to a context, with no fitting on that series.
+A foundation model is trained once on many series and then applied to a context, here with no fitting on that series.
 
 - Defined in: [Load a recorded foundation model's forecasts](compare-prophet-and-a-foundation-model.md#load-a-recorded-foundation-model)
 - Address: https://rollingedition.com/concepts/time-series-forecasting/foundation-model
@@ -341,7 +341,7 @@ A global model fits one set of parameters to many series in a single pass, so ev
 
 ## history
 
-the history is every reading before the cutoff
+the history is every reading before the cutoff, all that a forecast may use, though the book's models fit on its last eight weeks
 
 - Defined in: [Why a baseline comes first](beat-the-naive-baselines.md#why-a-baseline-comes-first)
 - Address: https://rollingedition.com/concepts/time-series-forecasting/history
@@ -357,7 +357,7 @@ The history half compares each feature on the rows of the eight weeks before eac
 
 ## holiday table
 
-Prophet takes holidays as a table of dates and effects
+Prophet takes holidays as a table of names and dates and fits an effect for each
 
 - True for: prophet 1.5.0
 - Part of: Prophet
@@ -374,7 +374,7 @@ A forecast uses only the readings before its cutoff, and it reaches forward a fi
 
 ## interval score
 
-The interval score adds a band's width to a penalty for each reading that misses the band, the penalty growing with the distance of the miss and scaled by 2 over the miss rate
+The interval score adds a band's width to a penalty for each reading that misses the band, the penalty growing with the distance of the miss and scaled by 2 over the miss rate the level allows
 
 - Measured from: prediction interval
 - Defined in: [Calibrate on earlier windows](quantify-forecast-uncertainty.md#calibrate-on-earlier-windows)
@@ -391,7 +391,7 @@ The lag of k hours for the hour t is the reading at t minus k.
 
 ## late starter
 
-A late starter is a client whose first reading falls inside the history its model reads.
+A late starter is a client whose first reading falls after the data begins, and so can fall inside the history its model reads.
 
 - Comes before: start rule
 - Defined in: [Meet the late starters](fit-statistical-models-per-client.md#meet-the-late-starters)
@@ -399,7 +399,7 @@ A late starter is a client whose first reading falls inside the history its mode
 
 ## leakage
 
-A backtest leaks when a window's model sees a reading from the hours it is asked to forecast.
+A backtest leaks when a window's model sees a reading from at or after its cutoff.
 
 - Also: leak
 - Defined in: [Keep the future out of the history](backtest-without-looking-ahead.md#keep-the-future-out-of-history)
@@ -474,7 +474,7 @@ The mean absolute error, MAE, is the average size of the miss
 
 ## mean absolute scaled error
 
-MASE, the mean absolute scaled error, is the mean of the scaled errors.
+MASE, the mean absolute scaled error, is the mean of the absolute scaled errors.
 
 - Also: MASE
 - Formula: `MASE = mean of |actual(t) - forecast(t)| / scale`
@@ -485,7 +485,7 @@ MASE, the mean absolute scaled error, is the mean of the scaled errors.
 
 ## mean per-client MASE
 
-The mean per-client MASE is MASE for each client, averaged over the eight clients.
+The mean per-client MASE is MASE for each client, averaged over the clients, here the eight clients.
 
 - Computed from: mean absolute scaled error
 - Defined in: [Measure what each feature adds](add-calendar-and-lag-features.md#measure-what-each-feature-adds)
@@ -559,7 +559,7 @@ A per-client model is one fit for each client, on that client's history alone, s
 
 ## poisoning check
 
-The poisoning check writes wrong values over every reading after a cutoff, then confirms that the refit and the forecast at that cutoff do not move.
+The poisoning check writes wrong values over every reading from a cutoff on, then confirms that the shares, the total's MASE scale and the start-rule history do not move.
 
 - Defined in: [What goes wrong in production](keep-the-forecast-running.md#what-goes-wrong-ch10)
 - Address: https://rollingedition.com/concepts/model-evaluation/poisoning-check
@@ -608,7 +608,7 @@ A rebuilt log is leakage in disguise, because it knows what the forecast should 
 
 ## recursive prediction
 
-In recursive prediction, for a 24-hour horizon, MLForecast forecasts one hour, writes that forecast back as the reading for the next hour, and repeats (_predict_recursive in mlforecast/core.py).
+In recursive prediction, for a 24-hour horizon, MLForecast forecasts one hour, writes that forecast back as that hour's reading, and repeats for the next hour (_predict_recursive in mlforecast/core.py).
 
 - True for: mlforecast 1.1.0
 - Implemented by: mlforecast 1.1.0
@@ -633,7 +633,7 @@ clock_change_repeat is 01:00 on an October clock-change day.
 
 ## residual
 
-A residual is the error of an earlier forecast: the reading minus the forecast, e = y - f.
+Here a residual is the error of an earlier forecast: the reading minus the forecast, e = y - f.
 
 - Formula: `e = y - f`
 - Comes before: conformal prediction
@@ -664,7 +664,7 @@ The root mean squared error, RMSE, is RMSE = sqrt(mean((actual - forecast)^2)).
 
 ## scaled error
 
-A scaled error divides each absolute error by a scale, the typical error of a simple method on the same client's own history.
+A scaled error divides each error by a scale, the typical error of a simple method on the same client's own history.
 
 - Computed from: error
 - Comes before: mean absolute scaled error
@@ -680,7 +680,7 @@ A score turns the errors of a set of forecasts into one number.
 
 ## season
 
-the season is the daily shape of the load
+the season is the shape that repeats in each cycle, here the daily shape of the load
 
 - Part of: ETS
 - Defined in: [Why a statistical model comes next](fit-statistical-models-per-client.md#why-a-statistical-model-comes-next)
@@ -711,7 +711,7 @@ under the seasonal scale, the denominator is seasonal naive's error on the clien
 
 ## share
 
-A client's share is its readings over its own history, the 1,344 hours before the cutoff, divided by the total's readings over the same hours.
+A client's share is its readings summed over its own history, the 1,344 hours before the cutoff, divided by the total's readings summed over the same hours.
 
 - Defined in: [Split a total by share](make-the-total-add-up.md#split-a-total-by-share)
 - Address: https://rollingedition.com/concepts/time-series-forecasting/share
@@ -732,7 +732,7 @@ The start rule says that a series begins at its first reading.
 
 ## statistical model
 
-A statistical model holds an estimate of each part of the state of a series, updates the estimates as each reading arrives, and projects them over the horizon.
+A statistical model describes how each reading follows from the state of a series or from earlier readings, estimates that from the history, and projects it over the horizon.
 
 - Kinds: ETS
 - Kinds: ARIMA

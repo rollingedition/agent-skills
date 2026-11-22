@@ -3,25 +3,92 @@ title: "Time Series Forecasting"
 chapter: "Fit a statistical model for each client"
 chapter_id: fit-statistical-models-per-client
 book: time-series-forecasting
-edition: 2026.11.15
+edition: 2026.11.16
 verified: 2026-11-22
-edition_code: 4ZZQ-AHZZ
+edition_code: W6DN-S05M
 canonical: https://rollingedition.com/time-series-forecasting/fit-statistical-models-per-client
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“Fit a statistical model for each client,” chapter 4 of Time Series Forecasting, Edition 2026.11.15, examples passed Nov 22, 2026. By Rolling Edition, https://rollingedition.com/time-series-forecasting/fit-statistical-models-per-client. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Fit a statistical model for each client,” chapter 4 of Time Series Forecasting, Edition 2026.11.16, examples passed Nov 22, 2026. By Rolling Edition, https://rollingedition.com/time-series-forecasting/fit-statistical-models-per-client. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Fit a statistical model for each client
 
-Here you fit AutoETS and a fixed seasonal ARIMA for each client over the same backtest, score both against seasonal naive, and learn to start a late-starting client at its first reading. The chapter assumes the baselines and backtests of the two chapters before it.
+Each of the supplier's clients needs its own day-ahead forecast, and [Chapter 2](#beat-the-naive-baselines)'s seasonal naive gives every one of them the same answer: the same hour yesterday. That rule keeps no estimate of a client's level or its trend, and the clients differ in both. The supplier buys for each client, so each forecast has to be right on its own.
 
-Each of the supplier's clients needs its own day-ahead forecast, and [Chapter 2](#beat-the-naive-baselines)'s seasonal naive gives every one of them the same answer: the same hour yesterday. That rule keeps no estimate of a client's level or its trend, and the clients differ in both. So this chapter fits a statistical model for each client, and asks whether the extra work pays.
+The chapter rests on the two before it: [Chapter 2](#beat-the-naive-baselines) sets seasonal naive as the bar, and [Chapter 3](#backtest-without-looking-ahead) tests it over many cutoffs. Take the lead client, `MT_014`. Its forecast for tomorrow has to follow its evening peak and its level, and seasonal naive follows them only a day late, by copying yesterday.
+
+The state comes first, since a model needs something to estimate. Exponential smoothing adds a level, whose flat forecast shows its limit. ETS then adds a season, and a seasonal ARIMA compares each hour with the same hour yesterday. Here you fit AutoETS and a fixed seasonal ARIMA for each client over the same backtest, score both against seasonal naive, and learn to start a late-starting client at its first reading.
 
 ## Why a statistical model comes next {#why-a-statistical-model-comes-next}
 
 [Chapter 2](#beat-the-naive-baselines) set the bar. [Seasonal naive](#forecast-with-seasonal-naive) forecasts each hour as the same hour yesterday, and the scaled error, MASE, compares clients with different loads on one scale. [Chapter 3](#backtest-without-looking-ahead) backtested that forecast over many cutoffs. A [cutoff](#the-case-and-its-data) is the time a forecast is made, and its history ends there. A [window](#the-case-and-its-data) is one cutoff and the 24 hours after it, which is the horizon. Each window's history ends at its cutoff, so no hour is forecast with data from its own day.
 
-A statistical model adds to that loop. A series has a state. The level of a series is its typical reading, the trend is the slow drift of the level, the season is the daily shape of the load, and what none of these explain is error. A statistical model holds an estimate of each part of the state of a series, updates the estimates as each reading arrives, and projects them over the horizon. Seasonal naive has no such state. It copies yesterday, so it gets a client's level only as well as yesterday did.
+Figure 4.1 draws the lead client's last two weeks before the first standard cutoff, each hour thin and the 24-hour mean heavy. Within each day the load rises and falls, a similar shape each day. Across the fortnight the 24-hour mean moves more slowly, and it is the line to follow for the level. These two movements are what the loop of Chapter 3 forecasts at every cutoff.
+
+*Figure 4.1. The lead client's load and its 24-hour mean.*
+
+![The load repeats a daily rise and fall, and its 24-hour mean moves more slowly, lowest after Christmas](https://rollingedition.ai/books/time-series-forecasting/2026.11.16/figures/lead-client-fortnight.svg)
+
+Example `figure-lead-client-fortnight` (Python 3.13.16 · matplotlib 3.11.2 · numpy 2.5.5 · pandas 2.3.3), passing in Edition 2026.11.16:
+
+```python
+"""Draw the lead client's last two weeks before the first standard cutoff, with its 24-hour mean.
+The hour lines show the daily shape the prose calls the season, and the 24-hour mean lines show the level."""
+import matplotlib.dates as mdates
+import pandas as pd
+
+from lib.electricity import load
+from lib.figures import ACCENT, INK, MUTED, new_figure, save
+from lib.settings import EVAL_CUTOFFS, LEAD, show
+
+end = pd.Timestamp(EVAL_CUTOFFS[0]) - pd.Timedelta(1, unit="h")   # the last hour before the first standard cutoff
+start = end - pd.Timedelta(14 * 24 - 1, unit="h")                   # 14 days of hours, ending there
+lead = load([LEAD], start, end).set_index("ds")["y"]
+mean_24 = lead.rolling(24).mean()                               # each hour's mean of the 24 hours up to it: the level, seen
+
+by_hour = lead.groupby(lead.index.hour).mean()                  # the average day: mean load at each hour of the day
+show("hours drawn", len(lead))
+show("mean load, kWh", lead.mean())
+show("highest hour of the average day", f"{by_hour.idxmax():02d}:00")
+show("mean load at the highest hour, kWh", by_hour.max())
+show("lowest hour of the average day", f"{by_hour.idxmin():02d}:00")
+show("mean load at the lowest hour, kWh", by_hour.min())
+show("24-hour mean on the first full day, kWh", mean_24.iloc[23])
+show("24-hour mean on the last day, kWh", mean_24.iloc[-1])
+show("lowest 24-hour mean, kWh", mean_24.min())
+show("day of the lowest 24-hour mean", f"{mean_24.idxmin():%b %-d}")
+
+fig, ax = new_figure(height=2.8)
+ax.plot(lead.index, lead.values, color=MUTED, linewidth=0.7, label="each hour")
+ax.plot(mean_24.index, mean_24.values, color=ACCENT, linewidth=2.0, label="mean of the last 24 hours")
+ax.set_ylabel("kWh in the hour")
+ax.set_ylim(bottom=0)
+fig.legend(loc="outside upper left", ncols=2, frameon=False, labelcolor=INK)
+ax.xaxis.set_major_formatter(mdates.DateFormatter("%b %-d"))
+save(fig, "lead-client-fortnight")
+```
+
+Output:
+
+```text
+hours drawn: 336
+mean load, kWh: 51.37
+highest hour of the average day: 18:00
+mean load at the highest hour, kWh: 66.27
+lowest hour of the average day: 05:00
+mean load at the lowest hour, kWh: 38.75
+24-hour mean on the first full day, kWh: 61.35
+24-hour mean on the last day, kWh: 41.37
+lowest 24-hour mean, kWh: 36.07
+day of the lowest 24-hour mean: Dec 26
+figure: figures/lead-client-fortnight.svg
+```
+
+A statistical model adds to that loop. A series has a state. The level of a series is its typical reading, the trend is the slow drift of the level, the season is the shape that repeats in each cycle, here the daily shape of the load, and what none of these explain is error. A statistical model describes how each reading follows from the state of a series or from earlier readings, estimates that from the history, and projects it over the horizon. Seasonal naive has no such state. It copies yesterday, so it gets a client's level only as well as yesterday did.
+
+The level sets the forecast's height, the trend tilts it, and the season shapes it within the day. Figure 4.1 shows the season most plainly: the average day peaks at 18:00 and bottoms out at 05:00, so a level alone would miss the evening rise and the night low.
+
+The 24-hour mean falls from 61.35 kWh on the first full day to its lowest, 36.07 kWh, on Dec 26, the Christmas dip, with rises in between. A level that updates follows that fall, so this is the boundary of the trend: a holiday dip is not a slow drift, and a model that took it for one would carry it forward. No part of the state names a holiday, so [Chapter 5](#add-calendar-and-holidays) adds one as a feature. From here on, the state of a series means its level, its trend and its season, the parts a model such as [exponential smoothing](#fit-exponential-smoothing) estimates.
 
 A per-client model is one fit for each client, on that client's history alone, so the cost is one fit per client per window. The subset this chapter uses, [`SUBSET8`](#the-case-and-its-data), has eight clients. Over the book's three standard cutoffs, Dec 29 to Dec 31, 2014, the last three days of the held-out week and the windows every later chapter reports, that is 24 fits for each model. The code runs the fits in one worker (`n_jobs=1`), which keeps the output identical from run to run. Every model in this chapter gets the same three cutoffs and the same 1,344 hours of history before each one. The cutoffs fall in the held-out week, and the subset holds the one late starter a later section needs.
 
@@ -31,13 +98,61 @@ A per-client model is one fit for each client, on that client's history alone, s
 
 Seasonal naive keeps only yesterday, so the first candidate keeps a level instead. Exponential smoothing moves its level toward each new reading. The simplest form updates the level as `level_t = alpha * y_t + (1 - alpha) * level_(t-1)`. The constant alpha, between 0 and 1, sets how fast the level follows the data. The forecast for every hour of the horizon is the last level. Recent readings count for more than older ones, and the weights fall off with age.
 
+Unrolled all the way back, the newest reading has weight alpha and each older one the weight before it times `1 - alpha`, so the weights decrease exponentially, as [*Forecasting: Principles and Practice*, section 8.1](https://otexts.com/fpp3/ses.html) puts it. Figure 4.2 draws the weights for two values of alpha, 0.2 and 0.5.
+
+*Figure 4.2. The weight each of the last 24 readings carries.*
+
+![The newest reading weighs most, and a smaller alpha spreads weight back](https://rollingedition.ai/books/time-series-forecasting/2026.11.16/figures/smoothing-weights.svg)
+
+Example `figure-smoothing-weights` (Python 3.13.16 · matplotlib 3.11.2 · numpy 2.5.5 · pandas 2.3.3), passing in Edition 2026.11.16:
+
+```python
+"""Draw the weight exponential smoothing gives each of the last 24 readings, for alpha 0.2 and 0.5.
+The lines name the weight on the newest reading, how many readings hold half the weight, and what is left past a day."""
+import numpy as np
+
+from lib.figures import ACCENT, MUTED, new_figure, save
+from lib.settings import show
+
+ages = np.arange(24)                                            # 0 is the newest reading, 23 the oldest in a day
+fig, ax = new_figure(height=2.6)
+for alpha, color in ((0.2, MUTED), (0.5, ACCENT)):
+    weights = alpha * (1 - alpha) ** ages                       # level_t = alpha*y_t + (1-alpha)*level_(t-1), unrolled
+    half = int(np.argmax(np.cumsum(weights) >= 0.5)) + 1        # the fewest newest readings that carry half the weight
+    show(f"weight on the newest reading, alpha {alpha}", weights[0])
+    show(f"readings that carry half the weight, alpha {alpha}", half)
+    show(f"weight left on readings older than a day, alpha {alpha}", (1 - alpha) ** 24, digits=4)
+    ax.plot(ages, weights, color=color, marker="o", markersize=3, linewidth=1.4, label=f"alpha = {alpha}")
+ax.set_xlabel("age of the reading, hours")
+ax.set_ylabel("weight in the level")
+ax.set_ylim(bottom=0)
+ax.legend(frameon=False)
+save(fig, "smoothing-weights")
+```
+
+Output:
+
+```text
+weight on the newest reading, alpha 0.2: 0.20
+readings that carry half the weight, alpha 0.2: 4
+weight left on readings older than a day, alpha 0.2: 0.0047
+weight on the newest reading, alpha 0.5: 0.50
+readings that carry half the weight, alpha 0.5: 1
+weight left on readings older than a day, alpha 0.5: 0.0000
+figure: figures/smoothing-weights.svg
+```
+
+At alpha 0.5 the newest reading carries 0.50, and 1 reading holds half. At alpha 0.2 it carries 0.20, and 4 readings hold at least half.
+
+The weight past a day is 0.0047 at alpha 0.2 and 0.0000 at alpha 0.5. At alpha 1 the level is the last reading, so the forecast is the [naive](#three-baselines-to-beat) one. Near alpha 0 the level barely moves. At any alpha the forecast is flat and cannot follow Figure 4.1's daily rise and fall, so ETS adds a season.
+
 ETS, for error, trend and season, extends the simplest form of exponential smoothing. Each part is chosen from a short list. The trend can be none, additive or damped. The error can be additive or multiplicative, and the season can be none, additive or multiplicative. A name such as ETS(A,N,A) reads in that order: additive error, no trend, additive season. ETS(M,Ad,M) has a multiplicative error, a damped trend and a multiplicative season.
 
 [AutoETS](#forecast-with-a-statistical-model) chooses the ETS form for you. Its default criterion is [AICc](#forecast-with-a-statistical-model), the corrected Akaike information criterion, which charges a model for each parameter and corrects for small samples, as the `AutoETS` docstring in statsforecast 2.1.1 (`statsforecast/models.py`) says. Two of its defaults matter for hourly demand. The season length defaults to 1, which means no season at all, and the model gives no warning when you leave it that way. The `model` argument defaults to `"ZZZ"`, which lets the model choose all three parts. For hourly demand with a daily pattern, the call sets `season_length=24`.
 
 Which form does AutoETS pick for each client, and do its forecasts beat seasonal naive? The lines it prints answer both.
 
-Example `autoets-subset-backtest` (Python 3.13.16 · numpy 2.5.5 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.15:
+Example `autoets-subset-backtest` (Python 3.13.16 · numpy 2.5.5 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.16:
 
 ```python
 """Backtest AutoETS and seasonal naive for the eight clients of SUBSET8 over the three standard cutoffs, and score both.
@@ -137,7 +252,7 @@ The chosen form changes from client to client, and for some clients from one cut
 
 A flat form winning looks odd when the seasonal form contains it. ETS(A,N,N) is ETS(A,N,A) with the seasonal part switched off, so the best seasonal fit cannot have a lower likelihood than the flat fit on the same history. Fitting both forms on each of the 24 windows shows whether that happens.
 
-Example `flat-form-check` (Python 3.13.16 · numpy 2.5.5 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.15:
+Example `flat-form-check` (Python 3.13.16 · numpy 2.5.5 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.16:
 
 ```python
 """For each subset window, fit the flat form ETS(A,N,N) and the additive-season form ETS(A,N,A) on the same history, and count where the seasonal fit has the lower likelihood.
@@ -185,7 +300,7 @@ The seasonal fit loses on likelihood, not only on AICc. Its log-likelihood is lo
 
 [Chapter 1](#forecast-with-a-statistical-model) forced an additive season on the lead client, with `model="ZZA"`, and seasonal naive still had the lower error there. Does that hold across all eight? The forced run covers the same eight clients, beside the default.
 
-Example `autoets-forced-season-backtest` (Python 3.13.16 · numpy 2.5.5 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.15:
+Example `autoets-forced-season-backtest` (Python 3.13.16 · numpy 2.5.5 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.16:
 
 ```python
 """Backtest AutoETS with the season forced to additive (model ZZA) and seasonal naive, for the eight clients of SUBSET8 over the three standard cutoffs.
@@ -284,7 +399,9 @@ The forced season helps some clients and hurts others. It lowers the lead client
 
 ## Fit a fixed seasonal ARIMA {#fit-a-fixed-seasonal-arima}
 
-The second candidate models what seasonal naive leaves behind. The backtests of Chapter 3 are the test for what it adds. An ARIMA model writes the next reading as a weighted sum of earlier readings and earlier errors, after differencing: subtracting a reading from the reading one season earlier. The model is written ARIMA(p,d,q)(P,D,Q)[m]. The non-seasonal part has p autoregressive terms, d differences and q moving-average terms. The seasonal part has the same three, at lags that are multiples of the season length m.
+The second candidate models what seasonal naive leaves behind. The backtests of Chapter 3 are the test for what it adds. An ARIMA model writes the next reading as a weighted sum of earlier readings and earlier errors, after differencing: subtracting an earlier reading from each reading, the one immediately before it or the one a season earlier. The model is written ARIMA(p,d,q)(P,D,Q)[m]. The non-seasonal part has p autoregressive terms, d differences and q moving-average terms. The seasonal part has the same three, at lags that are multiples of the season length m.
+
+ARIMA's d counts the ordinary difference, each reading minus the one immediately before it, which [*Forecasting: Principles and Practice*, section 9.1](https://otexts.com/fpp3/stationarity.html) calls differencing. D counts the seasonal difference, each reading minus the reading one season earlier.
 
 The book's model is ARIMA(1,0,0)(1,1,0)[24]. It has one autoregressive term, no ordinary difference, no moving-average term, one seasonal difference at lag 24, and one seasonal autoregressive term at lag 24. Written out, with B the step back operator, so that B y_t is y_(t-1):
 
@@ -292,9 +409,70 @@ The book's model is ARIMA(1,0,0)(1,1,0)[24]. It has one autoregressive term, no 
 
 The term `(1 - B^24)` replaces each reading with its change from the same hour yesterday. The lag of 24 is the point of the model for hourly demand. Each hour is compared with the same hour yesterday, which is the comparison seasonal naive makes, and the autoregressive terms then model what that comparison leaves behind. The seasonal difference removes the level, so the model has no mean term. statsforecast's `ARIMA` leaves the mean off for differenced series by default (`statsforecast/models.py`, the `ARIMA` docstring).
 
+Figure 4.3 shows the load above its change from the same hour yesterday, over the same fortnight as Figure 4.1, and in the bottom panel the change swings around zero.
+
+*Figure 4.3. The load and its change from the same hour yesterday.*
+
+![The load rises and falls within each day, and its change swings around zero](https://rollingedition.ai/books/time-series-forecasting/2026.11.16/figures/seasonal-difference.svg)
+
+Example `figure-seasonal-difference` (Python 3.13.16 · matplotlib 3.11.2 · numpy 2.5.5 · pandas 2.3.3), passing in Edition 2026.11.16:
+
+```python
+"""Draw the lead client's last two weeks before the first standard cutoff above their change from the same hour
+yesterday, and measure what the change still carries, over the model's 1,344 hours of history."""
+import matplotlib.dates as mdates
+import pandas as pd
+
+from lib.electricity import load
+from lib.figures import ACCENT, MUTED, new_figure, save
+from lib.settings import EVAL_CUTOFFS, HISTORY_HOURS, LEAD, show
+
+cutoff = pd.Timestamp(EVAL_CUTOFFS[0])
+history = load([LEAD], cutoff - pd.Timedelta(HISTORY_HOURS, unit="h"), cutoff - pd.Timedelta(1, unit="h")).set_index("ds")["y"]
+change = history.diff(24)                                       # (1 - B^24) y_t: each hour minus the same hour yesterday
+show("history hours", len(history))
+show("mean load, kWh", history.mean())
+show("mean change from the same hour yesterday, kWh", change.mean())
+show("spread of the load (standard deviation), kWh", history.std())
+show("spread of the change (standard deviation), kWh", change.std())
+# the correlations the ARIMA's two autoregressive terms model: with the hour before, and with the same hour yesterday
+show("correlation of the change with the hour before", change.autocorr(1))
+show("correlation of the change with the same hour yesterday", change.autocorr(24))
+
+fortnight = history.iloc[-14 * 24:]                             # the same 14 days as the lead client's fortnight
+fig, (top, bottom) = new_figure(rows=2, height=3.8)
+top.plot(fortnight.index, fortnight.values, color=MUTED, linewidth=0.7)
+top.set_ylabel("kWh")
+top.set_title("each hour's load", loc="left", fontsize=10, color=MUTED)
+top.set_ylim(bottom=0)
+bottom.plot(fortnight.index, change.iloc[-14 * 24:].values, color=ACCENT, linewidth=0.7)
+bottom.axhline(0, color=MUTED, linewidth=0.8)
+bottom.set_ylabel("change, kWh")
+bottom.set_title("its change from the same hour yesterday", loc="left", fontsize=10, color=MUTED)
+bottom.xaxis.set_major_formatter(mdates.DateFormatter("%b %-d"))
+save(fig, "seasonal-difference")
+```
+
+Output:
+
+```text
+history hours: 1344
+mean load, kWh: 52.28
+mean change from the same hour yesterday, kWh: -0.11
+spread of the load (standard deviation), kWh: 16.17
+spread of the change (standard deviation), kWh: 12.51
+correlation of the change with the hour before: 0.92
+correlation of the change with the same hour yesterday: -0.15
+figure: figures/seasonal-difference.svg
+```
+
+Over the eight weeks the model reads, the figure drawing only the last two, the change averages -0.11 kWh, against 52.28 kWh for the load, so the difference removes the level, and by its formula it also removes whatever repeats exactly from one day to the next. The spread falls from 16.17 kWh for the load to 12.51 kWh for the change, so the difference removes only part of it.
+
+What remains is what the two autoregressive terms model: over those eight weeks, the change still moves with the hour before it, at a correlation of 0.92, and little with the same hour yesterday, at -0.15. That is what this client's history shows, not proof that the order is right.
+
 We fix the order rather than search for it, and [the section on automatic search](#why-the-book-avoids-autoarima) explains why. Before the order goes into a backtest, fit it once with statsmodels 0.15.0 on the lead client's history before the first standard cutoff, and print the names of the fitted parameters. That shows whether the model has the terms you wrote down.
 
-Example `arima-summary-look` (Python 3.13.16 · numpy 2.5.5 · pandas 2.3.3 · statsmodels 0.15.0 · utilsforecast 0.2.17), passing in Edition 2026.11.15:
+Example `arima-summary-look` (Python 3.13.16 · numpy 2.5.5 · pandas 2.3.3 · statsmodels 0.15.0 · utilsforecast 0.2.17), passing in Edition 2026.11.16:
 
 ```python
 """Fit the fixed seasonal ARIMA with statsmodels on the lead client's history before the first standard cutoff, and print its parameter names. The parameter lines are what the prose reads."""
@@ -334,7 +512,7 @@ Four forecasts now cover the same 24 hours at the same three cutoffs, from the s
 
 One score is still missing: the fixed ARIMA's, on the same windows and measures.
 
-Example `arima-subset-backtest` (Python 3.13.16 · numpy 2.5.5 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.15:
+Example `arima-subset-backtest` (Python 3.13.16 · numpy 2.5.5 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.16:
 
 ```python
 """Backtest the fixed seasonal ARIMA(1,0,0)(1,1,0)[24] and seasonal naive for the eight clients of SUBSET8 over the three standard cutoffs.
@@ -412,7 +590,7 @@ Three windows are a small sample, as [Chapter 3](#why-one-test-week-misleads) ex
 
 ## Meet the late starters {#meet-the-late-starters}
 
-One client in the subset starts late. `MT_115`'s first non-zero reading is at 00:00 on Jan 14, 2014. Before that, the meter reports zeros, and the data flags those hours `before_first_reading`. Those zeros are not low use. A model that reads them learns a level the client does not have. A late starter is a client whose first reading falls inside the history its model reads. The fix is the start rule: a series begins at its first reading. This matters for the supplier's decision. A level pulled low means buying too little for that client, the costlier of the supplier's two errors.
+One client in the subset starts late. `MT_115`'s first non-zero reading is at 00:00 on Jan 14, 2014. Before that, the meter reports zeros, and the data flags those hours `before_first_reading`. Those zeros are not low use. A model that reads them learns a level the client does not have. A late starter is a client whose first reading falls after the data begins, and so can fall inside the history its model reads. The fix is the start rule: a series begins at its first reading. This matters for the supplier's decision. A level pulled low means buying too little for that client, the costlier of the supplier's two errors.
 
 At the December cutoffs the eight weeks before each one are all readings, so this section uses February cutoffs: Feb 1, 2014, Feb 15, 2014 and Feb 28, 2014. Their eight-week histories still reach back before the first reading, so the case is in them. [Chapter 6](#forecast-many-clients-at-once) applies the same rule to all thirty clients.
 
@@ -422,7 +600,7 @@ Start with the raw history, the eight weeks before each February cutoff with its
 
 Starting the history at the first reading may fix it. Fitting AutoETS twice at each February cutoff, once on the raw eight weeks and once on the start history, which begins at `MT_115`'s first reading, shows whether it does, scored on the 24 hours from each cutoff.
 
-Example `late-starter-trim` (Python 3.13.16 · numpy 2.5.5 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.15:
+Example `late-starter-trim` (Python 3.13.16 · numpy 2.5.5 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.16:
 
 ```python
 """Backtest AutoETS for MT_115, a late starter, on three February cutoffs: once on its raw eight weeks and once on its history from its first reading.
@@ -454,7 +632,7 @@ def fit_and_score(hist, c):
     sf = StatsForecast(models=[AutoETS(season_length=24)], freq="h", n_jobs=1)
     sf.fit(df=fill_clock_change_hours(hist)[["unique_id", "ds", "y"]])   # clock-change hours filled from their neighbouring hours, as elsewhere
     fc = sf.predict(h=HORIZON)
-    actual = masked[(masked["ds"] >= c) & (masked["ds"] < c + pd.Timedelta(hours=HORIZON))]   # the day's 24 readings, to score against
+    actual = masked[(masked["ds"] >= c) & (masked["ds"] < c + pd.Timedelta(HORIZON, unit="h"))]   # the day's 24 readings, to score against
     joined = fc.merge(actual[["ds", "y"]], on="ds", how="left")
     # the form's method name, the mean forecast, the day's MAE, and the mean of the readings
     return sf.fitted_[0, 0].model_["method"], float(joined["AutoETS"].mean()), float((joined["y"] - joined["AutoETS"]).abs().mean()), float(joined["y"].mean())

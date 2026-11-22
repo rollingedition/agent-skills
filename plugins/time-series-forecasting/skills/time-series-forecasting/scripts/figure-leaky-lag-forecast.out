@@ -1,0 +1,4 @@
+hours forecast: 72
+correlation of the honest forecast with the actuals: 0.736
+correlation of the leaky forecast with the actuals: 0.918
+figure: figures/leaky-lag-forecast.svg

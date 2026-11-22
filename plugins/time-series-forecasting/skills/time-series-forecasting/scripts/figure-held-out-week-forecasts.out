@@ -1,0 +1,7 @@
+scored hours: 168
+mean load on Dec 25, kWh: 38.40
+mean load on Dec 26, kWh: 45.90
+seasonal naive mean on Dec 26, kWh: 38.40
+AutoETS mean on Dec 25, kWh: 45.97
+AutoETS mean on Dec 26, kWh: 34.69
+figure: figures/held-out-week-forecasts.svg

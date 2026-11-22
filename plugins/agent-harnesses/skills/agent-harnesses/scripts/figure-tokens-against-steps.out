@@ -1,0 +1,12 @@
+runs drawn: 20
+runs above the dashed line: 20 of 20
+lowest prompt total, step-capped runs: 33951
+highest prompt total, other runs: 33630
+step-capped runs: 7
+step cap, in steps: 16
+mean first-step prompt, in tokens: 1044
+step-capped share of steps: 50.9%
+step-capped share of prompt tokens: 58.6%
+prompt tokens per step, step-capped runs: 2998
+prompt tokens per step, other runs: 2192
+figure: figures/tokens-against-steps.svg

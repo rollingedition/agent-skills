@@ -1,0 +1,3 @@
+lowest supported answer, average probability per token: 0.440
+highest made-up answer, average probability per token: 0.654
+figure: figures/confidence-overlap.svg

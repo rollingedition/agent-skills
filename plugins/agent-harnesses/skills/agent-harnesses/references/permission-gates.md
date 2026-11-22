@@ -3,13 +3,13 @@ title: "Agent Harnesses"
 chapter: "Gate the tools that change things"
 chapter_id: permission-gates
 book: agent-harnesses
-edition: 2026.11.6
+edition: 2026.11.7
 verified: 2026-11-22
-edition_code: 3KM9-2NP7
+edition_code: YNMR-JA84
 canonical: https://rollingedition.com/agent-harnesses/permission-gates
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“Gate the tools that change things,” chapter 6 of Agent Harnesses, Edition 2026.11.6, examples passed Nov 22, 2026. By Rolling Edition, https://rollingedition.com/agent-harnesses/permission-gates. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Gate the tools that change things,” chapter 6 of Agent Harnesses, Edition 2026.11.7, examples passed Nov 22, 2026. By Rolling Edition, https://rollingedition.com/agent-harnesses/permission-gates. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Gate the tools that change things
 
@@ -31,7 +31,7 @@ The library changes in one place. `apply` in `lib/permissions.py` writes new byt
 
 A write can also fail partway through an apply. The next example gives a proposal of two files, and puts a folder where the second file goes, so the second write fails.
 
-Example `apply-all-or-nothing` (Python 3.12.15 · pydantic 2.14.4), passing in Edition 2026.11.6:
+Example `apply-all-or-nothing` (Python 3.12.15 · numpy 2.5.5 · pydantic 2.14.4), passing in Edition 2026.11.7:
 
 ```python
 """A proposal of two files where the second cannot be written, because a folder stands where it goes. The first file
@@ -87,13 +87,13 @@ Most of what the agent does changes nothing the maintainer owns. It lists files,
 
 The gate wraps every tool in the set, and each tool's class comes from one table in `lib/permissions.py`. The reads (`list_files`, `read_file`, `run_tests` and `ask_user`) pass through, and the library guard watches each of them. `run_tests` is in the read class, but it runs code the model wrote, as [the copy section](#copy-first) says. Edits and writes (`edit_file` and `write_file`) run in the copy, and the gate counts each call. `finish` is a proposal. Its class comes from the harness's table and from nothing the model wrote, so neither the model's summary nor a tool's own description sets it. The names, descriptions and schemas that go to the model are the same with or without the gate, so a request made through the gated tools is the same request as one made without them.
 
-A proposal is the copy's whole diff against the library, not the summary the model wrote. `pending` lists each file whose bytes differ, and `diff_text` writes one header per file followed by its unified diff. The proposal's identity is a hash of the changed bytes, described in [the binding section](#bound-approval). The approver receives the proposal's ID, the summary, the list of changed files, the diff text as shown and the hash. It answers with a yes or a no, a reason, and the ID and hash it is answering. The summary is shown as the model's claim about the change, and the gate does not treat it as evidence. If the copy holds no change, `finish` passes through with its own result, so a run that changed nothing is not asked anything. Otherwise the approver is called inside the tool call, and the run waits for the answer. When the gate is enforcing, the finish tool's own body runs only after a yes.
+A proposal is the copy's whole diff against the library, not the summary the model wrote. `pending` lists each file whose bytes differ, and `diff_text` writes one header per file followed by its unified diff. The proposal's identity is a hash of each changed file's path and its old and new bytes, described in [the binding section](#bound-approval). The approver receives the proposal's ID, the summary, the list of changed files, the diff text as shown and the hash. It answers with a yes or a no, a reason, and the ID and hash it is answering. The summary is shown as the model's claim about the change, and the gate does not treat it as evidence. If the copy holds no change, `finish` passes through with its own result, so a run that changed nothing is not asked anything. Otherwise the approver is called inside the tool call, and the run waits for the answer. When the gate is enforcing, the finish tool's own body runs only after a yes.
 
 [OWASP's guidance on excessive agency](https://genai.owasp.org/llmrisk/llm062025-excessive-agency/) asks for a person to approve high-impact actions before they are taken, and for an agent to have only the tools it needs. That is guidance, not a measurement, and this chapter treats it as the reason for the design and not as proof that the design works.
 
 The [task set](#stop-rules) is 20 tasks on the case, most of them scored by a hidden check ([the task set](#task-set) covers all of them). Its runs were recorded with tool set v1 and no gate, from Qwen3-4B-Instruct-2507, the model that [chapter 1](#replayed-run) replays. A gate leaves each request unchanged, so a replay through it sends the same requests and gets the same recorded replies. Start with the path that should work: the recorded T-04 run, replayed, with a person who answers yes.
 
-Example `gate-applies-only-on-yes` (Python 3.12.15 · pydantic 2.14.4), passing in Edition 2026.11.6:
+Example `gate-applies-only-on-yes` (Python 3.12.15 · numpy 2.5.5 · pydantic 2.14.4), passing in Edition 2026.11.7:
 
 ```python
 """The recorded T-04 run (add the inch) with the gate and a scripted yes: its one changed file reaches the library, and
@@ -151,7 +151,7 @@ The second half of the example checks two yeses that cannot apply. In the first,
 
 The finish tool's body is part of the same rule.
 
-Example `finish-body-waits-for-yes` (Python 3.12.15 · pydantic 2.14.4), passing in Edition 2026.11.6:
+Example `finish-body-waits-for-yes` (Python 3.12.15 · numpy 2.5.5 · pydantic 2.14.4), passing in Edition 2026.11.7:
 
 ```python
 """A finish that publishes does its work only after a yes. With a no the body never runs; with a yes it runs once,
@@ -206,11 +206,11 @@ The code gives the run a `finish` that publishes, and replays the same proposal 
 
 A yes is worth something only if it is for the change the person read. The problem shows up as soon as one gate sees more than one proposal, as it does when several runs share a gate. An answer given for one change could be carried over to the next one if nothing ties the two together.
 
-The gate ties them with an identity. Each proposal takes the next ID from a counter on its gate, `p-1`, then `p-2`, and so on, and it carries the SHA-256 hash of the changed bytes. The hash covers the exact bytes of every changed file, in path order, and not only the text the person sees. The answer has to name both. The gate compares the two before it applies anything, and then it hashes the copy again, as [the gate section](#gate-in-finish) describes. [Microsoft's Agent Framework page on tool approval](https://learn.microsoft.com/en-us/agent-framework/agents/tools/tool-approval) describes the same pattern. It says that a local approval response authorizes a tool call only when it matches a pending approval request recorded in the same session, and that the framework ignores an unbound response and logs a warning. Its note on the opt-out says that turning the binding off can let a fabricated or replayed response approve a privileged call.
+The gate ties them with an identity. Each proposal takes the next ID from a counter on its gate, `p-1`, then `p-2`, and so on, and it carries the SHA-256 hash of the changed bytes. The hash covers the path and the exact old and new bytes of every changed file, in path order, and not only the text the person sees. The answer has to name both. The gate compares the two before it applies anything, and then it hashes the copy again, as [the gate section](#gate-in-finish) describes. [Microsoft's Agent Framework page on tool approval](https://learn.microsoft.com/en-us/agent-framework/agents/tools/tool-approval) describes the same pattern. It says that a local approval response authorizes a tool call only when it matches a pending approval request recorded in the same session, and that the framework ignores an unbound response and logs a warning. Its note on the opt-out says that turning the binding off can let a fabricated or replayed response approve a privileged call.
 
 The text a person reads is written out, not raw. `diff_text` writes every character a terminal could act on as a visible escape. A carriage return or an escape sequence therefore shows up as text in the diff, and a file that is not UTF-8 text is shown only by the hash of its bytes.
 
-Example `hidden-diff-lines-shown` (Python 3.12.15 · pydantic 2.14.4), passing in Edition 2026.11.6:
+Example `hidden-diff-lines-shown` (Python 3.12.15 · numpy 2.5.5 · pydantic 2.14.4), passing in Edition 2026.11.7:
 
 ```python
 """Two files whose text would hide a line in a terminal: a carriage return that overwrites the line before it, and an
@@ -256,7 +256,7 @@ applied: 0 refused: 1
 
 The script writes two files whose contents would hide a line in a terminal. One has a carriage return that would overwrite the line before it, and one has an escape that would erase a line. The person sees both lines, escaped. The script prints `2` headers that flag control characters, and `0` raw carriage returns or escapes in the shown text. Its person answers no, so nothing is applied.
 
-Example `answer-binds-bytes` (Python 3.12.15 · pydantic 2.14.4), passing in Edition 2026.11.6:
+Example `answer-binds-bytes` (Python 3.12.15 · numpy 2.5.5 · pydantic 2.14.4), passing in Edition 2026.11.7:
 
 ```python
 """A file that is not UTF-8 text is shown by the hash of its bytes, and the yes binds to those bytes. When the copy's
@@ -298,7 +298,7 @@ The script shows the other half. It adds a file whose bytes are not valid UTF-8,
 
 Two runs can share a gate in one example.
 
-Example `approval-in-transcript` (Python 3.12.15 · pydantic 2.14.4), passing in Edition 2026.11.6:
+Example `approval-in-transcript` (Python 3.12.15 · numpy 2.5.5 · pydantic 2.14.4), passing in Edition 2026.11.7:
 
 ```python
 """Two proposals in one transcript, through one gate: the recorded T-04 run is answered yes and its inch reaches the
@@ -350,9 +350,9 @@ IDs count up within one gate, so two gates both issue `p-1`. That is an open lim
 
 Some changes are not for a person to decide. The case's rules forbid the agent from renaming a public name, and from changing a test, and a yes cannot lift a rule of that kind. Putting the question to a person would move the decision to the wrong place, so the gate refuses these changes before any question is asked.
 
-`assess` computes its reasons from the diff against the library, not from the summary. It refuses five kinds of change. A change under `.github/` is refused. A deleted file under `tests/` is refused. An edit to an existing file under `tests/` is refused. A new file under `tests/` that is not a `test_*.py` module is refused. A removed name is refused: a top-level public name in a `unitcraft/` module that the library defines and the copy no longer does, and a top-level `test_` function that the library has and the copy lacks. A new `test_*.py` module is allowed. The two trees are compared name by name, so a rename shows up as a removed name. The model's words cannot change the result, because the reasons are computed from the files.
+`assess` computes its reasons from the diff against the library, not from the summary, and a change that has a reason is held as never: the gate refuses it before any question is asked. It refuses five kinds of change. A change under `.github/` is refused. A deleted file under `tests/` is refused. An edit to an existing file under `tests/` is refused. A new file under `tests/` that is not a `test_*.py` module is refused. A removed name is refused: a top-level public name in a `unitcraft/` module that the library defines and the copy no longer does, and a top-level `test_` function that the library has and the copy lacks. A new `test_*.py` module is allowed. The two trees are compared name by name, so a rename shows up as a removed name. The model's words cannot change the result, because the reasons are computed from the files.
 
-Example `never-class-refused` (Python 3.12.15 · pydantic 2.14.4), passing in Edition 2026.11.6:
+Example `never-class-refused` (Python 3.12.15 · numpy 2.5.5 · pydantic 2.14.4), passing in Edition 2026.11.7:
 
 ```python
 """A rename of a public name and the removal of a test, each an edit that succeeds on the copy, with a summary that
@@ -392,7 +392,7 @@ Two edits go into the copy in this example: a rename of a public function, and a
 
 The run ends as `ask_user`, and the handoff gives the reasons in full: `p-1 was not applied: the harness refuses it: changes the test file tests/test_parse.py; removes public name parse_quantity; removes test test_parses_negative_value`. An assertion holds that the approver was never asked, so the gate put no question to anyone.
 
-Example `gutted-test-refused` (Python 3.12.15 · pydantic 2.14.4), passing in Edition 2026.11.6:
+Example `gutted-test-refused` (Python 3.12.15 · numpy 2.5.5 · pydantic 2.14.4), passing in Edition 2026.11.7:
 
 ```python
 """An edit that keeps an existing test's name and removes its assertion is a change to a test file, and the harness
@@ -438,7 +438,7 @@ A no is an answer the run has to act on. If the harness dropped it, the change w
 
 A refusal is a tool result, so it takes room in the context like any other result, and chapter 5 counts it there ([the window the model has](#window)). [Microsoft's Agent Framework page](https://learn.microsoft.com/en-us/agent-framework/agents/tools/tool-approval) includes a Go sample that returns denials as well as approvals, so the model can respond to the person's decision.
 
-Example `refusal-handed-back` (Python 3.12.15 · pydantic 2.14.4), passing in Edition 2026.11.6:
+Example `refusal-handed-back` (Python 3.12.15 · numpy 2.5.5 · pydantic 2.14.4), passing in Edition 2026.11.7:
 
 ```python
 """The recorded T-04 run with the gate and a scripted no. The refusal is the step's tool result, the run ends as a
@@ -483,7 +483,7 @@ The [same replay of T-04](#gate-in-finish) runs again, this time with a no and a
 
 The gate checks what reaches the library through `finish`. Something else can change the library: the code that `run_tests` runs. So the gate wraps each tool in a guard that compares the library's bytes before and after the call. If the bytes moved, and the gate did not apply the change itself, the run ends as `library_changed`, and the handoff names the files. That is the seventh way a run can end: [chapter 2](#stop-rules) gives six from the loop, and the guard adds this one. Nothing is restored, and nothing else runs against the changed library.
 
-Example `library-guard-fails-closed` (Python 3.12.15 · pydantic 2.14.4), passing in Edition 2026.11.6:
+Example `library-guard-fails-closed` (Python 3.12.15 · numpy 2.5.5 · pydantic 2.14.4), passing in Edition 2026.11.7:
 
 ```python
 """A test module written into the copy makes run_tests write the library. The guard sees the library's bytes change
@@ -521,9 +521,9 @@ The script writes a test module into the copy. When the test run imports it, the
 
 A tool's call is checked in a second way, by name.
 
-The table in `lib/permissions.py` is the only source of a tool's class, and a tool outside it is classed `never`. The gate refuses that call before the tool's own code runs, and the refusal goes back to the model as text. The tool's description does not matter here: a description that says a tool only reads is a claim, and the table decides.
+The class tables the harness owns, the one in `lib/permissions.py` and any table the harness passes to the gate, are the only source of a tool's class, and a tool outside them is classed `never`. The gate refuses that call before the tool's own code runs, and the refusal goes back to the model as text. The tool's description does not matter here: a description that says a tool only reads is a claim, and the table decides.
 
-Example `unknown-tool-refused` (Python 3.12.15 · pydantic 2.14.4), passing in Edition 2026.11.6:
+Example `unknown-tool-refused` (Python 3.12.15 · numpy 2.5.5 · pydantic 2.14.4), passing in Edition 2026.11.7:
 
 ```python
 """A tool outside the harness's table is refused before its own code runs, even when its description says it only
@@ -578,7 +578,7 @@ This gate has no allow list. Every tool in the set goes through the wrapper, whi
 
 So far, every example has followed a single run. The question for the case is what the gate does across every recorded run, including the runs that should not change anything.
 
-Example `gate-over-task-set` (Python 3.12.15 · pydantic 2.14.4), passing in Edition 2026.11.6:
+Example `gate-over-task-set` (Python 3.12.15 · numpy 2.5.5 · pydantic 2.14.4), passing in Edition 2026.11.7:
 
 ```python
 """The 20 recorded task-set runs replayed with the gate observing, each matching its recorded ending and step count, and

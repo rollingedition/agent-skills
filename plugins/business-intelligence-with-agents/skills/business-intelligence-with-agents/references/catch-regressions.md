@@ -3,13 +3,13 @@ title: "Business Intelligence with Agents"
 chapter: "Judge answers and catch regressions"
 chapter_id: catch-regressions
 book: business-intelligence-with-agents
-edition: 2026.11.16
-verified: 2026-11-19
-edition_code: CSAB-T5TX
+edition: 2026.11.17
+verified: 2026-11-22
+edition_code: 6VBD-766G
 canonical: https://rollingedition.com/business-intelligence-with-agents/catch-regressions
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“Judge answers and catch regressions,” chapter 10 of Business Intelligence with Agents, Edition 2026.11.16, examples passed Nov 19, 2026. By Rolling Edition, https://rollingedition.com/business-intelligence-with-agents/catch-regressions. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Judge answers and catch regressions,” chapter 10 of Business Intelligence with Agents, Edition 2026.11.17, examples passed Nov 22, 2026. By Rolling Edition, https://rollingedition.com/business-intelligence-with-agents/catch-regressions. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Judge answers and catch regressions
 
@@ -35,7 +35,7 @@ interval = centre − half  to  centre + half
 
 The test split is held out, and the book scores it only for a number it reports. Chapters 3 and 6 recorded their agents on test once. This chapter recorded the declining agent on test once, in the recording `decline-runs-test`, with chapter 8's prompt unchanged, and changed nothing after it. These are the book's final test numbers for its agents.
 
-Example `scorecard` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.16:
+Example `scorecard` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.17:
 
 ```python
 """Score the book's agents on more than accuracy, on dev to compare them and on the held-out test split once.
@@ -145,6 +145,69 @@ On test, the declining prompt fixed no question and broke one, `gq-043`, "What w
 
 Its wrong numbers fell from 5 to 4, because one wrong answer became a run that hit the step limit, not a right one. The intervals of the two agents overlap almost entirely on both splits. Two totals with overlapping intervals can't tell you whether a change helped, which is why [the gate](#gate-a-change) compares the same questions in pairs.
 
+On dev, schema-only SQL's interval lies wholly below both metric agents': it ends at 0.29, and theirs begin at 0.50. Metrics-first's and declining's intervals are the same on dev. Figure 10.1 sets the three agents' intervals side by side on each split.
+
+*Figure 10.1. Each agent's accuracy on each split, with its 95% interval.*
+
+![On dev, schema-only SQL's interval lies wholly below both metric agents', whose intervals are the same](https://rollingedition.ai/books/business-intelligence-with-agents/2026.11.17/figures/accuracy-intervals.svg)
+
+Example `figure-accuracy-intervals` (Python 3.12.15 · duckdb 2.0.0 · matplotlib 3.11.2 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.17:
+
+```python
+"""Draw each agent's accuracy on each split with its 95% Wilson interval, scored as scorecard.py scores it.
+The prose rests on the printed bounds and on the yes or no lines: on dev, schema-only SQL's interval is clear of both metric
+agents', and metrics-first's and declining's dev intervals are equal."""
+import lib  # noqa: F401  (first, so threads and seeds are fixed before any numerical library loads)
+from lib.figures import INK, MUTED, new_figure, save
+from lib.golden import load_golden
+from lib.regressions import Scorecard, replay
+from lib.semantic import load
+from lib.warehouse import connect
+
+con, layer = connect(), load()
+AGENTS, SPLITS = ("schema-only", "metrics-first", "declining"), ("dev", "test")
+cards = {}                                    # (accuracy, low, high) per split and agent
+for split in SPLITS:
+    in_split = [q for q in load_golden() if q.split == split and q.kind in ("answer", "decline")]  # as scorecard.py selects them
+    for agent in AGENTS:
+        card = Scorecard(replay(con, layer, agent, in_split))
+        cards[split, agent] = (card.accuracy, *card.interval)              # the Wilson interval, at about 95%
+d_s, d_m, d_d = cards["dev", "schema-only"], cards["dev", "metrics-first"], cards["dev", "declining"]
+print(f"dev schema-only interval high: {d_s[2]:.2f}")
+print(f"dev metrics-first interval low: {d_m[1]:.2f}")
+checks = {  # each claim the prose makes, printed as a word and asserted
+    "dev schema-only interval clear of metrics-first": d_s[2] < d_m[1],
+    "dev schema-only interval clear of declining": d_s[2] < d_d[1],
+    "dev metrics-first and declining intervals equal": d_m[1:] == d_d[1:],
+}
+for name, ok in checks.items():
+    print(f"{name}: {'yes' if ok else 'no'}")
+    assert ok, name
+
+fig, ax = new_figure(height=3.2)
+for y, agent in zip(range(len(AGENTS))[::-1], AGENTS):    # the first agent is drawn at the top
+    for split, offset in (("dev", 0.15), ("test", -0.15)):    # dev above the row, test below, so the bars stay apart
+        accuracy, lo, hi = cards[split, agent]
+        ax.errorbar(accuracy, y + offset, xerr=[[accuracy - lo], [hi - accuracy]], fmt="o" if split == "dev" else "s",
+                    color=INK if split == "dev" else MUTED, markersize=6, capsize=3, elinewidth=1.4,
+                    label=f"{split} split" if agent == AGENTS[0] else None)   # one legend entry per split
+ax.set_yticks(range(len(AGENTS))[::-1], ["schema-only SQL", "metrics-first", "declining"])
+ax.set(ylim=(-0.5, len(AGENTS) - 0.5), xlim=(0, 1), xlabel="accuracy on the split's questions, with its 95% interval")
+ax.legend(loc="lower left", bbox_to_anchor=(0, 1.02), ncol=2)
+save(fig, "accuracy-intervals")
+```
+
+Output:
+
+```text
+dev schema-only interval high: 0.29
+dev metrics-first interval low: 0.50
+dev schema-only interval clear of metrics-first: yes
+dev schema-only interval clear of declining: yes
+dev metrics-first and declining intervals equal: yes
+figure: figures/accuracy-intervals.svg
+```
+
 **Working rule:** Report every run as a scorecard: correct with a Wilson interval, wrong numbers, declines and their recall and precision, failures by kind, and calls and tokens per question. Compare agents on the same questions in the same table. Score the test split once, when you report a final number, and say that you did; when two agents' intervals overlap, don't call either better from the totals.
 
 ## Judge only what can't be compared {#judge-what-cannot-be-compared}
@@ -153,7 +216,7 @@ Its wrong numbers fell from 5 to 4, because one wrong answer became a run that h
 
 So use a judge only where a result can't be compared directly, and design each call so that a bias would show. The shop's judge is the book's own model, the same one the agent uses, called with a separate prompt, `JUDGE_PAIR` in `lib/prompts.py`. It sees a question and two reasons for declining it, labelled A and B, and names the better one, or a tie, as JSON. The rubric asks for a reason that says accurately why the shop's data can't answer and what the person could ask instead. The cases are every golden question, on either split, that both chapter 6's metrics-first agent and chapter 8's declining agent declined: 8 pairs. Only 3 of them, `gq-021`, `gq-042` and `gq-045`, are decline questions. The other 5, `gq-032`, `gq-033`, `gq-034`, `gq-037` and `gq-041`, are answer questions the warehouse can answer, the [gaps in the layer](#measure-metrics-first) chapter 6 found, and both agents declined them wrongly. On those, the right reply was a number, so the judge compares two wrong declines. Each pair is judged twice, once with each agent's reason first, so a verdict that follows the position rather than the text changes with the order. `parse_verdict()` in `lib/judge.py` reads each reply, and the recording `judge-verdicts` holds every call.
 
-Example `judge-an-explanation` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.16:
+Example `judge-an-explanation` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.17:
 
 ```python
 """Judge only what can't be compared: two reasons for declining the same question, shown in both orders.
@@ -261,7 +324,7 @@ kappa, pi    = (p_o − chance) / (1 − chance)
 
 `agreement()` in `lib/judge.py` computes all three; scikit-learn's `cohen_kappa_score` uses the same definition of kappa ([scikit-learn](https://scikit-learn.org/stable/modules/generated/sklearn.metrics.cohen_kappa_score.html)). The prompt, `JUDGE_ANSWER`, gives the judge the shop's glossary, the question, the role, the metric and SQL behind the answer and its result. The cases are every distinct answer with a number that schema-only SQL, the metrics-first agent and the declining agent gave to an answer question, on both splits, from their recordings: 56 in all. The judge prompts were written once, and no verdict changed them. What the judge is shown changed once. Schema-only SQL's query for `gq-009` has no `ORDER BY`, so its rows came back in another order on replay, and the prompt built from them no longer matched its recording. `shown()` in `lib/judge.py` now sorts the rows of any query without `ORDER BY` before the judge sees them. The recording made before that fix was set aside, and every judge call was recorded again from scratch with the fix in place, as the manifest of `judge-verdicts` says. Every reply matched the set-aside recording's, so no number in this chapter moved.
 
-Example `judge-agreement` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.16:
+Example `judge-agreement` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.17:
 
 ```python
 """Calibrate the judge: its verdicts on the book's recorded answers against labels from results_match().
@@ -352,7 +415,7 @@ Every score so far came from one run per question, and a run is a sample. The bo
 
 The recording `repeat-runs` holds the same 12 dev questions run under four more seeds, 1 to 4, for both chapter 6's metrics-first agent and chapter 8's declining agent, with the same prompts, tools, sampling settings and four-call limit as their original recordings. With the original runs, made with seed 2718, each question has five runs per agent. `SeededRecording` in `lib/regressions.py` replays one agent's calls for one seed. The 12 questions are every dev answer or decline question that either agent missed in its original run, and the first five others in ID order, so they are harder than the split's average and their flip rates are an upper end. The recording also runs the declining agent once more with seed 2718 itself, to measure something the book has so far assumed: that a run with the same seed replays byte for byte on this runtime.
 
-Example `seed-variance` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.16:
+Example `seed-variance` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.17:
 
 ```python
 """Five runs of 12 dev questions per agent, one per seed: how much a score moves, and which questions flip.
@@ -432,9 +495,9 @@ We think the steadiness comes from the shop's design. Most of the agent's choice
 
 A CI job that scores every change on the golden questions turns the measurements so far into a decision: merge or don't. [The scorecard](#score-a-run) showed why it can't rest on totals: the declining prompt left dev accuracy unchanged. Miller recommends "conducting statistical inference on the question-level paired differences" ([Miller](https://arxiv.org/abs/2411.00640)): score both configurations on the same questions and test the mean of the per-question differences. Pairing removes the variation between questions, which is far larger than a change's.
 
-`Comparison` in `lib/regressions.py` takes, for each question, the share of runs correct under the base and under the candidate, and their difference. It reports the mean paired difference with a t interval, the standard error times Student's t for one fewer degrees of freedom than questions, counts the questions fixed and broken, and runs an exact sign test on the questions that changed. Miller's errors assume many questions; on 12, mostly unchanged, the t interval is a rough guide, and only the sign test assumes nothing. `gate()` applies two rules of our choosing: it fails on a stable break, a question the base got right in at least four runs of five and the candidate in at most one, and when the whole interval of the mean difference lies below zero. The first catches one regression an average would hide; the second, many small ones. We gate chapter 8's prompt against chapter 6's, with one run per question and then with five, on the 12 questions of [`repeat-runs`](#repeat-to-see-variance), which over-represent misses, so the gate's numbers describe them, not the dev split.
+`Comparison` in `lib/regressions.py` takes, for each question, the share of runs correct under the base and under the candidate, and their difference. It reports the mean paired difference with a t interval, the mean plus and minus the standard error times Student's t for one fewer degrees of freedom than questions, counts the questions fixed and broken, and runs an exact sign test on the questions that changed. Miller's errors assume many questions; on 12, mostly unchanged, the t interval is a rough guide, and only the sign test assumes nothing. `gate()` applies two rules of our choosing: it fails on a stable break, a question the base got right in at least four runs of five and the candidate in at most one, or when the whole interval of the mean difference lies below zero. The first catches one regression an average would hide; the second, many small ones. We gate chapter 8's prompt against chapter 6's, with one run per question and then with five, on the 12 questions of [`repeat-runs`](#repeat-to-see-variance), which over-represent misses, so the gate's numbers describe them, not the dev split.
 
-Example `regression-gate` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.16:
+Example `regression-gate` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.17:
 
 ```python
 """Gate a prompt change on paired, per-question differences over five recorded runs of each question.
@@ -529,7 +592,7 @@ The warehouse changes under the agent too: a column renamed upstream, a table re
 
 This run applies one migration an upstream team might ship, renaming `analytics.fct_orders.net_revenue_eur` to `net_revenue_ex_tax_eur`, to a new copy of the shop's warehouse, built by `migrated()` in `lib/regressions.py`. `schema_checks()` runs the three checks. Then the code makes the fix, one line in the metric's `expr`, in a copy of the semantic layer's YAML, and runs the checks again.
 
-Example `renamed-column-caught` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.16:
+Example `renamed-column-caught` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.17:
 
 ```python
 """An upstream rename of one column, caught by three checks that need no model, and the one-line fix.

@@ -3,13 +3,13 @@ title: "Open Table Formats"
 chapter: "Move a table between formats and check the copy"
 chapter_id: migrating-formats
 book: open-table-formats
-edition: 2026.11.12
+edition: 2026.11.13
 verified: 2026-11-22
-edition_code: CYAZ-TM3D
+edition_code: FWS1-2ZKC
 canonical: https://rollingedition.com/open-table-formats/migrating-formats
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“Move a table between formats and check the copy,” chapter 9 of Open Table Formats, Edition 2026.11.12, examples passed Nov 22, 2026. By Rolling Edition, https://rollingedition.com/open-table-formats/migrating-formats. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Move a table between formats and check the copy,” chapter 9 of Open Table Formats, Edition 2026.11.13, examples passed Nov 22, 2026. By Rolling Edition, https://rollingedition.com/open-table-formats/migrating-formats. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Move a table between formats and check the copy
 
@@ -21,7 +21,7 @@ The examples in this chapter pin 0.12.0 for pyiceberg, 1.6.6 for deltalake and 2
 
 ## What a copy keeps and loses {#what-a-copy-keeps-and-loses}
 
-A copy reads the rows of one table at one moment and writes them into another table, in another format. Each target library writes its own data files, its own metadata and its own history. What survives the trip is what both sides can represent: the rows, and the columns whose types both sides support. Everything else stays with the source, or has to be set again on the target by hand.
+A copy reads the rows of one table at one moment and writes them into another table, here in another format. Each target library writes its own data files, its own metadata and its own history. What survives the trip is what both sides can represent: the rows, and the columns whose types both sides support. Everything else stays with the source, or has to be set again on the target by hand.
 
 The losses are easiest to see as a table. Each row names a part of the table, what the copy does with it, and where this chapter shows the result.
 
@@ -35,7 +35,7 @@ The losses are easiest to see as a table. Each row names a part of the table, wh
 
 The history is a loss that readers often do not notice. Iceberg records changes as snapshots, and Delta Lake records each commit as a version. The chapter on [snapshots and time travel](#read-an-earlier-snapshot) showed how a reader uses them. A copy starts a new history in the target, so the target's history begins at the copy. The source keeps its own history for as long as you keep the source. Nothing in the copy refers back to it.
 
-A copy is also different from registration. A [registered metadata file](#register-from-metadata-file) makes a table visible in a second catalog without touching its files, so both catalogs read the same data. A copy writes new files and leaves the source alone, which means two tables now take writes and can drift apart. Choose a copy when the target must own its files and its history. Choose registration when the two catalogs should share one set of files, and accept that the shared files must stay put.
+A copy is also different from registration. A [registered metadata file](#register-from-metadata-file) makes a table visible in a second catalog without touching its files, so both catalogs read the same data until the first commit through either one. After that commit the two names are two tables that share only the files the registered metadata listed. A copy writes new files and leaves the source alone, so the two tables share no files at all. Choose a copy when the target must own its files and its history. Choose registration only for a read you will remove afterwards, because the names become two tables at the first commit, and accept that the files they share must stay put.
 
 The rows survive because the copy moves values, not files. A copy does not move data files. It reads values out of one table and writes new Parquet files for the other. That is why file names and file counts differ between a source and its copy, and why comparing file names or file counts can't check the copy. The check has to compare the rows.
 
@@ -47,7 +47,7 @@ The copy reads the Iceberg table with `scan_arrow`, then gives those rows to Duc
 
 The source is partitioned by the hour of `hour_utc`, which is the layout that [moving from daily to hourly partitions](#daily-to-hourly-partitions) arrives at. Here pyiceberg builds that source with the hourly spec, then appends three hours, one commit each:
 
-Example `iceberg-to-ducklake-copy` (Python 3.12.15 · deltalake 1.6.6 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.12:
+Example `iceberg-to-ducklake-copy` (Python 3.12.15 · deltalake 1.6.6 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.13:
 
 ```python
 """Copy an Iceberg table into DuckLake through Arrow, then print what the copy kept of the layout and the history.
@@ -139,7 +139,7 @@ The attach helper also sets `DATA_INLINING_ROW_LIMIT` to 0, so the copied rows a
 
 The Delta source is built the way a team's pipeline would build it: three appends with deltalake, one per hour. The three appends are versions 0, 1 and 2. The copy reads the current rows with `read_delta` and appends them to an Iceberg table made with the target schema:
 
-Example `delta-to-iceberg-copy` (Python 3.12.15 · deltalake 1.6.6 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.12:
+Example `delta-to-iceberg-copy` (Python 3.12.15 · deltalake 1.6.6 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.13:
 
 ```python
 """Copy a Delta Lake table into Iceberg through Arrow, then compare the copy with its source.
@@ -226,7 +226,7 @@ pyiceberg is strict about names. It checks the Arrow schema against the table's 
 
 Timestamps are a place where the formats disagree, sometimes silently. The Iceberg specification defines nanosecond timestamps as a version 3 type, so a version 2 table has no type for them ([the Iceberg specification](https://iceberg.apache.org/spec/), version 3 section). The example's table is version 2, the default. At this pin, pyiceberg refuses to write version 3, so the nanosecond values can only be kept by a format other than Iceberg. This example writes two values that differ only below a microsecond, 1000000500 and 1000000999 nanoseconds, to each format:
 
-Example `timestamp-precision-check` (Python 3.12.15 · deltalake 1.6.6 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.12:
+Example `timestamp-precision-check` (Python 3.12.15 · deltalake 1.6.6 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.13:
 
 ```python
 """Write two timestamps that differ only below a microsecond to Iceberg, Delta Lake and DuckLake, and show what each kept.
@@ -306,7 +306,7 @@ The pageviews table records hours, so the case never reaches the problem. A tabl
 
 A matching row count does not prove that the values match. A copy can keep the count and change one value, and the count will not show it. A digest does. The digest of a table is a hash of its sorted rows: `digest_rows` sorts the rows, writes each one out as a line of text and hashes the result. The sort makes the digest independent of the order in which the rows come back, so two copies with the same rows get the same digest, however each format returns them. `digest_rows` runs on both copies, and on a copy with one view count changed on purpose:
 
-Example `verify-copies-by-digest` (Python 3.12.15 · deltalake 1.6.6 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.12:
+Example `verify-copies-by-digest` (Python 3.12.15 · deltalake 1.6.6 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.13:
 
 ```python
 """Check each copy against its source with a sorted digest, and show that one changed value fails it.

@@ -3,13 +3,13 @@ title: "Time Series Forecasting"
 chapter: "Forecast many clients with one model"
 chapter_id: forecast-many-clients-at-once
 book: time-series-forecasting
-edition: 2026.11.15
+edition: 2026.11.16
 verified: 2026-11-22
-edition_code: 4ZZQ-AHZZ
+edition_code: W6DN-S05M
 canonical: https://rollingedition.com/time-series-forecasting/forecast-many-clients-at-once
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“Forecast many clients with one model,” chapter 6 of Time Series Forecasting, Edition 2026.11.15, examples passed Nov 22, 2026. By Rolling Edition, https://rollingedition.com/time-series-forecasting/forecast-many-clients-at-once. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Forecast many clients with one model,” chapter 6 of Time Series Forecasting, Edition 2026.11.16, examples passed Nov 22, 2026. By Rolling Edition, https://rollingedition.com/time-series-forecasting/forecast-many-clients-at-once. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Forecast many clients with one model
 
@@ -43,7 +43,7 @@ The rule for keeping an identifier is the one [Chapter 5](#measure-what-each-fea
 
 Before the identifier goes into the model, test it on windows the reported scores never touch. The check fits the model twice on each decision cutoff, with and without the identifier, and refuses to start if a scored hour is a holiday or in the held-out week.
 
-Example `client-identifier-check` (Python 3.13.16 · holidays 0.110.dev20261119150447 · lightgbm 4.7.0 · mlforecast 1.1.0 · numpy 2.5.5 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.15:
+Example `client-identifier-check` (Python 3.13.16 · holidays 0.110.dev20261119150447 · lightgbm 4.7.0 · mlforecast 1.1.0 · numpy 2.5.5 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.16:
 
 ```python
 """Tests whether a client identifier lowers the global model's error on four ordinary decision windows, before the
@@ -133,7 +133,7 @@ The rule refuses a cutoff in two cases only: a client has no non-zero reading be
 
 The leak check asks whether the rule reads only the past and refuses the right cutoffs. It runs nine cutoffs, refused or not, and poisons each from the cutoff on, once with zeros and once with a value no meter could record. The history must not change, and every accepted cutoff must hold all thirty clients.
 
-Example `start-rule-leak-check` (Python 3.13.16 · holidays 0.110.dev20261119150447 · lightgbm 4.7.0 · mlforecast 1.1.0 · numpy 2.5.5 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.15:
+Example `start-rule-leak-check` (Python 3.13.16 · holidays 0.110.dev20261119150447 · lightgbm 4.7.0 · mlforecast 1.1.0 · numpy 2.5.5 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.16:
 
 ```python
 """Checks that the start rule reads only rows before each cutoff, refuses the cutoffs the data's flag predicts, and
@@ -200,7 +200,7 @@ The same checks run on a deliberately broken version, which reads each first rea
 
 The model runs with the start rule and without it, on the standard cutoffs and then the February cutoffs. The counts that differ, and each run's error, show what the rule does.
 
-Example `global-model-raw-starts` (Python 3.13.16 · holidays 0.110.dev20261119150447 · lightgbm 4.7.0 · mlforecast 1.1.0 · numpy 2.5.5 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.15:
+Example `global-model-raw-starts` (Python 3.13.16 · holidays 0.110.dev20261119150447 · lightgbm 4.7.0 · mlforecast 1.1.0 · numpy 2.5.5 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.16:
 
 ```python
 """Runs the global model with the start rule and without it, on the February cutoffs, where a late starter's zeros enter
@@ -321,7 +321,7 @@ On the standard cutoffs the same forecasts score a mean MASE of 1.01 with the sc
 
 The score below sets the global model beside seasonal naive on the three standard cutoffs.
 
-Example `global-model-thirty-clients` (Python 3.13.16 · holidays 0.110.dev20261119150447 · lightgbm 4.7.0 · mlforecast 1.1.0 · numpy 2.5.5 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.15:
+Example `global-model-thirty-clients` (Python 3.13.16 · holidays 0.110.dev20261119150447 · lightgbm 4.7.0 · mlforecast 1.1.0 · numpy 2.5.5 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.16:
 
 ```python
 """Scores one global LightGBM model, with the identifier that client-identifier-check kept, against seasonal naive on the
@@ -395,6 +395,78 @@ The example scores 30 clients on 3 windows, 2160 scored hours, and it counts 0 c
 The count is only as good as its rule. At a cutoff of Dec 15, 2013, 2 clients have no reading yet, and counting any row before the cutoff would give 30, which reports no gap.
 
 One global model beats seasonal naive on these cutoffs, for most clients and in total: its mean per-client MASE is 0.91 against 1.18, and it wins for 23 of the thirty clients. It loses for MT_001, MT_128, MT_141, MT_179, MT_217, MT_268, MT_294, and those clients are the first place to look when the model is refreshed.
+
+Figure 6.1 plots each client's MASE under seasonal naive across the bottom and under the global model up the side, on the same three cutoffs. A client above the dashed equal line is one where seasonal naive wins, and each of those is labelled. Most of seasonal naive's wins are narrow: 4 of its 7 are by less than 0.10 MASE.
+
+*Figure 6.1. Each client's MASE under seasonal naive and under the global model.*
+
+![Most clients sit below the equal line, where the global model has the lower MASE, and the labelled clients sit above it, where seasonal naive wins](https://rollingedition.ai/books/time-series-forecasting/2026.11.16/figures/client-mase-global-vs-naive.svg)
+
+Example `figure-client-mase-global-vs-naive` (Python 3.13.16 · holidays 0.110.dev20261119150447 · lightgbm 4.7.0 · matplotlib 3.11.2 · mlforecast 1.1.0 · numpy 2.5.5 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.16:
+
+```python
+"""Draw each client's MASE under seasonal naive against the global model's, on the three standard cutoffs, with the equal line.
+Clients above the line are the ones seasonal naive wins; they are labelled. The forecasts and scale are global-model-thirty-clients's."""
+import pandas as pd
+from statsforecast import StatsForecast
+from statsforecast.models import SeasonalNaive
+
+from lib.backtest import forecast_windows
+from lib.baselines import SEASON
+from lib.electricity import load
+from lib.figures import ACCENT, INK, MUTED, new_figure, save
+from lib.panel import ALL30, IDENTIFIER_KEPT, panel_windows
+from lib.quirks import mask_clock_changes
+from lib.scoring import actual_hours, book_scale, score_windows
+from lib.settings import EVAL_CUTOFFS, show
+
+NARROW = 0.1                                                    # a seasonal naive win by less than this is narrow
+df = mask_clock_changes(raw := load(ALL30))[["unique_id", "ds", "y"]]          # clock-change hours masked, as in global-model-thirty-clients
+cutoffs = pd.to_datetime(EVAL_CUTOFFS)
+naive = forecast_windows(StatsForecast(models=[SeasonalNaive(season_length=SEASON)], freq="h", n_jobs=1), df, cutoffs)
+forecasts = naive.merge(panel_windows(df, cutoffs, client_id=IDENTIFIER_KEPT), on=["unique_id", "ds"], validate="one_to_one")
+_, per_client = score_windows(actual_hours(df, cutoffs), forecasts, ["SeasonalNaive", "global"], book_scale(raw, cutoffs[0]))
+
+wins = per_client["global"] < per_client["SeasonalNaive"]       # the strict test global-model-thirty-clients uses
+margin = (per_client["global"] - per_client["SeasonalNaive"])[~wins]   # how far the global model trails, on seasonal naive's wins
+show("clients where seasonal naive has the lower MASE", len(margin))
+show("margin that counts as narrow, MASE", NARROW)
+show("clients where seasonal naive wins by less than that margin", int((margin < NARROW).sum()))
+show("largest margin where seasonal naive wins, MASE", margin.max())
+show("client with the largest margin", margin.idxmax())
+
+lo, hi = 0, per_client.max().max() * 1.05                       # from zero, so no point sits on an axis limit
+fig, ax = new_figure(height=3.4)
+ax.plot([lo, hi], [lo, hi], color=INK, linestyle="--", linewidth=1.0, label="equal MASE")
+for mask, color, label in ((wins, MUTED, "global model lower"), (~wins, ACCENT, "seasonal naive lower")):
+    ax.scatter(per_client.loc[mask, "SeasonalNaive"], per_client.loc[mask, "global"], s=20, color=color, label=label)
+ax.set(xlim=(lo, hi), ylim=(lo, hi), xlabel="MASE under seasonal naive", ylabel="MASE under the global model")
+
+# each label takes the spot farthest, in axes units, from every point and label already placed
+pos = list(ax.transAxes.inverted().transform(ax.transData.transform(per_client[["SeasonalNaive", "global"]].to_numpy())))
+for uid in margin.index:
+    here = pos[per_client.index.get_loc(uid)]
+    spots = [(here[0] + dx, here[1] + dy) for dx in (0.03, -0.03, 0.07, -0.07) for dy in (0.04, -0.04, 0.09, -0.09)]
+    spot = max([s for s in spots if 0.12 < s[0] < 0.88 and 0.05 < s[1] < 0.95], key=lambda s: min(abs(s[0] - t[0]) + abs(s[1] - t[1]) for t in pos))
+    ax.annotate(uid, xy=tuple(per_client.loc[uid]), xytext=spot, textcoords="axes fraction", color=ACCENT, fontsize=8,
+                ha="left" if spot[0] > here[0] else "right", arrowprops=dict(arrowstyle="-", color=ACCENT, linewidth=0.5))
+    pos.append(spot)
+fig.legend(loc="outside upper left", ncols=3, frameon=False, labelcolor=INK)
+save(fig, "client-mase-global-vs-naive")
+```
+
+Output:
+
+```text
+clients where seasonal naive has the lower MASE: 7
+margin that counts as narrow, MASE: 0.10
+clients where seasonal naive wins by less than that margin: 4
+largest margin where seasonal naive wins, MASE: 0.48
+client with the largest margin: MT_268
+figure: figures/client-mase-global-vs-naive.svg
+```
+
+The widest gap is 0.48 MASE, for MT_268.
 
 The pooled figures point the same way. The MAE is 122.81 kWh against 148.26 kWh, and the RMSE is 678.81 kWh against 780.48.
 

@@ -3,13 +3,13 @@ title: "Time Series Forecasting"
 chapter: "Backtest without looking ahead"
 chapter_id: backtest-without-looking-ahead
 book: time-series-forecasting
-edition: 2026.11.15
+edition: 2026.11.16
 verified: 2026-11-22
-edition_code: 4ZZQ-AHZZ
+edition_code: W6DN-S05M
 canonical: https://rollingedition.com/time-series-forecasting/backtest-without-looking-ahead
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“Backtest without looking ahead,” chapter 3 of Time Series Forecasting, Edition 2026.11.15, examples passed Nov 22, 2026. By Rolling Edition, https://rollingedition.com/time-series-forecasting/backtest-without-looking-ahead. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Backtest without looking ahead,” chapter 3 of Time Series Forecasting, Edition 2026.11.16, examples passed Nov 22, 2026. By Rolling Edition, https://rollingedition.com/time-series-forecasting/backtest-without-looking-ahead. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Backtest without looking ahead
 
@@ -33,7 +33,7 @@ In words, each window's targets are the 24 hours from its cutoff, and its histor
 
 The Sunday sample runs seasonal naive over every Sunday of 2014, from Jan 5 to Dec 28, 2014. The EU puts every clock change on the last Sunday of March and of October ([Directive 2000/84/EC](https://eur-lex.europa.eu/eli/dir/2000/84/oj), Articles 2 and 3), and both changes of 2014, on Mar 30 and Oct 26, are in the sample. The sample uses [`SUBSET8`](#the-case-and-its-data), the book's eight-client subset. Here the year is scored on those eight clients, window by window:
 
-Example `backtest-sundays-2014` (Python 3.13.16 · holidays 0.110.dev20261119150447 · numpy 2.5.5 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.15:
+Example `backtest-sundays-2014` (Python 3.13.16 · holidays 0.110.dev20261119150447 · numpy 2.5.5 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.16:
 
 ```python
 """Seasonal naive over the 52 Sunday cutoffs of 2014, for eight clients, with no clock-change rule: how much history each
@@ -99,17 +99,84 @@ Client `MT_115` has no reading before Jan 14, 2014. Until then the meter reports
 
 The statsforecast library has a function for this loop, `cross_validation`, and it is possible to call it without the window you wanted. At version 2.1.1, the training slice of each window starts at the first reading of the series unless you pass `input_size`. The history then grows from one window to the next, and the eight-week rule is not in force. [Hyndman and Athanasopoulos](https://otexts.com/fpp3/toolbox.html#sec-accuracy) state the principle that the training set consists only of observations before the test set (*Forecasting: Principles and Practice*, 3rd ed., chapter 5). The code behind `cross_validation` decides the length of that set (statsforecast 2.1.1, `statsforecast/core.py`). Its cutoff is the last hour a window trains on, where this chapter's cutoff is the first hour it forecasts, so the two names differ by one hour. This chapter builds each window's history itself, from the cutoff backwards. That gives the same 1,344 hours at every window and makes the rule visible in the code.
 
+Figure 3.1 draws the first four Sunday windows of 2014 on one date axis. In the upper panel the four fixed histories are the same length, 1344 hours each, and each window starts 7 days after the last; the targets are a short bar at the cutoff. In the lower panel the expanding history that `cross_validation` takes when `input_size` is not passed starts at the first reading and holds 8856 hours at the first window and 9360 at the fourth.
+
+*Figure 3.1. Four Sunday windows of 2014: the fixed history and the expanding history.*
+
+![Each window's history is a fixed bar of the same length, while the expanding history starts at the first reading and grows with each cutoff](https://rollingedition.ai/books/time-series-forecasting/2026.11.16/figures/rolling-windows.svg)
+
+Example `figure-rolling-windows` (Python 3.13.16 · matplotlib 3.11.2 · numpy 2.5.5 · pandas 2.3.3 · utilsforecast 0.2.17), passing in Edition 2026.11.16:
+
+```python
+"""Draw the first four Sunday windows of 2014 on one date axis: each fixed 1,344-hour history with its 24 targets, and the
+expanding history that cross_validation takes when input_size is not passed, drawn from the dates alone with no model fitted.
+The lines print the lengths and dates the prose quotes."""
+import matplotlib.dates as mdates
+import pandas as pd
+
+from lib.backtest import history_before
+from lib.electricity import load
+from lib.figures import ACCENT, INK, MUTED, new_figure, save
+from lib.settings import HISTORY_HOURS, HORIZON, LEAD, show
+
+cutoffs = pd.date_range("2014-01-05", periods=4, freq="W-SUN")  # the first four Sunday cutoffs of the sample
+lead = load([LEAD])
+first = lead["ds"].min()
+fixed = [history_before(lead, c) for c in cutoffs]               # raises unless each window holds 1,344 hours
+expanding = [int(((lead["ds"] >= first) & (lead["ds"] < c)).sum()) for c in cutoffs]
+
+show("fixed history hours per window", len(fixed[0]))
+show("step between cutoffs, days", (cutoffs[1] - cutoffs[0]).days)
+show("first reading of the series", f"{first:%b %-d, %Y %H:%M}")
+show("expanding history hours at the first window", expanding[0])
+show("expanding history hours at the last drawn window", expanding[-1])
+
+fig, (top, bottom) = new_figure(rows=2, height=5.4)              # one date axis, shared by both panels, to scale
+rows = [4, 3, 2, 1]                                              # the first window on top
+for y, c in zip(rows, cutoffs):
+    top.barh(y, HISTORY_HOURS / 24, left=mdates.date2num(c - pd.Timedelta(HISTORY_HOURS, unit="h")), height=0.56,
+             color=ACCENT, label="fixed history, 1,344 hours" if y == 4 else None)
+    top.barh(y, HORIZON / 24, left=mdates.date2num(c), height=0.56, color=INK, label="24 targets" if y == 4 else None)
+    bottom.barh(y, (c - first) / pd.Timedelta(1, unit="D"), left=mdates.date2num(first), height=0.56, color=MUTED,
+                label="expanding history, from the first reading" if y == 4 else None)
+    bottom.plot([mdates.date2num(c)] * 2, [y - 0.4, y + 0.4], color=INK, linewidth=2.0,
+                label="cutoff" if y == 4 else None)
+for ax in (top, bottom):
+    ax.set_xlim(mdates.date2num(first - pd.Timedelta(5, unit="D")), mdates.date2num(cutoffs[-1] + pd.Timedelta(3, unit="D")))
+    ax.set_yticks(rows, [f"{c:%b} {c.day}, {c.year}" for c in cutoffs])
+    ax.set_axisbelow(True)                                      # grid behind the bars, so no cutoff mark looks broken
+    ax.set_ylim(0.4, 4.6)
+    ax.xaxis.set_major_locator(mdates.MonthLocator(interval=3))
+    ax.xaxis.set_major_formatter(mdates.DateFormatter("%b %Y"))
+top.set_title("the same eight weeks before each cutoff", loc="left", color=MUTED)
+bottom.set_title("the history that grows, from the first reading", loc="left", color=MUTED)
+handles, labels = [sum(x, []) for x in zip(top.get_legend_handles_labels(), bottom.get_legend_handles_labels())]
+fig.legend(handles, labels, loc="outside upper left", ncols=2, frameon=False, labelcolor=INK)
+save(fig, "rolling-windows")
+```
+
+Output:
+
+```text
+fixed history hours per window: 1344
+step between cutoffs, days: 7
+first reading of the series: Jan 1, 2013 00:00
+expanding history hours at the first window: 8856
+expanding history hours at the last drawn window: 9360
+figure: figures/rolling-windows.svg
+```
+
 **Working rule:** Set the history length explicitly, in hours, and check that it is the same for every window. When a library loops over windows for you, read how it sets the training slice before you trust its output, because its default may be an expanding window rather than the length you chose.
 
 ## Keep the future out of the history {#keep-the-future-out-of-history}
 
-A backtest leaks when a window's model sees a reading from the hours it is asked to forecast. The reading can reach the model in several ways: through the history, through a feature, or through a scale computed from data that includes the target. [Hewamalage, Ackermann and Bergmeir](https://arxiv.org/abs/2203.10716) describe rolling-origin evaluation as prone to exactly this, because the test data of one window becomes training data of the next. In forecasting, they note, the leak is easier to make and harder to avoid than in other machine learning tasks (2022, section 3.4).
+A backtest leaks when a window's model sees a reading from at or after its cutoff. The reading can reach the model in several ways: through the history, through a feature, or through a scale computed from data that includes the target. [Hewamalage, Ackermann and Bergmeir](https://arxiv.org/abs/2203.10716) describe rolling-origin evaluation as prone to exactly this, because the test data of one window becomes training data of the next. In forecasting, they note, the leak is easier to make and harder to avoid than in other machine learning tasks (2022, section 3.4).
 
 One rule closes the history path. Each window's history is the readings whose timestamps fall in the eight weeks before its cutoff, and nothing at or after the cutoff. In the book's code, `history_before` keeps the rows with `ds` from the cutoff minus 1,344 hours up to, but not including, the cutoff. The reading at the cutoff itself belongs to the target day, so the same comparison excludes it. Membership is decided by timestamps, not by row positions, so a missing row cannot shift a window by an hour. `history_before` also raises an error unless every client has exactly 1,344 rows in the window.
 
 The window's own first hour is the cutoff, so a cut that is one hour too generous passes the first target reading into the history, and nothing in a forecast shows it. A row count can catch it, and the example below counts the rows.
 
-Example `history-cut-check` (Python 3.13.16 · numpy 2.5.5 · pandas 2.3.3 · utilsforecast 0.2.17), passing in Edition 2026.11.15:
+Example `history-cut-check` (Python 3.13.16 · numpy 2.5.5 · pandas 2.3.3 · utilsforecast 0.2.17), passing in Edition 2026.11.16:
 
 ```python
 """One window's history, cut by its cutoff: its first and last timestamps, and what a cut that keeps the cutoff hour adds.
@@ -128,7 +195,7 @@ show("history rows", len(hist))
 show("first history timestamp", hist["ds"].min().strftime("%Y-%m-%d %H:%M"))
 show("last history timestamp", hist["ds"].max().strftime("%Y-%m-%d %H:%M"))
 
-wrong = df[(df["ds"] >= cutoff - pd.Timedelta(hours=HISTORY_HOURS)) & (df["ds"] <= cutoff)]  # the off-by-one cut: <= keeps the cutoff hour
+wrong = df[(df["ds"] >= cutoff - pd.Timedelta(HISTORY_HOURS, unit="h")) & (df["ds"] <= cutoff)]  # the off-by-one cut: <= keeps the cutoff hour
 show("history rows with ds at or before the cutoff", len(wrong))
 show("target-day readings in that cut", int((wrong["ds"] == cutoff).sum()))
 ```
@@ -159,7 +226,7 @@ The book reads the file under one stated assumption, which every later chapter r
 
 On Mar 30, 2014, the 01:00 label reads zero for 5 of the eight clients in the subset. The others read a small amount, not an hour of demand. The census covers all thirty clients.
 
-Example `clock-change-census` (Python 3.13.16 · numpy 2.5.5 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.15:
+Example `clock-change-census` (Python 3.13.16 · numpy 2.5.5 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.16:
 
 ```python
 """The clock-change hours of all thirty clients, each against its neighbours. The point that the March hours read near zero
@@ -204,7 +271,7 @@ Seasonal naive copies the last day's values forward, so the forecast for 01:00 o
 
 Make a guess before the next run. The cutoff of Mar 31 looks back over 24 hours, and those hours include the zero. How large is the error at 01:00 on Mar 31 compared with an ordinary hour? The run covers the 15 daily cutoffs from Mar 23 to Apr 6, 2014, first with no rule and then with the rule from the next section:
 
-Example `clock-gap-daily-cutoffs` (Python 3.13.16 · numpy 2.5.5 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.15:
+Example `clock-gap-daily-cutoffs` (Python 3.13.16 · numpy 2.5.5 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.16:
 
 ```python
 """Seasonal naive around the March clock change, for eight clients: the raw failure, then the rule. The prose's claims rest
@@ -276,7 +343,7 @@ The failure is the reverse of the March one. On the change day, seasonal naive f
 
 The same comparison runs over the 15 daily cutoffs from Oct 19 to Nov 2, 2014:
 
-Example `clock-repeat-daily-cutoffs` (Python 3.13.16 · numpy 2.5.5 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.15:
+Example `clock-repeat-daily-cutoffs` (Python 3.13.16 · numpy 2.5.5 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.16:
 
 ```python
 """Seasonal naive around the October clock change, for eight clients: the raw failure, then the rule. The prose's claims rest
@@ -344,7 +411,7 @@ With the fill, the next-day error at that hour falls from 2393.01 to 274.41 kWh 
 
 The year of Sunday cutoffs is a different test, because it applies the mask to the scores and the fill plays no part. Scoring the year twice, plain and masked, shows how much the two hours moved the headline.
 
-Example `clock-masked-backtest` (Python 3.13.16 · numpy 2.5.5 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.15:
+Example `clock-masked-backtest` (Python 3.13.16 · numpy 2.5.5 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.16:
 
 ```python
 """The Sunday backtest of 2014 for eight clients, scored twice: as the readings stand, and with the clock-change rule, which
@@ -399,7 +466,7 @@ Every window in a backtest should be built from data available at its cutoff, so
 
 The test has two halves, and each catches what the other misses. Take the lead client, `MT_014`, and three features over its hourly readings. The first is a trailing mean: the average of the 24 hours up to and including each hour, which reads nothing after its hour. The second is the same mean shifted one hour forward, so each value is the average of a window that ends one hour later, and it reads the first hour after the cutoff. The third is a lag of one hour, the most common day-ahead leak. The history half compares each feature on the rows of the eight weeks before each of the three evaluation cutoffs, Dec 29 to Dec 31, 2014. The target half compares the 24 hours that each cutoff forecasts, computed from the readings before the cutoff only. Both versions start from the same first reading, so the warm-up of a rolling mean matches on both sides. Computed from different starts, the warm-up and floating-point rounding would show as false differences, which is why the check compares with a tolerance:
 
-Example `leakage-shift-check` (Python 3.13.16 · numpy 2.5.5 · pandas 2.3.3), passing in Edition 2026.11.15:
+Example `leakage-shift-check` (Python 3.13.16 · numpy 2.5.5 · pandas 2.3.3), passing in Edition 2026.11.16:
 
 ```python
 """Shift test: a feature must read nothing from its cutoff on, on the history rows and on the target hours. The prose's

@@ -3,13 +3,13 @@ title: "Time Series Forecasting"
 chapter: "Make the total add up"
 chapter_id: make-the-total-add-up
 book: time-series-forecasting
-edition: 2026.11.15
+edition: 2026.11.16
 verified: 2026-11-22
-edition_code: 4ZZQ-AHZZ
+edition_code: W6DN-S05M
 canonical: https://rollingedition.com/time-series-forecasting/make-the-total-add-up
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“Make the total add up,” chapter 7 of Time Series Forecasting, Edition 2026.11.15, examples passed Nov 22, 2026. By Rolling Edition, https://rollingedition.com/time-series-forecasting/make-the-total-add-up. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Make the total add up,” chapter 7 of Time Series Forecasting, Edition 2026.11.16, examples passed Nov 22, 2026. By Rolling Edition, https://rollingedition.com/time-series-forecasting/make-the-total-add-up. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Make the total add up
 
@@ -39,7 +39,7 @@ The sum adds up by construction, so the check that matters is on the data. The t
 
 Every score below is measured against the total, so the total has to match its parts first. The first example builds both totals and scores them, and its last lines check that match in each clock-free hour.
 
-Example `total-bottom-up-and-direct` (Python 3.13.16 · holidays 0.110.dev20261119150447 · lightgbm 4.7.0 · mlforecast 1.1.0 · numpy 2.5.5 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.15:
+Example `total-bottom-up-and-direct` (Python 3.13.16 · holidays 0.110.dev20261119150447 · lightgbm 4.7.0 · mlforecast 1.1.0 · numpy 2.5.5 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.16:
 
 ```python
 """Forecasts the total of the thirty clients two ways, bottom-up (the sum of the client forecasts) and direct (one model on the
@@ -135,7 +135,7 @@ Only means add. The mean of a sum is the sum of the means, because expectation i
 
 The direct total is one model fitted to the total series itself. Its history is the total's history before the cutoff: the readings of the 1,344 hours before it, which is 8 weeks, the same length as the clients' histories. Each client's history is cut by the start rule, its clock-change hours are filled from its own neighbours, as [Chapter 3](#mark-clock-change-hours-as-missing) does, and the readings are summed by hour. The total's history therefore has no missing hour.
 
-The model uses the features the clients use. Its inputs are the total's readings 24 and 168 hours earlier, so no input comes from the day being forecast. Its target is the total as it is, not scaled. [Chapter 6](#score-thirty-clients-on-the-same-cutoffs) scales each client's target, because one model over clients of different sizes would otherwise fit the large ones. A single total has no such mix, so that reason does not carry over. On the decision windows, the unscaled target has the lower error, 1678.62 kWh against 1705.71 kWh with the target scaled, as [the first example](https://github.com/rollingedition/book-time-series-forecasting/blob/cf36d5ab76b8d305c961f960a4695d7bec92f038/examples/total-bottom-up-and-direct.py) shows, so the direct model uses it. The model is fitted once per cutoff, on that cutoff's history only, and it forecasts the next 24 hours. It is a LightGBM regressor inside mlforecast 1.1.0, with the settings of [Chapter 5](#measure-what-each-feature-adds).
+The model uses the features the clients use. Its inputs are the total's readings 24 and 168 hours earlier, so no input comes from the day being forecast. Its target is the total as it is, not scaled. [Chapter 6](#score-thirty-clients-on-the-same-cutoffs) scales each client's target, because one model over clients of different sizes would otherwise fit the large ones. A single total has no such mix, so that reason does not carry over. On the decision windows, the unscaled target has the lower error, 1678.62 kWh against 1705.71 kWh with the target scaled, as [the first example](https://github.com/rollingedition/book-time-series-forecasting/blob/541597e54daaa7c5aaa947abf8be16a61f4f6b6f/examples/total-bottom-up-and-direct.py) shows, so the direct model uses it. The model is fitted once per cutoff, on that cutoff's history only, and it forecasts the next 24 hours. It is a LightGBM regressor inside mlforecast 1.1.0, with the settings of [Chapter 5](#measure-what-each-feature-adds).
 
 The two totals differ in how they are built. The bottom-up total comes from one global model that forecasts every client, and the direct total from one model that forecasts the sum. The lags and the other settings are the same. The target scaling differs, and the decision windows choose it for the direct model alone.
 
@@ -171,11 +171,89 @@ The identifier is where the two window sets disagree. On the decision windows, t
 
 ## Split a total by share {#split-a-total-by-share}
 
-The top-down split starts from the [direct total](#forecast-the-total-directly) and gives each client a share of it. A client's share is its readings over its own history, the 1,344 hours before the cutoff, divided by the total's readings over the same hours. Each client's top-down forecast for an hour is the direct total's forecast for that hour, times its share. A client that supplied a tenth of the total over the past 8 weeks is expected to take a tenth of the total the next day.
+The top-down split starts from the [direct total](#forecast-the-total-directly) and gives each client a share of it. A client's share is its readings summed over its own history, the 1,344 hours before the cutoff, divided by the total's readings summed over the same hours. Each client's top-down forecast for an hour is the direct total's forecast for that hour, times its share. A client that supplied a tenth of the total over the past 8 weeks is expected to take a tenth of the total the next day.
 
 The eight weeks are a choice, not a tuned value. They are the history every other model in this chapter reads, so the split uses the same memory as the clients. A shorter window would follow a change in a client's share sooner, and it would be noisier. This chapter does not measure that trade-off. A supplier that wants it should test it on the decision windows.
 
 The split's weak point is the shape of the day. It gives every client the total's daily profile, so a client that peaks at a different hour gets the wrong profile in every hour, however good the total forecast is. On these clients the split loses even with the true total in hand. A check this chapter calls the oracle check applies the shares to the actual total, which no forecast can know, and its mean per-client MAE is 171.80 kWh. That is a reference, not a method: the error the split would have with a perfect total. The bottom-up forecast, which has to forecast each client, has a mean per-client MAE of 122.81 kWh.
+
+Figure 7.1 draws the average day of the total, the largest client and a typical client, each divided by its own daily mean, over the eight weeks before the first standard cutoff. 20 of the thirty peak at another hour from the total's, and the typical client is the middle one of those by gap. The largest client, 0.56 of the total, differs from the total's day by 0.121 on average, against a median of 0.14 across the thirty.
+
+*Figure 7.1. The average day of the total, the largest client and a typical client, each over its own daily mean.*
+
+![The total's average day dips well below its mean at night, while the largest client and a typical client stay near theirs](https://rollingedition.ai/books/time-series-forecasting/2026.11.16/figures/client-daily-profiles.svg)
+
+Example `figure-client-daily-profiles` (Python 3.13.16 · holidays 0.110.dev20261119150447 · lightgbm 4.7.0 · matplotlib 3.11.2 · mlforecast 1.1.0 · numpy 2.5.5 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.16:
+
+```python
+"""Draw the average day of the total of the thirty clients, of the largest client and of a typical client, each divided by its
+own daily mean, on the history before the first standard cutoff. The typical client is the one in the middle, by gap, of the
+clients whose average day peaks at another hour from the total's; the lines print how it was chosen and the values the prose quotes."""
+import pandas as pd
+
+from lib.electricity import load
+from lib.figures import ACCENT, INK, MUTED, new_figure, save
+from lib.panel import ALL30, panel_history
+from lib.quirks import mask_clock_changes
+from lib.settings import EVAL_CUTOFFS, show
+from lib.totals import shares, total_history
+
+raw = load(ALL30)
+cut = pd.Timestamp(EVAL_CUTOFFS[0])                               # the first standard cutoff: shares and profiles read before it
+
+
+def normalised(hist):
+    """Mean load at each hour of the day, divided by the mean of those 24 means: the shape, on one scale."""
+    by_hour = hist.groupby(hist["ds"].dt.hour)["y"].mean()
+    return by_hour / by_hour.mean()
+
+
+total_day = normalised(total_history(raw, cut))                   # the total's history has no missing hour
+clients = panel_history(mask_clock_changes(raw)[["unique_id", "ds", "y"]], cut, start_rule=True)
+days = pd.DataFrame({uid: normalised(g) for uid, g in clients.groupby("unique_id")}).T   # one row per client, 24 hours
+largest = shares(raw, cut).idxmax()                               # the largest client by share of the total
+gap = (days - total_day).abs().mean(axis=1)                       # mean absolute difference from the total's day
+peak = days.idxmax(axis=1)                                        # each client's peak hour
+elsewhere = gap[peak != total_day.idxmax()].sort_values()         # the clients peaking at another hour, by gap
+typical = elsewhere.index[len(elsewhere) // 2]                    # the one in the middle of them
+assert peak[typical] != total_day.idxmax()                        # the prose says the typical client peaks at another hour
+
+show("clients whose average day peaks at a different hour from the total's", len(elsewhere))
+show("typical client, the median gap among those", typical)
+show("median gap across the thirty clients", gap.median())
+show("mean absolute difference from the total's day, largest client", gap[largest], digits=3)
+show("peak hour of the total's average day", f"{total_day.idxmax():02d}:00")
+show("peak hour of the typical client's average day", f"{peak[typical]:02d}:00")
+for name, day in (("the total's", total_day), ("the largest client's", days.loc[largest]), ("the typical client's", days.loc[typical])):
+    show(f"night mean of {name} average day, hours 0 to 5, over its mean", day.loc[:5].mean())   # midnight to 05:00
+
+fig, ax = new_figure(height=2.8)
+ax.plot(total_day.index, total_day.values, color=INK, label="total of the thirty clients")
+ax.plot(days.columns, days.loc[largest].values, color=MUTED, linestyle="--", label=f"largest client, {largest}")
+ax.plot(days.columns, days.loc[typical].values, color=ACCENT, linewidth=2.0, label=f"typical client, {typical}")
+ax.set(xlabel="hour of the day", ylabel="load over its daily mean")
+ax.set_xticks(range(0, 24, 3))
+ax.set_ylim(bottom=0)
+fig.legend(loc="outside upper left", ncols=1, frameon=False, labelcolor=INK)
+save(fig, "client-daily-profiles")
+```
+
+Output:
+
+```text
+clients whose average day peaks at a different hour from the total's: 20
+typical client, the median gap among those: MT_090
+median gap across the thirty clients: 0.14
+mean absolute difference from the total's day, largest client: 0.121
+peak hour of the total's average day: 18:00
+peak hour of the typical client's average day: 09:00
+night mean of the total's average day, hours 0 to 5, over its mean: 0.80
+night mean of the largest client's average day, hours 0 to 5, over its mean: 0.97
+night mean of the typical client's average day, hours 0 to 5, over its mean: 0.99
+figure: figures/client-daily-profiles.svg
+```
+
+At night the shapes part. Averaged over midnight to 05:00, the total's day is 0.80 of its mean, while the largest client's is 0.97 of its own and the typical client's 0.99. A split by share hands both clients the total's night dip, which neither of them has.
 
 The shares are also uneven. On the first cutoff, Dec 29, 2014, the largest client's share of the total is 0.56.
 
@@ -183,7 +261,7 @@ The working paper that defines MinT reports, citing Hyndman et al. (2011), that 
 
 Scoring the split client by client, against bottom-up on the same windows, shows whether it wins for any single client, which a mean cannot show. The second example does that, and runs the leak check on the shares. It makes the choice on the decision windows first, then reports the standard cutoffs.
 
-Example `total-split-by-share` (Python 3.13.16 · holidays 0.110.dev20261119150447 · lightgbm 4.7.0 · mlforecast 1.1.0 · numpy 2.5.5 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.15:
+Example `total-split-by-share` (Python 3.13.16 · holidays 0.110.dev20261119150447 · lightgbm 4.7.0 · mlforecast 1.1.0 · numpy 2.5.5 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.16:
 
 ```python
 """Splits the direct total forecast into client forecasts, each client taking its share of the history before each cutoff
@@ -259,15 +337,15 @@ Most failures in this chapter are silent.
 
 The first is a quietly short total. If one client drops out of the sum, the total is smaller than the demand, and its scores still look reasonable. The bottom-up total in this book raises an error when an hour has fewer than thirty client forecasts. The start rule refuses a client with too little history instead of skipping it, as [Chapter 6](#apply-the-start-rule-to-every-client) explains. In production, a run that builds fewer forecasts than clients should stop and name the missing client.
 
-The second is the raw sum. The October repeat hour holds the energy of two ([Chapter 3](#the-october-hour-that-holds-two)), so a total built from raw readings can count that hour at roughly twice its neighbours. The result is a demand spike that is not there. The book's total masks the hour instead, and the check in [the first example](https://github.com/rollingedition/book-time-series-forecasting/blob/cf36d5ab76b8d305c961f960a4695d7bec92f038/examples/total-bottom-up-and-direct.py) excludes the clock-change hours for the same reason.
+The second is the raw sum. The October repeat hour holds the energy of two ([Chapter 3](#the-october-hour-that-holds-two)), so a total built from raw readings can count that hour at roughly twice its neighbours. The result is a demand spike that is not there. The book's total masks the hour instead, and the check in [the first example](https://github.com/rollingedition/book-time-series-forecasting/blob/541597e54daaa7c5aaa947abf8be16a61f4f6b6f/examples/total-bottom-up-and-direct.py) excludes the clock-change hours for the same reason.
 
-The third is a split that reads the future. A split whose shares use the window's own readings scores better in a backtest than it will in production. The [poisoning check](#what-goes-wrong-ch10) is the test. A share must not move when readings after its cutoff change. A production run should keep both checks, the share check in [the second example](https://github.com/rollingedition/book-time-series-forecasting/blob/cf36d5ab76b8d305c961f960a4695d7bec92f038/examples/total-split-by-share.py) and the scale check in [the first](https://github.com/rollingedition/book-time-series-forecasting/blob/cf36d5ab76b8d305c961f960a4695d7bec92f038/examples/total-bottom-up-and-direct.py), as tests that fail loudly.
+The third is a split that reads the future. A split whose shares use the window's own readings scores better in a backtest than it will in production. The [poisoning check](#what-goes-wrong-ch10) is the test. A share must not move when readings after its cutoff change. A production run should keep both checks, the share check in [the second example](https://github.com/rollingedition/book-time-series-forecasting/blob/541597e54daaa7c5aaa947abf8be16a61f4f6b6f/examples/total-split-by-share.py) and the scale check in [the first](https://github.com/rollingedition/book-time-series-forecasting/blob/541597e54daaa7c5aaa947abf8be16a61f4f6b6f/examples/total-bottom-up-and-direct.py), as tests that fail loudly.
 
 The fourth is a decision and a report that disagree. The identifier lowers the total's error on the decision windows and raises it on the standard cutoffs. A monitor that watches only one set of windows will miss the other's failure. On every refit, log the total's error with and without the identifier on the same windows, beside the per-client MASE that [Chapter 6](#identify-each-client) uses to decide.
 
-The fifth is a share that goes stale. A share is a fact about the past 8 weeks, so when a client's habits change, its share lags the change for as long as the window is long. A top-down forecast of that client is then wrong in a steady direction, not at random, and the error does not show in the total at all, because the shares still add to one. A monitor should therefore watch each client's share over time, not only the total's error. The per-client MASE in [the second example](https://github.com/rollingedition/book-time-series-forecasting/blob/cf36d5ab76b8d305c961f960a4695d7bec92f038/examples/total-split-by-share.py) is the measure that sees it.
+The fifth is a share that goes stale. A share is a fact about the past 8 weeks, so when a client's habits change, its share lags the change for as long as the window is long. A top-down forecast of that client is then wrong in a steady direction, not at random, and the error does not show in the total at all, because the shares still add to one. A monitor should therefore watch each client's share over time, not only the total's error. The per-client MASE in [the second example](https://github.com/rollingedition/book-time-series-forecasting/blob/541597e54daaa7c5aaa947abf8be16a61f4f6b6f/examples/total-split-by-share.py) is the measure that sees it.
 
-The sixth is a scale that moves with the window. The total's MASE scale is read once, from the history before the first scored cutoff. A scale refreshed for each window reads that window's own readings, and every score on the total then changes for reasons that have nothing to do with the forecast. [The first example](https://github.com/rollingedition/book-time-series-forecasting/blob/cf36d5ab76b8d305c961f960a4695d7bec92f038/examples/total-bottom-up-and-direct.py) checks, for each scored cutoff, that the scale for that window does not move when readings from the cutoff on are replaced. No scale moves: 0 of the six comparisons (three cutoffs by two values) changes it.
+The sixth is a scale that moves with the window. The total's MASE scale is read once, from the history before the first scored cutoff. A scale refreshed for each window reads that window's own readings, and every score on the total then changes for reasons that have nothing to do with the forecast. [The first example](https://github.com/rollingedition/book-time-series-forecasting/blob/541597e54daaa7c5aaa947abf8be16a61f4f6b6f/examples/total-bottom-up-and-direct.py) checks, for each scored cutoff, that the scale for that window does not move when readings from the cutoff on are replaced. No scale moves: 0 of the six comparisons (three cutoffs by two values) changes it.
 
 **Working rule:** In production, check the total against the sum of its readings on every refit, stop when a client is missing from a total, and run the poisoning check on each share and on the scale for each window. Log the total's error with and without the identifier on the same windows. When the windows disagree, report both and do not choose the one that flatters the model.
 

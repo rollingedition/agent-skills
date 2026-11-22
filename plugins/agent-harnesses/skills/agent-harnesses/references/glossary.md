@@ -1,13 +1,13 @@
 ---
 title: "Glossary"
 book: "Agent Harnesses"
-edition: "2026.11.6"
+edition: "2026.11.7"
 canonical: "https://rollingedition.com/agent-harnesses/glossary"
 ---
 
 # Glossary of *Agent Harnesses*
 
-The 86 terms this book defines, as Edition 2026.11.6 has them, each in the book's own sentence. When a task this skill covers uses one, it means what it says here: read its section before you rely on it, and cite the section. Where a definition depends on a package, it says the version this edition pins and runs its examples on. On the web: https://rollingedition.com/agent-harnesses/glossary
+The 87 terms this book defines, as Edition 2026.11.7 has them, each in the book's own sentence. When a task this skill covers uses one, it means what it says here: read its section before you rely on it, and cite the section. Where a definition depends on a package, it says the version this edition pins and runs its examples on. On the web: https://rollingedition.com/agent-harnesses/glossary
 
 ## action
 
@@ -30,7 +30,7 @@ an agent when an LLM dynamically directs its own processes and tool use
 
 ## agent harness
 
-The harness supplies the loop, the tools and the limits on what those tools may do
+The harness supplies the loop, the context, the tools and the limits on what those tools may do
 
 - Also: harness
 - Defined in: [Give a model tools and a loop](tools-and-a-loop.md)
@@ -130,7 +130,7 @@ a run's cost is three numbers: its steps, its tool calls and its tokens
 
 ## decision table
 
-The decision table sorts each task by three readings: whether its steps are known before the run, whether a check can decide the result without a person, and whether a person has to say yes.
+The decision table sorts each task by whether the harness refuses the change outright, then by three readings: whether its steps are known before the run, whether a check can decide the result without a person, and whether a person has to say yes.
 
 - Defined in: [The decision table](when-an-agent-is-the-wrong-design.md#which-design)
 - Address: https://rollingedition.com/concepts/ai-agents/decision-table
@@ -153,7 +153,7 @@ A stop task is done when the run ended with ask_user, its question contains one 
 
 ## edit
 
-An edit names the text it replaces.
+An edit names the text it replaces and the text that replaces it.
 
 - Also: edits
 - Defined in: [Edit errors that name the nearest lines](tool-schemas.md#edit-errors)
@@ -185,7 +185,7 @@ The fence is an opening tag that names the tool, and a closing tag.
 
 ## finish reason
 
-the finish reason, which says whether the model stopped on its own or ran out of tokens
+the finish reason, which says why the model stopped, such as on its own or because it ran out of tokens
 
 - Also: finish_reason
 - Defined in: [Ask every model the same question](model-adapters.md#model-protocol)
@@ -233,7 +233,7 @@ Harness v1 is the loop of chapter 1 with tool set v1 from chapter 3, a step cap 
 
 ## harness v2
 
-Harness v2 is the configuration of chapter 5: it runs tool set v2, with strict argument models, typed error results and edit errors that name the nearest lines of the file.
+Harness v2 is the configuration of chapter 5: it runs tool set v2's tools, with strict argument models, typed error results and edit errors that name the nearest lines of the file, plus a note tool, the two stop rules from chapter 2 and compaction under the context budget, with chapter 5's system prompt.
 
 - Contrasts with: harness v1
 - Defined in: [Two harness versions, compared as counts](testing-the-agent.md#v1-v2)
@@ -246,6 +246,14 @@ This harness has no terminal and no session: it is a headless run, and the only 
 - Also: headless run with a callback
 - Defined in: [Which mode this harness is in](permission-gates.md#mode)
 - Address: https://rollingedition.com/concepts/ai-agents/headless-run
+
+## held as never
+
+a change that has a reason is held as never: the gate refuses it before any question is asked
+
+- Contrasts with: never class
+- Defined in: [Some changes are refused without a question](permission-gates.md#never-class)
+- Address: https://rollingedition.com/concepts/ai-agents/held-as-never
 
 ## hidden check
 
@@ -344,7 +352,7 @@ The naive range treats each task as an independent trial, and it is built with t
 
 ## nearest lines
 
-The harness slides a window of the same length as old down the file, keeps the window that matches best, and breaks a tie toward the earlier window, so the answer is the same on every run.
+The harness slides a window of as many lines as old down the file, keeps the window that matches best, and breaks a tie toward the earlier window, so the answer is the same on every run.
 
 - Also: nearest-line errors
 - Part of: refusal
@@ -353,7 +361,7 @@ The harness slides a window of the same length as old down the file, keeps the w
 
 ## never class
 
-The table in lib/permissions.py is the only source of a tool's class, and a tool outside it is classed never.
+The class tables the harness owns, the one in lib/permissions.py and any table the harness passes to the gate, are the only source of a tool's class, and a tool outside them is classed never.
 
 - A kind of: tool class
 - Defined in: [The wrapper checks every call](permission-gates.md#wrapper)
@@ -437,7 +445,7 @@ A proposal is the copy's whole diff against the library, not the summary the mod
 
 ## proposal hash
 
-The proposal's identity is a hash of the changed bytes
+The proposal's identity is a hash of each changed file's path and its old and new bytes
 
 - Part of: proposal
 - Defined in: [The gate sits in finish](permission-gates.md#gate-in-finish)
@@ -493,7 +501,7 @@ a request is the messages and tool schemas sent at one step
 
 ## request hash
 
-ReplayModel hashes the request it was given, the sha256 of its messages and tool schemas in canonical JSON
+ReplayModel hashes the request it was given, the sha256 of its messages and tool schemas as JSON with sorted keys, no spaces and ASCII escapes
 
 - Computed from: request
 - Defined in: [Script the replies, or replay a stored run](model-adapters.md#scripted-and-replayed)
@@ -595,7 +603,7 @@ For the three stops that end a child stuck, step_cap, repeated_call and no_progr
 
 ## task set
 
-the task set: the 20 tasks that testing the agent scores, run with tool set v1, whose tools include edits
+the task set: the 20 tasks that testing the agent scores, first recorded with tool set v1, whose tools include edits
 
 - Defined in: [Stop the loop when it's done or stuck](stop-rules.md)
 - Address: https://rollingedition.com/concepts/llm-evaluation/task-set
@@ -643,7 +651,7 @@ A tool call is one request inside a step
 
 ## tool class
 
-Chapter 6 divided the harness's tools into classes: a read runs, and a change waits.
+Chapter 6 divided the harness's tools into classes: a read runs, a change runs in the copy, a proposal waits for a yes, and a tool with no class never runs.
 
 - Defined in: [Another party's tools need approval](mcp-tools.md#other-tools)
 - Address: https://rollingedition.com/concepts/ai-agents/tool-class

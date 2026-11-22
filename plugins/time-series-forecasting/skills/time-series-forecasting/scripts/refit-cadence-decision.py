@@ -28,7 +28,7 @@ models = {}
 for age in range(7):
     parts = []
     for day in DECISION_DAYS:
-        fit_day = day - pd.Timedelta(days=age)  # a model aged `age` days, fitted that many days before the decision day
+        fit_day = day - pd.Timedelta(age, unit="D")  # a model aged `age` days, fitted that many days before the decision day
         if fit_day not in models:  # a model is fitted once and reused by every decision day it serves
             models[fit_day] = fit_at(df, fit_day)[0]  # fit_at returns (model, read_by); [0] is the model
         # forecast_at returns (forecast, pending count, read_by); the first is the forecast

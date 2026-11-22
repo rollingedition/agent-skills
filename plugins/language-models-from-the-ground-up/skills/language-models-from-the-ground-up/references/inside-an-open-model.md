@@ -3,13 +3,13 @@ title: "Language Models from the Ground Up"
 chapter: "Inside an open model"
 chapter_id: inside-an-open-model
 book: language-models-from-the-ground-up
-edition: 2026.11.17
-verified: 2026-11-19
-edition_code: DR5A-G7ZM
+edition: 2026.11.18
+verified: 2026-11-22
+edition_code: 5E4E-0JVJ
 canonical: https://rollingedition.com/language-models-from-the-ground-up/inside-an-open-model
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“Inside an open model,” chapter 10 of Language Models from the Ground Up, Edition 2026.11.17, examples passed Nov 19, 2026. By Rolling Edition, https://rollingedition.com/language-models-from-the-ground-up/inside-an-open-model. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Inside an open model,” chapter 10 of Language Models from the Ground Up, Edition 2026.11.18, examples passed Nov 22, 2026. By Rolling Edition, https://rollingedition.com/language-models-from-the-ground-up/inside-an-open-model. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Inside an open model
 
@@ -25,7 +25,7 @@ The parts are familiar, so the first question is where the parameters sit. [Chap
 
 Run the same count on SmolLM2's recorded weights, and watch which part now holds the most:
 
-Example `open-model-parameters` (Python 3.12.15), passing in Edition 2026.11.17:
+Example `open-model-parameters` (Python 3.12.15), passing in Edition 2026.11.18:
 
 ```python
 """Counts SmolLM2-360M's recorded weights by part, with the embedding table shared with the output counted once.
@@ -90,7 +90,7 @@ SmolLM2 comes in three sizes, each built from the same parts, and their configur
 
 Count all three sizes from their recorded configurations, and check the 360M count against the weights the first recording saved:
 
-Example `open-model-family` (Python 3.12.15), passing in Edition 2026.11.17:
+Example `open-model-family` (Python 3.12.15), passing in Edition 2026.11.18:
 
 ```python
 """Counts all three SmolLM2 sizes from their recorded configurations, part by part, and checks the 360M model's count
@@ -161,7 +161,7 @@ counting a key and a value per layer, and two bytes per number.
 
 Budgeting needs, for each size, the weights, the cache per token and the cache for the longest text the models are set up for, 8,192 tokens, with and without grouped keys and values:
 
-Example `open-model-memory` (Python 3.12.15), passing in Edition 2026.11.17:
+Example `open-model-memory` (Python 3.12.15), passing in Edition 2026.11.18:
 
 ```python
 """Works out each size's weights and key and value cache, with and without grouped keys and values, in decimal gigabytes
@@ -206,11 +206,65 @@ Grouping keys and values keeps the 360M model's cache small. It takes 41 kilobyt
 
 A service writing many descriptions at once keeps one cache per text, so with long texts the caches can outgrow the weights. The 1.7B model, which doesn't group keys and values, needs 197 kilobytes per token, and 1.61 gigabytes for one long text, about half its 3.4 gigabytes of weights.
 
+For the smallest size, grouping decides whether one long text's cache outgrows the weights. Without grouping, SmolLM2-135M's cache passes its weights at 3,893 tokens, inside the longest text; with grouping, it doesn't reach them within that text. Figure 10.1 draws both caches against text length, each growing in a straight line, with the weights as the dashed line: the ungrouped line crosses it part way along, and the grouped line stays under it to the end.
+
+*Figure 10.1. SmolLM2-135M's key and value cache against text length, with and without grouping, beside its weights' memory.*
+
+![Without grouping, the smallest model's cache passes its weights part way through the longest text; grouped, it stays under them](https://rollingedition.ai/books/language-models-from-the-ground-up/2026.11.18/figures/kv-cache-grows.svg)
+
+Example `figure-kv-cache-grows` (Python 3.12.15 · matplotlib 3.11.2 · numpy 2.5.5), passing in Edition 2026.11.18:
+
+```python
+"""Draws SmolLM2-135M's key and value cache against text length, with and without grouped keys and values, beside its
+weights' memory, all computed as open-model-memory computes them. The crossing line rests on the ungrouped cache's
+bytes per token, and the grouped line says whether that cache reaches the weights within the longest text."""
+from lib import open_model
+from lib.figures import ACCENT, INK, MUTED, new_figure, save
+
+import numpy as np
+
+config = open_model.config("SmolLM2-135M")
+longest = open_model.config("SmolLM2-360M")["max_position_embeddings"]    # the longest text the models are set up for
+head_size = config["hidden_size"] // config["num_attention_heads"]        # the width shared out over the query heads, grouped or not
+layers = config["num_hidden_layers"]
+weights = open_model.parameters(config)["total"] * 2                       # 16-bit numbers: 2 bytes each
+grouped = layers * 2 * config["num_key_value_heads"] * head_size * 2       # bytes per token: a key and a value per layer, 2 bytes each
+ungrouped = layers * 2 * config["num_attention_heads"] * head_size * 2     # the same cache with every query head keeping its own
+lengths = np.arange(longest + 1)                                           # text lengths in tokens, from 0 to the longest text
+cache_grouped, cache_ungrouped = grouped * lengths, ungrouped * lengths    # bytes: each token adds the same amount
+assert (np.diff(cache_grouped) == grouped).all() and (np.diff(cache_ungrouped) == ungrouped).all()
+print("each token adds the same bytes to the cache, grouped and not: yes")
+
+# The first text length whose ungrouped cache reaches the weights; the grouped cache is checked over the same lengths.
+crossing = int(np.argmax(cache_ungrouped >= weights))
+print("text length at which the cache without grouping passes the weights, in tokens:", f"{crossing:,}")
+grouped_passes = bool((cache_grouped >= weights).any())
+print("the grouped cache passes the weights within the longest text:", "yes" if grouped_passes else "no")
+assert not grouped_passes                                                  # the prose's claim: grouping keeps it under the weights
+
+fig, ax = new_figure()
+ax.plot(lengths, cache_grouped / 1e9, color=ACCENT, label="cache with grouped keys and values")
+ax.plot(lengths, cache_ungrouped / 1e9, color=INK, label="cache without grouping")
+ax.axhline(weights / 1e9, color=MUTED, linestyle="--", label="weights, in 16-bit numbers")
+ax.set(xlabel="text length, in tokens", ylabel="memory, in GB", ylim=(0, None))
+ax.legend(frameon=False, loc="upper left")
+save(fig, "kv-cache-grows")
+```
+
+Output:
+
+```text
+each token adds the same bytes to the cache, grouped and not: yes
+text length at which the cache without grouping passes the weights, in tokens: 3,893
+the grouped cache passes the weights within the longest text: no
+figure: figures/kv-cache-grows.svg
+```
+
 **Working rule:** Budget a model's memory as its weights plus one cache per text in progress, computed from its configuration. Prefer models that group keys and values when you serve long texts or many at once, and cap the text length you allow to what you've budgeted for.
 
 ## Score the store's text with a general model {#score-the-store-text}
 
-A model with two hundred times the parameters, trained on more than a million times as many tokens as the store's catalog holds, might be expected to predict the store's text better than the store's own small model. Testing that takes care, because the two models use different tokenizers: SmolLM2's vocabulary of 49,152 tokens splits text differently from the store's, so their [perplexities per token](#score-with-perplexity) count different things. What they share is the text. A **perplexity per word** divides a model's total log-probability of a text by the number of words in it, instead of by its number of tokens. In symbols, for a text of W words whose tokens the model gives probabilities p₁ to pₙ, however many tokens that takes:
+A model with two hundred times the parameters, trained on more than a million times as many tokens as the store's catalog holds, might be expected to predict the store's text better than the store's own small model. Testing that takes care, because the two models use different tokenizers: SmolLM2's vocabulary of 49,152 tokens splits text differently from the store's, so their [perplexities per token](#score-with-perplexity) count different things. What they share is the text. A **perplexity per word** divides a model's total log-probability of a text by the number of words in it, instead of by its number of tokens, before turning it back into a count. In symbols, for a text of W words whose tokens the model gives probabilities p₁ to pₙ, however many tokens that takes:
 
 perplexity per word = exp(−(log p₁ + … + log pₙ) / W)
 
@@ -220,7 +274,7 @@ Each model scores the same events. For a name, the store's model starts from `<s
 
 Which model scores the store's names better per word, and by how much? Decide before reading on. Then compute the store's model's scores in NumPy, read SmolLM2's from the recording, and compare them per token and per word:
 
-Example `open-model-on-the-store` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1), passing in Edition 2026.11.17:
+Example `open-model-on-the-store` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1), passing in Edition 2026.11.18:
 
 ```python
 """Scores the store's model and SmolLM2-360M on the same names and the same descriptions, per word, the unit the two share.
@@ -292,7 +346,7 @@ The lesson isn't that small models are better. A model predicts best the kind of
 
 Look at each head's recorded average weight on the previous token and on the first token, over the first 50 of the 446 products scored above, each text a name, a newline and its description. The even spread is averaged the same way, so the two can be set side by side:
 
-Example `open-model-heads` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1 · tokenizers 0.23.3), passing in Edition 2026.11.17:
+Example `open-model-heads` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1 · tokenizers 0.23.3), passing in Edition 2026.11.18:
 
 ```python
 """Reads SmolLM2's recorded head averages over the recorded texts, and compares them with an even spread averaged the same way.
@@ -346,6 +400,65 @@ A few heads specialize sharply. 3 heads put more than half their weight on the p
 
 The first token's weight is the larger surprise. In the first four layers, heads put 0.13 of their weight on it on average; from layer 5 on, 0.61, against an even spread's 0.05, and 286 heads put more than half there. That's the [attention sink](#reach-past-the-window) that Xiao and colleagues found in large models ([Xiao et al., 2024](https://arxiv.org/abs/2309.17453)). They explain it by softmax: a head with nothing useful to attend to still has to put its weight somewhere, and the first token is always there. [Chapter 6](#reach-past-the-window) found the pattern only weakly in the store's model, whose description tokens put 0.11 of their attention on its two markers, against an even spread's 0.05.
 
+In 21 of 28 layers past the fourth, most heads put more than half their weight on the first token. Figure 10.2 draws each head as a dot at its layer, at its weight on the first token. The dashed line is the even spread, a reference to read the dots against, not a fit to them: the highest dot in layers 1 to 4 sits at 0.34, and the highest from layer 5 on at 1.00.
+
+*Figure 10.2. Each head's average weight on the first token, by layer, against the even spread.*
+
+![Heads in the first four layers put little weight on the first token; from layer 5 on, most heads in most layers put more than half there](https://rollingedition.ai/books/language-models-from-the-ground-up/2026.11.18/figures/first-token-sinks.svg)
+
+Example `figure-first-token-sinks` (Python 3.12.15 · matplotlib 3.11.2 · numpy 2.5.5 · pandas 3.1.1 · tokenizers 0.23.3), passing in Edition 2026.11.18:
+
+```python
+"""Draws each of SmolLM2's 480 recorded heads by its layer: its average weight on the first token, with the even spread as
+a dashed reference line. It prints how many layers from 5 on most heads put over half their weight on the first token."""
+from lib import open_model, transformer
+from lib.figures import ACCENT, MUTED, new_figure, save
+from lib.products import product_texts
+from lib.store import load_products
+
+import numpy as np
+from tokenizers import Tokenizer
+
+heads = open_model.read("heads")
+first = np.array(heads["first"])                                            # (layers, heads), counted from layer 0 in the rows
+layer = np.arange(1, first.shape[0] + 1)                                    # the layer each row is, counted from 1
+most = (first > 0.5).sum(1) > first.shape[1] / 2                            # a layer where more than half of its heads put over half on the first token
+assert layer[most][0] == 5                                                  # the layer the prose names: a retrained model that moves it fails here
+print("layers from 5 on in which most heads do:", f"{most[4:].sum()} of {most[4:].size}")   # rows from 4 on are layers 5 to 32
+print("highest first-token weight, layers 1 to 4:", f"{first[:4].max():.2f}")
+print("highest first-token weight, layers 5 to 32:", f"{first[4:].max():.2f}")
+
+# The even spread, averaged as open-model-heads averages it: a position's weight 1 / k on each of its k tokens.
+smollm2 = Tokenizer.from_file("data/smollm2-tokenizer/tokenizer.json")
+end = transformer.load()[1].index(transformer.END)      # [1] is the vocabulary: load() returns weights, vocabulary, manifest
+rows = load_products("validation").head(500)            # the first 500 validation products, the ones product_texts reads
+# The same products as product_texts, with their names and descriptions, filtered the same way. Each text is a name, a newline
+# and a description, as the recording wrote it.
+texts = [f"{name}\n{description}\n" for (ids, sep), name, description in
+         zip(product_texts("validation", 500), rows["name"], rows["description"]) if ids[-1] == end and sep < len(ids) - 2]
+# Only the texts the recording averaged. The +1 is the start token the recording put before every text.
+lengths = [len(smollm2.encode(text, add_special_tokens=False).ids) + 1 for text in texts[:heads["texts"]]]
+even = np.mean([np.mean(1 / np.arange(2, n + 1)) for n in lengths])
+
+x = np.repeat(layer, first.shape[1])                                        # one dot per head, at its layer
+fig, ax = new_figure(height=3.6)
+ax.plot(x, first.ravel(), linestyle="none", marker="o", markersize=3.2, color=ACCENT, label="weight on the first token")
+ax.axhline(even, color=MUTED, linestyle="--", label="even spread")
+ax.set(xlabel="layer", xticks=[1, 5, 10, 15, 20, 25, 30], ylabel="average weight of a head on the first token",
+       ylim=(0, 1.3), yticks=[0, 0.2, 0.4, 0.6, 0.8, 1.0])
+ax.legend(frameon=False, loc="upper center", ncol=2)                       # above the dots, which top out at 1
+save(fig, "first-token-sinks")
+```
+
+Output:
+
+```text
+layers from 5 on in which most heads do: 21 of 28
+highest first-token weight, layers 1 to 4: 0.34
+highest first-token weight, layers 5 to 32: 1.00
+figure: figures/first-token-sinks.svg
+```
+
 **Working rule:** Describe a large model's heads by the same measured averages you'd use on a small one, compared with an even spread. Expect a few specialized heads and many that put their weight on the first token, and keep that token when you cut a model's context to save memory.
 
 ## Test copying at scale {#copying-at-scale}
@@ -354,7 +467,7 @@ The first token's weight is the larger surprise. In the first four layers, heads
 
 Check SmolLM2's recorded probabilities of `cover` and `set` at one point in the description of `double chaise patio furniture cover`, after `this outdoor patio furniture`, with the name as sold, without `cover`, and ending in `set`:
 
-Example `open-model-copying` (Python 3.12.15), passing in Edition 2026.11.17:
+Example `open-model-copying` (Python 3.12.15), passing in Edition 2026.11.18:
 
 ```python
 """Prints SmolLM2's recorded probabilities of cover and set after the same words of a description, under three versions of the name.
@@ -392,7 +505,7 @@ The search box is where the store's text matters most. [Chapter 8](#autocomplete
 
 Here are SmolLM2's three likeliest next tokens after the same five prefixes, each given with nothing before it, the way the store's model got them:
 
-Example `open-model-autocomplete` (Python 3.12.15), passing in Edition 2026.11.17:
+Example `open-model-autocomplete` (Python 3.12.15), passing in Edition 2026.11.18:
 
 ```python
 """Prints SmolLM2's three likeliest next tokens after five search-box prefixes, and its probability of stool after outdoor bar.

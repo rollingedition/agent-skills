@@ -1,0 +1,6 @@
+fixed history hours per window: 1344
+step between cutoffs, days: 7
+first reading of the series: Jan 1, 2013 00:00
+expanding history hours at the first window: 8856
+expanding history hours at the last drawn window: 9360
+figure: figures/rolling-windows.svg

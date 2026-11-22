@@ -1,0 +1,4 @@
+each token adds the same bytes to the cache, grouped and not: yes
+text length at which the cache without grouping passes the weights, in tokens: 3,893
+the grouped cache passes the weights within the longest text: no
+figure: figures/kv-cache-grows.svg

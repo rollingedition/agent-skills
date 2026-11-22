@@ -1,0 +1,10 @@
+paired items (n): 20
+items where the two verdicts differ: 2
+bootstrap resamples: 2000
+difference, P2 minus P1: +0.0 points
+95% interval of the difference: [-15.0, +15.0] points
+interval width: 30.0 points
+step between possible differences: 5.0 points
+most common difference: +0.0 points
+resamples at the most common difference: 606
+figure: figures/twenty-difference.svg

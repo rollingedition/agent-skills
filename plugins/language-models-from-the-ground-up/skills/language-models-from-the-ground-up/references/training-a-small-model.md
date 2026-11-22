@@ -3,13 +3,13 @@ title: "Language Models from the Ground Up"
 chapter: "Training a small model"
 chapter_id: training-a-small-model
 book: language-models-from-the-ground-up
-edition: 2026.11.17
-verified: 2026-11-19
-edition_code: DR5A-G7ZM
+edition: 2026.11.18
+verified: 2026-11-22
+edition_code: 5E4E-0JVJ
 canonical: https://rollingedition.com/language-models-from-the-ground-up/training-a-small-model
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“Training a small model,” chapter 8 of Language Models from the Ground Up, Edition 2026.11.17, examples passed Nov 19, 2026. By Rolling Edition, https://rollingedition.com/language-models-from-the-ground-up/training-a-small-model. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Training a small model,” chapter 8 of Language Models from the Ground Up, Edition 2026.11.18, examples passed Nov 22, 2026. By Rolling Edition, https://rollingedition.com/language-models-from-the-ground-up/training-a-small-model. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Training a small model
 
@@ -27,7 +27,7 @@ Each text then gives the model one prediction per position. The **inputs** are a
 
 Padding is the cost to watch, so build one shuffled epoch's batches as the training script does, and count how much of each batch is padding:
 
-Example `training-batches` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1), passing in Edition 2026.11.17:
+Example `training-batches` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1), passing in Edition 2026.11.18:
 
 ```python
 """Builds one shuffled epoch of batches the way the training script does, and measures the padding in them.
@@ -119,7 +119,7 @@ The training script also **clips** the gradients: when their combined length, me
 
 ## Warm up, then decay the step size {#warm-up-then-decay}
 
-The last line of the loop, `scheduler.step()`, changes the step size after every batch, following a **schedule**, which sets the step size for each step of the run. For the first 200 steps, the step size rises in a straight line from nearly zero to its peak, 0.003: a **warm-up**, as the transformer paper's schedule had ([Vaswani et al., 2017](https://arxiv.org/abs/1706.03762), section 5.3). In Adam's first steps, its running average of squared gradients rests on only a few batches, so its step sizes vary widely; Liu and colleagues showed that warm-up works by reducing that variance ([Liu et al., 2020](https://arxiv.org/abs/1908.03265)). After the warm-up, the step size falls along half a cosine curve, to a tenth of the peak by the last step ([Loshchilov and Hutter, 2017](https://arxiv.org/abs/1608.03983)). Large steps early cover ground; small steps late let the weights settle into a low point instead of bouncing around it. In symbols, after the warm-up:
+The last line of the loop, `scheduler.step()`, changes the step size after every batch, following a **schedule**, which sets the step size for each step of the run. For the first 200 steps, the step size rises in a straight line from nearly zero to its peak, 0.003: a **warm-up**, as the transformer paper's schedule had ([Vaswani et al., 2017](https://arxiv.org/abs/1706.03762), section 5.3). In Adam's first steps, its running average of squared gradients rests on only a few batches, so its step sizes vary widely; Liu and colleagues showed that warm-up works by reducing that variance ([Liu et al., 2020](https://arxiv.org/abs/1908.03265)). After the warm-up, the step size falls along half a cosine curve, here to a tenth of the peak by the last step ([Loshchilov and Hutter, 2017](https://arxiv.org/abs/1608.03983)). Large steps early cover ground; small steps late let the weights settle into a low point instead of bouncing around it. In symbols, after the warm-up:
 
 rate = peak × (0.1 + 0.9 × ½ (1 + cos(π × progress)))
 
@@ -127,7 +127,7 @@ where progress runs from 0 at the end of the warm-up to 1 at the last step.
 
 Whether the schedule matches the run's is checkable: compute it by hand from the recorded settings, and set it against the step sizes the training script saved every tenth step:
 
-Example `learning-rate-schedule` (Python 3.12.15 · numpy 2.5.5), passing in Edition 2026.11.17:
+Example `learning-rate-schedule` (Python 3.12.15 · numpy 2.5.5), passing in Edition 2026.11.18:
 
 ```python
 """Computes the warm-up and cosine schedule by hand from the recorded settings, and checks it against the step sizes
@@ -176,6 +176,80 @@ same as the recorded step sizes: yes
 
 The hand calculation matches every saved step size. The step size starts at 1.50e-05, peaks at 3.00e-03 at the warm-up's end, and is 3.00e-04 at the last step, a tenth of that peak.
 
+Figure 8.1 draws that schedule at every step of the run, with the saved step sizes over it. The top panel shows the whole run, where the warm-up is a sliver at the left edge; the bottom panel zooms in on it. The warm-up is 1.2% of the run. The decay fills the rest of the run: the step size first falls to half its peak at step 9,269, and from there to the last step it never rises, staying at or below half the peak for the last 46% of the run.
+
+*Figure 8.1. The step size at every step of the run, with the saved step sizes over it and the warm-up zoomed in below.*
+
+![The step size rises in a straight line to its peak, then falls along a curve that stays below half the peak for the last part of the run](https://rollingedition.ai/books/language-models-from-the-ground-up/2026.11.18/figures/learning-rate-schedule.svg)
+
+Example `figure-learning-rate-schedule` (Python 3.12.15 · matplotlib 3.11.2 · numpy 2.5.5), passing in Edition 2026.11.18:
+
+```python
+"""Draws the step size for every step of the run, computed from the recorded settings, with the saved step sizes over it,
+and the warm-up zoomed in below. The printed lines give the warm-up's share of the run, the step at which the step size
+first reaches half its peak, the share of the run from there to the last step, and the largest gap from the saved sizes."""
+from lib import transformer
+from lib.figures import ACCENT, INK, MUTED, new_figure, save
+
+import json
+
+import numpy as np
+
+_, _, manifest = transformer.load()
+settings, total = manifest["settings"], manifest["steps"]
+warmup, peak = settings["warmup_steps"], settings["peak_rate"]
+saved = np.array(json.loads((transformer.RECORDED / "curves.json").read_text())["rates"])
+saved_steps = np.arange(len(saved)) * 10 + 1      # saved[i] was written after step 10 * i: the size used at step 10 * i + 1
+
+steps = np.arange(total)
+progress = np.clip(steps - warmup, 0, None) / (total - warmup)
+# the schedule of learning-rate-schedule.py, steps counted from 0, so step 0 is already a share of the peak
+schedule = np.where(steps < warmup, peak * (steps + 1) / warmup,
+                    peak * (0.1 + 0.9 * 0.5 * (1 + np.cos(np.pi * progress))))
+half = warmup + int(np.argmax(schedule[warmup:] <= peak / 2))   # the decay starts above half the peak
+assert np.all(schedule[half:] <= peak / 2)                       # and from there on, every step stays at or below it
+assert np.allclose(np.diff(schedule[:warmup], 2), 0, rtol=0, atol=1e-12)   # the warm-up adds the same amount each step
+assert np.all(np.diff(schedule[warmup:]) <= 0)                  # the decay never rises
+gap = np.max(np.abs(saved - schedule[saved_steps]))
+assert gap < 1e-9                                               # the tolerance learning-rate-schedule.py uses
+print(f"share of the run spent warming up: {warmup / total:.1%}")
+print(f"first step at or below half the peak: {half:,}")
+print(f"share of the run from that step to the last: {(total - half) / total:.0%}")
+print(f"largest gap from a saved step size: {gap:.1e}")
+print("warm-up is a straight line: yes")
+print("decay never rises: yes")
+
+fig, (whole, zoom) = new_figure(rows=2, height=4.8, sharex=False)
+# the whole run is drawn every tenth step and the zoom every step, which keeps the SVG under its size limit;
+# the whole run draws the saved sizes as a dotted line, the zoom marks each one
+panels = ((whole, total, 10, "the whole run", {"linestyle": ":"}),
+          (zoom, 400, 1, "the warm-up, zoomed in", {"marker": "o", "linestyle": "none", "markersize": 2.5}))
+for ax, last, every, title, style in panels:                  # the zoom stops at step 400, past the warm-up's end
+    kept = saved_steps < last
+    ax.plot(steps[:last:every], schedule[:last:every], color=ACCENT, label="schedule from the recorded settings")
+    ax.plot(saved_steps[kept], saved[kept], color=INK, linewidth=1.2, label="saved step sizes, every 10th step", **style)
+    ax.axvline(warmup, color=MUTED, linestyle=":", linewidth=1)
+    ax.set(title=title, xlabel="training step, counted from 0", ylabel="step size", ylim=(0, None))
+whole.axhline(peak / 2, color=MUTED, linestyle="--", linewidth=1)
+whole.text(13500, peak * 0.55, "half the peak", color=MUTED)     # above the dashed line, where the curve is lower
+zoom.annotate("end of the warm-up", xy=(warmup, peak), xytext=(warmup + 60, peak * 0.4), color=MUTED,
+              arrowprops={"arrowstyle": "-", "color": MUTED, "linewidth": 0.8})
+zoom.legend(loc="lower right")                  # the empty lower right, short labels so the warm-up line crosses no text
+save(fig, "learning-rate-schedule")
+```
+
+Output:
+
+```text
+share of the run spent warming up: 1.2%
+first step at or below half the peak: 9,269
+share of the run from that step to the last: 46%
+largest gap from a saved step size: 4.3e-19
+warm-up is a straight line: yes
+decay never rises: yes
+figure: figures/learning-rate-schedule.svg
+```
+
 The decay matters. The comparison run trained for four epochs at the same width, with the same seed and the same batches, so its schedule finished its decay at step 4,284, and at that step it scored 27.6 on the validation names. The recorded run was still near its peak step size at that step, and scored 32.6. Same data, same steps: the difference is the decay.
 
 **Working rule:** Warm the step size up over the first few hundred steps, then decay it, and match the schedule's length to the run's. Save the step size as training runs, as the training script does, and check it against the schedule you meant: a schedule bug looks like a training problem, and is far easier to find this way.
@@ -186,7 +260,7 @@ With its batches, updates and schedule set, the store's model trained for 16 epo
 
 Read as [perplexity](#score-with-perplexity) per token, the recorded curves, epoch by epoch, look like this:
 
-Example `transformer-training-curve` (Python 3.12.15 · numpy 2.5.5), passing in Edition 2026.11.17:
+Example `transformer-training-curve` (Python 3.12.15 · numpy 2.5.5), passing in Edition 2026.11.18:
 
 ```python
 """Prints the recorded run's perplexity for each epoch, then the epoch kept and its validation perplexities.
@@ -254,7 +328,7 @@ The comparison has to count the same predictions. The 4-gram predicts each name'
 
 Make a guess first: can the transformer alone beat the counted baseline that chapter 5's window model couldn't? Then score both models, and mixtures of the two, the way [chapter 5](#mix-with-the-counts) did:
 
-Example `transformer-on-names` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1), passing in Edition 2026.11.17:
+Example `transformer-on-names` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1), passing in Edition 2026.11.18:
 
 ```python
 """Scores every validation name, its end included, with the 4-gram baseline and with the transformer, then mixes them
@@ -307,7 +381,7 @@ The [names comparison](#compare-on-names) favours counting, because names are sh
 
 Put the longer reach to the test on descriptions: fit the 4-gram on every training text, then score it, the transformer and an even mix on the descriptions of the first 500 validation products, leaving out texts cut at the length limit and products with no description. It also splits the tokens, as [chapter 5](#compare-with-the-baseline) did, by whether their three-token context occurs in the training texts:
 
-Example `transformer-on-descriptions` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1), passing in Edition 2026.11.17:
+Example `transformer-on-descriptions` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1), passing in Edition 2026.11.18:
 
 ```python
 """Scores the descriptions of the first 500 validation products with a 4-gram trained on whole texts, with the transformer,
@@ -389,7 +463,7 @@ So the training script recorded seven cheaper runs beside the main one, each cha
 
 Which change buys the most? Read the eight runs side by side, each one's size, steps and perplexities at its best and last epochs:
 
-Example `width-data-and-steps` (Python 3.12.15 · numpy 2.5.5), passing in Edition 2026.11.17:
+Example `width-data-and-steps` (Python 3.12.15 · numpy 2.5.5), passing in Edition 2026.11.18:
 
 ```python
 """Reads eight recorded runs and prints each one's parameters, steps, best epoch, and validation perplexities at its best
@@ -498,7 +572,7 @@ Averages say how good a model is; the search box shows what that means to a shop
 
 A shopper would see the transformer's three likeliest next tokens, and those of the half-and-half mix that the [names comparison](#compare-on-names) favoured, after the same five prefixes, each treated as the start of a name. A suggestion of `<sep>` means the model expects the name to end there:
 
-Example `transformer-autocomplete` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1), passing in Edition 2026.11.17:
+Example `transformer-autocomplete` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1), passing in Edition 2026.11.18:
 
 ```python
 """Asks the transformer and its half-and-half mix with the 4-gram for their three likeliest next tokens after five prefixes,

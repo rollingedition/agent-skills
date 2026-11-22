@@ -1,0 +1,7 @@
+prompt budget, in tokens: 7168
+runs drawn: 20
+runs whose prompt rises at every step: 20
+largest prompt, in tokens: 6556
+largest prompt, run: T-16
+largest prompt, step: 16
+figure: figures/prompt-per-step.svg

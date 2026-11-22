@@ -3,13 +3,13 @@ title: "Open Table Formats"
 chapter: "Register tables in a catalog and query them from DuckDB"
 chapter_id: catalogs
 book: open-table-formats
-edition: 2026.11.12
+edition: 2026.11.13
 verified: 2026-11-22
-edition_code: CYAZ-TM3D
+edition_code: FWS1-2ZKC
 canonical: https://rollingedition.com/open-table-formats/catalogs
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“Register tables in a catalog and query them from DuckDB,” chapter 8 of Open Table Formats, Edition 2026.11.12, examples passed Nov 22, 2026. By Rolling Edition, https://rollingedition.com/open-table-formats/catalogs. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Register tables in a catalog and query them from DuckDB,” chapter 8 of Open Table Formats, Edition 2026.11.13, examples passed Nov 22, 2026. By Rolling Edition, https://rollingedition.com/open-table-formats/catalogs. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Register tables in a catalog and query them from DuckDB
 
@@ -19,9 +19,9 @@ The earlier chapters opened each table by its own route: a catalog object for Ic
 
 ## What a catalog holds {#what-a-catalog-holds}
 
-Ask where `wiki.pageviews_hourly` lives, and the answer depends on the format. Underneath, every format stores a table as data files plus [metadata](#what-a-table-format-adds) files. The metadata names the table's current state: its schema, its partition spec and, directly or through manifest files, the data files of its current snapshot or version. Each commit writes new metadata and moves the table to it. The catalog is the registry that maps a table's name to the place where its current metadata is. A reader that asks the catalog for `wiki.pageviews_hourly` gets a pointer to the metadata, and then reads the data files that the metadata lists.
+Ask where `wiki.pageviews_hourly` lives, and the answer depends on the format. Underneath, every format stores a table as data files plus [metadata](#what-a-table-format-adds). The metadata names the table's current state: its schema, its partition spec and, directly or through manifest files, the data files of its current snapshot or version. Each commit writes new metadata and moves the table to it. The catalog is the registry that maps a table's name to the place where its current metadata is. For Iceberg, a reader that asks the catalog for `wiki.pageviews_hourly` gets a pointer to the metadata, and then reads the data files that the metadata lists.
 
-The catalog holds pointers, not the rows. The Parquet files stay in the warehouse folder, and the catalog says where to start reading. Names have a second level as well: `wiki` is a namespace, and every Iceberg table name in this book is a namespace and a table name joined by a dot.
+For Iceberg, the catalog holds pointers, not the rows. The Parquet files stay in the warehouse folder, and the catalog says where to start reading. Names have a second level as well: `wiki` is a namespace, and every Iceberg table name in this book is a namespace and a table name joined by a dot.
 
 Choosing a catalog comes down to two questions: who writes the table, and what reads it. A table that one job writes and one engine reads can live in a file-based catalog and be found by its path. A table that several engines read needs a name each of them can resolve, which is what a [SQL catalog](#register-iceberg-in-sql-catalog) or a service provides. We recommend one catalog for each table, and a record next to the table that names its catalog and its owner. A join across catalogs, as [the join section](#join-tables-from-two-catalogs) shows, works in one session. It does not make the two catalogs one.
 
@@ -33,7 +33,7 @@ The three formats in this book use three different catalogs:
 | DuckLake | The catalog file, attached by path | Inside the catalog file |
 | Delta Lake | Nothing; the table's folder path | In the table's folder |
 
-The Iceberg REST catalog is a catalog of another kind, a service instead of a file. Its [REST catalog page](https://iceberg.apache.org/rest-catalog-spec/) describes a common API, specified with OpenAPI, for interacting with any Iceberg catalog, so that clients need one implementation for all of them. The same page says the protocol uses change-based commits, so the service can resolve conflicts and retry on its side, and that the catalog service writes the root metadata. This chapter runs no REST catalog. Each one needs a running service, and the examples here run offline with no service. The book does not compare the products that implement the protocol.
+The Iceberg REST catalog is a catalog of another kind, an HTTP API that a service implements, instead of a file. Its [REST catalog page](https://iceberg.apache.org/rest-catalog-spec/) describes a common API, specified with OpenAPI, for interacting with any Iceberg catalog, so that clients need one implementation for all of them. The same page says the protocol uses change-based commits, so the service can resolve conflicts and retry on its side, and that the catalog service writes the root metadata. This chapter runs no REST catalog. Each one needs a running service, and the examples here run offline with no service. The book does not compare the products that implement the protocol.
 
 A catalog can hold more than names. Classifications and retention rules are table metadata too. [*Data Governance as Code*](https://rollingedition.com/data-governance-as-code) covers them, and this book does not teach them.
 
@@ -41,11 +41,11 @@ A catalog can hold more than names. Classifications and retention rules are tabl
 
 ## Register a table in a SQL catalog {#register-iceberg-in-sql-catalog}
 
-The pyiceberg `SqlCatalog` keeps its tables in a database. You give it a `uri` for that database and a `warehouse` for the folder where it writes data files and metadata. This book uses a SQLite file for the database and a local folder for the warehouse. The [pyiceberg configuration page](https://py.iceberg.apache.org/configuration/) says the SQL catalog needs a database behind it, and warns that SQLite is not built for concurrency and suits exploratory or development use. These examples are for development, so that limit does not change anything in them. A production catalog needs a database that several writers can use.
+The pyiceberg `SqlCatalog` keeps its list of tables in a database. You give it a `uri` for that database and a `warehouse` for the folder where it writes data files and metadata. This book uses a SQLite file for the database and a local folder for the warehouse. The [pyiceberg configuration page](https://py.iceberg.apache.org/configuration/) says the SQL catalog needs a database behind it, and warns that SQLite is not built for concurrency and suits exploratory or development use. These examples are for development, so that limit does not change anything in them. A production catalog needs a database that several writers can use.
 
 The next example opens the same catalog file a second time, with the same name, and reads the table through that second object. It then registers a second name for the table's metadata, and shows what a catalog object with a different name can see.
 
-Example `register-iceberg-table` (Python 3.12.15 · deltalake 1.6.6 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.12:
+Example `register-iceberg-table` (Python 3.12.15 · deltalake 1.6.6 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.13:
 
 ```python
 """Register an Iceberg table in a SQL catalog, then reach it through a second catalog object, a stale object and a
@@ -107,7 +107,74 @@ A loaded table keeps the state it had when it was loaded. An object from before 
 
 `register_table(identifier, metadata_location)` adds a name for an existing metadata file. The [pyiceberg API page](https://py.iceberg.apache.org/api/) gives it as the way to register a table from its metadata, and says that passing `overwrite=True` replaces an entry that already exists. The example registers the table's metadata under `archive.pageviews_copy`, in a namespace it creates first. The archive name reads the same rows as the original table, 1999 of them. Both names point at the same metadata, and the registration writes no data files.
 
-A registered name is a second route to the same table, not a second table. Commits through one name are the commits of both, because both read the same metadata. Treat a second name as a read route, and not as a backup.
+A registered name is a second route to the table as it was when registered, not a live second route: the first commit through either name makes it a second table that shares the old data files. Treat a second name as a read route, and not as a backup.
+
+Example `registered-names-split` (Python 3.12.15 · deltalake 1.6.6 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.13:
+
+```python
+"""Register a second name for a table's metadata, then commit through each name in turn. The point rests on the
+'archive rows after a commit through wiki' line: the registered name keeps the rows it read before that commit."""
+
+from lib.lakehouse import ICEBERG_ID, create_iceberg_table, new_warehouse, open_catalog, parquet_files, read_cut_hour, scan_arrow
+
+ARCHIVE_ID = "archive.pageviews_copy"
+
+
+def rows_by_name(catalog):
+    """Return the row counts that the two names read now, each through a freshly loaded table."""
+    wiki = scan_arrow(catalog.load_table(ICEBERG_ID)).num_rows
+    archive = scan_arrow(catalog.load_table(ARCHIVE_ID)).num_rows
+    return wiki, archive
+
+
+with new_warehouse() as wh:
+    table = create_iceberg_table(wh)
+    table.append(read_cut_hour(0))
+    table.append(read_cut_hour(1))
+
+    # register_table adds a catalog row that points at the metadata file as it is now.
+    catalog = open_catalog(wh)
+    catalog.create_namespace("archive")
+    catalog.register_table(ARCHIVE_ID, table.metadata_location)
+    wiki, archive = rows_by_name(catalog)
+    print("wiki rows at registration:", wiki)
+    print("archive rows at registration:", archive)
+
+    # The first commit goes through the original name, so only that name's pointer moves.
+    table.append(read_cut_hour(2))
+    wiki_after, archive_after = rows_by_name(catalog)
+    print("wiki rows after a commit through wiki:", wiki_after)
+    print("archive rows after a commit through wiki:", archive_after)
+    assert wiki_after > wiki
+    assert archive_after == archive
+
+    # Two commits go through the registered name, so its count differs from the original's. Each load is fresh,
+    # because a loaded table keeps the state it had at load time.
+    for hour in (3, 4):
+        catalog.load_table(ARCHIVE_ID).append(read_cut_hour(hour))
+    wiki_again, archive_again = rows_by_name(catalog)
+    print("wiki rows after two commits through archive:", wiki_again)
+    print("archive rows after two commits through archive:", archive_again)
+    print("data files both names list:", len(set(parquet_files(catalog.load_table(ICEBERG_ID))) & set(parquet_files(catalog.load_table(ARCHIVE_ID)))))
+    assert wiki_again == wiki_after
+    assert archive_again > archive_after
+```
+
+Output:
+
+```text
+wiki rows at registration: 999
+archive rows at registration: 999
+wiki rows after a commit through wiki: 1499
+archive rows after a commit through wiki: 999
+wiki rows after two commits through archive: 1499
+archive rows after two commits through archive: 1999
+data files both names list: 2
+```
+
+A commit through either name moves only that name's pointer. After a commit through the original, the registered name still reads 999 rows, where the original reads 1499. After two commits through the registered name, it reads 1999 rows, and the original still reads 1499.
+
+The two names still list 2 of the same data files.
 
 **Working rule:** Keep one writer name for each table. Register a metadata file under a second name only for a read you will remove afterwards, and pass `overwrite=True` only when you mean to replace that entry.
 
@@ -117,7 +184,7 @@ DuckLake's catalog is a database file, and DuckDB attaches it with an `ATTACH` s
 
 The next example creates `wiki.domains` in a fresh DuckLake catalog, detaches it, and attaches the file again with no data path. It then lists the tables in the `wiki` schema of the file.
 
-Example `attach-ducklake` (Python 3.12.15 · deltalake 1.6.6 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.12:
+Example `attach-ducklake` (Python 3.12.15 · deltalake 1.6.6 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.13:
 
 ```python
 """Attach a DuckLake catalog file, detach it, and attach it again from the file alone. The point rests on the
@@ -159,7 +226,7 @@ The [same connecting page](https://ducklake.select/docs/stable/duckdb/usage/conn
 
 A Delta Lake table in this book is a folder. It has no catalog, and nothing in this book's setup names it apart from its path. The `deltalake` package opens the folder with `DeltaTable(path)`, and every read goes through that path. The three appends in the next example are versions 0, 1 and 2.
 
-Example `open-delta-by-path` (Python 3.12.15 · deltalake 1.6.6 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.12:
+Example `open-delta-by-path` (Python 3.12.15 · deltalake 1.6.6 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.13:
 
 ```python
 """Open a Delta Lake table by its path, with no catalog, and read its first version and its current one. The point
@@ -208,7 +275,7 @@ A path is a good name for a table that one job writes and a few jobs read. It ne
 
 DuckDB can query an Arrow table that a library hands it, and a DuckLake table that is attached to the same session, in one statement. The Iceberg table leaves pyiceberg as an Arrow table through `scan_arrow`. DuckDB registers that table under a name, and the join reads `wiki.domains` through the attached catalog. The book does not load DuckDB's `iceberg` extension for this, so the Iceberg side is the Arrow table and nothing else.
 
-Example `join-pageviews-and-domains` (Python 3.12.15 · deltalake 1.6.6 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.12:
+Example `join-pageviews-and-domains` (Python 3.12.15 · deltalake 1.6.6 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.13:
 
 ```python
 """Join an Iceberg table, read through Arrow, with a DuckLake table in one DuckDB statement. The point rests on the
@@ -272,7 +339,7 @@ Only the last failure below has no example.
 
 **The catalog file replaced by an empty one.** The next example attaches a fresh, empty catalog file to the data folder of a live catalog, then runs `ducklake_delete_orphaned_files` with `cleanup_all => true`. The [DuckLake cleanup page](https://ducklake.select/docs/stable/duckdb/maintenance/cleanup_of_files) shows `cleanup_all` deleting all orphaned files, and `dry_run` listing them instead. It defines an [orphan](#find-orphan-files) as a file that the catalog you run it against does not track. A fresh catalog tracks nothing, so every Parquet file in the folder is an orphan to it.
 
-Example `ducklake-orphan-cleanup-hazard` (Python 3.12.15 · deltalake 1.6.6 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.12:
+Example `ducklake-orphan-cleanup-hazard` (Python 3.12.15 · deltalake 1.6.6 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.13:
 
 ```python
 """Run cleanup_all against a fresh, empty DuckLake catalog that shares a data folder with a live one. The point rests

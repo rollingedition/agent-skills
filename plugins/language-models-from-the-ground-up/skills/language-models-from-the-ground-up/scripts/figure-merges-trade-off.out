@@ -1,0 +1,8 @@
+settings drawn: 16
+merges with the fewest rare token types: 2,000
+rare token types at 12,000 merges: 32%
+steepest rise in rare token types starts at merges: 10,000
+steepest rise in rare token types ends at merges: 12,000
+tokens per word falls faster before 2,000 merges than after: yes
+rare token types fall to a low, then climb, across the settings: yes
+figure: figures/merges-trade-off.svg

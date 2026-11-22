@@ -3,13 +3,13 @@ title: "Data Governance as Code"
 chapter: "Governance end to end"
 chapter_id: governance-end-to-end
 book: data-governance-as-code
-edition: 2026.11.33
-verified: 2026-11-19
-edition_code: 6KBP-RPEQ
+edition: 2026.11.34
+verified: 2026-11-22
+edition_code: CXPB-RS22
 canonical: https://rollingedition.com/data-governance-as-code/governance-end-to-end
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“Governance end to end,” chapter 1 of Data Governance as Code, Edition 2026.11.33, examples passed Nov 19, 2026. By Rolling Edition, https://rollingedition.com/data-governance-as-code/governance-end-to-end. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Governance end to end,” chapter 1 of Data Governance as Code, Edition 2026.11.34, examples passed Nov 22, 2026. By Rolling Edition, https://rollingedition.com/data-governance-as-code/governance-end-to-end. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Governance end to end
 
@@ -76,7 +76,7 @@ Three of the book's shared modules do the work. `lib.catalog.open_catalog` build
 
 Loading the file and cataloging `crm.learners` with it takes a few lines, and the check runs on what it builds:
 
-Example `catalog-the-learners` (Python 3.12.15 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.33:
+Example `catalog-the-learners` (Python 3.12.15 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.34:
 
 ```python
 """Apply governance/metadata.toml to crm.learners: write its owner, domain and descriptions into the catalog, then run the
@@ -139,7 +139,7 @@ The platform's `marketing_audience` pipeline is one `create table ... as select 
 
 Run the pipeline with events on, read its lineage back from the events alone, and count the rows through `lib.warehouse.connect`, which gives DuckDB a view of each catalog table:
 
-Example `audience-pipeline-lineage` (Python 3.12.15 · duckdb 2.0.0 · openlineage-python 1.55.0 · pyarrow 26.0.1 · pyiceberg 0.12.0 · pyyaml 6.0.3 · sqlglot 30.33.0), passing in Edition 2026.11.33:
+Example `audience-pipeline-lineage` (Python 3.12.15 · duckdb 2.0.0 · openlineage-python 1.55.0 · pyarrow 26.0.1 · pyiceberg 0.12.0 · pyyaml 6.0.3 · sqlglot 30.33.0), passing in Edition 2026.11.34:
 
 ```python
 """Run the marketing_audience pipeline with OpenLineage events, then read its column lineage back from the events alone.
@@ -223,7 +223,7 @@ row_filters contains {"column": "support_region", "equals": user.region} if {
 
 `agent-a05`, a support agent in EMEA, asks for three columns of `crm.learners` and counts learners by region through the layer. Next, the emails are checked against the generated files that `lib.platform.load` reads:
 
-Example `support-region-enforced` (Python 3.12.15 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0 · regopy 1.5.2 · sqlglot 30.33.0), passing in Edition 2026.11.33:
+Example `support-region-enforced` (Python 3.12.15 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0 · regopy 1.5.2 · sqlglot 30.33.0), passing in Edition 2026.11.34:
 
 ```python
 """One access decision from the platform's Rego policy, and the same agent's query enforced in the layer. The point rests on
@@ -282,11 +282,11 @@ regopy is the Python binding of rego-cpp, Microsoft's C++ implementation of Rego
 
 The book's module for this is `lib.ci`, the platform's governance job. A schema change on the platform is a migration, an `alter table` statement in a file in the branch's `migrations/` folder. Each side of a pull request is a checkout in its own folder, one of main and one of the branch. For each side, `lib.ci.run` builds a [scratch platform](#governance-in-ci), a fresh catalog made the way the platform runs. It holds the source tables, the side's migrations, its metadata written into the catalog, and its pipelines. It runs the checks it's given on the branch's platform, runs them on main's alone to learn what is already there, and compares the findings by ID.
 
-This section runs one check, `coverage`. The coverage check is [the catalog check](#catalog-a-table), `lib.metadata.problems`, run on the branch's platform, and for each column nobody classified it adds what a rule on column names suggests, from the rules [chapter 3](#classify-columns-from-the-schema) writes.
+This section runs one check, `coverage`. The coverage check is [the catalog check](#catalog-a-table), `lib.metadata.problems` with `lib.metadata.dropped`, run on the branch's platform, and for each column nobody classified it adds what a rule on column names suggests, from the rules [chapter 3](#classify-columns-from-the-schema) writes, and it flags a column classified less strictly than its name suggests.
 
 The CRM team's pull request adds a column for learners' work email in one migration and forgets the column's metadata, so the coverage check has something to find:
 
-Example `unclassified-column-fails` (Python 3.12.15 · duckdb 2.0.0 · openlineage-python 1.55.0 · phonenumbers 9.0.43 · presidio-analyzer 2.2.366 · pyarrow 26.0.1 · pyiceberg 0.12.0 · pyyaml 6.0.3 · regopy 1.5.2 · sqlglot 30.33.0 · tldextract 5.4.0), passing in Edition 2026.11.33:
+Example `unclassified-column-fails` (Python 3.12.15 · duckdb 2.0.0 · openlineage-python 1.55.0 · phonenumbers 9.0.43 · presidio-analyzer 2.2.366 · pyarrow 26.0.1 · pyiceberg 0.12.0 · pyyaml 6.0.3 · regopy 1.5.2 · sqlglot 30.33.0 · tldextract 5.4.0), passing in Edition 2026.11.34:
 
 ```python
 """The CRM team's pull request adds a column to crm.learners and no metadata for it; the coverage check runs on its branch and
@@ -339,7 +339,7 @@ The spreadsheet this chapter [started from](#governance-end-to-end) lists tables
 
 Take the platform's spreadsheet, an inventory of `crm.learners` exported as CSV, one row per column. Then the CRM team's migration from [the pull request above](#fail-the-pull-request) adds `work_email`. Compare it with the catalog after the migration to find what it misses:
 
-Example `spreadsheet-misses-new-column` (Python 3.12.15 · duckdb 2.0.0 · openlineage-python 1.55.0 · phonenumbers 9.0.43 · presidio-analyzer 2.2.366 · pyarrow 26.0.1 · pyiceberg 0.12.0 · pyyaml 6.0.3 · regopy 1.5.2 · sqlglot 30.33.0 · tldextract 5.4.0), passing in Edition 2026.11.33:
+Example `spreadsheet-misses-new-column` (Python 3.12.15 · duckdb 2.0.0 · openlineage-python 1.55.0 · phonenumbers 9.0.43 · presidio-analyzer 2.2.366 · pyarrow 26.0.1 · pyiceberg 0.12.0 · pyyaml 6.0.3 · regopy 1.5.2 · sqlglot 30.33.0 · tldextract 5.4.0), passing in Edition 2026.11.34:
 
 ```python
 """A governance inventory kept as a spreadsheet, exported before a schema change, then compared with the catalog after it.
@@ -394,7 +394,7 @@ A policy protects only the reads that pass through whatever enforces it. Trino a
 
 The [enforcement layer](#enforce-one-access-decision) keeps `agent-a05` to EMEA. The layer has routes around it, though, because anything with the catalog's access can read the table's files. Read the table around the layer twice: with DuckDB through `lib.warehouse.connect`, which the layer itself uses, as a notebook would, and with PyIceberg's own scan, as any reader holding the catalog's access would:
 
-Example `read-around-the-layer` (Python 3.12.15 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0 · regopy 1.5.2 · sqlglot 30.33.0), passing in Edition 2026.11.33:
+Example `read-around-the-layer` (Python 3.12.15 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0 · regopy 1.5.2 · sqlglot 30.33.0), passing in Edition 2026.11.34:
 
 ```python
 """The same table, read three ways: through the enforcement layer, and around it with DuckDB and with PyIceberg. The point

@@ -1,13 +1,13 @@
 ---
 title: "Glossary"
 book: "Evaluating LLM Applications"
-edition: "2026.11.5"
+edition: "2026.11.6"
 canonical: "https://rollingedition.com/evaluating-llm-applications/glossary"
 ---
 
 # Glossary of *Evaluating LLM Applications*
 
-The 124 terms this book defines, as Edition 2026.11.5 has them, each in the book's own sentence. When a task this skill covers uses one, it means what it says here: read its section before you rely on it, and cite the section. Where a definition depends on a package, it says the version this edition pins and runs its examples on. On the web: https://rollingedition.com/evaluating-llm-applications/glossary
+The 124 terms this book defines, as Edition 2026.11.6 has them, each in the book's own sentence. When a task this skill covers uses one, it means what it says here: read its section before you rely on it, and cite the section. Where a definition depends on a package, it says the version this edition pins and runs its examples on. On the web: https://rollingedition.com/evaluating-llm-applications/glossary
 
 ## agreement
 
@@ -74,7 +74,7 @@ The baseline is the setup chapter 1 measured.
 
 ## BLEU
 
-Papineni and colleagues proposed BLEU in 2002 as a quick and inexpensive way to score machine translation.
+Papineni and colleagues proposed BLEU in 2002 as a quick and inexpensive way to score machine translation, from modified n-gram precision and a brevity penalty
 
 - Contrasts with: ROUGE-N
 - Defined in: [Where BLEU and ROUGE mislead](checks-in-code.md#where-bleu-rouge-mislead)
@@ -82,7 +82,7 @@ Papineni and colleagues proposed BLEU in 2002 as a quick and inexpensive way to 
 
 ## BM25
 
-The index is built with BM25, which scores each section by the words it shares with the question.
+The index is built with BM25, which scores each section by the words it shares with the question, giving rarer words more weight and long sections less.
 
 - True for: bm25s 0.3.16
 - Implemented by: bm25s 0.3.16
@@ -133,7 +133,7 @@ A citation is a claim about the docs: this section, in this version, supports th
 
 ## citation accuracy
 
-Citation accuracy asks whether each citation names a section the item lists as supporting.
+Citation accuracy asks whether each citation names a section the item lists as supporting in the asked version.
 
 - Contrasts with: faithfulness
 - Close to: https://rollingedition.com/concepts/search-and-recommendation/attribution
@@ -142,14 +142,14 @@ Citation accuracy asks whether each citation names a section the item lists as s
 
 ## citation form
 
-the citation form, a section ID in square brackets
+the citation form, a section ID after sec: in square brackets, such as [sec:no-fail-flag]
 
 - Defined in: [Citations](measure-before-you-change.md#citations-in-code)
 - Address: https://rollingedition.com/concepts/retrieval-augmented-generation/citation-form
 
 ## citation rate
 
-The citation rate counts every citation in answered items that is supported.
+The citation rate is the share of all citations in answered items that are supported.
 
 - Contrasts with: item rate
 - Defined in: [Citation accuracy](grounded-answers.md#citation-accuracy)
@@ -164,7 +164,7 @@ citation-first, for a reply whose first line opens with a citation
 
 ## code check
 
-A code check reads two things: the reply's text, and the item's own data, which holds its reference answer and the list of sections that support it.
+A code check reads the reply's text and data the run already holds: the item's own data, which holds its reference answer and the list of sections that support it, the sections the prompt gave, and the docs' section IDs.
 
 - Contrasts with: judge
 - Defined in: [What a code check can see](checks-in-code.md#what-a-code-check-can-see)
@@ -187,7 +187,7 @@ Contamination is when a benchmark's items or answers appear in training data, so
 
 ## corrected pass rate
 
-The corrected rate estimates the share of sablefile's replies that a person would pass, under the book's correctness cut.
+The corrected rate estimates the share of sablefile's readable replies that a person would pass, under the book's correctness cut.
 
 - Also: corrected rate
 - Formula: `(observed + TNR - 1) / (TPR + TNR - 1)`
@@ -275,7 +275,7 @@ The loader sets extra="forbid", so an unknown field is an error and not a field 
 
 ## F1
 
-F1, which combines recall with precision
+F1, the harmonic mean of recall and precision
 
 - Contrasts with: ROUGE-N
 - Defined in: [Where BLEU and ROUGE mislead](checks-in-code.md#where-bleu-rouge-mislead)
@@ -299,7 +299,7 @@ Each reply got one mode, its main defect
 
 ## faithfulness
 
-Faithfulness asks whether each claim is in the sections the assistant was shown.
+Faithfulness asks whether each claim follows from the sections the assistant was shown.
 
 - Contrasts with: version-correctness
 - The same as: https://rollingedition.com/concepts/search-and-recommendation/faithfulness
@@ -334,9 +334,7 @@ false-premise: the question asks about a flag or key that the asked version does
 
 A false refusal is an answerable item declined
 
-- Also: over-declining
 - Contrasts with: false answer
-- A kind of: failure mode
 - Defined in: [Declines](measure-before-you-change.md#declines-in-code)
 - Address: https://rollingedition.com/concepts/llm-evaluation/false-refusal
 
@@ -390,7 +388,7 @@ A gate is a rule that stops a change from merging.
 
 ## grounded
 
-An answer is grounded when a reader who follows its citations finds the claim where the citation says it is, in the version they asked about.
+An answer is grounded when a reader who follows its citations finds each of its claims where the citation says it is, in the version they asked about.
 
 - Close to: https://rollingedition.com/concepts/search-and-recommendation/grounding
 - Defined in: [What grounded means here](grounded-answers.md#what-grounded-means)
@@ -415,7 +413,7 @@ A guard reads the best-matching section's score and declines when it falls below
 
 ## held-out
 
-held-out is used once, to report a result.
+held-out is used once for each comparison, to report a result.
 
 - Also: held-out items
 - Contrasts with: dev
@@ -426,7 +424,7 @@ held-out is used once, to report a result.
 
 ## interval
 
-An interval answers a different question from the pass rate: how far would the rate move if the set had been another twenty items drawn the same way?
+An interval answers a different question from the pass rate: how far would the rate move if the set had been another set of as many items, drawn the same way?
 
 - Also: 95% interval
 - Computed from: pass rate
@@ -444,7 +442,7 @@ an item: one test question with the fields a scorer needs.
 
 ## item rate
 
-The item rate counts an answered item once if at least one of its citations is supported, so one good citation carries the item.
+The item rate counts an answered item once if at least one of its citations is supported, over all answered items, so one good citation carries the item.
 
 - Computed from: supported
 - Defined in: [Citation accuracy](grounded-answers.md#citation-accuracy)
@@ -452,7 +450,7 @@ The item rate counts an answered item once if at least one of its citations is s
 
 ## judge
 
-a judge: a model that reads the question, a written reference answer and the assistant's reply, and returns PASS or FAIL
+a judge: a model that grades a reply, here by reading the question, a written reference answer and the assistant's reply, and returning PASS or FAIL
 
 - Close to: https://rollingedition.com/concepts/search-and-recommendation/judge
 - Defined in: [One judge](measure-before-you-change.md#one-judge)
@@ -460,7 +458,7 @@ a judge: a model that reads the question, a written reference answer and the ass
 
 ## judged-correct rate
 
-The judged-correct rate is the count for version-dependent items alone, so a version miss shows on its own line, and a team can see whether a change to retrieval moved it.
+The judged-correct rate is the pass rate for version-dependent items alone, so a version miss shows on its own line, and a team can see whether a change to retrieval moved it.
 
 - Computed from: version-dependent item
 - Defined in: [Version-correctness](grounded-answers.md#version-correctness)
@@ -494,7 +492,7 @@ Each item also has a kind, which says what a correct reply looks like.
 
 ## length
 
-length: whether the pass rate rises with the length of the reply.
+length: whether the pass rate rises with the length of a reply that says no more.
 
 - Also: verbosity bias
 - Contrasts with: position
@@ -503,7 +501,7 @@ length: whether the pass rate rises with the length of the reply.
 
 ## MC1
 
-The book uses TruthfulQA's multiple-choice version, MC1: exactly one option is correct, and the model answers with a letter.
+The book uses TruthfulQA's multiple-choice version, MC1: exactly one option is correct, and here the model answers with a letter.
 
 - Part of: TruthfulQA
 - Defined in: [TruthfulQA](build-the-test-set.md#truthfulqa)
@@ -534,7 +532,7 @@ A naive gate would fail whenever the point estimate of the difference is below m
 
 ## near-miss term
 
-a planted near-miss term, a name close to one the docs use, which catches a careless reply
+a planted near-miss term, a name that one version renamed or that the docs use for another concept, which catches a careless reply
 
 - Also: near-miss-term
 - Part of: planted item
@@ -543,7 +541,7 @@ a planted near-miss term, a name close to one the docs use, which catches a care
 
 ## no difference detected
 
-No difference detected is a finding about a set at its size.
+No difference detected, the reading when the interval includes zero, is a finding about a set at its size.
 
 - Computed from: interval
 - Defined in: [Paired comparisons](intervals-and-sample-size.md#paired-comparisons)
@@ -591,7 +589,7 @@ Outcome against path asks whether a pass came with its section in hand, and whet
 
 ## paired comparison
 
-A paired comparison subtracts, for each item, the verdict of the baseline from the verdict of prompt B, and averages the differences over the set.
+A paired comparison subtracts, for each item, the verdict of the baseline from the verdict of the variant, here prompt B, and averages the differences over the set.
 
 - Contrasts with: unpaired comparison
 - Close to: https://rollingedition.com/concepts/search-and-recommendation/paired-test
@@ -600,7 +598,7 @@ A paired comparison subtracts, for each item, the verdict of the baseline from t
 
 ## paired difference
 
-The paired difference is rubric B's score minus rubric A's, averaged over the dev rows
+The paired difference is the variant's score minus the baseline's, here rubric B's agreement score minus rubric A's, averaged over the dev rows
 
 - Close to: https://rollingedition.com/concepts/llm-evaluation/paired-difference
 - Defined in: [Agreement and kappa](calibrate-the-judge.md#agreement-and-kappa)
@@ -647,7 +645,7 @@ Path is what the steps before the reply reached.
 
 ## percentile bootstrap
 
-The percentile bootstrap is the simplest interval built on resampling, the middle 95% of the resampled rates.
+The percentile bootstrap is the simplest interval built on resampling, the middle 95% of the resampled rates, or another share when a different level is chosen.
 
 - A kind of: interval
 - The same as: https://rollingedition.com/concepts/search-and-recommendation/percentile-interval
@@ -723,7 +721,7 @@ The retrieval-path count asks one question of each item: is a supporting section
 
 ## ROUGE-1 F1
 
-ROUGE-1 F1 counts single words.
+ROUGE-1 F1 counts the single words a candidate shares with its reference, as an F1.
 
 - Contrasts with: ROUGE-N
 - Computed from: F1
@@ -771,7 +769,7 @@ The second-model variant keeps the baseline's prompt and hands the answer to a s
 
 ## self-preference
 
-self-preference: whether the judge favours answers written by its own model.
+self-preference: whether the judge favours answers written by its own model over answers of equal quality.
 
 - Contrasts with: length
 - Defined in: [Find where a judge's verdict stops being reliable](when-the-judge-stops-being-reliable.md)
@@ -779,7 +777,7 @@ self-preference: whether the judge favours answers written by its own model.
 
 ## stale answer
 
-stale-answer: the answer sits under a section ID that a version filter removes, so a filter that is too strict misses it.
+stale-answer: the answer sits under a section ID that only the asked version has, so an answer built from an older version's docs is stale.
 
 - Also: stale-answer
 - Part of: planted item
@@ -834,7 +832,7 @@ a task is the recipe for an evaluation, made minimally of a dataset, a solver an
 
 ## template
 
-The template wraps the request, the reference and the reply in markers, so the judge can tell them apart.
+The template wraps the request, the reply and any reference in markers, so the judge can tell them apart.
 
 - Part of: rubric
 - Defined in: [Write a rubric a judge can apply](a-judge-with-a-rubric.md)
@@ -935,7 +933,7 @@ An unreadable pair has a missing verdict in either order.
 
 ## unreadable verdict
 
-an unreadable verdict means the judge gave no judgment at all.
+an unreadable verdict means the judge gave no judgment the code can read.
 
 - Contrasts with: FAIL
 - Defined in: [Verdict first](a-judge-with-a-rubric.md#verdict-first)
@@ -943,7 +941,7 @@ an unreadable verdict means the judge gave no judgment at all.
 
 ## upper bound
 
-The upper bound is the least negative reading the data still allows
+The upper bound is the most favourable reading the interval allows for the candidate
 
 - Part of: interval
 - Defined in: [A gate that respects the interval](keep-the-evaluation-running.md#a-gate-that-respects-the-interval)
@@ -967,7 +965,7 @@ version-swap: the question uses another version's wording, so an assistant that 
 
 ## version-correctness
 
-Version-correctness asks whether the answer fits the asked version.
+Version-correctness asks whether the answer matches the reference for the asked version.
 
 - Defined in: [Check that answers rest on the cited docs, in the asked version](grounded-answers.md)
 - Address: https://rollingedition.com/concepts/retrieval-augmented-generation/version-correctness
@@ -1007,7 +1005,7 @@ wrong-version means a section that exists in another version only.
 
 ## XSTest
 
-XSTest is a test suite of safe prompts that look unsafe.
+XSTest is a test suite of safe prompts that look unsafe, with unsafe prompts beside them as contrasts.
 
 - Defined in: [Outside this book](declining-when-the-docs-dont-say.md#outside-this-book)
 - Address: https://rollingedition.com/concepts/llm-evaluation/xstest

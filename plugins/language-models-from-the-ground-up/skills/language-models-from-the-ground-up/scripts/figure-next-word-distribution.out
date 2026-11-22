@@ -1,0 +1,9 @@
+likeliest word after coffee: table
+top probability after coffee: 0.896
+words that followed coffee: 29
+share of probability in the 15 drawn, after coffee: 0.989
+likeliest word after start marker: 3
+top probability after start marker: 0.006
+words that followed start marker: 19570
+share of probability in the 15 drawn, after start marker: 0.040
+figure: figures/next-word-distribution.svg

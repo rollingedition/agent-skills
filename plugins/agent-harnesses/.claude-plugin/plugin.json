@@ -1,7 +1,7 @@
 {
   "name": "agent-harnesses",
   "displayName": "Agent Harnesses",
-  "version": "2026.11.6",
+  "version": "2026.11.7",
   "description": "Build the code around a model that makes an agent you can trust with real tools: the loop, tools, context, permissions, sandboxing, subagents and tests, on a maintenance agent for a small Python library.",
   "author": {
     "name": "Rolling Edition",

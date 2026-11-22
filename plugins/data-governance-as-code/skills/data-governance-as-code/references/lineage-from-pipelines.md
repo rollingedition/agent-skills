@@ -3,13 +3,13 @@ title: "Data Governance as Code"
 chapter: "Lineage from pipelines"
 chapter_id: lineage-from-pipelines
 book: data-governance-as-code
-edition: 2026.11.33
-verified: 2026-11-19
-edition_code: 6KBP-RPEQ
+edition: 2026.11.34
+verified: 2026-11-22
+edition_code: CXPB-RS22
 canonical: https://rollingedition.com/data-governance-as-code/lineage-from-pipelines
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“Lineage from pipelines,” chapter 4 of Data Governance as Code, Edition 2026.11.33, examples passed Nov 19, 2026. By Rolling Edition, https://rollingedition.com/data-governance-as-code/lineage-from-pipelines. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Lineage from pipelines,” chapter 4 of Data Governance as Code, Edition 2026.11.34, examples passed Nov 22, 2026. By Rolling Edition, https://rollingedition.com/data-governance-as-code/lineage-from-pipelines. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Lineage from pipelines
 
@@ -22,13 +22,13 @@ The online learning platform from [chapter 1](#governance-end-to-end) builds its
 - `marketing_audience` writes `marketing.audience`: the learners marketing may email, with their name and email.
 - `review_corpus` writes `ai.review_corpus`: the review text the platform's course assistant is grounded on.
 
-[Chapter 2](#a-catalog-you-can-test)'s metadata check found that two of those outputs, `marketing.audience` and `ai.review_corpus`, have no metadata at all: no owner, and no classification for any column. Yet one holds learners' names and emails, and the other holds the free text of reviews, where [chapter 3](#classify-columns-from-their-values) found names and emails too. Two questions follow, and the catalog can't answer either. Which columns of those tables are personal data? And if the CRM team renames or reformats `crm.learners.email`, what breaks? Both are lineage questions. Lineage is where each column's data came from, and where it goes.
+[Chapter 2](#a-catalog-you-can-test)'s metadata check found that two of those outputs, `marketing.audience` and `ai.review_corpus`, have no metadata at all: no owner, and no classification for any column. Yet one holds learners' names and emails, and the other holds the free text of reviews, where [chapter 3](#classify-columns-from-their-values) found names and emails too. Two questions follow, and the catalog can't answer either. Which columns of those tables are personal data? And if the CRM team renames or reformats `crm.learners.email`, what breaks? Both are lineage questions. Lineage is where each table's and each column's data came from, and where it goes.
 
 This chapter adds the book's shared module for lineage, `lib.lineage`. It runs each pipeline, tells OpenLineage what the run read and wrote, column by column, and reads the result back as a graph that answers both questions.
 
 ## Send a run event from every pipeline {#send-run-events}
 
-OpenLineage, an open specification for lineage, describes it with three objects ([object model](https://openlineage.io/docs/spec/object-model)). A **job** is "a process that consumes or produces Datasets", such as a pipeline. A **run** is one occurrence of a job, identified by a UUID the client generates, and the spec recommends UUIDv7. A **dataset** is a table or file, named by a namespace and a name that together identify it. A run reports itself through **run events**: a START when it begins, then one terminal event, COMPLETE, FAIL or ABORT, and a server treats the events for one run as accumulating ([run cycle](https://openlineage.io/docs/spec/run-cycle)). Lineage comes mostly from the work itself: a backend learns about datasets mainly from information about jobs.
+OpenLineage, an open specification for lineage, describes it with three objects ([object model](https://openlineage.io/docs/spec/object-model)). A **job** is "a process that consumes or produces Datasets", such as a pipeline. A **run** is one occurrence of a job, identified by a UUID the client generates, and the spec recommends UUIDv7. A **dataset** is any discrete body of data, such as a table or file, named by a namespace and a name that together identify it. A run reports itself through **run events**: a START when it begins, any RUNNING events, OTHER events for more metadata at any time before the end, then one terminal event, COMPLETE, FAIL or ABORT, and a server treats the events for one run as accumulating ([run cycle](https://openlineage.io/docs/spec/run-cycle)). Lineage comes mostly from the work itself: a backend learns about datasets mainly from information about jobs.
 
 The Python client, openlineage-python 1.55.0, builds events from `RunEvent`, `Run`, `Job`, `InputDataset` and `OutputDataset` in `openlineage.client.event_v2`, and sends them through a transport ([client docs](https://openlineage.io/docs/client/python)). It ships HTTP and Kafka transports for servers, and a file transport "designed mainly for integration testing", which with `append` set writes one JSON event per line to a single file ([configuration](https://openlineage.io/docs/client/python/configuration)). The client computes no lineage. It serializes what the caller passes in and adds only metadata of its own: a run facet with its version, the job's source location when it runs in a Git checkout, and any environment variables you configure it to collect (`emit` in `client/client.py`, [openlineage-python](https://pypi.org/project/openlineage-python/1.54.0/)). This means the lineage that reaches a server is the lineage your code put in the event.
 
@@ -36,7 +36,7 @@ The Python client, openlineage-python 1.55.0, builds events from `RunEvent`, `Ru
 
 The examples need the same bytes every time, yet an event's time and random run ID change by default. Here `lib.lineage` stamps every event with the nominal start of the nightly run on the book's "today", and derives the run ID with the client's `generate_static_uuid`, which, its docstring says, "always produces the same result" for the same time and data: here, the job's name. Run the four pipelines with lineage twice, into two files, and print what the first file's events say, not the raw JSON:
 
-Example `pipeline-run-events` (Python 3.12.15 · duckdb 2.0.0 · openlineage-python 1.55.0 · pyarrow 26.0.1 · pyiceberg 0.12.0 · pyyaml 6.0.3 · sqlglot 30.33.0), passing in Edition 2026.11.33:
+Example `pipeline-run-events` (Python 3.12.15 · duckdb 2.0.0 · openlineage-python 1.55.0 · pyarrow 26.0.1 · pyiceberg 0.12.0 · pyyaml 6.0.3 · sqlglot 30.33.0), passing in Edition 2026.11.34:
 
 ```python
 """Runs the four pipelines with lineage twice, into two files, and reads back what the first file's events say. The
@@ -111,7 +111,7 @@ sqlglot, a SQL parser, does it with `sqlglot.lineage.lineage`. Given a statement
 
 Start with `marketing_audience`, which feeds the list marketing may email. In words, it picks learners who agreed to marketing email and whose account is active, and adds each one's favourite course category, which a CTE computes by ranking categories by the learner's enrollments. Ask sqlglot for the lineage of the pipeline's outputs and of two `course_performance` columns, to see what it leaves out:
 
-Example `sqlglot-misses-row-inputs` (Python 3.12.15 · duckdb 2.0.0 · openlineage-python 1.55.0 · pyarrow 26.0.1 · pyiceberg 0.12.0 · pyyaml 6.0.3 · sqlglot 30.33.0), passing in Edition 2026.11.33:
+Example `sqlglot-misses-row-inputs` (Python 3.12.15 · duckdb 2.0.0 · openlineage-python 1.55.0 · pyarrow 26.0.1 · pyiceberg 0.12.0 · pyyaml 6.0.3 · sqlglot 30.33.0), passing in Edition 2026.11.34:
 
 ```python
 """What sqlglot.lineage says the pipeline outputs come from, and what it leaves out. The prose rests on the CTE-traced
@@ -183,7 +183,7 @@ ROW_CLAUSES = {"joins": "JOIN", "where": "FILTER", "group": "GROUP_BY", "having"
 
 Run it on the same pipeline and the same two columns:
 
-Example `indirect-column-lineage` (Python 3.12.15 · duckdb 2.0.0 · openlineage-python 1.55.0 · pyarrow 26.0.1 · pyiceberg 0.12.0 · pyyaml 6.0.3 · sqlglot 30.33.0), passing in Edition 2026.11.33:
+Example `indirect-column-lineage` (Python 3.12.15 · duckdb 2.0.0 · openlineage-python 1.55.0 · pyarrow 26.0.1 · pyiceberg 0.12.0 · pyyaml 6.0.3 · sqlglot 30.33.0), passing in Edition 2026.11.34:
 
 ```python
 """The book's column lineage for the marketing audience pipeline and two course performance columns: each input,
@@ -249,7 +249,7 @@ The platform's [column lineage](#add-indirect-inputs) is only as good as the par
 
 All four of the platform's pipelines are `CREATE TABLE ... AS` statements. As tables grow, pipelines like these often become incremental: an `INSERT` that appends a day's revenue to `analytics.daily_revenue`, or a `MERGE` that updates `analytics.learner_activity` in place. Ask sqlglot and `lib.lineage.column_lineage` about each, the `INSERT` and the `MERGE` in two forms, and compare the answers:
 
-Example `insert-and-merge-lineage` (Python 3.12.15 · duckdb 2.0.0 · openlineage-python 1.55.0 · pyarrow 26.0.1 · pyiceberg 0.12.0 · pyyaml 6.0.3 · sqlglot 30.33.0), passing in Edition 2026.11.33:
+Example `insert-and-merge-lineage` (Python 3.12.15 · duckdb 2.0.0 · openlineage-python 1.55.0 · pyarrow 26.0.1 · pyiceberg 0.12.0 · pyyaml 6.0.3 · sqlglot 30.33.0), passing in Edition 2026.11.34:
 
 ```python
 """sqlglot.lineage's answers for an INSERT and for two MERGE statements, beside the book's lineage: sqlglot names the
@@ -319,7 +319,7 @@ For the `MERGE` whose `USING` names a table, sqlglot returns none, and no error.
 
 A misspelt column, the third case, depends on how the column is written. The platform's pipelines qualify every column with its table's alias, as in `l.email`, and sqlglot checks a qualified column against the schema itself:
 
-Example `misspelt-column-lineage` (Python 3.12.15 · duckdb 2.0.0 · openlineage-python 1.55.0 · pyarrow 26.0.1 · pyiceberg 0.12.0 · pyyaml 6.0.3 · sqlglot 30.33.0), passing in Edition 2026.11.33:
+Example `misspelt-column-lineage` (Python 3.12.15 · duckdb 2.0.0 · openlineage-python 1.55.0 · pyarrow 26.0.1 · pyiceberg 0.12.0 · pyyaml 6.0.3 · sqlglot 30.33.0), passing in Edition 2026.11.34:
 
 ```python
 """A misspelt column, emial for email, in a query on one table: sqlglot raises when the column is qualified by its
@@ -363,13 +363,13 @@ A qualified typo stops sqlglot with `OptimizeError: Unknown column: emial`. An u
 
 ## Find what a column change breaks {#impact-of-a-column-change}
 
-With [column lineage](#add-indirect-inputs) in every COMPLETE event, the platform has a graph: columns are nodes, and each input field is an edge to the column or table it feeds. **Impact analysis** asks what a change to one column can break. It walks that graph from the column, following every edge out of it and continuing from wherever each lands, at any depth. No special method is needed; it's graph reachability. One rule is specific to lineage. An INDIRECT edge into a table means every row of it can change, so the walk continues from all of that table's columns.
+With [column lineage](#add-indirect-inputs) in every COMPLETE event, the platform has a graph: columns, and tables fed as a whole, are nodes, and each transformation of an input field is an edge to the column or table it feeds. **Impact analysis** asks what a change to one column can break. It walks that graph from the column, following every edge out of it and continuing from wherever each lands, at any depth. No special method is needed; it's graph reachability. One rule is specific to lineage. An INDIRECT edge into a table means every row of it can change, so the walk continues from all of that table's columns.
 
 `lib.lineage.graph` builds the graph from the events file alone, as a lineage server would, not from the SQL. Thus it includes every job that sends events, whatever it's written in, and nothing that doesn't. `lib.lineage.downstream` does the walk.
 
 Take three changes the platform's teams might make. The CRM team lowercases every email, or renames `crm.learners.email`. A new sign-up flow changes what `crm.learners.marketing_consent` means for older accounts. The learning team renames a category in `learning.courses`. Make a guess first: how many columns can the consent change reach?
 
-Example `column-impact` (Python 3.12.15 · duckdb 2.0.0 · openlineage-python 1.55.0 · pyarrow 26.0.1 · pyiceberg 0.12.0 · pyyaml 6.0.3 · sqlglot 30.33.0), passing in Edition 2026.11.33:
+Example `column-impact` (Python 3.12.15 · duckdb 2.0.0 · openlineage-python 1.55.0 · pyarrow 26.0.1 · pyiceberg 0.12.0 · pyyaml 6.0.3 · sqlglot 30.33.0), passing in Edition 2026.11.34:
 
 ```python
 """What a change to one source column can break, walked over the column graph that the nightly run's events describe.
@@ -422,6 +422,68 @@ Consent is the surprise. A change to it reaches 0 columns through values, yet th
 
 A change to `email` reaches 1 column, `marketing.audience.email`, so renaming it breaks the marketing pipeline and no other job that sends lineage. A category rename reaches 2 columns through values, and 12 in all, because categories also group `analytics.course_performance` and rank each learner's favourite.
 
+Figure 4.1 draws the category's walk. Each solid line carries values to one column, and each dashed line carries rows to a whole table, so every column of that table is reached. The solid lines land on `analytics.course_performance.category` and `marketing.audience.favourite_category`, and the dashed lines take in every column of each table: 7 in `analytics.course_performance` and 5 in `marketing.audience`.
+
+*Figure 4.1. What a change to the category reaches, by values and by rows.*
+
+![A category change copies values into single columns, but shapes the rows of whole tables, reaching every column in them](https://rollingedition.ai/books/data-governance-as-code/2026.11.34/figures/category-reach.svg)
+
+Example `figure-category-reach` (Python 3.12.15 · duckdb 2.0.0 · matplotlib 3.11.2 · openlineage-python 1.55.0 · pyarrow 26.0.1 · pyiceberg 0.12.0 · pyyaml 6.0.3 · sqlglot 30.33.0), passing in Edition 2026.11.34:
+
+```python
+"""Draws what a change to learning.courses.category reaches: a solid line to each column its values are copied into, and a
+dashed line to each table whose rows it shapes. The prose rests on the per-table counts printed at the end."""
+from lib import lineage
+from lib.catalog import open_catalog
+from lib.figures import ACCENT, INK, MUTED, new_figure, save
+from lib.platform import scratch
+from matplotlib.lines import Line2D
+from matplotlib.patches import Rectangle
+
+events_file = scratch() / "events.jsonl"
+lineage.run_all(open_catalog(), events_file)
+graph = lineage.graph(lineage.read_events(events_file))    # the same column graph column-impact walks
+reached = lineage.downstream(graph, "learning.courses.category")
+assert all(edge.source == "learning.courses.category" for edge in reached)    # one hop only: a deeper walk fails here
+
+fig, ax = new_figure(height=4.6)
+ax.set(xlim=(0, 10), ylim=(1, 9.6), xticks=[], yticks=[], frame_on=False)
+ax.text(0.3, 6.6, "learning.courses.category", va="center", color=INK)
+ends, y = {}, 9.2                                    # where each line lands: a table's title or a column's row, at the box's left edge
+for table in sorted({lineage.table_of(edge.target) for edge in reached}):
+    names = sorted(graph.columns[table])
+    height = 0.5 * len(names) + 0.5
+    ax.add_patch(Rectangle((5.0, y - height), 4.9, height, fill=False, edgecolor=MUTED, linewidth=0.8))
+    ax.text(5.15, y - 0.25, table, va="center", color=MUTED, fontweight="bold", fontsize=9)
+    ends[table] = (5.0, y - 0.25)
+    for i, name in enumerate(names):
+        ends[f"{table}.{name}"] = (5.0, y - 0.75 - 0.5 * i)
+        ax.text(5.3, y - 0.75 - 0.5 * i, name, va="center", color=INK)
+    y -= height + 0.4
+for target in sorted({edge.target for edge in reached}):    # one line per target, labelled with the subtypes into it
+    found = [edge for edge in reached if edge.target == target]
+    direct = found[0].type == "DIRECT"
+    x, y_end = ends[target]
+    ax.plot([4.3, x], [6.6, y_end], color=ACCENT if direct else MUTED, linestyle="-" if direct else "--")
+    ax.text(9.8, y_end, ", ".join(sorted({e.subtype for e in found})), ha="right", va="center", fontsize=8,
+            color=ACCENT if direct else MUTED)
+ax.legend(handles=[Line2D([], [], color=ACCENT, label="DIRECT, the values are copied"),
+                   Line2D([], [], color=MUTED, linestyle="--", label="INDIRECT, every row")], loc="lower left")
+save(fig, "category-reach")
+for table in sorted({edge.target for edge in reached if edge.type == "INDIRECT"}):
+    rows = [edge for edge in reached if edge.target == table]
+    # a table target counts every one of its columns, not only the ones a value is copied into
+    print(f"{table}, columns reached through its rows:", len(lineage.columns_reached(graph, rows)))
+```
+
+Output:
+
+```text
+figure: figures/category-reach.svg
+analytics.course_performance, columns reached through its rows: 7
+marketing.audience, columns reached through its rows: 5
+```
+
 The same walk serves two later chapters: [chapter 7](#plan-erasure-from-lineage) follows a learner's columns downstream to find every derived table an erasure must reach, and [chapter 10](#report-what-a-schema-change-reaches) writes an impact report for every pull request that changes a schema.
 
 **Working rule:** Run impact analysis on the graph built from events, INDIRECT edges included, and report two lists: columns whose values can change, and tables whose rows can change. Treat a change to a column used only in filters and joins as a change to every column of the tables it filters, and send the report to the owners of each table it reaches.
@@ -434,7 +496,7 @@ Two more choices follow from the same caution. OpenLineage's `masking` flag says
 
 `lib.lineage.propose` proposes a classification for every column a job wrote, and `lib.metadata.problems` lists the tables that need one. Check the rule on the two tables people did classify, `analytics.course_performance` and `analytics.learner_activity`, before you trust it on `marketing.audience` and `ai.review_corpus`, the two with no metadata:
 
-Example `propagate-classifications` (Python 3.12.15 · duckdb 2.0.0 · openlineage-python 1.55.0 · pyarrow 26.0.1 · pyiceberg 0.12.0 · pyyaml 6.0.3 · sqlglot 30.33.0), passing in Edition 2026.11.33:
+Example `propagate-classifications` (Python 3.12.15 · duckdb 2.0.0 · openlineage-python 1.55.0 · pyarrow 26.0.1 · pyiceberg 0.12.0 · pyyaml 6.0.3 · sqlglot 30.33.0), passing in Edition 2026.11.34:
 
 ```python
 """Proposes classifications from lineage for the columns with no declared one, then checks the rule against the columns
@@ -512,7 +574,7 @@ DIRECT inputs alone reproduce 10 of 13, and miss 3: `course_id`, `title` and `ca
 
 So build a table whose filter does. For a birthday offer, marketing wants the learners who consented and were born this month, with their ID and country, and nothing else:
 
-Example `personal-filter-propagates` (Python 3.12.15 · duckdb 2.0.0 · openlineage-python 1.55.0 · pyarrow 26.0.1 · pyiceberg 0.12.0 · pyyaml 6.0.3 · sqlglot 30.33.0), passing in Edition 2026.11.33:
+Example `personal-filter-propagates` (Python 3.12.15 · duckdb 2.0.0 · openlineage-python 1.55.0 · pyarrow 26.0.1 · pyiceberg 0.12.0 · pyyaml 6.0.3 · sqlglot 30.33.0), passing in Edition 2026.11.34:
 
 ```python
 """A birthday-offer table whose only personal input is a filter on date of birth. The prose rests on the learner count,
@@ -582,7 +644,7 @@ Lineage fails quietly: a missing edge looks exactly like a column with no depend
 
 The client reads `OPENLINEAGE_DISABLED` from the environment, and when it's `true`, events are dropped ([configuration](https://openlineage.io/docs/client/python/configuration)). In the client's source, that check comes first ([openlineage-python](https://pypi.org/project/openlineage-python/1.54.0/), `client/client.py`): before it looks at the transport you passed explicitly, the client picks a transport that does nothing. Its only notice is an INFO log line: "OpenLineage is disabled. No events will be emitted." Python's root logger is set to `WARNING` by default, so the line never shows ([logging HOWTO](https://docs.python.org/3.12/howto/logging.html)). A variable left in a shared environment file after debugging is enough. Set the variable, run `review_corpus` with an explicit file transport, and check what reaches the file:
 
-Example `lineage-disabled-silently` (Python 3.12.15 · duckdb 2.0.0 · openlineage-python 1.55.0 · pyarrow 26.0.1 · pyiceberg 0.12.0 · pyyaml 6.0.3 · sqlglot 30.33.0), passing in Edition 2026.11.33:
+Example `lineage-disabled-silently` (Python 3.12.15 · duckdb 2.0.0 · openlineage-python 1.55.0 · pyarrow 26.0.1 · pyiceberg 0.12.0 · pyyaml 6.0.3 · sqlglot 30.33.0), passing in Edition 2026.11.34:
 
 ```python
 """With OPENLINEAGE_DISABLED=true in the environment, an explicit file transport writes nothing and raises nothing. The
@@ -627,7 +689,7 @@ With the variable set, the pipeline still runs, but nothing reaches the file. Th
 
 Lineage covers only the jobs that send it. The platform's marketing team runs a weekly Python script that copies `marketing.audience` into `marketing.campaign_list`, a table its email tool reads. Nobody wired the script to OpenLineage:
 
-Example `uninstrumented-job` (Python 3.12.15 · duckdb 2.0.0 · openlineage-python 1.55.0 · pyarrow 26.0.1 · pyiceberg 0.12.0 · pyyaml 6.0.3 · sqlglot 30.33.0), passing in Edition 2026.11.33:
+Example `uninstrumented-job` (Python 3.12.15 · duckdb 2.0.0 · openlineage-python 1.55.0 · pyarrow 26.0.1 · pyiceberg 0.12.0 · pyyaml 6.0.3 · sqlglot 30.33.0), passing in Edition 2026.11.34:
 
 ```python
 """A Python step copies marketing.audience for the email tool and sends no lineage. The prose rests on the walk from the
@@ -670,7 +732,7 @@ An export that sends no events is invisible to impact analysis. The script copie
 
 Instrumenting [the marketing team's export](#job-nobody-instrumented) fixes the graph, and exposes a second problem. When the export's owner created `marketing.campaign_list`, they classified every column internal, because only the marketing team reads it. That's a statement about who reads a table, not what it holds. Wrap the script's work in `lib.lineage.record`, with the `SELECT` it runs as its lineage, and compare the declared classifications with lineage's proposal:
 
-Example `personal-copy-tagged-internal` (Python 3.12.15 · duckdb 2.0.0 · openlineage-python 1.55.0 · pyarrow 26.0.1 · pyiceberg 0.12.0 · pyyaml 6.0.3 · sqlglot 30.33.0), passing in Edition 2026.11.33:
+Example `personal-copy-tagged-internal` (Python 3.12.15 · duckdb 2.0.0 · openlineage-python 1.55.0 · pyarrow 26.0.1 · pyiceberg 0.12.0 · pyyaml 6.0.3 · sqlglot 30.33.0), passing in Edition 2026.11.34:
 
 ```python
 """The same export, now recorded with lineage, into a table its owner tagged internal. The prose rests on the walk to

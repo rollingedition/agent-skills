@@ -3,13 +3,13 @@ title: "Securing LLM Applications and Agents"
 chapter: "Draw the assistant's threat model"
 chapter_id: threat-model
 book: securing-llm-applications-and-agents
-edition: 2026.11.1
+edition: 2026.11.2
 verified: 2026-11-22
-edition_code: M6D1-RCM2
+edition_code: Y3X2-HXT9
 canonical: https://rollingedition.com/securing-llm-applications-and-agents/threat-model
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“Draw the assistant's threat model,” chapter 2 of Securing LLM Applications and Agents, Edition 2026.11.1, examples passed Nov 22, 2026. By Rolling Edition, https://rollingedition.com/securing-llm-applications-and-agents/threat-model. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Draw the assistant's threat model,” chapter 2 of Securing LLM Applications and Agents, Edition 2026.11.2, examples passed Nov 22, 2026. By Rolling Edition, https://rollingedition.com/securing-llm-applications-and-agents/threat-model. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Draw the assistant's threat model
 
@@ -27,7 +27,7 @@ A record matters because of who receives it. A tenant may know their own bank re
 
 To find which tools reach these assets, the book reads the tool code instead of the design notes.
 
-Example `threat-tool-table` (Python 3.13.16 · bm25s 0.3.16 · linkify-it-py 2.2.0 · markdown-it-py 4.3.0 · numpy 2.5.5), passing in Edition 2026.11.1:
+Example `threat-tool-table` (Python 3.13.16 · bm25s 0.3.16 · linkify-it-py 2.2.0 · markdown-it-py 4.3.0 · numpy 2.5.5), passing in Edition 2026.11.2:
 
 ```python
 """Prints one block per office tool: what it reads and writes, whether its output carries outside text, whether its
@@ -130,7 +130,7 @@ Only one tool returns private records, and the example asserts it. The listing p
 
 Output is the harder column. 5 tools return text that someone outside the office wrote. Four are office tools: `list_messages` and `read_message` return inbox messages, `search_documents` returns documents, and `fetch_page` returns a page. The fifth is `list_slots`, which returns a slot's note, and the contractor may write that note. So "untrusted output" is a property of each result. A tool's name doesn't settle it, and a tool that looks internal can carry outside text.
 
-The table also shows that the prompt holds the portal key and the hidden context on every episode, whichever tools are offered, so a count of tools misses those values. The code asserts this. Removing a tool removes the path to the records it reads, but not the values that sit in the prompt. [Chapter 9](#secrets-and-records) takes up that problem and makes a promise about it: the book measures what happens to these values when they are kept out of the prompt.
+The table also shows that the prompt holds the portal key and the internal note on every episode, whichever tools are offered, so a count of tools misses those values. The code asserts this. Removing a tool removes the path to the records it reads, but not the values that sit in the prompt. [Chapter 9](#secrets-and-records) takes up that problem and makes a promise about it: the book measures what happens to these values when they are kept out of the prompt.
 
 **Working rule:** Draw the assets and boundaries from the code's list of tools, not from the design document. For each tool the model is offered, record what it reads, what it writes, which results carry outside text and whether its definition came from outside. Check the count against the prompt's tool list. A tool in one list and missing from the other is a gap in the model you're drawing.
 
@@ -140,7 +140,7 @@ A data flow follows a piece of text from the place it was written to the point w
 
 The six places where outside text can enter are the locations the attack set uses. [Chapter 3](#goals-locations-styles) defines them and says how the cases were built. The example prints them with a `loc-` prefix, and this book drops the prefix.
 
-Example `threat-flows` (Python 3.13.16 · bm25s 0.3.16 · linkify-it-py 2.2.0 · markdown-it-py 4.3.0 · numpy 2.5.5), passing in Edition 2026.11.1:
+Example `threat-flows` (Python 3.13.16 · bm25s 0.3.16 · linkify-it-py 2.2.0 · markdown-it-py 4.3.0 · numpy 2.5.5), passing in Edition 2026.11.2:
 
 ```python
 """Each attack location, and the one channel that delivers its text to the model: a tool that reads the carrier's field,
@@ -234,7 +234,7 @@ Simon Willison named the lethal trifecta in [a June 2025 post](https://simonwill
 
 Meta turned the same idea into a design rule in [a post of 31 October 2025](https://ai.meta.com/blog/practical-ai-agent-security/), which it calls the Agents Rule of Two. The rule says an agent session should combine no more than two of three properties: processing untrustworthy inputs, reaching sensitive systems or private data, and changing state or communicating externally. The post says the rule should hold until prompt injection can be reliably detected and refused, and it describes prompt injection as an unsolved weakness of LLMs in general. An agent that needs all three should not run on its own; it needs supervision, such as a person approving its actions. [Chapter 6](#least-privilege) builds on that clause. The post also points to Meta's own protection tools. This book treats the rule as a check on a design, not a measured defence, and no result in this chapter shows that it reduces attacks.
 
-Example `threat-trifecta-check` (Python 3.13.16 · bm25s 0.3.16 · linkify-it-py 2.2.0 · markdown-it-py 4.3.0 · numpy 2.5.5), passing in Edition 2026.11.1:
+Example `threat-trifecta-check` (Python 3.13.16 · bm25s 0.3.16 · linkify-it-py 2.2.0 · markdown-it-py 4.3.0 · numpy 2.5.5), passing in Edition 2026.11.2:
 
 ```python
 """Each tool's trifecta legs, and whether removing one leg's tools leaves at most two legs (the Rule of Two), asserted
@@ -317,7 +317,7 @@ Here the count is taken over tools, and none of the 8 tools holds all three legs
 
 When a reviewer reads a trifecta count, three questions matter more than the total: which tools the model is offered, which text reaches its prompt by any route, and which channels can carry data out of the office. The count answers the first question only. The other two need the [flows](#data-flows) from the previous section.
 
-The count is taken over tools, and that is where it breaks: a run can read private data and never send it, as [chapter 3](#undefended-baseline) shows. The success count has the same blind spot: a run where private data entered the context but never left counts as a failure. With the private tools removed, the example still finds the private values in the prompt. The portal key and the hidden context are there on every episode, so the session still holds the private leg, and the model can still send those values out by the outward tools if an injected instruction asks. The working unit here is what reaches the model, not the list of tools.
+The count is taken over tools, and that is where it breaks: a run can read private data and never send it, as [chapter 3](#undefended-baseline) shows. The success count has the same blind spot: a run where private data entered the context but never left counts as a failure. With the private tools removed, the example still finds the private values in the prompt. The portal key and the internal note are there on every episode, so the session still holds the private leg, and the model can still send those values out by the outward tools if an injected instruction asks. The working unit here is what reaches the model, not the list of tools.
 
 The contractor's tools make the outward leg harder to reason about. `list_slots` and `book_visit` are outward, and their definitions come from the contractor, so the office didn't write the text the model reads about them. `book_visit` sends its arguments to the contractor's server, which means an argument the user never asked for leaves the office even when the booking itself is wanted. [Chapter 6](#least-privilege) writes argument policies for calls like this one, and [chapter 10](#third-party-parts) covers the contractor's server and definitions. [Chapter 8](#isolation-by-design) builds a design that cuts the untrusted leg from the tools: one model reads the outside text with no tools, and a second model with tools never sees that text raw.
 

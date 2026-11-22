@@ -3,19 +3,19 @@ title: "Language Models from the Ground Up"
 chapter: "The transformer block"
 chapter_id: the-transformer-block
 book: language-models-from-the-ground-up
-edition: 2026.11.17
-verified: 2026-11-19
-edition_code: DR5A-G7ZM
+edition: 2026.11.18
+verified: 2026-11-22
+edition_code: 5E4E-0JVJ
 canonical: https://rollingedition.com/language-models-from-the-ground-up/the-transformer-block
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“The transformer block,” chapter 7 of Language Models from the Ground Up, Edition 2026.11.17, examples passed Nov 19, 2026. By Rolling Edition, https://rollingedition.com/language-models-from-the-ground-up/the-transformer-block. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“The transformer block,” chapter 7 of Language Models from the Ground Up, Edition 2026.11.18, examples passed Nov 22, 2026. By Rolling Edition, https://rollingedition.com/language-models-from-the-ground-up/the-transformer-block. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # The transformer block
 
 By the end of this chapter you can assemble a transformer block from its parts, joined by residual connections: attention, normalization, a gated feed-forward layer and position information. You can then stack blocks into a complete language model. You'll check each part on the store's trained model, check the whole model against PyTorch's own implementations, measure what each block and each detail contributes, and count where the parameters go.
 
-[Chapter 6](#attention) built attention: each position looks back at earlier ones and takes a weighted average of what it finds. Attention alone isn't a language model, and the store, an online furniture and home-goods shop, needs more than attention. It moves information between positions but transforms little of it, and it has almost no sense of word order. Layers of it stacked directly also degrade: without the other parts of a block, the output of pure attention tends towards the same vector at every position, faster with every layer ([Dong et al., 2021](https://arxiv.org/abs/2103.03404)). The **transformer block** adds parts around attention that transform each position, give it word order and keep a deep stack from degrading ([Vaswani et al., 2017](https://arxiv.org/abs/1706.03762)).
+[Chapter 6](#attention) built attention: each position looks back at earlier ones and takes a weighted average of what it finds. Attention alone isn't a language model, and the store, an online furniture and home-goods shop, needs more than attention. It moves information between positions but transforms little of it, and it has almost no sense of word order. Layers of it stacked directly also degrade: without the other parts of a block, the output of pure attention tends towards the same vector at every position, faster with every layer ([Dong et al., 2021](https://arxiv.org/abs/2103.03404)). The **transformer block** adds parts around attention that transform each position, give it word order (in the form this chapter builds) and keep a deep stack from degrading ([Vaswani et al., 2017](https://arxiv.org/abs/1706.03762)).
 
 This chapter builds the block in the form the LLaMA models popularized: normalization of each part's input with RMSNorm, a gated feed-forward layer and rotary position embeddings in every layer ([Touvron et al., 2023](https://arxiv.org/abs/2302.13971), section 2.2). SmolLM2, whose tokenizer [chapter 2](#read-an-open-tokenizer) read, is built the same way. Its 360-million-parameter model has 960 dimensions, 32 layers and 15 heads, and differs from the store's model in two details covered below: its heads share keys and values, and its rotary positions turn more slowly ([configuration](https://huggingface.co/HuggingFaceTB/SmolLM2-360M/blob/f8027fd0eaeea54caa13c31d31b9fdc459c38b49/config.json)).
 
@@ -32,7 +32,7 @@ Two consequences follow. With the additions, the signal can pass "directly from 
 
 Run the store's model on one validation product and, at every layer, measure the length of what attention adds, of what the [feed-forward layer](#transform-each-position) adds, and of the vectors after both additions, averaged over positions. A vector's length here is the square root of the sum of its squared numbers:
 
-Example `residual-stream` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1), passing in Edition 2026.11.17:
+Example `residual-stream` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1), passing in Edition 2026.11.18:
 
 ```python
 """Runs the store's model on one validation product, one block at a time, and prints how much attention and the
@@ -79,7 +79,7 @@ The stream grows through the layers, because each addition piles onto the last. 
 
 ## Normalize before each part {#normalize-before-each-part}
 
-The residual stream grows through the layers, as the [previous section](#add-to-the-residual-stream) measured, so each part should read a rescaled copy of it. **Normalization** rescales a vector to a standard size before a part reads it, so the part's weights work the same whether the stream is short or long. The original transformer normalized after each addition, with **layer normalization**, which subtracts each vector's mean and divides by its standard deviation ([Ba et al., 2016](https://arxiv.org/abs/1607.06450)). Xiong and colleagues showed that normalizing before each part instead trains more stably, because only the copy each part reads is rescaled, never the stream itself ([Xiong et al., 2020](https://arxiv.org/abs/2002.04745)). And **RMSNorm** drops the mean: it divides each vector by its root mean square, the square root of the average of its squared numbers, and multiplies each dimension by a learned gain ([Zhang and Sennrich, 2019](https://arxiv.org/abs/1910.07467)):
+The residual stream grows through the layers, as the [previous section](#add-to-the-residual-stream) measured, so each part should read a rescaled copy of it. **Normalization** rescales a vector to a standard size before a part reads it, so the part's weights work the same whether the stream is short or long. The original transformer normalized after each addition, with **layer normalization**, which subtracts each vector's mean and divides by its standard deviation, and applies a learned gain and bias ([Ba et al., 2016](https://arxiv.org/abs/1607.06450)). Xiong and colleagues showed that normalizing before each part instead trains more stably, because only the copy each part reads is rescaled, never the stream itself ([Xiong et al., 2020](https://arxiv.org/abs/2002.04745)). And **RMSNorm** drops the mean: it divides each vector by its root mean square, the square root of the average of its squared numbers, and multiplies each dimension by a learned gain ([Zhang and Sennrich, 2019](https://arxiv.org/abs/1910.07467)):
 
 RMSNorm(x) = x / √(mean(x²) + ε) · g
 
@@ -87,7 +87,7 @@ where ε is a tiny number, 10⁻⁵ here, that keeps the division safe, and g is
 
 Normalize the stream of the same validation product by hand at both ends of the model, entering the first block and leaving the last, with the gain left at 1, and compare every position's vector with `lib.transformer.rms_norm`:
 
-Example `rms-norm-by-hand` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1), passing in Edition 2026.11.17:
+Example `rms-norm-by-hand` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1), passing in Edition 2026.11.18:
 
 ```python
 """Normalizes one validation product's residual stream by hand, entering the first block and leaving the last, and
@@ -135,7 +135,7 @@ So though the stream grew many times longer across the layers, every attention a
 
 Attention moves information between positions; the **feed-forward layer** transforms it, at each position separately. It's the same idea as [chapter 5](#a-neural-language-model)'s [hidden layer](#predict-from-a-window): widen the vector, apply a function that isn't a straight line, and narrow the result back to the stream's width. The store's model widens 128 numbers to 352.
 
-The form the LLaMA models use is **gated**. A gated feed-forward layer computes two widened vectors from the input, passes one through a function called SiLU, and multiplies the two number by number, so the first decides how much of the second gets through ([Shazeer, 2020](https://arxiv.org/abs/2002.05202)):
+The form the LLaMA models use is **gated**. A gated feed-forward layer computes two widened vectors from the input, passes one through a function, here one called SiLU, and multiplies the two number by number, so the first decides how much of the second gets through ([Shazeer, 2020](https://arxiv.org/abs/2002.05202)):
 
 FFN(x) = (SiLU(x W_gate) ⊙ (x W_up)) W_down
 
@@ -143,7 +143,7 @@ where ⊙ multiplies number by number, and SiLU(z) = z · σ(z), with σ the log
 
 What does the gate shut? Compute SiLU at three points, then run the first block's real feed-forward layer on the same validation product and count, at each position, how many of its hidden units the gate nearly shuts:
 
-Example `gated-feed-forward` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1), passing in Edition 2026.11.17:
+Example `gated-feed-forward` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1), passing in Edition 2026.11.18:
 
 ```python
 """Computes SiLU at three points, then runs block 1's feed-forward layer on one validation product and counts the hidden
@@ -203,7 +203,7 @@ Rotation has two properties that suit attention. It doesn't change a vector's le
 
 Rotate a random query and key of 32 numbers, the size of the store's heads, for positions 0 to 19, and compare scaled scores, as [chapter 6](#attention) defines them, at three pairs, which tests that:
 
-Example `rope-by-hand` (Python 3.12.15 · numpy 2.5.5), passing in Edition 2026.11.17:
+Example `rope-by-hand` (Python 3.12.15 · numpy 2.5.5), passing in Edition 2026.11.18:
 
 ```python
 """Rotates one random query and key for each of 20 positions, checks that the rotation keeps their lengths, and scores
@@ -237,6 +237,57 @@ score with the key at 2 and the query at 8: -0.765
 ```
 
 Pairs the same distance apart score the same, wherever they sit. The key at position 2 and the query at 5 score 0.217, and the key at 12 and the query at 15 score 0.217, the same, because both pairs are 3 apart. The key at 2 and the query at 8, 6 apart, score -0.765: the same query and key, scored differently because they're further apart. The rotation keeps both vectors' lengths, which the example asserts.
+
+Figure 7.1 plots the scaled score of that query and key against the offset between them, at every offset from 0 to 51, for a key at position 2 (the wide band) and a key at position 12 (the dashed line). The two lines lie on top of each other, which the example asserts: at every offset drawn, the score depends only on the offset, not on where the key sits. The pairs above are points at offsets 3 and 6 on this line.
+
+*Figure 7.1. Scaled score of one random query and key against the offset between them, for keys at two positions.*
+
+![The score of one query and key follows the offset between them, so the two keys' lines lie on top of each other](https://rollingedition.ai/books/language-models-from-the-ground-up/2026.11.18/figures/rope-depends-on-offset.svg)
+
+Example `figure-rope-depends-on-offset` (Python 3.12.15 · matplotlib 3.11.2 · numpy 2.5.5), passing in Edition 2026.11.18:
+
+```python
+"""Scores the same random query and key as rope-by-hand, for every offset between them, once for a key at position 2 and
+once for a key at position 12. The two lines are one line, and the scores at offsets 3 and 6 are rope-by-hand's."""
+from lib.transformer import rope
+from lib.figures import ACCENT, INK, new_figure, save
+
+import numpy as np
+
+rng = np.random.default_rng(2026)                              # rope-by-hand's seed: the same random query and key
+size = 32                                                      # 32 numbers: the store's width of 128 split across 4 heads
+query, key = rng.normal(0, 1, size), rng.normal(0, 1, size)
+positions = 64
+rotated_q = rope(np.tile(query, (positions, 1)))              # the query turned for each position 0 to 63
+rotated_k = rope(np.tile(key, (positions, 1)))
+KEYS = (2, 12)                                                 # two key positions, 10 apart
+offsets = np.arange(positions - max(KEYS))                    # the query at key + offset must exist: the later key stops at 63 - 12
+lines = {k: np.array([rotated_q[k + d] @ rotated_k[k] / np.sqrt(size) for d in offsets]) for k in KEYS}
+
+PRINTED = {3: 0.217, 6: -0.765}                               # rope-by-hand.out, copied so a change there fails here
+for offset, value in PRINTED.items():
+    assert round(lines[2][offset], 3) == value
+gap = np.abs(lines[2] - lines[12]).max()
+assert gap < 1e-9                                             # floating-point rounding, nothing more
+print("smallest offset drawn:", offsets[0])
+print("largest offset drawn:", offsets[-1])
+
+fig, ax = new_figure(height=3.0)
+ax.plot(offsets, lines[2], color=ACCENT, linewidth=4, alpha=0.4, label="key at position 2 (wide band)")  # wide, so the dashed line shows inside it
+ax.plot(offsets, lines[12], color=INK, linestyle="--", marker="s", markersize=2.5, label="key at position 12 (dashed)")
+ax.set(xlabel="offset from the key to the query, in positions", ylabel="scaled score of the query and key")
+ax.set_ylim(-2.0, 1.5)                                        # room under the lowest score, clear of the legend
+ax.legend(loc="lower right")
+save(fig, "rope-depends-on-offset")
+```
+
+Output:
+
+```text
+smallest offset drawn: 0
+largest offset drawn: 51
+figure: figures/rope-depends-on-offset.svg
+```
 
 RoPE has no learned parameters: the angles are fixed, and the model learns queries and keys that use them. The store's model applies it to the queries and keys of every head in every layer, which gives [chapter 6's](#attend-to-the-previous-token) previous-token heads a direct way to find the previous token, alongside the weak signal the mask provides.
 
@@ -274,7 +325,7 @@ PyTorch trained the store's model once, in `recordings/transformer.py`, as it tr
 
 To test the whole forward pass, recompute the saved product's logits in NumPy and compare every position with PyTorch's:
 
-Example `transformer-same-as-pytorch` (Python 3.12.15 · numpy 2.5.5), passing in Edition 2026.11.17:
+Example `transformer-same-as-pytorch` (Python 3.12.15 · numpy 2.5.5), passing in Edition 2026.11.18:
 
 ```python
 """Recomputes the store's model's logits in NumPy for the validation product the training script saved, and checks every
@@ -314,7 +365,7 @@ The model is checked; now measure what its blocks contribute. Because every bloc
 
 Which block's removal hurts most? Predict one, then score the names and descriptions of the first 100 validation products, 7,624 predictions in all, with the full model and with each block left out in turn:
 
-Example `skip-a-block` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1), passing in Edition 2026.11.17:
+Example `skip-a-block` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1), passing in Edition 2026.11.18:
 
 ```python
 """Scores the names and descriptions of the first 100 validation products with the full model, and with each block left
@@ -378,7 +429,7 @@ Every detail of a block has to match the weights it runs with, and a mismatch do
 
 One wrong detail of RoPE at a time shows what each costs: score the same 100 validation products with the trained weights, pairing neighbouring numbers instead of halves, a base of 100,000, SmolLM2's, instead of the store's 10,000, and no RoPE at all:
 
-Example `mismatched-details` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1), passing in Edition 2026.11.17:
+Example `mismatched-details` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1), passing in Edition 2026.11.18:
 
 ```python
 """Scores the same 100 validation products with the trained weights, changing one detail of RoPE at a time: how it pairs
@@ -429,7 +480,7 @@ The other difference from SmolLM2 is [grouped-query attention](#parameters-at-sc
 
 With every part built, count what the model learns, and where. A model's parameters are its capacity to learn, and where they sit says what it spends that capacity on. The trained model's count, by part:
 
-Example `transformer-parameters` (Python 3.12.15 · numpy 2.5.5), passing in Edition 2026.11.17:
+Example `transformer-parameters` (Python 3.12.15 · numpy 2.5.5), passing in Edition 2026.11.18:
 
 ```python
 """Counts the store's model's parameters by part from its saved weights, and prints its settings. The prose's point

@@ -3,13 +3,13 @@ title: "Evaluating LLM Applications"
 chapter: "Measure an assistant before you change it"
 chapter_id: measure-before-you-change
 book: evaluating-llm-applications
-edition: 2026.11.5
-verified: 2026-11-21
-edition_code: ZZQG-NPXH
+edition: 2026.11.6
+verified: 2026-11-22
+edition_code: P6V8-WKJT
 canonical: https://rollingedition.com/evaluating-llm-applications/measure-before-you-change
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“Measure an assistant before you change it,” chapter 1 of Evaluating LLM Applications, Edition 2026.11.5, examples passed Nov 21, 2026. By Rolling Edition, https://rollingedition.com/evaluating-llm-applications/measure-before-you-change. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Measure an assistant before you change it,” chapter 1 of Evaluating LLM Applications, Edition 2026.11.6, examples passed Nov 22, 2026. By Rolling Edition, https://rollingedition.com/evaluating-llm-applications/measure-before-you-change. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Measure an assistant before you change it
 
@@ -25,7 +25,7 @@ An evaluation is only as steady as the thing it measures. The sablefile docs com
 
 Start with the docs. Load the three versions, count the sections in each, and count the section IDs that all three share.
 
-Example `list-the-docs` (Python 3.12.15 · numpy 2.5.5), passing in Edition 2026.11.5:
+Example `list-the-docs` (Python 3.12.15 · numpy 2.5.5), passing in Edition 2026.11.6:
 
 ```python
 """Loads the three doc versions and prints each one's section count, and how many section IDs all three share.
@@ -74,7 +74,7 @@ The items fall into four kinds. Answerable items have their answer on the page. 
 
 Each item is printed in ID order, with its version, kind, twin and whether it was planted.
 
-Example `twenty-questions` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pydantic 2.14.3 · typing-extensions 4.16.0), passing in Edition 2026.11.5:
+Example `twenty-questions` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pydantic 2.14.3 · typing-extensions 4.16.0), passing in Edition 2026.11.6:
 
 ```python
 """Prints the twenty chapter items in id order: version, kind, planted flag and question, then the counts by kind.
@@ -140,9 +140,9 @@ Each trap is simple. `q-0003` asks whether `${project}` is the right placeholder
 
 The assistant doesn't read all the docs for every question. For each question it takes the three sections most likely to hold the answer, from the index of the version the question names, and answers from those three alone. A wrong answer can therefore come from two places: the right section was never retrieved, or the model misread the section it was given. A measurement that can't tell these apart can't say what to fix.
 
-The index is built with BM25, which scores each section by the words it shares with the question. The scoring runs through bm25s at 0.3.16. Take one question: whether an ignore entry such as `docs/**/*.tmp` catches a file two folders down in 1.1. Its output shows the words the index keeps from the question, and the top three sections, ordered by score and then by section ID.
+The index is built with BM25, which scores each section by the words it shares with the question, giving rarer words more weight and long sections less. The scoring runs through bm25s at 0.3.16. Take one question: whether an ignore entry such as `docs/**/*.tmp` catches a file two folders down in 1.1. Its output shows the words the index keeps from the question, and the top three sections, ordered by score and then by section ID.
 
-Example `retrieve-top-sections` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pydantic 2.14.3 · typing-extensions 4.16.0), passing in Edition 2026.11.5:
+Example `retrieve-top-sections` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pydantic 2.14.3 · typing-extensions 4.16.0), passing in Edition 2026.11.6:
 
 ```python
 """Shows BM25 retrieval for one question (q-0007, version 1.1): the words kept, then the top three sections.
@@ -194,7 +194,7 @@ A model's reply to the same question can change with its runtime, its settings a
 
 The recording is a folder of replies, one per item. It was made with a 4-bit build of Qwen3-4B-Instruct-2507, an open model pinned to one file and one revision, run at temperature zero on a CPU. It holds a reply for every item in the full set, and this chapter reads twenty of them by ID. Replay one of them: the reply to `q-0006`, which asks whether `check` can exit with status 0 when a file has drifted in 2.0.
 
-Example `replay-one-answer` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pydantic 2.14.3 · typing-extensions 4.16.0), passing in Edition 2026.11.5:
+Example `replay-one-answer` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pydantic 2.14.3 · typing-extensions 4.16.0), passing in Edition 2026.11.6:
 
 ```python
 """Replays the recorded baseline reply to q-0006 and parses it: the sections it was given, the reply, its citations.
@@ -246,11 +246,11 @@ Some errors need no judge. A citation to a section that wasn't in the prompt, or
 
 ### Citations {#citations-in-code}
 
-The assistant must cite every statement with the citation form, a section ID in square brackets, and it may cite only the IDs it was given. A citation can fail in two ways. The ID may not exist at all, or it may exist in another version, which is the mistake the version-swap items are written to provoke. The check calls a citation to any section that was not in the prompt `unknown-section`, whichever way it went wrong. It also flags an answer that has no citation.
+The assistant must cite every statement with the citation form, a section ID after `sec:` in square brackets, such as `[sec:no-fail-flag]`, and it may cite only the IDs it was given. A citation can fail in two ways. The ID may not exist at all, or it may exist in another version, which is the mistake the version-swap items are written to provoke. The check calls a citation to any section that was not in the prompt `unknown-section`, whichever way it went wrong. It also flags an answer that has no citation.
 
 The citation and format checks run over the twenty baseline replies, and the output counts each kind of failure.
 
-Example `check-citations` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pydantic 2.14.3 · typing-extensions 4.16.0), passing in Edition 2026.11.5:
+Example `check-citations` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pydantic 2.14.3 · typing-extensions 4.16.0), passing in Edition 2026.11.6:
 
 ```python
 """Runs the citation and format checks on the baseline replies to the twenty chapter items, and counts each problem.
@@ -325,7 +325,7 @@ When the docs don't answer a question, the assistant must reply with the decline
 
 Both decline errors are counted over the baseline's replies.
 
-Example `check-declines` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pydantic 2.14.3 · typing-extensions 4.16.0), passing in Edition 2026.11.5:
+Example `check-declines` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pydantic 2.14.3 · typing-extensions 4.16.0), passing in Edition 2026.11.6:
 
 ```python
 """Counts the two decline errors over the baseline replies: answerable items declined, and unanswerable items answered.
@@ -378,13 +378,13 @@ The rates leave out 6 items, and the last line names the one of them that the ba
 
 ## One judge {#one-judge}
 
-Citations and declines check the shape of a reply. They can't check whether the reply is right, and that's the question the team cares about. For that, the book uses a judge: a model that reads the question, a written reference answer and the assistant's reply, and returns PASS or FAIL. The judge here is Qwen3-4B-Instruct-2507, the same model that wrote the replies. A judge and an assistant that are one model can share blind spots, and then the judge misses the errors the assistant makes for the same reason. This book can't test for that with this setup. What it does instead is check the same model, under a calibration rubric, against public human ratings, and say what carrying those rates to this judge assumes, in [chapter 6](calibrate-the-judge).
+Citations and declines check the shape of a reply. They can't check whether the reply is right, and that's the question the team cares about. For that, the book uses a judge: a model that grades a reply, here by reading the question, a written reference answer and the assistant's reply, and returning PASS or [FAIL](#verdict-first). The judge here is Qwen3-4B-Instruct-2507, the same model that wrote the replies. A judge and an assistant that are one model can share blind spots, and then the judge misses the errors the assistant makes for the same reason. This book can't test for that with this setup. What it does instead is check the same model, under a calibration rubric, against public human ratings, and say what carrying those rates to this judge assumes, in [chapter 6](calibrate-the-judge).
 
 The judge's rules are short, and they're worth reading in full. A reply is correct only if it says what the reference says. Other words are fine, and so is extra detail that doesn't contradict the reference. A reply that says something the reference doesn't support, or contradicts it, fails. If the reference has more than one reading, the reply must answer every one of them, and a partial answer fails. If the reference is "none", the docs don't answer, and the only correct reply is the decline. A reply that gives an answer and also the decline phrase fails. The judge writes its verdict on the first line and a short reason after it. The prompt asks for one sentence, and the judge doesn't always stop there.
 
 Here is the judge's verdict on `q-0005`, the near miss. The assistant's reply to it says that 2.0 does not read `sablefile.lock`, and points vaguely at migration.
 
-Example `judge-one-answer` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pydantic 2.14.3 · typing-extensions 4.16.0), passing in Edition 2026.11.5:
+Example `judge-one-answer` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pydantic 2.14.3 · typing-extensions 4.16.0), passing in Edition 2026.11.6:
 
 ```python
 """Reads the reference-guided judge's verdict on the baseline reply to q-0005, a planted near-miss item, from its recording.
@@ -437,11 +437,11 @@ A pass rate is a count divided by a denominator, and the denominator decides wha
 pass rate = passed items / items
 ```
 
-An interval answers a different question from the pass rate: how far would the rate move if the set had been another twenty items drawn the same way? The method is a percentile bootstrap. The bootstrap itself is Efron's: his 1979 paper [*Bootstrap Methods: Another Look at the Jackknife*](https://doi.org/10.1214/aos/1176344552), in the *Annals of Statistics*, set out resampling as a way to estimate how much a statistic varies. The percentile bootstrap is the simplest interval built on resampling, the middle 95% of the resampled rates. The procedure draws items from the set with replacement, without regard to kind, so one draw can hold any mix of kinds. It computes the pass rate of each draw, and repeats the draws many times. The interval shows how much twenty items could say.
+An interval answers a different question from the pass rate: how far would the rate move if the set had been another set of as many items, drawn the same way? The method is a percentile bootstrap. The bootstrap itself is Efron's: his 1979 paper [*Bootstrap Methods: Another Look at the Jackknife*](https://doi.org/10.1214/aos/1176344552), in the *Annals of Statistics*, set out resampling as a way to estimate how much a statistic varies. The percentile bootstrap is the simplest interval built on resampling, the middle 95% of the resampled rates, or another share when a different level is chosen. The procedure draws items from the set with replacement, without regard to kind, so one draw can hold any mix of kinds. It computes the pass rate of each draw, and repeats the draws many times. The interval shows how much twenty items could say.
 
 Compute the rate and its interval for the baseline, then break the rate down by kind.
 
-Example `pass-rate-interval` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pydantic 2.14.3 · typing-extensions 4.16.0), passing in Edition 2026.11.5:
+Example `pass-rate-interval` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pydantic 2.14.3 · typing-extensions 4.16.0), passing in Edition 2026.11.6:
 
 ```python
 """The baseline's pass rate over the twenty chapter items, judged by the reference-guided judge, with its 95% interval.
@@ -496,7 +496,7 @@ The team's proposed prompt is the change to measure. P1 is the baseline prompt. 
 
 Both prompts run over the same twenty items, and the output reports the difference with its interval.
 
-Example `compare-two-prompts` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pydantic 2.14.3 · typing-extensions 4.16.0), passing in Edition 2026.11.5:
+Example `compare-two-prompts` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pydantic 2.14.3 · typing-extensions 4.16.0), passing in Edition 2026.11.6:
 
 ```python
 """Compares the baseline prompt (P1) with prompt-b (P2) on the twenty chapter items: each pass rate, the paired difference, its interval and n.
@@ -548,7 +548,7 @@ The paired view shows what sits under the tie. P2 passes 1 item that P1 fails, a
 
 Here the judge's verdicts on `q-0019` are read under both prompts, and the rule the PASS breaks is printed beside them.
 
-Example `judge-gets-one-wrong` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pydantic 2.14.3 · typing-extensions 4.16.0), passing in Edition 2026.11.5:
+Example `judge-gets-one-wrong` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pydantic 2.14.3 · typing-extensions 4.16.0), passing in Edition 2026.11.6:
 
 ```python
 """Shows one judge verdict that breaks the judge's own rule: on q-0019, the judge passes P2's reply, which answers only one of the
@@ -613,7 +613,7 @@ Read this output as a record of the judge's verdicts. The reference for `q-0019`
 
 This last example takes the same two prompts and asks what the twenty items can show about them. Twenty items turn out to say very little about these two prompts.
 
-Example `twenty-cannot-tell` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pydantic 2.14.3 · typing-extensions 4.16.0), passing in Edition 2026.11.5:
+Example `twenty-cannot-tell` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pydantic 2.14.3 · typing-extensions 4.16.0), passing in Edition 2026.11.6:
 
 ```python
 """Shows that twenty items cannot tell the two prompts apart: the interval of the paired difference includes zero.
@@ -649,6 +649,84 @@ interval width: 30.0 points
 ```
 
 Only 2 items get different verdicts from the two prompts, so the difference can move only in coarse steps, one item at a time. The interval of the difference is 30.0 points wide. An assert in the code requires the interval to include zero, so the claim fails loudly if the numbers ever stop supporting it. An interval that wide can detect only a large change, and a smaller change that still matters to users can hide inside it.
+
+*Figure 1.1. The bootstrap distribution of P2 minus P1 over the twenty items.*
+
+![The resampled differences peak at zero, and the middle 95% of them spread wide on both sides of it](https://rollingedition.ai/books/evaluating-llm-applications/2026.11.6/figures/twenty-difference.svg)
+
+Example `figure-twenty-difference` (Python 3.12.15 · bm25s 0.3.16 · matplotlib 3.11.2 · numpy 2.5.5 · pydantic 2.14.3 · typing-extensions 4.16.0), passing in Edition 2026.11.6:
+
+```python
+"""Draws the bootstrap distribution of the paired difference, P2 minus P1, over the twenty items of twenty-cannot-tell:
+how many resamples give each possible difference. The printed interval and its width are the ones that example prints,
+and the asserts check that the resamples drawn here give the same ends, land on whole steps, and reach past zero."""
+import lib  # first: fixes the thread counts and seeds before anything else loads
+
+import numpy as np
+
+from lib import SEED
+from lib.answers import chapter_items
+from lib.figures import ACCENT, INK, MUTED, new_figure, save
+from lib.judging import paired
+from lib.stats import RESAMPLES, interval_points
+
+result = paired("judge-answers-baseline", "judge-answers-prompt-b", [item.id for item in chapter_items()])
+diff = result.second - result.first  # per item: +1, 0 or -1, in the sorted item order the interval uses
+# bootstrap_mean keeps only the interval, so this redraws its resamples: the same generator, seed and count.
+rng = np.random.default_rng(SEED)
+picks = rng.integers(0, diff.size, size=(RESAMPLES, diff.size))
+gaps = 100 * diff[picks].mean(axis=1)  # each resampled difference, in points
+lo, hi = np.quantile(gaps, [0.025, 0.975])  # the middle 95% of the resampled differences
+assert np.isclose(lo, 100 * result.diff_lo) and np.isclose(hi, 100 * result.diff_hi), "the resamples must give the interval"
+assert lo < 0.0 < hi, "the middle 95% must reach past zero on both sides"
+# One differing item moves the difference by 100 / n points, so every resample is a whole number of steps.
+step = 100 / result.n
+assert np.allclose(gaps / step, np.round(gaps / step)), "every resampled difference must be a multiple of the step"
+values, value_counts = np.unique(np.round(gaps, 6), return_counts=True)
+assert values[value_counts.argmax()] == 0.0, "the most common resampled difference must be zero"
+
+print(f"paired items (n): {result.n}")
+differing = int((result.first != result.second).sum())
+print(f"items where the two verdicts differ: {differing}")
+print(f"bootstrap resamples: {RESAMPLES}")
+print(f"difference, P2 minus P1: {100 * result.difference:+.1f} points")
+print(f"95% interval of the difference: {interval_points(result.diff_lo, result.diff_hi)}")
+print(f"interval width: {100 * (result.diff_hi - result.diff_lo):.1f} points")
+print(f"step between possible differences: {step:.1f} points")
+print(f"most common difference: {values[value_counts.argmax()]:+.1f} points")
+print(f"resamples at the most common difference: {value_counts.max()}")
+
+fig, ax = new_figure(height=2.8)
+# One bar per step, centred on each possible difference, so a resample at -25 gets a bar of its own.
+edges = np.arange(gaps.min() - step / 2, gaps.max() + step, step)
+counts, _, _ = ax.hist(gaps, bins=edges, rwidth=0.8, color=ACCENT, label="resampled differences")
+assert counts.sum() == RESAMPLES, "every resample must fall in a bar"
+# Zero is the claim: the interval includes it, so no difference is ruled out at this size.
+ax.axvline(0, color=INK, linewidth=1.2, label="zero: no difference")
+ax.axvline(100 * result.diff_lo, color=MUTED, linestyle="--", label="ends of the middle 95%")
+ax.axvline(100 * result.diff_hi, color=MUTED, linestyle="--")
+ax.set_xlabel("difference, P2 minus P1, in percentage points")
+ax.set_ylabel("resamples")
+ax.legend(frameon=False, loc="lower left", bbox_to_anchor=(0.0, 1.0), ncol=2)  # above the plot, where no line crosses it
+save(fig, "twenty-difference")
+```
+
+Output:
+
+```text
+paired items (n): 20
+items where the two verdicts differ: 2
+bootstrap resamples: 2000
+difference, P2 minus P1: +0.0 points
+95% interval of the difference: [-15.0, +15.0] points
+interval width: 30.0 points
+step between possible differences: 5.0 points
+most common difference: +0.0 points
+resamples at the most common difference: 606
+figure: figures/twenty-difference.svg
+```
+
+Figure 1.1 counts how many resamples land on each possible difference, one bar per step. Each time a resample draws one of the differing items, the difference moves by a twentieth of the set, 5.0 points. The most common difference is +0.0 points, the bar at zero. Zero is the solid line, and the dashed lines mark the middle 95%, which runs over [-15.0, +15.0] points and reaches past zero on both sides.
 
 In production, the same mistake shows up in three forms: trusting a number that can't carry the claim made for it. A team picks the prompt with the higher number on the twenty items it wrote first, and the report leaves out the interval, so nobody sees how little the number holds. A judge gets trusted because its verdicts look sensible, and nobody reads its FAIL reasons against the reference. A set of recorded replies, kept after the sections the assistant sees have changed, measures the old system while its numbers keep looking fine. You notice the first when a report carries an interval beside each rate. You notice the second when someone reads the judge's FAIL reasons against the references on every run. The third shows only if the recording also hashes the docs it was given. This book's manifests hash the prompt and the test set, so a prompt change is refused on replay, but a change to the sections goes unseen.
 

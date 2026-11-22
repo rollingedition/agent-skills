@@ -3,13 +3,13 @@ title: "Agent Harnesses"
 chapter: "Keep the context useful as the task grows"
 chapter_id: context-budgets
 book: agent-harnesses
-edition: 2026.11.6
+edition: 2026.11.7
 verified: 2026-11-22
-edition_code: 3KM9-2NP7
+edition_code: YNMR-JA84
 canonical: https://rollingedition.com/agent-harnesses/context-budgets
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“Keep the context useful as the task grows,” chapter 5 of Agent Harnesses, Edition 2026.11.6, examples passed Nov 22, 2026. By Rolling Edition, https://rollingedition.com/agent-harnesses/context-budgets. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Keep the context useful as the task grows,” chapter 5 of Agent Harnesses, Edition 2026.11.7, examples passed Nov 22, 2026. By Rolling Edition, https://rollingedition.com/agent-harnesses/context-budgets. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Keep the context useful as the task grows
 
@@ -27,7 +27,7 @@ The manifest also stores `max_tokens`, the most the reply may take: 1024 tokens.
 
 The arithmetic is short. 8192 tokens, less 1024 for the reply, leaves 7168 tokens for everything the model reads on one step. The prompt holds the system prompt, the tool schemas, the issue, the notes, the earlier steps and the last tool result, and all of it counts against that budget. A refusal is a tool result like any other: the harness returns its text to the model as a tool message, so it counts against the budget too. This chapter calls the tokens left for everything the model reads on one step the prompt budget.
 
-Example `budget-counts-tokens` (Python 3.12.15 · pydantic 2.14.4), passing in Edition 2026.11.6:
+Example `budget-counts-tokens` (Python 3.12.15 · numpy 2.5.5 · pydantic 2.14.4), passing in Edition 2026.11.7:
 
 ```python
 """The context the harness loads the model with, the room the reply keeps, and each run's largest prompt against them.
@@ -105,6 +105,74 @@ The recording stores the [prompt count](#token-counts) the model reported for ev
 
 On those counts, no recorded step reached the [prompt budget](#window). Of the 220 recorded steps, 0 went over it. The largest was T-16's last step, and it left 612 tokens of the window spare once the reply's room was set aside. The check reads the recording and loads no model, so anyone can run it without the hardware that made the recording. The same check, run on any new recording, shows at once whether its prompts still fit the budget, which makes it the first thing to rerun after a model change.
 
+Figure 5.1 draws the prompt count at each step for every recorded run, with the prompt budget as a dashed line. The prompt rises at every step in 20 of the 20 runs, because each step carries every step before it.
+
+The line with dots is T-16, the run with the largest prompt. It climbs to 6556 tokens and stays under the dashed line, the budget of 7168. The thinner lines are the other runs.
+
+*Figure 5.1. The prompt at each step of the recorded runs, against the prompt budget.*
+
+![The prompt climbs at every step of every recorded run, and the largest one stops short of the budget line](https://rollingedition.ai/books/agent-harnesses/2026.11.7/figures/prompt-per-step.svg)
+
+Example `figure-prompt-per-step` (Python 3.12.15 · matplotlib 3.11.2 · numpy 2.5.5 · pydantic 2.14.4), passing in Edition 2026.11.7:
+
+```python
+"""Each recorded run's prompt tokens at every step, against the prompt budget. The point rests on the largest prompt line
+and the budget line: the prompts climb at every step, and the largest one sits under the budget, close to it."""
+import json
+
+from lib.context import PROMPT_BUDGET, REPLY, WINDOW
+from lib.figures import ACCENT, INK, MUTED, new_figure, save
+from lib.models import RECORDED
+
+folder = RECORDED / "task-set"
+manifest = json.loads((folder / "manifest.json").read_text(encoding="utf-8"))
+steps = [json.loads(line) for line in (folder / "replies.jsonl").read_text(encoding="utf-8").splitlines()]
+assert manifest["n_ctx"] == WINDOW and manifest["max_tokens"] == REPLY, "the budget comes from the recorded load settings"
+
+runs = {}  # run id -> its prompt counts, in step order
+for step in sorted(steps, key=lambda s: (s["run"], s["step"])):
+    runs.setdefault(step["run"], []).append(step["prompt_tokens"])
+# ties go to the later run and step, so the same step is named on every run
+largest = max(steps, key=lambda s: (s["prompt_tokens"], s["run"], s["step"]))
+# each step carries the whole history, so a run's prompt should grow at every step
+rising = sum(all(b > a for a, b in zip(counts, counts[1:])) for counts in runs.values())
+cap = max(len(counts) for counts in runs.values())  # the x axis runs to the longest run in the recording
+print("prompt budget, in tokens:", PROMPT_BUDGET)
+print("runs drawn:", len(runs))
+print("runs whose prompt rises at every step:", rising)
+print("largest prompt, in tokens:", largest["prompt_tokens"])
+print("largest prompt, run:", largest["run"])
+print("largest prompt, step:", largest["step"])
+
+fig, ax = new_figure(height=3.2)
+others = [run for run in runs if run != largest["run"]]
+for run in others:  # one legend entry names the group: the lines are told apart by their place, not by colour
+    ax.plot(range(1, len(runs[run]) + 1), runs[run], color=MUTED, linestyle="-", linewidth=1.0,
+            label=f"the other {len(others)} runs" if run == others[0] else None)
+ax.plot(range(1, len(runs[largest["run"]]) + 1), runs[largest["run"]], color=ACCENT, linestyle="-", marker="o",
+        markersize=3.5, linewidth=1.8, label=f"{largest['run']}, the largest prompt")
+ax.axhline(PROMPT_BUDGET, color=INK, linestyle="--", linewidth=1.2, label=f"prompt budget, {PROMPT_BUDGET} tokens")
+ax.set_xlabel("step of the run, counting from 1")
+ax.set_ylabel("prompt, in tokens")
+ax.set_xlim(0.5, cap + 0.5)
+ax.set_xticks(range(1, cap + 1, 3))
+ax.set_ylim(0, WINDOW)
+ax.legend(frameon=False, loc="lower right")
+save(fig, "prompt-per-step")
+```
+
+Output:
+
+```text
+prompt budget, in tokens: 7168
+runs drawn: 20
+runs whose prompt rises at every step: 20
+largest prompt, in tokens: 6556
+largest prompt, run: T-16
+largest prompt, step: 16
+figure: figures/prompt-per-step.svg
+```
+
 That result says less than it seems. The recorded task set ran tool set v1 with nothing between the loop and the model that could shorten or refuse a prompt. Nothing compacted, and no step was ever cut to fit. The counts show that these prompts fit. They do not show what the harness does when a prompt does not fit, and the rest of this chapter is about that case.
 
 **Working rule:** Compare every step's count with the prompt budget before you read anything into a run.
@@ -117,7 +185,7 @@ We chose three by looking at the task-set recording. The first rule we tried was
 
 Each step's estimate can be set against the count the model reported for that same step.
 
-Example `estimate-vs-recorded` (Python 3.12.15 · pydantic 2.14.4), passing in Edition 2026.11.6:
+Example `estimate-vs-recorded` (Python 3.12.15 · numpy 2.5.5 · pydantic 2.14.4), passing in Edition 2026.11.7:
 
 ```python
 """The estimate of each recorded request against the prompt count the model reported for it. The rule was chosen on
@@ -221,7 +289,7 @@ The cut rule is the one that matters for a local harness. The vendor's guide to 
 
 Four reads and a finish, under a budget of 2000 estimated tokens, are enough to cross it. That budget is far below the real 7168, on purpose, so that compaction happens on a small task. The real budget is not reached by this task.
 
-Example `compact-keeps-last-result` (Python 3.12.15 · pydantic 2.14.4), passing in Edition 2026.11.6:
+Example `compact-keeps-last-result` (Python 3.12.15 · numpy 2.5.5 · pydantic 2.14.4), passing in Edition 2026.11.7:
 
 ```python
 """Four reads of the case, then finish, under a small budget that the reads cross. The point rests on the calls
@@ -303,7 +371,7 @@ A 2026 preprint does measure a design of this kind. Semantic Context Handoff, by
 
 The harness adds a `note` tool: the model writes one line per fact, and the harness sends the notes after the issue at every step. Compaction does not cut them, because they are not part of the older steps. A fact the model writes as a note survives every compaction. A fact that stays only in an older result is kept at most as the first line of that result.
 
-Example `notes-survive` (Python 3.12.15 · pydantic 2.14.4), passing in Edition 2026.11.6:
+Example `notes-survive` (Python 3.12.15 · numpy 2.5.5 · pydantic 2.14.4), passing in Edition 2026.11.7:
 
 ```python
 """A note the agent writes keeps a fact that an older read result had, after a compaction. The summary keeps only the
@@ -370,7 +438,7 @@ That shows the mechanism. It does not show that a model will write the notes. Th
 
 The recording `chapter-5-notes` was made with tool set v2 from [chapter 3](#tool-schemas), the note tool, and the stop rules from [chapter 2](#stop-rules). Its three runs are T-01, T-02 and T-06. Seven task-set runs reached the step cap of 16 (T-01, T-02, T-06, T-10, T-11, T-13, T-16), and the recording's script names these three as the long runs that each hit that cap. It does not run the other four. We replayed the three runs with compaction on, to see what the model did with the tools and the budget.
 
-Example `recorded-context-use` (Python 3.12.15 · pydantic 2.14.4), passing in Edition 2026.11.6:
+Example `recorded-context-use` (Python 3.12.15 · numpy 2.5.5 · pydantic 2.14.4), passing in Edition 2026.11.7:
 
 ```python
 """The three recorded runs of chapter 5, replayed with the compaction on: how each ended, whether its check passed,

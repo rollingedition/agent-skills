@@ -1,0 +1,5 @@
+unscaled residuals, lowest client coverage at 80: 0.021
+unscaled residuals, clients within 0.1 of 0.8: 3
+scaled residuals, lowest client coverage at 80: 0.365
+scaled residuals, clients within 0.1 of 0.8: 14
+figure: figures/client-coverage-scaled.svg

@@ -1,0 +1,17 @@
+Kneser-Ney 1-gram training perplexity: 676.4
+Kneser-Ney 1-gram validation perplexity: 687.2
+Kneser-Ney 2-gram training perplexity: 29.6
+Kneser-Ney 2-gram validation perplexity: 46.9
+Kneser-Ney 3-gram training perplexity: 7.3
+Kneser-Ney 3-gram validation perplexity: 24.9
+Kneser-Ney 4-gram training perplexity: 4.7
+Kneser-Ney 4-gram validation perplexity: 23.1
+Kneser-Ney 5-gram training perplexity: 3.8
+Kneser-Ney 5-gram validation perplexity: 23.5
+lowest validation perplexity order: 4
+gap at the 4-gram: 18.4
+gap at the 5-gram: 19.7
+training perplexity falls at every order: yes
+validation perplexity does not improve after the 4-gram: yes
+gap widens from the 4-gram to the 5-gram: yes
+figure: figures/perplexity-by-order.svg

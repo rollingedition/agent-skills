@@ -3,17 +3,17 @@ title: "Open Table Formats"
 chapter: "Compact the small files that hourly appends leave"
 chapter_id: compaction
 book: open-table-formats
-edition: 2026.11.12
+edition: 2026.11.13
 verified: 2026-11-22
-edition_code: CYAZ-TM3D
+edition_code: FWS1-2ZKC
 canonical: https://rollingedition.com/open-table-formats/compaction
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“Compact the small files that hourly appends leave,” chapter 6 of Open Table Formats, Edition 2026.11.12, examples passed Nov 22, 2026. By Rolling Edition, https://rollingedition.com/open-table-formats/compaction. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Compact the small files that hourly appends leave,” chapter 6 of Open Table Formats, Edition 2026.11.13, examples passed Nov 22, 2026. By Rolling Edition, https://rollingedition.com/open-table-formats/compaction. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Compact the small files that hourly appends leave
 
-This chapter shows you how to count the data files a table holds, merge them into fewer files in Delta Lake, DuckLake and Iceberg, and say what each merge leaves on disk. The trouble starts with the loads. The pageviews table from the [first chapter](#first-table) is loaded once an hour into each of the three formats. Each load is a commit, and each commit writes its own data files. A data file is a Parquet file that holds rows of a table.
+This chapter shows you how to count the data files a table holds, merge them into fewer files in Delta Lake, DuckLake and Iceberg, and say what each merge leaves on disk. The trouble starts with the loads. The pageviews table from the [first chapter](#first-table) is loaded once an hour into each of the three formats. Each load is a commit, and each commit writes its own data files. A data file is a file, Parquet in this book, that holds rows of a table.
 
 ## Hourly appends leave small files {#hourly-appends-leave-small-files}
 
@@ -43,7 +43,7 @@ Delta Lake is the first of the three formats in the table above. Its Python libr
 
 You load the six hours into a Delta table, one append each, then count the files the table lists, compact, and count again. Each count comes from the table's own list of files for its current version.
 
-Example `file-counts-before-after` (Python 3.12.15 · deltalake 1.6.6 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.12:
+Example `file-counts-before-after` (Python 3.12.15 · deltalake 1.6.6 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.13:
 
 ```python
 """Load six hourly appends into a Delta Lake table, compact it, and count its files and rows before and after.
@@ -99,6 +99,82 @@ The metrics the call returns count the same change from the library's side: 1 fi
 
 The compaction did not remove the old files. Read at the version from before the call, the table still returns all 2999 rows, because that version points at the old files. The directory holds 7 Parquet files after the call, the six old ones and the new one. Delta Lake removes files that no retained version uses in a separate step called `vacuum`, which [chapter 7](#expiry-and-cleanup) shows. Until that step runs, a compaction adds files on disk rather than taking any away.
 
+Figure 6.1 follows the same six appends and the compaction version by version. The solid line counts the files each version lists, and the dashed line counts the Parquet files on disk after that version was written.
+
+*Figure 6.1. The files each table version lists, and the Parquet files on disk after it.*
+
+![A compaction cuts the files the table lists, while the files on disk still grow](https://rollingedition.ai/books/open-table-formats/2026.11.13/figures/files-live-and-on-disk.svg)
+
+Example `figure-files-live-and-on-disk` (Python 3.12.15 · deltalake 1.6.6 · duckdb 2.0.0 · matplotlib 3.11.2 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.13:
+
+```python
+"""Compact six hourly appends into a Delta Lake table, and count the files each version lists and the Parquet files on disk after it.
+The prose rests on the printed lines for the last append version and the compaction version."""
+
+from lib.figures import ACCENT, INK, MUTED, new_figure, save
+from lib.lakehouse import delta_file_count, new_warehouse, read_cut_hour
+
+from deltalake import DeltaTable, write_deltalake
+
+
+def main():
+    with new_warehouse() as wh:
+        root = wh.root / "delta"
+        path = str(root / "pageviews_hourly")
+        on_disk = []  # the Parquet files under the table's folder after each commit, indexed by version; no version lists them all
+        for hour in range(6):
+            write_deltalake(path, read_cut_hour(hour), mode="append")  # one append is one commit, so one version
+            on_disk.append(len(list(root.rglob("*.parquet"))))
+
+        metrics = DeltaTable(path).optimize.compact()  # a commit: it writes one file and lists it in place of the six
+        compacted = DeltaTable(path).version()
+        assert compacted == len(on_disk), "compaction should be the next commit after the last append"
+        on_disk.append(len(list(root.rglob("*.parquet"))))  # the replaced files are still on disk: no vacuum has run
+        assert metrics["numFilesRemoved"] == 6, "the six appended files should be the ones compaction replaces"
+
+        last = compacted - 1
+        # Each version's own log lists the files that version uses, so the count is read from that version.
+        listed = [delta_file_count(DeltaTable(path, version=v)) for v in range(compacted + 1)]
+        assert all(listed[v] == on_disk[v] == v + 1 for v in range(last + 1)), "each append adds one file, listed and on disk"
+        print(f"last append version: {last}")
+        print(f"files in the last append version: {listed[last]}")
+        print(f"parquet files on disk after the last append version: {on_disk[last]}")
+        print(f"compaction version: {compacted}")
+        print(f"files in the compaction version: {listed[compacted]}")
+        print(f"parquet files on disk after the compaction version: {on_disk[compacted]}")
+
+        fig, ax = new_figure(height=2.8)
+        versions = list(range(compacted + 1))
+        ax.plot(versions, listed, color=ACCENT, linewidth=2.2, marker="o", markersize=4, zorder=3, label="files in the version")
+        ax.plot(versions, on_disk, color=INK, linestyle="--", marker="s", markersize=3.5, zorder=2, label="Parquet files on disk")
+        ax.axvline(compacted, color=MUTED, linewidth=0.8, linestyle=":")
+        ax.text(compacted - 0.15, 8.1, f"compaction: version {compacted}", ha="right", va="top", color=MUTED)
+        ax.set_xlabel("table version")
+        ax.set_ylabel("data files")
+        ax.set_xticks(versions)
+        ax.set_ylim(0, 8.5)
+        ax.legend(loc="upper left")
+        save(fig, "files-live-and-on-disk")
+
+
+if __name__ == "__main__":
+    main()
+```
+
+Output:
+
+```text
+last append version: 5
+files in the last append version: 6
+parquet files on disk after the last append version: 6
+compaction version: 6
+files in the compaction version: 1
+parquet files on disk after the compaction version: 7
+figure: figures/files-live-and-on-disk.svg
+```
+
+Through the six appends the two lines coincide, because an append only adds a file and the newest version lists every file written so far. At the compaction, version 6, they part: the solid line falls to 1 file, and the dashed line climbs to 7, because the files it replaced are still on disk.
+
 Delta reads here go through the library's query builder, as every Delta read in this book does. Since the point is the file count, the rows are compared by count alone.
 
 **Working rule:** Compact a Delta table on the schedule from the first section (daily for hourly loads), and check the file count afterwards. Read the retention rules in chapter 7 before you remove anything: a compaction adds a commit and leaves the old files in place, so it adds storage until the [vacuum](#vacuum-in-delta-lake) runs.
@@ -113,7 +189,7 @@ DuckLake has compaction as a maintenance function that you call from SQL. The fu
 
 What does the merge leave for a snapshot from before it? The example below reads one. It attaches the catalog with inlining off, inserts the six hours one insert each, and calls the merge once. The table lives in the `wiki` schema, so the call names it. It reads the snapshot number before the merge, so it can read the table as it was at that point.
 
-Example `compact-ducklake` (Python 3.12.15 · deltalake 1.6.6 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.12:
+Example `compact-ducklake` (Python 3.12.15 · deltalake 1.6.6 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.13:
 
 ```python
 """Merge six DuckLake data files, then read a snapshot from before the merge to see what the merge left behind.
@@ -190,7 +266,7 @@ Compaction in Iceberg, at the pinned version of pyiceberg, is a rewrite by overw
 
 A rewrite is judged by what it leaves behind. The check below reads the table's files and rows after six appends and one overwrite, and reads a snapshot from before the rewrite.
 
-Example `iceberg-rewrite-by-overwrite` (Python 3.12.15 · deltalake 1.6.6 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.12:
+Example `iceberg-rewrite-by-overwrite` (Python 3.12.15 · deltalake 1.6.6 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.13:
 
 ```python
 """Rewrite an unpartitioned Iceberg table by overwriting it with its own scan, then check its data files, its snapshot

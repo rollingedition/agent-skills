@@ -3,13 +3,13 @@ title: "Agent Harnesses"
 chapter: "Give the model tools it can't misuse"
 chapter_id: tool-schemas
 book: agent-harnesses
-edition: 2026.11.6
+edition: 2026.11.7
 verified: 2026-11-22
-edition_code: 3KM9-2NP7
+edition_code: YNMR-JA84
 canonical: https://rollingedition.com/agent-harnesses/tool-schemas
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“Give the model tools it can't misuse,” chapter 3 of Agent Harnesses, Edition 2026.11.6, examples passed Nov 22, 2026. By Rolling Edition, https://rollingedition.com/agent-harnesses/tool-schemas. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Give the model tools it can't misuse,” chapter 3 of Agent Harnesses, Edition 2026.11.7, examples passed Nov 22, 2026. By Rolling Edition, https://rollingedition.com/agent-harnesses/tool-schemas. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Give the model tools it can't misuse
 
@@ -29,7 +29,7 @@ That single place matters because a schema holds more than field names. Think of
 
 Pydantic writes each field's type, its description, its default and its bounds into the schema. The case's tools take only paths and strings, so this section uses a different read, one with a line limit that no tool in the set uses. It is a teaching model, chosen to show what a bound looks like. Printing its schema is the quickest way to see what the model is told, and the bounds and the default are the lines to read.
 
-Example `schema-from-model` (Python 3.12.15 · pydantic 2.14.4), passing in Edition 2026.11.6:
+Example `schema-from-model` (Python 3.12.15 · numpy 2.5.5 · pydantic 2.14.4), passing in Edition 2026.11.7:
 
 ```python
 """The JSON schema pydantic makes for a read with a line limit: its bounds, its default and the descriptions the
@@ -68,7 +68,7 @@ A default in a schema is a note, not a rule. The [JSON Schema validation specifi
 
 The other half of what the model reads is each tool's sentence. Those sentences sit beside their schemas in every request, so the example below prints them. Two lines are worth checking: the one that says which chapter 1 tools share a sentence with this set, and the one that says `finish` does not.
 
-Example `tool-descriptions` (Python 3.12.15 · pydantic 2.14.4), passing in Edition 2026.11.6:
+Example `tool-descriptions` (Python 3.12.15 · numpy 2.5.5 · pydantic 2.14.4), passing in Edition 2026.11.7:
 
 ```python
 """The one-sentence description of each tool in the v1 set, the text the model reads beside each schema. The point
@@ -114,7 +114,7 @@ A model that writes `"50"` for a line limit most likely means fifty, so refusing
 
 The next example sends the same values through both modes. Compare what each mode does with each value.
 
-Example `lax-and-strict` (Python 3.12.15 · pydantic 2.14.4), passing in Edition 2026.11.6:
+Example `lax-and-strict` (Python 3.12.15 · numpy 2.5.5 · pydantic 2.14.4), passing in Edition 2026.11.7:
 
 ```python
 """Pydantic's default (lax) mode and strict mode, given the same values for an int field: lax takes the string "50"
@@ -213,7 +213,7 @@ Bad calls fail at different points, and the harness has to check them in order. 
 
 Each of the bad calls in this example is wrong in a different way. They go through tool set v2 and then through tool set v1, and the printout shows what each set hands back:
 
-Example `bad-arguments-handed-back` (Python 3.12.15 · pydantic 2.14.4), passing in Edition 2026.11.6:
+Example `bad-arguments-handed-back` (Python 3.12.15 · numpy 2.5.5 · pydantic 2.14.4), passing in Edition 2026.11.7:
 
 ```python
 """Five bad calls, sent by a ScriptedModel. Each parsed call is run through the v2 tool set and through v1, and each
@@ -286,13 +286,13 @@ The name matters most for the stop tool. The loop ends a run when a `finish` or 
 
 ## Edit errors that name the nearest lines {#edit-errors}
 
-An edit names the text it replaces. The tool set v1 `edit_file` tool changes the one place where `old` appears in the file, and it refuses the call when `old` is missing or appears more than once. An edit can therefore fail over a few quoted characters. A model that copies code from its own reading of a file can get those quotes wrong, and then the edit is refused.
+An edit names the text it replaces and the text that replaces it. The tool set v1 `edit_file` tool changes the one place where `old` appears in the file, and it refuses the call when `old` is missing or appears more than once. An edit can therefore fail over a few quoted characters. A model that copies code from its own reading of a file can get those quotes wrong, and then the edit is refused.
 
 The first version of the change, in chapter 1, put the whole file inside one JSON string, so every quote and newline in the file had to be escaped in the model's reply. An edit is smaller. It copies only the lines that change, so there are fewer characters to get wrong. The escaping problem does not go away, though, because the copy still has to match the file exactly.
 
 The task-set recording shows the copy going wrong. It holds the replies of the same open model, Qwen3-4B-Instruct-2507, over twenty tasks, run with tool set v1, a step cap of 16 and temperature 0; [chapter 1](#replayed-run) explains the model's setup. In T-01's third reply, the model copied a few lines into `old` and dropped the quotes around two f-strings and the closing quote of `separator = "."`. The file has those quotes. The stored `old` text is printed first, then that one reply is replayed through both tool sets, so the difference shows:
 
-Example `edit-error-nearest-lines` (Python 3.12.15 · pydantic 2.14.4), passing in Edition 2026.11.6:
+Example `edit-error-nearest-lines` (Python 3.12.15 · numpy 2.5.5 · pydantic 2.14.4), passing in Edition 2026.11.7:
 
 ```python
 """The edit_file call from step 3 of the task-set recording's T-01 run, read from its stored reply. Its old text drops
@@ -345,7 +345,7 @@ error: old text not found in unitcraft/format.py. The nearest lines of the file,
 Copy old from those lines exactly, quotes included, and call edit_file again.
 ```
 
-The tool set v1 text says only that the old text is not in the file, and it names the file. The tool set v2 text does more. It gives the nearest lines of the file, numbered as the file numbers them and with their quotes as they are, and it ends by saying what to do next: copy `old` from those lines, quotes included, and call again. The refusal carries a window of lines and not the whole file. A whole file would answer the model's question at a cost of many tokens, and every tool result counts against the same context that holds the task, as [chapter 5](#where-tokens-go) counts them. The lines are found by similarity. The harness slides a window of the same length as `old` down the file, keeps the window that matches best, and breaks a tie toward the earlier window, so the answer is the same on every run. Here the best window holds the f-string line the model was copying, with its quotes, and the example asserts that the line appears in the error.
+The tool set v1 text says only that the old text is not in the file, and it names the file. The tool set v2 text does more. It gives the nearest lines of the file, numbered as the file numbers them and with their quotes as they are, and it ends by saying what to do next: copy `old` from those lines, quotes included, and call again. The refusal carries a window of lines and not the whole file. A whole file would answer the model's question at a cost of many tokens, and every tool result counts against the same context that holds the task, as [chapter 5](#where-tokens-go) counts them. The lines are found by similarity. The harness slides a window of as many lines as `old` down the file, keeps the window that matches best, and breaks a tie toward the earlier window, so the answer is the same on every run. Here the best window holds the f-string line the model was copying, with its quotes, and the example asserts that the line appears in the error.
 
 If the model repeats the same failing edit, the stop rules in [chapter 2](#repeated-calls) end the run, provided they are switched on. They are off by default, and the task-set recording did not switch them on. The nearest lines are meant to make such a repeat less likely. The tool set v1 text leaves the model a second step to spend: it has to call `read_file` to see the lines it should have copied, and the next reply may still copy them wrongly. The tool set v2 text puts those lines in the refusal itself, so the model can try again at once. The printout shows the text the harness returns, not whether the next edit succeeds. That takes a run, and [chapter 10](#v1-v2) counts the runs. This chapter reports no count of either kind.
 

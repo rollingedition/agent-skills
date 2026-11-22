@@ -3,13 +3,13 @@ title: "Data Governance as Code"
 chapter: "Access policies as code"
 chapter_id: access-policies-as-code
 book: data-governance-as-code
-edition: 2026.11.33
-verified: 2026-11-19
-edition_code: 6KBP-RPEQ
+edition: 2026.11.34
+verified: 2026-11-22
+edition_code: CXPB-RS22
 canonical: https://rollingedition.com/data-governance-as-code/access-policies-as-code
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“Access policies as code,” chapter 5 of Data Governance as Code, Edition 2026.11.33, examples passed Nov 19, 2026. By Rolling Edition, https://rollingedition.com/data-governance-as-code/access-policies-as-code. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Access policies as code,” chapter 5 of Data Governance as Code, Edition 2026.11.34, examples passed Nov 22, 2026. By Rolling Edition, https://rollingedition.com/data-governance-as-code/access-policies-as-code. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Access policies as code
 
@@ -17,7 +17,7 @@ By the end of this chapter you can write a data platform's access rules as one p
 
 Each group that reads the platform's warehouse, from support agents to its course assistant, needs something different. Support agents each serve one region, `americas`, `emea` or `apac`, and need learners' contact details to answer tickets. Instructors see the learners and reviews of their own courses, without contact details. Marketing may reach only learners who agreed to marketing email. Finance reconciles payments, and the legacy `card_number` column of `billing.payments` must never show more than its last four digits. Data scientists see `learner_id` as stored, to join tables on it, with personal columns pseudonymized and free text redacted. The course assistant reads only the reviews whose authors agreed to AI training. [Chapter 1](#governance-end-to-end) showed one rule, support agents see only their own region, and enforced it on one query. Rules for every group need to live in one place, stated exactly, and tested before anyone relies on them.
 
-This chapter's terms are the ones the rest of the book uses. A **policy** is code that answers whether a request may go ahead. A **decision** is a policy's answer. The **principal** is who asks, a **role** is a group of principals with the same job, and an **attribute** is any other fact a rule reads, about the principal, the data or the request. A **row filter** limits which rows a query returns, and a **column mask** changes how a column's values are shown, such as **pseudonymization**, which replaces an identifier with a consistent stand-in.
+This chapter's terms are the ones the rest of the book uses. A **policy** is code that answers whether a request may go ahead, and on what terms. A **decision** is a policy's answer. The **principal** is who asks, a **role** is a group of principals with the same job, and an **attribute** is any other fact a rule reads, about the principal, the data or the request. A **row filter** limits which rows a query returns, and a **column mask** changes how a column's values are shown, such as **pseudonymization**, which replaces an identifier with a consistent stand-in.
 
 The platform's policy is `governance/policies/access.rego`, and its tests are in `governance/policies/access_test.rego`. The book's shared module `lib.policy` loads both into regopy 1.5.2, the Python binding of rego-cpp, Microsoft's C++ implementation of Rego, which evaluates policies inside the Python process with no server to run.
 
@@ -27,7 +27,7 @@ A policy engine answers questions about requests, so the shape of a request deci
 
 The platform's policy reads the same fields, so it decides Trino's request to read columns, `SelectFromColumns`, as Trino sends it. Trino needs more than that one decision. It wants each row filter and column mask as SQL, a row filter as `{"expression": "clause"}`, where the policy returns a column and a value ([Trino 484, OPA access control](https://trino.io/docs/484/security/opa-access-control.html)). It also asks about other checks, such as `ExecuteQuery` and `AccessCatalog`, which this policy's `allow` denies ([`OpaAccessControl.java` at Trino 484](https://github.com/trinodb/trino/blob/484/plugin/trino-opa/src/main/java/io/trino/plugin/opa/OpaAccessControl.java)). [Chapter 6](#engine-enforcement) shows what a module beside the policy has to return for them. `lib.policy.request` builds the platform's requests in Trino's shape, and the next example uses it for an `emea` support agent, `agent-a05`, reading three columns of `support.tickets`:
 
-Example `trino-shaped-request` (Python 3.12.15 · pyarrow 26.0.1 · pyiceberg 0.12.0 · regopy 1.5.2), passing in Edition 2026.11.33:
+Example `trino-shaped-request` (Python 3.12.15 · pyarrow 26.0.1 · pyiceberg 0.12.0 · regopy 1.5.2), passing in Edition 2026.11.34:
 
 ```python
 """The request a support agent's read sends the policy, shaped as Trino's OPA plugin sends it. The point rests on the printed `action`: the operation SelectFromColumns, and the table with the columns the query reads."""
@@ -78,7 +78,7 @@ The [request](#shape-the-request-like-trinos) says who asks for what. Everything
 
 `lib.policy.data_document` builds the document from those three sources each time a policy is loaded, and never from anything typed:
 
-Example `generated-policy-data` (Python 3.12.15 · pyarrow 26.0.1 · pyiceberg 0.12.0 · regopy 1.5.2), passing in Edition 2026.11.33:
+Example `generated-policy-data` (Python 3.12.15 · pyarrow 26.0.1 · pyiceberg 0.12.0 · regopy 1.5.2), passing in Edition 2026.11.34:
 
 ```python
 """The data the policy reads besides the request, built from the files that own each fact. The point rests on the last two lines: instructor 17's courses come from learning.courses, not from anything typed."""
@@ -140,7 +140,7 @@ allow if {
 
 The last line guards against a failure that [the section on production](#policies-in-production) shows by removing it. Print the map and decide four requests to see the default at work:
 
-Example `allow-by-role` (Python 3.12.15 · pyarrow 26.0.1 · pyiceberg 0.12.0 · regopy 1.5.2), passing in Edition 2026.11.33:
+Example `allow-by-role` (Python 3.12.15 · pyarrow 26.0.1 · pyiceberg 0.12.0 · regopy 1.5.2), passing in Edition 2026.11.34:
 
 ```python
 """Which groups may read which tables, then four requests decided by the default-deny policy. The points rest on the four decisions and their reasons, printed last."""
@@ -203,7 +203,7 @@ row_filters contains {"column": "support_region", "equals": user.region} if {
 
 Reads by support agents, an instructor, marketing and a data scientist show what each attribute does, with the data scientist reading reviews twice, once with no purpose and once for `ai-training`:
 
-Example `attributes-as-row-filters` (Python 3.12.15 · pyarrow 26.0.1 · pyiceberg 0.12.0 · regopy 1.5.2), passing in Edition 2026.11.33:
+Example `attributes-as-row-filters` (Python 3.12.15 · pyarrow 26.0.1 · pyiceberg 0.12.0 · regopy 1.5.2), passing in Edition 2026.11.34:
 
 ```python
 """Row filters the policy builds for seven reads, from three attributes: the agent's region, the learner's consent and the request's purpose. The points rest on the analyst's two review reads, with and without a purpose."""
@@ -267,7 +267,7 @@ classification(column) := level if {
 
 Take marketing reading four columns of `crm.learners`, three of them classified in the metadata. The fourth, `linkedin_url`, stands for a column a pipeline has added and nobody has classified yet:
 
-Example `one-decision-document` (Python 3.12.15 · pyarrow 26.0.1 · pyiceberg 0.12.0 · regopy 1.5.2), passing in Edition 2026.11.33:
+Example `one-decision-document` (Python 3.12.15 · pyarrow 26.0.1 · pyiceberg 0.12.0 · regopy 1.5.2), passing in Edition 2026.11.34:
 
 ```python
 """The whole decision for one read: marketing's four columns of crm.learners, one of them unclassified. The point rests on the masks and the reasons, which give one line per mask and per group that allowed the read."""
@@ -334,7 +334,7 @@ test_finance_sees_only_the_last_four_digits if {
 
 The tests cover each group's allow, its filters and its masks, and the ways a request is denied: a table the group isn't given, an operation other than a read, a user the policy doesn't know, and a support agent with no region.
 
-Example `policy-unit-tests` (Python 3.12.15 · pyarrow 26.0.1 · pyiceberg 0.12.0 · regopy 1.5.2), passing in Edition 2026.11.33:
+Example `policy-unit-tests` (Python 3.12.15 · pyarrow 26.0.1 · pyiceberg 0.12.0 · regopy 1.5.2), passing in Edition 2026.11.34:
 
 ```python
 """Runs every test in the platform's Rego test file and counts the passes. The point rests on the last line, the tests passed out of all of them."""
@@ -378,7 +378,7 @@ A test that checks only `decision.allow` would miss most mistakes, so every test
 
 The platform's table is `lib.policy.WHO_SEES_WHAT`, a list of rows in Python. Each gives a user, a table, the columns read and an optional purpose, then whether the read is allowed, which columns the row filters test and which columns are masked, and how. Every row goes through `lib.policy.decide`, which returns the [decision document](#return-the-decision-as-one-document), and the example prints one line per row, in the form to show the data's owners:
 
-Example `who-sees-what` (Python 3.12.15 · pyarrow 26.0.1 · pyiceberg 0.12.0 · regopy 1.5.2), passing in Edition 2026.11.33:
+Example `who-sees-what` (Python 3.12.15 · pyarrow 26.0.1 · pyiceberg 0.12.0 · regopy 1.5.2), passing in Edition 2026.11.34:
 
 ```python
 """Each row of the who-sees-what table run through the policy and printed as one line, with the count of rows the policy matches. The point rests on the last line, the count of rows whose decision matches the outcome its row expects."""
@@ -429,7 +429,7 @@ The platform's [tests](#unit-test-the-policy-in-rego) run in regopy because the 
 
 The first group runs without any error:
 
-Example `regopy-silent-differences` (Python 3.12.15 · regopy 1.5.2), passing in Edition 2026.11.33:
+Example `regopy-silent-differences` (Python 3.12.15 · regopy 1.5.2), passing in Edition 2026.11.34:
 
 ```python
 """Small policies that regopy answers differently from OPA, each printed with the answer regopy gives. The prose's points rest on the printed values, and the bound and literal-mock lines are the controls where regopy agrees with OPA."""
@@ -489,7 +489,7 @@ region under a mock that refers to a rule: "apac"
 
 The second group fails, and one failure takes Python down with it. One case adds a test to a copy of the platform's tests; the other formats the same string from nine sources:
 
-Example `regopy-failed-outputs` (Python 3.12.15 · pyarrow 26.0.1 · pyiceberg 0.12.0 · regopy 1.5.2), passing in Edition 2026.11.33:
+Example `regopy-failed-outputs` (Python 3.12.15 · pyarrow 26.0.1 · pyiceberg 0.12.0 · regopy 1.5.2), passing in Edition 2026.11.34:
 
 ```python
 """One test that replaces the whole input, and what that does to the interpreter: every query fails, and printing a failed output ends Python. The points rest on the printed error count, the assert that true does not succeed, and the signal the crash ends with."""
@@ -544,7 +544,7 @@ lib.policy.decide raises: regopy couldn't evaluate data.platform.access.decision
 printing the failed output ends Python with: SIGSEGV
 ```
 
-Example `regopy-sprintf-quotes` (Python 3.12.15 · regopy 1.5.2), passing in Edition 2026.11.33:
+Example `regopy-sprintf-quotes` (Python 3.12.15 · regopy 1.5.2), passing in Edition 2026.11.34:
 
 ```python
 """One label formatted from nine sources, the schema taken from each in turn. The point rests on the printed lines where regopy's JSON is invalid: a source that keeps its quotes breaks the output."""
@@ -599,11 +599,11 @@ from a local variable set to a literal, regopy's invalid JSON: {"expressions":[t
 
 ## Write the same rules in Cedar {#the-same-rules-in-cedar}
 
-Rego isn't the only language for policies like the platform's. Cedar's designers present it as a language for expressive, fast, safe and analyzable authorization ([Cutler et al., 2024](https://arxiv.org/abs/2403.04651)), and it takes a narrower view of a decision. A Cedar request names a principal, an action and a resource, and the answer follows three rules: default deny, forbid overrides permit, and skip on error, which the documentation defines as "if a policy's evaluation returns error, the policy does not factor into the authorization response; it is skipped" ([Cedar, authorization](https://docs.cedarpolicy.com/auth/authorization.html)). A schema declares every type of entity, the kinds of principal and resource a request can name, with its attributes, and attributes are required unless the schema marks them optional ([Cedar, schema](https://docs.cedarpolicy.com/schema/schema.html)). Validation checks policies against a schema before any request, and a set that validates avoids most of the errors that evaluation could raise, for requests that match the schema ([Cedar, validation](https://docs.cedarpolicy.com/policies/validation.html)). The book's examples run Cedar with cedarpy 4.12.2, which wraps the Rust Cedar Policy library for Python ([cedarpy](https://pypi.org/project/cedarpy/4.12.2/)).
+Rego isn't the only language for policies like the platform's. Cedar's designers present it as a language for expressive, fast, safe and analyzable authorization ([Cutler et al., 2024](https://arxiv.org/abs/2403.04651)), and it takes a narrower view of a decision. A Cedar request names a principal, an action and a resource, and the answer follows three rules: default deny, forbid overrides permit, and skip on error, which the documentation defines as "if a policy's evaluation returns error, the policy does not factor into the authorization response; it is skipped" ([Cedar, authorization](https://docs.cedarpolicy.com/auth/authorization.html)). A schema declares every type of entity, the kinds of principal and resource a request can name, with its attributes, and each action with the principals and resources it applies to; attributes are required unless the schema marks them optional ([Cedar, schema](https://docs.cedarpolicy.com/schema/schema.html)). Validation checks policies against a schema before any request, and a set that validates avoids most of the errors that evaluation could raise, for requests that match the schema ([Cedar, validation](https://docs.cedarpolicy.com/policies/validation.html)). The book's examples run Cedar with cedarpy 4.12.2, which wraps the Rust Cedar Policy library for Python ([cedarpy](https://pypi.org/project/cedarpy/4.12.2/)).
 
 The platform's rules in Cedar are in `governance/policies/access.cedar`, with the schema in `access.cedarschema`. A `permit` per group repeats the Rego policy's [`readable` map](#deny-by-default-then-allow-by-role). A `forbid` keeps support agents to learners in their own region, and another hides sensitive columns from everyone except finance's view of card numbers. `lib.policy.cedar_entities` generates the users, groups, tables and columns from the same [data document](#generate-the-data-the-policy-reads) the Rego policy reads, and the code adds the first learner of `crm.learners` in each region:
 
-Example `cedar-same-rules` (Python 3.12.15 · cedarpy 4.12.2 · pyarrow 26.0.1 · pyiceberg 0.12.0 · regopy 1.5.2), passing in Edition 2026.11.33:
+Example `cedar-same-rules` (Python 3.12.15 · cedarpy 4.12.2 · pyarrow 26.0.1 · pyiceberg 0.12.0 · regopy 1.5.2), passing in Edition 2026.11.34:
 
 ```python
 """The platform's Cedar policies checked against their schema, then asked the questions the Rego policy answers, over entities generated from its data. The points rest on the printed decisions, and on the misspelt-region error the schema gives before any request."""
@@ -674,7 +674,7 @@ We consider the most damaging failure a rule that silently doesn't apply because
 
 Take a copy of the platform's policy and tests, in a temporary folder, and remove the one line, `not missing_attribute`, from [`allow`](#deny-by-default-then-allow-by-role). Then add a support agent with their group and no region, as happens when someone is given a role before anyone sets their region, and ask both policies for the agent's tickets:
 
-Example `missing-region-guard` (Python 3.12.15 · pyarrow 26.0.1 · pyiceberg 0.12.0 · regopy 1.5.2), passing in Edition 2026.11.33:
+Example `missing-region-guard` (Python 3.12.15 · pyarrow 26.0.1 · pyiceberg 0.12.0 · regopy 1.5.2), passing in Edition 2026.11.34:
 
 ```python
 """The support policy with and without its guard, asked for a support agent's tickets. The prose's points rest on the printed reasons, row filters and regions seen with each version, and on the test the copy without the guard fails."""
@@ -729,7 +729,7 @@ Without the guard, the agent is allowed, with row filters `[]`, and sees the tic
 
 Cedar fails the same way, through [skip on error](#the-same-rules-in-cedar). Strip the `has region` check from the support agents' `forbid` in the platform's Cedar policies, and it reads `principal.region` on an agent who has none:
 
-Example `cedar-missing-region` (Python 3.12.15 · cedarpy 4.12.2 · pyarrow 26.0.1 · pyiceberg 0.12.0 · regopy 1.5.2), passing in Edition 2026.11.33:
+Example `cedar-missing-region` (Python 3.12.15 · cedarpy 4.12.2 · pyarrow 26.0.1 · pyiceberg 0.12.0 · regopy 1.5.2), passing in Edition 2026.11.34:
 
 ```python
 """Cedar's support forbid with and without its `has region` check, asked about a support agent with no region. The points rest on the printed decisions with each version, and on the validation error the unguarded policy gets."""

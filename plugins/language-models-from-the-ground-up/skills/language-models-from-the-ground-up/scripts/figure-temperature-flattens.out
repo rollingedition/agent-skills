@@ -1,0 +1,11 @@
+temperature 0.5, probability of the likeliest token: 0.605
+temperature 0.5, probability of the 40th likeliest token: 0.00003
+temperature 0.5, probability outside the 40 drawn: 0.1%
+temperature 1.0, probability of the likeliest token: 0.262
+temperature 1.0, probability of the 40th likeliest token: 0.00186
+temperature 1.0, probability outside the 40 drawn: 14.6%
+temperature 1.5, probability of the likeliest token: 0.087
+temperature 1.5, probability of the 40th likeliest token: 0.00321
+temperature 1.5, probability outside the 40 drawn: 50.8%
+tail grows with temperature: yes
+figure: figures/temperature-flattens.svg

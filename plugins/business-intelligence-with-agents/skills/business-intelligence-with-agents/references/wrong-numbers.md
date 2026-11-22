@@ -3,13 +3,13 @@ title: "Business Intelligence with Agents"
 chapter: "Where raw text-to-SQL gets the number wrong"
 chapter_id: wrong-numbers
 book: business-intelligence-with-agents
-edition: 2026.11.16
-verified: 2026-11-19
-edition_code: CSAB-T5TX
+edition: 2026.11.17
+verified: 2026-11-22
+edition_code: 6VBD-766G
 canonical: https://rollingedition.com/business-intelligence-with-agents/wrong-numbers
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“Where raw text-to-SQL gets the number wrong,” chapter 2 of Business Intelligence with Agents, Edition 2026.11.16, examples passed Nov 19, 2026. By Rolling Edition, https://rollingedition.com/business-intelligence-with-agents/wrong-numbers. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Where raw text-to-SQL gets the number wrong,” chapter 2 of Business Intelligence with Agents, Edition 2026.11.17, examples passed Nov 22, 2026. By Rolling Edition, https://rollingedition.com/business-intelligence-with-agents/wrong-numbers. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Where raw text-to-SQL gets the number wrong
 
@@ -23,11 +23,11 @@ Every example replays the recording called `schema-only-sql`: the replies a pinn
 
 ## Joins that fan out and inflate a sum {#joins-that-fan-out}
 
-Fan-out is what happens when a query joins a table to another that has several rows for each of its rows, and then sums a column of the first. An order has one row in the orders mart and several in the order lines, so after the join each order's amount appears once per line, and a sum over it counts the order several times. The query runs, the number has the right units, and nothing in the result marks it. An analyst who knows the grain of each table aggregates the lines per order before joining, or filters with `IN` instead of a join. A model that sees only column names has to infer the grain from them, and the schema doesn't state it.
+Fan-out is what happens when a query joins a table to another that has several rows for each of its rows, and then sums or counts a column of the first. An order has one row in the orders mart and several in the order lines, so after the join each order's amount appears once per line, and a sum over it counts the order several times. The query runs, the number has the right units, and nothing in the result marks it. An analyst who knows the grain of each table aggregates the lines per order before joining, or filters with `IN` instead of a join. A model that sees only column names has to infer the grain from them, and the schema doesn't state it.
 
 In the shop's warehouse, `analytics.fct_orders` holds one row per order with its `net_revenue_eur`, and `analytics.fct_order_lines` holds one row per line with its `product_id`. The question is one a category manager asks: "How much net revenue came from orders that included a tent in 2025?" It is golden question `gq-007`. Its golden SQL counts each order's whole net revenue once, if any of its lines is a product in the `Tents` category. Count the rows the model's join produces, against the golden query: the sum looks plausible but isn't.
 
-Example `tent-orders-fan-out` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.16:
+Example `tent-orders-fan-out` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.17:
 
 ```python
 """Replay the model's SQL for net revenue from orders with a tent, then count each order once. Read the `inflated by` line: it is the fan-out, measured with the model's own joins and filters kept as they are."""
@@ -103,6 +103,64 @@ The name match is the query's largest error: it matches products whose name cont
 
 How large a fan-out is depends on the data, not on the query. Few of the shop's orders have two tent lines, so the inflation here is small. Where a join repeats most rows several times, the same query shape multiplies a sum. Join every order of 2025 to all its lines, with no product filter, and the sum of net revenue comes to 3.38 times the true figure. Each order's revenue counts once for each of its lines, and the shop's orders have 2.56 lines on average; the ratio is that count weighted by revenue, so it can exceed the plain average. The size you measure on one question tells you nothing about the next.
 
+Most 2025 orders have two or more lines, so the join counts most orders more than once. Figure 2.1 counts the 2025 orders at each number of lines, from 1 to 6. Only 29.4% of the 6542 orders have a single line, and every other order enters the sum at least twice.
+
+*Figure 2.1. How many 2025 orders have each number of lines.*
+
+![Most 2025 orders have two or more lines, so a sum over the order join counts most orders more than once](https://rollingedition.ai/books/business-intelligence-with-agents/2026.11.17/figures/lines-per-order.svg)
+
+Example `figure-lines-per-order` (Python 3.12.15 · duckdb 2.0.0 · matplotlib 3.11.2), passing in Edition 2026.11.17:
+
+```python
+"""Draw how many 2025 orders have each number of lines, from the join the tent example uses, which counts an order once per line.
+The prose rests on `share of orders with one line`, `orders drawn`, `most lines in an order`, and the count at each number of lines."""
+import lib  # noqa: F401  (first, so threads and seeds are fixed before any numerical library loads)
+from lib.figures import ACCENT, new_figure, save
+from lib.warehouse import connect
+
+con = connect()
+# The same join and year filter as the tent example, with no product filter: every 2025 order joined to all of its lines.
+# count(*) per order is the number of joined rows that carry that order, so its revenue is summed that many times.
+per_order = con.execute("""SELECT f.order_id, count(*) AS lines
+    FROM analytics.fct_orders f JOIN analytics.fct_order_lines fl ON f.order_id = fl.order_id
+    WHERE EXTRACT(YEAR FROM f.placed_at) = 2025
+    GROUP BY f.order_id""").fetchall()
+orders = len(per_order)
+counts = {n: 0 for n in range(1, max(n for _, n in per_order) + 1)}   # every line count from one up, empty ones at zero
+for _, n in per_order:
+    counts[n] += 1
+
+fig, ax = new_figure(height=2.8)
+ax.bar(list(counts), list(counts.values()), color=ACCENT, width=0.7, label="2025 orders, by lines in the order")
+ax.set_xticks(list(counts))
+ax.set_xlabel("lines in the order, count")
+ax.set_ylabel("orders, count")
+ax.set_ylim(bottom=0)
+ax.legend(frameon=False)
+save(fig, "lines-per-order")
+
+print(f"orders drawn: {orders}")
+print(f"share of orders with one line: {counts[1] / orders:.1%}")
+print(f"most lines in an order: {max(counts)}")
+for n, c in counts.items():
+    print(f"orders with {n} {'line' if n == 1 else 'lines'}: {c}")
+```
+
+Output:
+
+```text
+figure: figures/lines-per-order.svg
+orders drawn: 6542
+share of orders with one line: 29.4%
+most lines in an order: 6
+orders with 1 line: 1925
+orders with 2 lines: 1713
+orders with 3 lines: 1280
+orders with 4 lines: 779
+orders with 5 lines: 570
+orders with 6 lines: 275
+```
+
 **Working rule:** When a query joins tables of different grains, check the grain of every column it sums. Aggregate the finer table to the coarser grain before joining, or filter with `IN` or `EXISTS`, and compare the row count after the join with the count of distinct keys. Expect a model given only the schema to miss this, because the schema names columns, not grains.
 
 ## Definitions the schema doesn't hold {#definitions-not-in-schema}
@@ -111,7 +169,7 @@ A [fan-out](#joins-that-fan-out) is a mechanical error: anyone who knows the tab
 
 The shop's finance team defines revenue as net revenue: in euros, after discounts, before tax, from real orders that weren't cancelled, on the order's local business day. The orders mart has both `gross_revenue_eur` and `net_revenue_eur`. EMEA's prices include VAT and the other regions add sales tax on top, so the gap between the two columns differs by region. The question is golden question `gq-008`: "What was our total revenue in 2025?" It doesn't say net, because people who work at the shop don't. Which choice costs most? The example changes one at a time, from gross to golden.
 
-Example `gross-or-net-revenue` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.16:
+Example `gross-or-net-revenue` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.17:
 
 ```python
 """Replay the model's SQL for total revenue in 2025, then change one choice at a time until it reaches the golden result. The line that matters is `overstated by`, and the step from gross to net, which matches the tax in the gross figure."""
@@ -168,7 +226,7 @@ Most of that gap is tax. Switching to net revenue on the same rows gives 1,745,1
 
 The same choice went wrong elsewhere in the recording. For `gq-009`, average order value by region in March 2026, the model averaged `gross_revenue_eur` over every order, cancelled ones included, where the shop's definition divides net revenue by orders that weren't cancelled. On `gq-012`, total revenue for each sales region, the model chose gross again. Neither choice is careless. Each is a common meaning of the word outside the shop.
 
-Neither error taxonomy we checked has a class for this. One detailed taxonomy, NL2SQL-BUGs, sorts semantic errors in text-to-SQL into 9 categories and 31 subcategories, from 2,018 expert-annotated cases ([Liu et al., KDD 2025](https://arxiv.org/abs/2503.11984)). It would file the query under *Attribute Mismatch*, a wrong column, which names the symptom and not the cause: none of its classes is "the business defines this differently from the schema". The closest we found is in an audit of benchmark annotations, which names mismatches between a question and the domain knowledge it needs ([Jin et al., CIDR 2026](https://vldb.org/cidrdb/papers/2026/p5-jin.pdf)). That gap is our reading of both papers, not a measured result, and other taxonomies may have the class.
+Neither error taxonomy we checked has a class for this. One detailed taxonomy, NL2SQL-BUGs, sorts semantic errors in text-to-SQL into 9 categories and 31 subcategories, from 2,018 expert-annotated cases, 999 of them wrong ([Liu et al., KDD 2025](https://arxiv.org/abs/2503.11984)). It would file the query under *Attribute Mismatch*, a wrong column, which names the symptom and not the cause: none of its classes is "the business defines this differently from the schema". The closest we found is in an audit of benchmark annotations, which names mismatches between a question and the domain knowledge it needs ([Jin et al., CIDR 2026](https://vldb.org/cidrdb/papers/2026/p5-jin.pdf)). That gap is our reading of both papers, not a measured result, and other taxonomies may have the class.
 
 **Working rule:** Treat every business word in a question as a definition to look up, not a column to match. Write down who owns each definition, and give the agent the definition itself, as a governed metric or at least a glossary entry, never only the columns it could be computed from. When a word has no written definition, have the agent ask or decline instead of choosing.
 
@@ -178,7 +236,7 @@ Time looks like the least ambiguous part of a question, and on the shop's wareho
 
 The shop counts each order on its region's local business day, stored as `order_date_local` in the orders mart, beside the UTC timestamp `placed_at`. Its [fiscal year](#meet-the-shop) starts on February 1 and is named for the year it ends in, so fiscal 2026 runs from February 1, 2025 to January 31, 2026, and `analytics.dim_date` holds the fiscal columns. Golden question `gq-004` asks how many customers placed their first order in fiscal year 2026. Golden question `gq-013` asks how many orders each sales region received in May 2026. One tests the fiscal year, the other the local business day.
 
-Example `fiscal-year-and-local-day` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.16:
+Example `fiscal-year-and-local-day` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.17:
 
 ```python
 """Two time traps in the model's SQL: a calendar year where the question meant a fiscal one, and UTC days. Read the `gq-004 model` line, the `gq-013` lines, and the counts of orders whose two clocks disagree."""
@@ -282,7 +340,7 @@ A [definition](#definitions-not-in-schema) can go wrong inside the right table; 
 
 The shop's warehouse has one: `analytics.orders_legacy`, which has columns called `revenue` and `sales_region`. Its revenue is gross, tax included, and it keeps test and cancelled orders. Golden question `gq-012`, "What was total revenue for each sales region in 2025?", uses both of its column names, and was written to tempt the model toward it, as was `gq-013`, which asks for orders by sales region. Two checks follow: what the legacy table answers, and whether the model's queries ever read it.
 
-Example `legacy-table-answer` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.16:
+Example `legacy-table-answer` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.17:
 
 ```python
 """What the legacy mart says about revenue by sales region in 2025, and how often the model's queries read that mart. The line to read is `legacy total over golden`, and the count of queries that read `orders_legacy`."""
@@ -349,7 +407,7 @@ The people who write text-to-SQL benchmarks miss these filters too. In the BIRD 
 
 The shop's marts apply one such rule for you: they remove test orders. They can't remove cancelled orders, because some questions are about cancellations, so `fct_orders` keeps them with their `status`, and the order lines keep them too. The question is golden question `gq-015`, "How many units of each product category did we sell in 2025?", which needs the status from one table to filter rows in another. The model's query never drops cancelled orders, and the example shows the cost.
 
-Example `cancelled-lines-counted` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.16:
+Example `cancelled-lines-counted` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.17:
 
 ```python
 """Replay the model's SQL for units sold by category in 2025, and find the filters it left out. Read the `overstated by` line, and the units on cancelled orders, which the missing status filter explains."""
@@ -436,7 +494,7 @@ Each section so far showed one failure on one question. To decide what to fix fi
 
 This run takes the model's schema-only SQL for each golden question from `gq-001` to `gq-016` with an answer, 15 of them, so its failures can be counted. It leaves out `gq-005`, a forecast that should be declined, which is chapter 8's subject. It grades each result against the golden result as correct, wrong or error, and labels each query with its failure kinds. The labels come from `lib/failure_kinds.py`, which parses the model's query and its golden SQL with sqlglot and compares them. For instance, a query that uses `placed_at` where the golden SQL uses the local business day gets the label `time`. The rules are ours, written for this warehouse's traps; the module's docstring lists each one.
 
-Example `classify-schema-only-errors` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.16:
+Example `classify-schema-only-errors` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.17:
 
 ```python
 """Run the model's schema-only SQL on each golden question that has an answer, grade each result, and label the failure kinds of each query. The counts of correct, wrong and error answers, and the kinds the wrong ones carry, are what the prose quotes."""

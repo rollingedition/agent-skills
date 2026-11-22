@@ -1,0 +1,4 @@
+first threshold on the grid: 0.00
+last threshold at the lowest sum: 2.00
+lowest sum of the two rates: 27.9%
+figure: figures/guard-threshold.svg

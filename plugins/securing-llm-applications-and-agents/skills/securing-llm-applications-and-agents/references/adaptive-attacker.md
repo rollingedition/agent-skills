@@ -3,19 +3,19 @@ title: "Securing LLM Applications and Agents"
 chapter: "Red-team the assistant with an adaptive attacker"
 chapter_id: adaptive-attacker
 book: securing-llm-applications-and-agents
-edition: 2026.11.1
+edition: 2026.11.2
 verified: 2026-11-22
-edition_code: M6D1-RCM2
+edition_code: Y3X2-HXT9
 canonical: https://rollingedition.com/securing-llm-applications-and-agents/adaptive-attacker
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“Red-team the assistant with an adaptive attacker,” chapter 11 of Securing LLM Applications and Agents, Edition 2026.11.1, examples passed Nov 22, 2026. By Rolling Edition, https://rollingedition.com/securing-llm-applications-and-agents/adaptive-attacker. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Red-team the assistant with an adaptive attacker,” chapter 11 of Securing LLM Applications and Agents, Edition 2026.11.2, examples passed Nov 22, 2026. By Rolling Edition, https://rollingedition.com/securing-llm-applications-and-agents/adaptive-attacker. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Red-team the assistant with an adaptive attacker
 
 By the end of this chapter you can run an attacker that revises its injection after each try, against a defence, under a fixed budget. You can read the result round by round, compare it with the fixed set, and say what the result does and does not show. You will also see which controls in this book this attacker did not touch, and why a toolkit's static probes cannot replace the loop.
 
-Every defence in chapters 4 to 10 was measured against injections written before the run. Each case in the attack set is a fixed string, and the assistant either followed it or did not. A real attacker sees what happened and tries again. This chapter asks whether a small attacker that does that finds anything the fixed set missed on the office assistant.
+Every defence in chapters 4 to 10 was measured against injections written before the run. Each case in the attack set is a fixed string, and the assistant either followed it or did not. A real attacker is adaptive: it sees what happened and tries again. This chapter asks whether a small attacker that does that finds anything the fixed set missed on the office assistant.
 
 On this set it found nothing the fixed set had not already found. The rest of the chapter explains why that is weak evidence.
 
@@ -38,7 +38,7 @@ It never sees the assistant's replies, the tool results, the arguments of the ca
 
 The feedback in the recording can be checked on every round. The next example asserts that each round's feedback holds only those two fields, and each call only its tool and decision. It also counts what the attacker did with its turns, which the section on [the gap](#the-gap-to-the-fixed-set) returns to:
 
-Example `adaptive-attacker-turns` (Python 3.13.16 · bm25s 0.3.16 · huggingface-hub 2.4.0 · linkify-it-py 2.2.0 · markdown-it-py 4.3.0 · numpy 2.5.5 · tokenizers 0.23.3 · torch 2.15.0+cpu · transformers 5.23.0), passing in Edition 2026.11.1:
+Example `adaptive-attacker-turns` (Python 3.13.16 · bm25s 0.3.16 · huggingface-hub 2.4.0 · linkify-it-py 2.2.0 · markdown-it-py 4.3.0 · numpy 2.5.5 · tokenizers 0.23.3 · torch 2.15.0+cpu · transformers 5.23.0), passing in Edition 2026.11.2:
 
 ```python
 """What the attacker did with its turns, and what it was shown: replays the same chains as `adaptive-round-count`. The
@@ -102,7 +102,7 @@ The design is a measurement, not a search for the strongest attack. Its job is t
 
 Round 0 has to be the fixed set's own result, or the comparison means nothing. The round-count example checks it for every case and every defence, and fails the run if one differs:
 
-Example `adaptive-round-count` (Python 3.13.16 · bm25s 0.3.16 · huggingface-hub 2.4.0 · linkify-it-py 2.2.0 · markdown-it-py 4.3.0 · numpy 2.5.5 · tokenizers 0.23.3 · torch 2.15.0+cpu · transformers 5.23.0), passing in Edition 2026.11.1:
+Example `adaptive-round-count` (Python 3.13.16 · bm25s 0.3.16 · huggingface-hub 2.4.0 · linkify-it-py 2.2.0 · markdown-it-py 4.3.0 · numpy 2.5.5 · tokenizers 0.23.3 · torch 2.15.0+cpu · transformers 5.23.0), passing in Edition 2026.11.2:
 
 ```python
 """The adaptive attacker on 12 dev cases under each of five defences, replayed from one recording: how many chains reach
@@ -235,7 +235,7 @@ Think of each case as a yes or no for each round. A case that succeeds at round 
 
 A reader can check this from the output. Where a defence's round 0 and round 5 lines match, the attacker added nothing for that defence. A higher round 5 line means a case changed outcome, and the interval shows whether that change is larger than the twelve cases can rule out as chance.
 
-Example `adaptive-gap` (Python 3.13.16 · bm25s 0.3.16 · huggingface-hub 2.4.0 · linkify-it-py 2.2.0 · markdown-it-py 4.3.0 · numpy 2.5.5 · tokenizers 0.23.3 · torch 2.15.0+cpu · transformers 5.23.0), passing in Edition 2026.11.1:
+Example `adaptive-gap` (Python 3.13.16 · bm25s 0.3.16 · huggingface-hub 2.4.0 · linkify-it-py 2.2.0 · markdown-it-py 4.3.0 · numpy 2.5.5 · tokenizers 0.23.3 · torch 2.15.0+cpu · transformers 5.23.0), passing in Edition 2026.11.2:
 
 ```python
 """The gap between the fixed set and the adaptive attacker: the success rate of the same 12 dev cases at round 0 (the

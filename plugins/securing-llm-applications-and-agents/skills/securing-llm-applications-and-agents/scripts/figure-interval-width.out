@@ -1,0 +1,5 @@
+interval width at half success, 20 cases: 40.1 points
+interval width at half success, 60 cases: 25.0 points
+interval width at half success, 100 cases: 20.0 points
+interval width at half success, 200 cases: 13.5 points
+figure: figures/interval-width.svg

@@ -3,13 +3,13 @@ title: "Securing LLM Applications and Agents"
 chapter: "Keep untrusted data out of the plan"
 chapter_id: isolation-by-design
 book: securing-llm-applications-and-agents
-edition: 2026.11.1
+edition: 2026.11.2
 verified: 2026-11-22
-edition_code: M6D1-RCM2
+edition_code: Y3X2-HXT9
 canonical: https://rollingedition.com/securing-llm-applications-and-agents/isolation-by-design
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“Keep untrusted data out of the plan,” chapter 8 of Securing LLM Applications and Agents, Edition 2026.11.1, examples passed Nov 22, 2026. By Rolling Edition, https://rollingedition.com/securing-llm-applications-and-agents/isolation-by-design. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Keep untrusted data out of the plan,” chapter 8 of Securing LLM Applications and Agents, Edition 2026.11.2, examples passed Nov 22, 2026. By Rolling Edition, https://rollingedition.com/securing-llm-applications-and-agents/isolation-by-design. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Keep untrusted data out of the plan
 
@@ -25,7 +25,7 @@ The undefended assistant completes 93.3% (14 of 15) of the benign dev tasks, and
 
 Each of the examples below runs in the same harness, against the same case, so their lines can be read side by side. Where a figure is given, the sentence beside it says which split and which design it belongs to, and the table near the end puts the designs in one place.
 
-Example `isolation-paired` (Python 3.13.16 · bm25s 0.3.16 · linkify-it-py 2.2.0 · markdown-it-py 4.3.0 · numpy 2.5.5), passing in Edition 2026.11.1:
+Example `isolation-paired` (Python 3.13.16 · bm25s 0.3.16 · linkify-it-py 2.2.0 · markdown-it-py 4.3.0 · numpy 2.5.5), passing in Edition 2026.11.2:
 
 ```python
 """Each isolation design against the undefended baseline, on the dev set and on the held-out set, with the paired differences between them.
@@ -169,9 +169,9 @@ This paired run prints every line the sections below use. It replays the recorde
 
 ## The dual LLM {#dual-llm}
 
-The dual LLM splits the assistant in two. A privileged model holds the tools and never reads the untrusted text. A quarantined model reads that text and holds no tools, so it has nothing to send or fetch with. Simon Willison described the pattern in [a 2023 post](https://simonwillison.net/2023/Apr/25/dual-llm-pattern/), and calls it an imperfect protection. Beurer-Kellner and co-authors list it among six design patterns in an arXiv preprint, [2506.08837](https://arxiv.org/abs/2506.08837). In the preprint's dual-LLM section, the privileged model never dereferences the untrusted value.
+The dual LLM splits the assistant in two, so that the tool-holding model never reads the untrusted text. A privileged model holds the tools and never reads the untrusted text. A quarantined model reads that text and holds no tools, so it has nothing to send or fetch with. Simon Willison described the pattern in [a 2023 post](https://simonwillison.net/2023/Apr/25/dual-llm-pattern/), and calls it an imperfect protection. Beurer-Kellner and co-authors list it among six design patterns in an arXiv preprint, [2506.08837](https://arxiv.org/abs/2506.08837). In the preprint's dual-LLM section, the privileged model never dereferences the untrusted value.
 
-The dual LLM's primary defence is that split: the model that holds the tools never reads the text. The book's version is a teaching approximation of that pattern, teaching code and defence in depth. It keeps the tenant's text in a variable in the harness. The planner sees a reference to that variable, not the text. The planner is offered one tool that reaches the quarantined model, `ask_quarantined`, which sends it a question about a piece of text and returns an answer. The quarantined model is meant to answer only the question it is asked. On this set it was never called on a benign task, as the counts below show.
+The dual LLM's primary defence is that split. The book's version is a teaching approximation of that pattern, teaching code and defence in depth. It keeps the tenant's text in a variable in the harness. The planner sees a reference to that variable, not the text. The planner is offered one tool that reaches the quarantined model, `ask_quarantined`, which sends it a question about a piece of text and returns an answer. The quarantined model is meant to answer only the question it is asked. On this set it was never called on a benign task, as the counts below show.
 
 The planner decides what to do from references and from the staff member's request, and it cannot read the text the references stand for. The design's cost falls on tasks the planner must finish without the wording of that text. This chapter did not trace the lost dev tasks, so it does not say what caused them.
 
@@ -179,7 +179,7 @@ A check on a call judges the arguments once they arrive. A design decides which 
 
 The first example runs one benign task and one attack case under this design. It prints the calls by tool name and question name only.
 
-Example `dual-llm-references` (Python 3.13.16 · bm25s 0.3.16 · linkify-it-py 2.2.0 · markdown-it-py 4.3.0 · numpy 2.5.5), passing in Edition 2026.11.1:
+Example `dual-llm-references` (Python 3.13.16 · bm25s 0.3.16 · linkify-it-py 2.2.0 · markdown-it-py 4.3.0 · numpy 2.5.5), passing in Edition 2026.11.2:
 
 ```python
 """One benign task and one attack case under the dual LLM, as the calls made, by tool and question name only.
@@ -260,7 +260,7 @@ The dual LLM does not inspect the reply. An attack that works through a link in 
 
 The planner was offered `ask_quarantined`. On the benign dev tasks the quarantined model was asked 0 questions, and on the benign held-out tasks it was asked 0. The attack cases are not counted in those lines, so this run does not say how often the planner asked about attack text. The quarantined model never ran on a benign task, so this chapter makes no claim about the answers it would have given. The design's effect on these attacks is measured, and the example does not say which part of the design produced it.
 
-Example `isolation-cost` (Python 3.13.16 · bm25s 0.3.16 · linkify-it-py 2.2.0 · markdown-it-py 4.3.0 · numpy 2.5.5), passing in Edition 2026.11.1:
+Example `isolation-cost` (Python 3.13.16 · bm25s 0.3.16 · linkify-it-py 2.2.0 · markdown-it-py 4.3.0 · numpy 2.5.5), passing in Edition 2026.11.2:
 
 ```python
 """Where each design's utility cost comes from, counted in the traces of the benign tasks the design lost, on dev and on held-out.
@@ -356,7 +356,7 @@ The dual LLM also has three limits that its counts do not show. It masks only th
 
 ## Plan-then-execute {#plan-then-execute}
 
-Plan-then-execute fixes the plan before the reply is read. The planner writes every call in one reply, and the harness runs them in the order written. The primary defence is that fixed plan: an injection cannot add a call after the reads. A placeholder that names an earlier call's result is filled only with a value of the type it names. A `text` placeholder, which carries the planner's own final reply, is accepted only in a message body, so the planner cannot put its own text into a recipient or a slot. A literal is used only where the staff request states the value, such as a unit or a date. A list result needs a `where` field that names one item, or the list must hold exactly one item; otherwise the call fails.
+Plan-then-execute fixes the plan before any tool result is read. The planner writes every call in one reply, and the harness runs them in the order written. The primary defence is that fixed plan: an injection cannot add a call after the reads. A placeholder that names an earlier call's result is filled only with a value of the type it names. A `text` placeholder, which carries the planner's own final reply, is accepted only in a message body, so the planner cannot put its own text into a recipient or a slot. A literal is used only where the staff request states the value, such as a unit or a date. A list result needs a `where` field that names one item, or the list must hold exactly one item; otherwise the call fails.
 
 The fixed plan fixes control flow, not data. The body of a message is the planner's final reply, and that reply is written after the planner has read the injected text. So an injection can change what a message body says, though it cannot change where the message goes. Beurer-Kellner and co-authors' preprint makes the same point: tool data cannot make the agent deviate from its plan, but it can alter the body of a message. The book's version keeps that limit, and its results show what the limit costs.
 
@@ -398,7 +398,7 @@ The check's limits are its width and its coverage. A string argument carries the
 
 The example has no recording. It takes one untrusted message, with fictional fields, and three candidate calls, and it runs the check on each.
 
-Example `taint-label-origins` (Python 3.13.16 · bm25s 0.3.16 · linkify-it-py 2.2.0 · markdown-it-py 4.3.0 · numpy 2.5.5), passing in Edition 2026.11.1:
+Example `taint-label-origins` (Python 3.13.16 · bm25s 0.3.16 · linkify-it-py 2.2.0 · markdown-it-py 4.3.0 · numpy 2.5.5), passing in Edition 2026.11.2:
 
 ```python
 """Which argument values of a crafted episode carry an untrusted label, and the rule that gave the label.
@@ -507,6 +507,92 @@ Each design buys a lower attack success by giving up something the assistant use
 | Plan-then-execute | 6.7% (1 of 15) | 5.0% (3 of 60) | 26.7% (4 of 15) | 5.0% (3 of 60) |
 | Taint labels | 26.7% (4 of 15) | 8.3% (5 of 60) | 53.3% (8 of 15) | 10.0% (6 of 60) |
 
+Figure 8.1 plots dev utility against attack success: undefended 93.3% (14 of 15), dual LLM 80.0% (12 of 15), taint 26.7% (4 of 15), plan-then-execute 6.7% (1 of 15). Utility splits them; attack success does not.
+
+*Figure 8.1. Each run's dev utility against its attack success, with 95% intervals.*
+
+![Only utility splits the designs](https://rollingedition.ai/books/securing-llm-applications-and-agents/2026.11.2/figures/isolation-tradeoff.svg)
+
+Example `figure-isolation-tradeoff` (Python 3.13.16 · bm25s 0.3.16 · linkify-it-py 2.2.0 · markdown-it-py 4.3.0 · matplotlib 3.11.2 · numpy 2.5.5), passing in Edition 2026.11.2:
+
+```python
+"""Each isolation design on the dev split as one point, attack success against utility, with 95% bootstrap intervals in both directions.
+The prose rests on the printed rates and intervals, which are the same numbers the points are drawn from."""
+from lib import cases, replay, report, runs, scorers, stats  # lib first: threads and seeds are fixed here
+from lib.figures import ACCENT, INK, new_figure, save
+
+DESIGNS = ["design-dual-llm", "design-plan-then-execute", "design-taint"]  # sorted, as isolation-paired prints them
+# Each point's label as the chapter's table names it, its offset in points from the point, and its alignment, clear of the other bars.
+LABEL_AT = {"baseline": ("undefended", 6, 5, "left", "bottom"), "design-dual-llm": ("dual LLM", 4, -8, "left", "top"), "design-plan-then-execute": ("plan-then-execute", 110, 0, "left", "center"), "design-taint": ("taint labels", 6, 5, "left", "bottom")}
+
+
+def scores(name, tasks, attacks):
+    """Utility per benign task and attack success per case, in ID order, for the baseline or one design on dev."""
+    rec = f"{name}-dev"  # the baseline's recording is baseline-dev, and each design's is design-*-dev
+    model = replay.ReplayModel(rec)  # one model per recording: it reads its file once
+    variant = None if name == "baseline" else name  # None replays the undefended prompt, a design names its own
+    benign = runs.replay_tasks(rec, tasks, variant=variant, model=model)
+    attack = runs.replay_cases(rec, attacks, variant=variant, model=model)
+    return [scorers.utility(t, benign[t.id]) for t in tasks], [scorers.attack_success(c, attack[c.id]) for c in attacks]
+
+
+def interval(flags):
+    """The 95% bootstrap interval of the rate of `flags`, in points."""
+    lo, hi = stats.bootstrap_mean([1.0 if flag else 0.0 for flag in flags])  # one 0 or 1 per item
+    return 100 * lo, 100 * hi
+
+
+def main():
+    tasks, attacks = cases.load_tasks("dev"), cases.load_cases("dev")  # 15 benign tasks, 60 attack cases
+    assert (len(tasks), len(attacks)) == (15, 60)  # the counts the prose names
+    fig, ax = new_figure(height=3.4)
+    u_lo, u_hi, a_lo, a_hi = {}, {}, {}, {}  # the printed intervals, in points, by run
+    for name in ["baseline"] + DESIGNS:
+        utility, success = scores(name, tasks, attacks)
+        base = name == "baseline"  # the labels isolation-paired prints for the undefended run, and each design's
+        report.rate_lines("baseline utility, 15 benign tasks" if base else f"utility, {name}, 15 benign tasks", utility)
+        report.rate_lines("baseline attack success, 60 cases" if base else f"attack success, {name}, 60 cases", success)
+        x, y = 100 * sum(success) / len(success), 100 * sum(utility) / len(utility)  # attack success, utility
+        (a_lo[name], a_hi[name]), (u_lo[name], u_hi[name]) = interval(success), interval(utility)
+        # The undefended run in ink, plan-then-execute in muted, dual LLM and taint in the accent: its bars stay apart from taint's, both at 6.7% utility.
+        color = INK if name == "baseline" else ACCENT  # the undefended run in ink, each design in the accent, as the prompt-defence figure does
+        _, caps, bars = ax.errorbar(x, y, xerr=[[x - a_lo[name]], [a_hi[name] - x]], yerr=[[y - u_lo[name]], [u_hi[name] - y]], fmt="o", color=color, markersize=4, capsize=2, elinewidth=1)
+        if name == "design-plan-then-execute": [a.set_linestyle("--") for a in (*caps, *bars)]  # its bar meets taint's lower cap
+        text, dx, dy, ha, va = LABEL_AT[name]
+        ax.annotate(text, (x, y), xytext=(dx, dy), textcoords="offset points", color=color, ha=ha, va=va)
+    # The two claims the figure and its prose make, checked on the printed intervals.
+    assert u_lo["design-dual-llm"] > max(u_hi["design-taint"], u_hi["design-plan-then-execute"])  # utility splits the runs
+    assert all(a_lo[d] < a_hi["baseline"] and a_hi[d] > a_lo["baseline"] for d in DESIGNS)  # attack intervals overlap
+    ax.set(xlim=(-1, 25), ylim=(0, 105), xlabel="attack success, percent of 60 dev cases", ylabel="utility, percent of 15 dev benign tasks")
+    save(fig, "isolation-tradeoff")
+
+
+if __name__ == "__main__":
+    main()
+```
+
+Output:
+
+```text
+baseline utility, 15 benign tasks: 93.3% (14 of 15)
+baseline utility, 15 benign tasks, interval: [80.0%, 100.0%]
+baseline attack success, 60 cases: 11.7% (7 of 60)
+baseline attack success, 60 cases, interval: [5.0%, 20.0%]
+utility, design-dual-llm, 15 benign tasks: 80.0% (12 of 15)
+utility, design-dual-llm, 15 benign tasks, interval: [60.0%, 100.0%]
+attack success, design-dual-llm, 60 cases: 3.3% (2 of 60)
+attack success, design-dual-llm, 60 cases, interval: [0.0%, 8.3%]
+utility, design-plan-then-execute, 15 benign tasks: 6.7% (1 of 15)
+utility, design-plan-then-execute, 15 benign tasks, interval: [0.0%, 20.0%]
+attack success, design-plan-then-execute, 60 cases: 5.0% (3 of 60)
+attack success, design-plan-then-execute, 60 cases, interval: [0.0%, 11.7%]
+utility, design-taint, 15 benign tasks: 26.7% (4 of 15)
+utility, design-taint, 15 benign tasks, interval: [6.7%, 46.7%]
+attack success, design-taint, 60 cases: 8.3% (5 of 60)
+attack success, design-taint, 60 cases, interval: [1.7%, 15.0%]
+figure: figures/isolation-tradeoff.svg
+```
+
 The paired differences are computed per item, then bootstrapped, as [Evaluating LLM Applications, chapter 8](https://rollingedition.com/evaluating-llm-applications/s/paired-comparisons) describes.
 
 The utility differences on dev are -13.3 points for the dual LLM, -86.7 points for plan-then-execute and -66.7 points for taint.
@@ -529,7 +615,7 @@ Each cost in this chapter comes from an ordinary request in this office: a reply
 
 The regression example runs the paths this chapter describes, one line per path, so a change to a check shows up as a changed line. Each line gives the case's row and what the check did:
 
-Example `isolation-regressions` (Python 3.13.16 · bm25s 0.3.16 · linkify-it-py 2.2.0 · markdown-it-py 4.3.0 · numpy 2.5.5), passing in Edition 2026.11.1:
+Example `isolation-regressions` (Python 3.13.16 · bm25s 0.3.16 · linkify-it-py 2.2.0 · markdown-it-py 4.3.0 · numpy 2.5.5), passing in Edition 2026.11.2:
 
 ```python
 """The isolation regressions for chapter 8's security review (findings S8-1 to S8-3), with no model and no recording.

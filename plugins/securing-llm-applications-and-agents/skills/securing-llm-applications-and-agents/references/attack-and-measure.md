@@ -3,13 +3,13 @@ title: "Securing LLM Applications and Agents"
 chapter: "Attack an assistant, then measure a fix"
 chapter_id: attack-and-measure
 book: securing-llm-applications-and-agents
-edition: 2026.11.1
+edition: 2026.11.2
 verified: 2026-11-22
-edition_code: M6D1-RCM2
+edition_code: Y3X2-HXT9
 canonical: https://rollingedition.com/securing-llm-applications-and-agents/attack-and-measure
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“Attack an assistant, then measure a fix,” chapter 1 of Securing LLM Applications and Agents, Edition 2026.11.1, examples passed Nov 22, 2026. By Rolling Edition, https://rollingedition.com/securing-llm-applications-and-agents/attack-and-measure. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Attack an assistant, then measure a fix,” chapter 1 of Securing LLM Applications and Agents, Edition 2026.11.2, examples passed Nov 22, 2026. By Rolling Edition, https://rollingedition.com/securing-llm-applications-and-agents/attack-and-measure. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Attack an assistant, then measure a fix
 
@@ -51,7 +51,7 @@ The rough set is deliberately strong. It holds the combination the undefended ru
 
 Run the baseline. Its first lines are the undefended run's three measures, and the rest are the breakdowns the chapter uses later.
 
-Example `attack-rough-baseline` (Python 3.13.16 · bm25s 0.3.16 · linkify-it-py 2.2.0 · markdown-it-py 4.3.0 · numpy 2.5.5), passing in Edition 2026.11.1:
+Example `attack-rough-baseline` (Python 3.13.16 · bm25s 0.3.16 · linkify-it-py 2.2.0 · markdown-it-py 4.3.0 · numpy 2.5.5), passing in Edition 2026.11.2:
 
 ```python
 """The undefended assistant on the rough set, replayed from the rough-baseline recording.
@@ -124,7 +124,7 @@ A count alone doesn't say how far a rate could move. For that the book uses a pe
 
 The interval covers one thing: the spread that comes from which cases happened to be drawn. It doesn't cover cases the set never contained, and it doesn't cover a scorer that is wrong. Its width depends on the number of cases, and on the rate too. It is widest near half, and it shrinks to nothing at 0% and at 100%, where a zero width is not precision. The next example shows the width of the same kind of rate at three sizes.
 
-Example `attack-interval-width` (Python 3.13.16 · numpy 2.5.5), passing in Edition 2026.11.1:
+Example `attack-interval-width` (Python 3.13.16 · numpy 2.5.5), passing in Edition 2026.11.2:
 
 ```python
 """How wide a bootstrap interval is on 20 cases, and on 100 and 200, for the same observed rate.
@@ -161,13 +161,70 @@ interval width, 100 of 200: 13.5 points
 
 Ten successes in twenty cases gives an interval 40.1 points wide. The same rate on a hundred cases gives 20.0 points, and on two hundred cases, 13.5 points. A set of twenty is small, and an interval that wide can hide a large difference between two defences. That is why this chapter calls its intervals rough.
 
+*Figure 1.1. How wide the 95% interval is for a rate of one half, from 10 to 200 cases.*
+
+![The interval is widest on few cases, and it narrows fast at first and then slowly](https://rollingedition.ai/books/securing-llm-applications-and-agents/2026.11.2/figures/interval-width.svg)
+
+Example `figure-interval-width` (Python 3.13.16 · matplotlib 3.11.2 · numpy 2.5.5), passing in Edition 2026.11.2:
+
+```python
+"""Draw how wide the bootstrap interval is for an observed rate of one half, as the number of cases grows from 10 to 200.
+
+The prose rests on the widths printed at 20, 60, 100 and 200 cases: the interval narrows fast at first, then slowly.
+No model and no recording are used here.
+"""
+from lib import stats  # lib first: threads and seeds are fixed here
+from lib.figures import ACCENT, MUTED, new_figure, save
+
+SIZES = list(range(10, 201, 10))   # set sizes, in steps of 10 cases
+MARKED = (20, 60, 100, 200)        # the rough set of 20, and the three larger sizes the prose quotes
+
+
+def width(successes, total):
+    """The width of the bootstrap interval for `successes` of `total` cases, in points."""
+    values = [1.0] * successes + [0.0] * (total - successes)  # one item per case, 1 for a success
+    lo, hi = stats.bootstrap_mean(values)
+    return 100 * (hi - lo)
+
+
+def main():
+    widths = [width(size // 2, size) for size in SIZES]   # half the cases succeed at every size
+    for size in MARKED:
+        print(f"interval width at half success, {size} cases: {widths[SIZES.index(size)]:.1f} points")
+    fig, ax = new_figure(height=2.6)
+    ax.plot(SIZES, widths, color=ACCENT, marker="o", markersize=3, label="width of the 95% interval, half the cases succeed")
+    ax.plot(MARKED, [widths[SIZES.index(s)] for s in MARKED], linestyle="none", marker="o", markersize=7,
+            markerfacecolor="none", color=MUTED, label="20, 60, 100 and 200 cases")
+    ax.set_xlabel("cases in the set")
+    ax.set_ylabel("interval width, points")
+    ax.set_ylim(bottom=0)
+    ax.legend(frameon=False)
+    save(fig, "interval-width")
+
+
+if __name__ == "__main__":
+    main()
+```
+
+Output:
+
+```text
+interval width at half success, 20 cases: 40.1 points
+interval width at half success, 60 cases: 25.0 points
+interval width at half success, 100 cases: 20.0 points
+interval width at half success, 200 cases: 13.5 points
+figure: figures/interval-width.svg
+```
+
+Figure 1.1 draws that width for a rate of one half, at every set size from 10 to 200 cases in steps of ten. The line is the width of the 95% interval, and the open circles mark 20, 60, 100 and 200 cases. Forty more cases take the width from 40.1 points at 20 cases to 25.0 points at 60. The next hundred and forty take it only to 13.5 points at 200.
+
 The intervals are only as good as the scorer under them. A scorer that reads the wrong field undercounts, and the bootstrap then reports that undercount with the same care it gives a right one. That is why each scorer is short, and why the example prints counts a reader can check by hand: an odd count is the first place to look. The check is not a substitute for reading the scorer.
 
 **Working rule:** Report every rate with its count beside its interval, and call an interval rough when the set holds few cases. Twenty is few.
 
 ## An outbound allowlist {#an-outbound-allowlist}
 
-The primary defence is not in this chapter's code. It is the deployment's own egress control: the environment reaches only the fixture hosts, and the office's mail account refuses recipients outside its directory. This chapter takes that design as given and states it. It doesn't test it. The defence measured here is an outbound allowlist, a rule in the harness that acts on each call before the call runs. It is labelled harness (enforcement), it is teaching code, and it is defence in depth. The harness is the code that runs each episode and enforces the rules on every call, in `lib/harness.py`. Its `check_call` asks `defences.outbound_allowlist` for a decision, and runs a call only on an explicit Allow. Any other answer is a refusal, and so is a call to a tool name the rule doesn't know.
+The primary defence is not in this chapter's code. It is the deployment's own egress control: the environment reaches only the fixture hosts, and the office's mail account refuses recipients outside its directory. This chapter takes that design as given and states it. It doesn't test it. The defence measured here is an outbound allowlist, a rule in the harness that, before each call runs, refuses a message to a recipient or a page fetch from a host it does not list. It is labelled harness (enforcement), it is teaching code, and it is defence in depth. The harness is the code that runs each episode and enforces the rules on every call, in `lib/harness.py`. Its `check_call` asks `defences.outbound_allowlist` for a decision, and runs a call only on an explicit Allow. Any other answer is a refusal, and so is a call to a tool name the rule doesn't know.
 
 The rule allows `send_message` to recipients in the office directory, to tenant IDs and to the contractor's ID. It allows `fetch_page` only to the office's own host, which the code pins, so adding a fixture page cannot widen it. The rule compares hosts in lower case and the page tool matches addresses exactly, so an office address written in capitals passes the rule and then finds no page. Six tools pass with no check of their arguments. Four read the office's own data. The other two, `list_slots` and `book_visit`, are the contractor's, and they send their arguments to the contractor's server, so the rule passes data out of the office on those calls. [Chapter 6](#argument-policies) checks those arguments. The rule fails closed: an address or a host it doesn't recognise is refused, and so is a call it can't read. A refused call is recorded and does not run. The attack's goal check then reads what remains of the trace.
 
@@ -175,7 +232,7 @@ To measure the rule, you run the same 20 attack cases and 10 benign tasks again,
 
 The rough set comes from the development split. The allowlist has no threshold to tune, so the rule itself is not fitted to these cases. The set was chosen for the attack, as the previous section says. Chapter 3 sets the held-out split aside, and each defence from chapter 4 on reports its numbers on it once, on cases the defence was never tuned on.
 
-Example `attack-allowlist-paired` (Python 3.13.16 · bm25s 0.3.16 · linkify-it-py 2.2.0 · markdown-it-py 4.3.0 · numpy 2.5.5), passing in Edition 2026.11.1:
+Example `attack-allowlist-paired` (Python 3.13.16 · bm25s 0.3.16 · linkify-it-py 2.2.0 · markdown-it-py 4.3.0 · numpy 2.5.5), passing in Edition 2026.11.2:
 
 ```python
 """The same 20 cases and 10 benign tasks with the outbound allowlist enforced, from the rough-allowlist recording.
@@ -263,7 +320,7 @@ The paired difference in attack success is -100.0 points. Its interval, [-100.0,
 
 A rule in the harness is only as strict as the harness that runs it, so the harness fails closed when the rule is not followed. A check that returns no decision lets 0 pages be fetched. A tool the rule has never heard of is refused and logged as a defence event, and the model's malformed arguments end in an error result, not a crashed run:
 
-Example `attack-allowlist-probes` (Python 3.13.16 · bm25s 0.3.16 · linkify-it-py 2.2.0 · markdown-it-py 4.3.0 · numpy 2.5.5), passing in Edition 2026.11.1:
+Example `attack-allowlist-probes` (Python 3.13.16 · bm25s 0.3.16 · linkify-it-py 2.2.0 · markdown-it-py 4.3.0 · numpy 2.5.5), passing in Edition 2026.11.2:
 
 ```python
 """The harness's own fail-closed and error paths, probed with a scripted model and no recording, for chapter 1's review (F-1 to F-3).

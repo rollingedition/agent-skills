@@ -1,0 +1,3 @@
+reference, median daily MASE: 0.72
+flag line, MASE: 1.43
+figure: figures/drift-flags.svg

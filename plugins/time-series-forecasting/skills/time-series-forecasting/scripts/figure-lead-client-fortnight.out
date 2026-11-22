@@ -1,0 +1,11 @@
+hours drawn: 336
+mean load, kWh: 51.37
+highest hour of the average day: 18:00
+mean load at the highest hour, kWh: 66.27
+lowest hour of the average day: 05:00
+mean load at the lowest hour, kWh: 38.75
+24-hour mean on the first full day, kWh: 61.35
+24-hour mean on the last day, kWh: 41.37
+lowest 24-hour mean, kWh: 36.07
+day of the lowest 24-hour mean: Dec 26
+figure: figures/lead-client-fortnight.svg

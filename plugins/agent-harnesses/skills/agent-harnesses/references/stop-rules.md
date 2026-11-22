@@ -3,19 +3,19 @@ title: "Agent Harnesses"
 chapter: "Stop the loop when it's done or stuck"
 chapter_id: stop-rules
 book: agent-harnesses
-edition: 2026.11.6
+edition: 2026.11.7
 verified: 2026-11-22
-edition_code: 3KM9-2NP7
+edition_code: YNMR-JA84
 canonical: https://rollingedition.com/agent-harnesses/stop-rules
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“Stop the loop when it's done or stuck,” chapter 2 of Agent Harnesses, Edition 2026.11.6, examples passed Nov 22, 2026. By Rolling Edition, https://rollingedition.com/agent-harnesses/stop-rules. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Stop the loop when it's done or stuck,” chapter 2 of Agent Harnesses, Edition 2026.11.7, examples passed Nov 22, 2026. By Rolling Edition, https://rollingedition.com/agent-harnesses/stop-rules. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Stop the loop when it's done or stuck
 
 By the end of this chapter you can say why any run stopped, from the one word the harness records for it, and add the two rules that end a run which has stopped making progress.
 
-[Chapter 1](#tools-and-a-loop) built a loop that ends a run in one of three ways: the model calls `finish`, the run reaches its step cap of 8, or the model gives no call twice. That covers a model that finishes. It doesn't cover a model that keeps sending the same edit, which is what an edit that can't find its text invites. Chapter 1's tools have no edit, so that case comes from the task set: the 20 tasks that [testing the agent](#testing-the-agent) scores, run with [tool set v1](#tool-schemas), whose tools include edits. In the running case, unitcraft, a small units library whose visible suite gives a count after each change, a stuck run of that kind goes to the cap, and the only record of its end is that the cap ended it. Each lost step is a model call and a line in the transcript that a reviewer has to read. This chapter names the ways the loop ends a run, adds two rules that end a stuck run early, and measures what they do on the task set.
+[Chapter 1](#tools-and-a-loop) built a loop that ends a run in one of three ways: the model calls `finish`, the run reaches its step cap of 8, or the model gives no call twice. That covers a model that finishes. It doesn't cover a model that keeps sending the same edit, which is what an edit that can't find its text invites. Chapter 1's tools have no edit, so that case comes from the task set: the 20 tasks that [testing the agent](#testing-the-agent) scores, first recorded with [tool set v1](#tool-schemas), whose tools include edits. In the running case, unitcraft, a small units library whose visible suite gives a count after each change, a stuck run of that kind goes to the cap, and the only record of its end is that the cap ended it. Each lost step is a model call and a line in the transcript that a reviewer has to read. This chapter names the ways the loop ends a run, adds two rules that end a stuck run early, and measures what they do on the task set.
 
 ## Ways a run ends {#ways-to-end}
 
@@ -52,7 +52,7 @@ The [task set](#testing-the-agent), the 20 tasks this chapter's last example cou
 
 The chapter 1 recording of T-01 shows the budget at work. The model, Qwen3-4B-Instruct-2507, is an open model, and its replies were recorded and are replayed here, so every run in this chapter gets the same output on every machine. In that recording the model did not finish within eight steps. Its last step was a malformed tool call, which the harness refused. Replay the run under the budget, with no other rule, and the output shows where the cap ends it:
 
-Example `budget-stops-a-loop` (Python 3.12.15 · pydantic 2.14.4), passing in Edition 2026.11.6:
+Example `budget-stops-a-loop` (Python 3.12.15 · numpy 2.5.5 · pydantic 2.14.4), passing in Edition 2026.11.7:
 
 ```python
 """The chapter 1 recorded run of T-01 under its step budget of 8. The budget ends the run as step_cap, with no finish;
@@ -102,7 +102,7 @@ Three is this book's threshold, not a fixed one. It is a judgement, and the work
 
 T-01 never sends the same call three times in a row, so this example replays T-02, where the model does:
 
-Example `repeated-call-stops` (Python 3.12.15 · pydantic 2.14.4), passing in Edition 2026.11.6:
+Example `repeated-call-stops` (Python 3.12.15 · numpy 2.5.5 · pydantic 2.14.4), passing in Edition 2026.11.7:
 
 ```python
 """The recorded run of T-02 with and without the repeated-call rule. Three identical calls in a row end the run as
@@ -164,7 +164,7 @@ The rule keeps a count of edits in a row that leave the counts unchanged. The fi
 
 Run T-01 from the task-set recording, which uses tool set v1 and whose edits fail, twice: once with no rules and once with the no-progress rule set to two edits. Read where each run ends:
 
-Example `no-progress-stops` (Python 3.12.15 · pydantic 2.14.4), passing in Edition 2026.11.6:
+Example `no-progress-stops` (Python 3.12.15 · numpy 2.5.5 · pydantic 2.14.4), passing in Edition 2026.11.7:
 
 ```python
 """The recorded run of T-01 under the no-progress rule. Two edits in a row that leave the test counts where they
@@ -223,7 +223,7 @@ Only `ask_user` asks. The model calls it with a question, the harness hands the 
 
 The last check in this chapter runs all 20 tasks twice, once as recorded and once with both rules, [repeated calls](#repeated-calls) and [no progress](#no-progress). It prints counts only:
 
-Example `stop-rules-over-task-set` (Python 3.12.15 · pydantic 2.14.4), passing in Edition 2026.11.6:
+Example `stop-rules-over-task-set` (Python 3.12.15 · numpy 2.5.5 · pydantic 2.14.4), passing in Edition 2026.11.7:
 
 ```python
 """The task-set recording's 20 runs, replayed as recorded and again with both stop rules. Counts only: which runs hit
@@ -310,6 +310,86 @@ Each done task still passes with the rules on, and the example checks it. Of the
 Without the rules, 6 runs asked a question and were not done. With the rules, 6 of those runs ended earlier, and none of them asked. The one `ask_user` left with the rules on is T-18's, which the scorer counts as done; [chapter 10](#t18-path) shows that it counts only through a word in a path. A stop that ends a run early doesn't make the run right. It ends the run before the wrong question is asked, and that run is still not done. The rules cut the waste; they can't tell a right question from a wrong one.
 
 You can check the output yourself. The six endings with the rules on add up to the number of runs, as the lines of the output show, and the done count is the same with the rules and without them. If the done count ever moves, a rule has cut a run that was going to pass, and the rule is the thing to change. If a run in your own work ends stuck, read it in this order: the `ended` value, then the last few steps, then the first step where a call began to repeat. Those reads take less time than reading the whole transcript.
+
+Figure 2.1 draws each of the 20 runs as steps: an open circle for the run as recorded, a filled square for the run with both rules, and a line joining the two. A line that runs down is a run the rules shortened, and a square inside a circle, with no line, is a run whose steps did not change. The dashed line is the step cap, at 16 steps, and the triangles along the bottom mark the done runs.
+
+*Figure 2.1. Steps each run took, as recorded and with both rules.*
+
+![The rules shorten many runs, and the done runs take the same steps with and without them](https://rollingedition.ai/books/agent-harnesses/2026.11.7/figures/steps-with-and-without-rules.svg)
+
+Example `figure-steps-with-and-without-rules` (Python 3.12.15 · matplotlib 3.11.2 · numpy 2.5.5 · pydantic 2.14.4), passing in Edition 2026.11.7:
+
+```python
+"""The task-set recording's 20 runs, each replayed as recorded and again with both stop rules, drawn as steps per task.
+The rules shorten the stuck runs and leave the done runs at the same steps, which the last assert checks."""
+from lib.case import load_tasks
+from lib.figures import ACCENT, INK, MUTED, new_figure, save
+from lib.loop import Stops, run_task
+from lib.models import ReplayModel
+from lib.tasks import score
+from lib.tools import V1
+from lib.trace import IdCounter
+
+
+def replay(stops: Stops) -> dict:
+    """Each task's (steps, done) in file order, so the run IDs match the recording's."""
+    ids, out = IdCounter(), {}
+    for task in load_tasks():
+        run = run_task(ReplayModel("task-set", task.id), task, V1, max_steps=V1.step_cap, ids=ids, stops=stops)
+        out[task.id] = (run.steps, score(task, run))
+        run.close()
+    return out
+
+
+# Three identical calls in a row, and two edits that leave the counts where they were.
+plain, ruled = replay(Stops()), replay(Stops(repeat_limit=3, no_progress_limit=2))
+x = list(range(1, len(plain) + 1))
+steps_plain, steps_ruled = [[runs[t][0] for t in plain] for runs in (plain, ruled)]
+done = [i for i, t in enumerate(plain) if plain[t][1]]
+assert all(ruled[t] == plain[t] for t in plain if plain[t][1]), "a done run changed with the rules"
+assert all(r <= p for r, p in zip(steps_ruled, steps_plain)), "a rule lengthened a run"
+
+print("task set step cap:", V1.step_cap)
+print("runs:", len(plain))
+print("runs the rules shortened:", sum(r < p for r, p in zip(steps_ruled, steps_plain)))
+print("steps saved in all:", sum(steps_plain) - sum(steps_ruled))
+print("steps saved on the runs that hit the step cap:", sum(p - r for p, r in zip(steps_plain, steps_ruled) if p == V1.step_cap))
+print("done runs:", len(done))
+print("steps of the done runs as recorded:", sum(steps_plain[i] for i in done))
+print("steps of the done runs with both rules:", sum(steps_ruled[i] for i in done))
+
+fig, ax = new_figure(height=3.6)
+# A thin line joins each task's two counts: a drop is a shortened run, and no line means the steps did not change.
+ax.vlines(x, steps_ruled, steps_plain, color=MUTED, linewidth=0.8)
+ax.plot(x, steps_plain, linestyle="none", marker="o", ms=9, mew=1.2, mfc="none", color=MUTED, label="as recorded")
+ax.plot(x, steps_ruled, linestyle="none", marker="s", ms=4, color=ACCENT, label="with both rules")
+ax.axhline(V1.step_cap, color=INK, linestyle="--", linewidth=1.0, label=f"step cap, {V1.step_cap} steps")
+# The done runs sit on a row of their own below zero, so which runs passed reads without the colour or the line.
+ax.plot([x[i] for i in done], [-2] * len(done), linestyle="none", marker="^", ms=6, color=INK, label="done")
+ax.set(ylabel="steps in the run", ylim=(-3, V1.step_cap + 6), xlabel="task, in file order", xticks=x, xticklabels=list(plain))
+ax.set_yticks([-2, *range(0, V1.step_cap + 1, 4)], ["done", *map(str, range(0, V1.step_cap + 1, 4))])
+ax.legend(frameon=False, loc="upper center", ncol=2)   # headroom above the cap line holds the legend
+ax.tick_params(axis="x", labelrotation=90, labelsize=7)
+save(fig, "steps-with-and-without-rules")
+```
+
+Output:
+
+```text
+task set step cap: 16
+runs: 20
+runs the rules shortened: 12
+steps saved in all: 94
+steps saved on the runs that hit the step cap: 61
+done runs: 5
+steps of the done runs as recorded: 27
+steps of the done runs with both rules: 27
+figure: figures/steps-with-and-without-rules.svg
+```
+
+The rules save 94 steps, and only the 12 runs they shorten change. Most of that saving, 61 steps, is on the runs that reached the step cap without the rules.
+
+The 5 done runs take 27 steps as recorded and 27 with both rules.
 
 **Working rule:** Count each run by the `ended` value it recorded, and report the counts with the rules on and off, next to the done count. A stop can only turn a run into one that is not done, so when you change a rule, check that the done count holds before you keep the change.
 

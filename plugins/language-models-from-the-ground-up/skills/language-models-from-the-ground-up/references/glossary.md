@@ -1,13 +1,13 @@
 ---
 title: "Glossary"
 book: "Language Models from the Ground Up"
-edition: "2026.11.17"
+edition: "2026.11.18"
 canonical: "https://rollingedition.com/language-models-from-the-ground-up/glossary"
 ---
 
 # Glossary of *Language Models from the Ground Up*
 
-The 134 terms this book defines, as Edition 2026.11.17 has them, each in the book's own sentence. When a task this skill covers uses one, it means what it says here: read its section before you rely on it, and cite the section. Where a definition depends on a package, it says the version this edition pins and runs its examples on. On the web: https://rollingedition.com/language-models-from-the-ground-up/glossary
+The 134 terms this book defines, as Edition 2026.11.18 has them, each in the book's own sentence. When a task this skill covers uses one, it means what it says here: read its section before you rely on it, and cite the section. Where a definition depends on a package, it says the version this edition pins and runs its examples on. On the web: https://rollingedition.com/language-models-from-the-ground-up/glossary
 
 ## <unk>
 
@@ -62,7 +62,7 @@ In vectors, the answer to "a is to b as c is to what?" is the token nearest to b
 
 ## attention
 
-Attention lets every position look at every earlier one, and decide from their contents how much each matters.
+Attention lets every position look at other positions, in a language model every earlier one, and decide from their contents how much each matters.
 
 - Contrasts with: input window
 - Defined in: [Attention](attention.md)
@@ -112,7 +112,7 @@ a baseline, a fixed yardstick: one model, one text, one tokenizer and one measur
 
 ## batch
 
-Each step of real training is computed on a batch of examples, a few hundred at a time, instead of all of them, so each step is cheap and the steps vary a little.
+Each step of real training is computed on a batch of examples, a few hundred at a time here, instead of all of them, so each step is cheap and the steps vary a little.
 
 - Part of: gradient descent
 - Defined in: [Take gradient descent steps](a-neural-language-model.md#take-gradient-descent-steps)
@@ -205,7 +205,7 @@ a token's continuation count, the number of different tokens it follows
 
 ## cosine decay
 
-After the warm-up, the step size falls along half a cosine curve, to a tenth of the peak by the last step
+After the warm-up, the step size falls along half a cosine curve, here to a tenth of the peak by the last step
 
 - Formula: `rate = peak × (0.1 + 0.9 × ½ (1 + cos(π × progress)))`
 - Part of: schedule
@@ -225,7 +225,7 @@ To measure how alike two vectors are, this book uses cosine similarity: the cosi
 
 The cross-entropy of a text is the average surprise over every word in it
 
-- Formula: `cross-entropy = −(1/N) Σ log P(next word | previous word)`
+- Formula: `cross-entropy = −(1/N) Σ log P(next word | the words before it)`
 - Computed from: surprise
 - Defined in: [Score a model with perplexity](predicting-the-next-word.md#score-with-perplexity)
 - Address: https://rollingedition.com/concepts/natural-language-processing/cross-entropy
@@ -260,7 +260,6 @@ Direct Preference Optimization, DPO, does preference tuning without a reward mod
 
 At each order, Kneser-Ney subtracts a fixed discount d from every count it has seen, and gives the probability it took to the next order down
 
-- Formula: `D = n₁ / (n₁ + 2 n₂)`
 - Part of: Kneser-Ney smoothing
 - Defined in: [Smooth with Kneser-Ney](counting-further-back.md#smooth-with-kneser-ney)
 - Address: https://rollingedition.com/concepts/natural-language-processing/discount
@@ -278,7 +277,7 @@ DPO's loss works on a pair of responses to one request, one preferred and one re
 
 ## early stopping
 
-the simplest defence is early stopping: measure validation loss after every epoch, one full pass over the training text, and keep the weights from the best epoch.
+The simplest defence is early stopping: measure validation loss after every epoch, one full pass over the training text, and keep the weights from the best epoch.
 
 - Close to: https://rollingedition.com/concepts/search-and-recommendation/early-stopping
 - Defined in: [Stop when validation loss turns up](a-neural-language-model.md#stop-at-the-best-epoch)
@@ -345,7 +344,7 @@ Full fine-tuning updates every weight, which for a model of hundreds of millions
 
 ## gated feed-forward layer
 
-A gated feed-forward layer computes two widened vectors from the input, passes one through a function called SiLU, and multiplies the two number by number, so the first decides how much of the second gets through
+A gated feed-forward layer computes two widened vectors from the input, passes one through a function, here one called SiLU, and multiplies the two number by number, so the first decides how much of the second gets through
 
 - Also: SwiGLU
 - Formula: `FFN(x) = (SiLU(x W_gate) ⊙ (x W_up)) W_down`
@@ -355,7 +354,7 @@ A gated feed-forward layer computes two widened vectors from the input, passes o
 
 ## generation
 
-To generate, start at <s>, draw the next word at random in proportion to its probability, append it, and repeat from the word you drew, until the model draws </s>.
+To generate from this model, start at <s>, draw the next word at random in proportion to its probability, append it, and repeat from the word you drew, until the model draws </s>.
 
 - Also: generate
 - Defined in: [Generate names one word at a time](predicting-the-next-word.md#generate-one-word-at-a-time)
@@ -423,7 +422,7 @@ several attention computations, called heads, side by side, each with its own qu
 
 ## hidden layer
 
-A hidden layer computes h = tanh(xW + b) from its input x: it multiplies x by a matrix of weights W, adds a vector of biases b, and passes each result through tanh
+In this model, a hidden layer computes h = tanh(xW + b) from its input x: it multiplies x by a matrix of weights W, adds a vector of biases b, and passes each result through tanh
 
 - Formula: `h = tanh(xW + b)`
 - Part of: neural language model
@@ -432,7 +431,7 @@ A hidden layer computes h = tanh(xW + b) from its input x: it multiplies x by a 
 
 ## induction head
 
-an induction head: a head in an earlier layer copies each token's predecessor into its position, and the induction head uses that to find earlier positions that followed the current token, and attends to them
+an induction head: a head in an earlier layer copies each token's predecessor into its position, and the induction head uses that to find earlier positions that followed the current token, attends to them, and copies their token into the prediction
 
 - Also: induction heads
 - A kind of: head
@@ -467,7 +466,7 @@ Instruction tuning, or supervised fine-tuning, continues training a model on exa
 
 ## interpolation
 
-Interpolation falls back smoothly: the probability of a token is a weighted mix of what the trigram, bigram and unigram counts say
+Interpolation falls back smoothly: the probability of a token is a weighted mix of what the counts of each order say (here trigram, bigram and unigram)
 
 - Formula: `P(token | a b) = λ₃ · P₃(token | a b) + λ₂ · P₂(token | b) + λ₁ · P₁(token)`
 - A kind of: smoothing
@@ -495,7 +494,7 @@ The key and value cache, every layer's keys and values for the earlier tokens, g
 
 ## Kneser-Ney smoothing
 
-Kneser-Ney smoothing combines interpolation of orders with continuation counts.
+Kneser-Ney smoothing combines discounting, interpolation of orders and continuation counts.
 
 - Also: Kneser-Ney, interpolated Kneser-Ney
 - Formula: `P(w | h) = max(c(h w) − d, 0) / c(h) + d · N(h) / c(h) · P(w | shorter h)`
@@ -512,7 +511,7 @@ A language model is a program that assigns a probability to every word that coul
 
 ## layer normalization
 
-layer normalization, which subtracts each vector's mean and divides by its standard deviation
+layer normalization, which subtracts each vector's mean and divides by its standard deviation, and applies a learned gain and bias
 
 - Defined in: [Normalize before each part](the-transformer-block.md#normalize-before-each-part)
 - Address: https://rollingedition.com/concepts/deep-learning/layer-normalization
@@ -549,7 +548,7 @@ LoRA, low-rank adaptation, freezes the model's weights and trains a small correc
 
 ## loss
 
-To measure how badly a model predicts, use the loss: L = −log P(next token), the negative log probability the model gave to the token that actually came next, the same surprise chapter 1 averaged into perplexity.
+To measure how badly a model predicts, use a loss, here the surprise whose average is chapter 1's cross-entropy: L = −log P(next token), the negative log probability the model gave to the token that actually came next, the same surprise chapter 1 averaged into perplexity.
 
 - Formula: `L = −log P(next token)`
 - Comes before: gradient
@@ -566,7 +565,7 @@ An answer is made up if it names a material that the product's name and descript
 
 ## maximum likelihood estimation
 
-Estimating probabilities from the fraction of times something happened is called maximum likelihood estimation
+Estimating probabilities from the fraction of times something happened is an example of maximum likelihood estimation: of all the probability tables you could choose, it's the one that makes the training text likeliest
 
 - Also: maximum likelihood, MLE
 - Formula: `P(v | w) = count(w v) / count(w)`
@@ -668,7 +667,7 @@ The heads' outputs are joined side by side and mixed back together by one more l
 
 ## overfitting
 
-A validation perplexity that turns up while training perplexity keeps falling is overfitting
+A validation perplexity that turns up while training perplexity keeps falling is the sign of overfitting: the model fits its training text, noise included, so closely that it does worse on new text.
 
 - Measured from: perplexity
 - Defined in: [Stop when validation loss turns up](a-neural-language-model.md#stop-at-the-best-epoch)
@@ -710,7 +709,7 @@ Perplexity is the cross-entropy turned back into a count
 
 ## perplexity per word
 
-A perplexity per word divides a model's total log-probability of a text by the number of words in it, instead of by its number of tokens.
+A perplexity per word divides a model's total log-probability of a text by the number of words in it, instead of by its number of tokens, before turning it back into a count.
 
 - Also: per-word perplexity
 - Formula: `perplexity per word = exp(−(log p₁ + … + log pₙ) / W)`
@@ -793,7 +792,7 @@ repetition: the share of four-token phrases that repeat an earlier one in the sa
 
 ## repetition penalty
 
-Keskar and colleagues proposed a repetition penalty: divide the logit of every token already generated by a factor θ above 1, so it becomes less likely
+Keskar and colleagues proposed a repetition penalty: divide the logit of every token already generated by a factor θ above 1, so that, where the logit is positive, it becomes less likely
 
 - Defined in: [Penalize repetition](choosing-the-next-token.md#penalize-repetition)
 - Address: https://rollingedition.com/concepts/large-language-models/repetition-penalty
@@ -879,7 +878,7 @@ SiLU passes large positive numbers almost unchanged and turns large negative one
 
 ## singular value decomposition
 
-the singular value decomposition, SVD, which finds the 64 directions that together reconstruct the PPMI rows best, and weights each by how much of the rows it explains
+the singular value decomposition, SVD, which finds the directions that reconstruct the PPMI rows best, in order, so that the first 64 together reconstruct them best of any 64, and weights each by how much of the rows it explains
 
 - Also: SVD
 - Computed from: positive PMI
@@ -955,7 +954,7 @@ Open models mark the start or end of a text, or a turn in a conversation, with s
 
 ## supported answer
 
-An answer is supported if every material it names is in the product's name or description
+An answer is supported if it names a material and every material it names is in the product's name or description
 
 - Contrasts with: made-up answer
 - Defined in: [Measure made-up product details](from-predicting-to-following.md#measure-made-up-details)
@@ -1030,7 +1029,7 @@ The different tokens a text uses are its token types.
 
 ## tokenizer
 
-The list of merges, in the order they were learned, is the tokenizer.
+A tokenizer cuts text into tokens; a BPE tokenizer is the list of merges, in the order they were learned, applied to the characters it starts from.
 
 - Implemented by: tokenizers 0.23.3
 - Close to: https://rollingedition.com/concepts/large-language-models/tokenizer
@@ -1071,7 +1070,7 @@ a training split that models learn from
 
 ## transformer block
 
-The transformer block adds parts around attention that transform each position, give it word order and keep a deep stack from degrading
+The transformer block adds parts around attention that transform each position, give it word order (in the form this chapter builds) and keep a deep stack from degrading
 
 - Defined in: [The transformer block](the-transformer-block.md)
 - Address: https://rollingedition.com/concepts/large-language-models/transformer-block

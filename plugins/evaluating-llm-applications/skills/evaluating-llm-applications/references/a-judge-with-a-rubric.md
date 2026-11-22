@@ -3,13 +3,13 @@ title: "Evaluating LLM Applications"
 chapter: "Write a rubric a judge can apply"
 chapter_id: a-judge-with-a-rubric
 book: evaluating-llm-applications
-edition: 2026.11.5
-verified: 2026-11-21
-edition_code: ZZQG-NPXH
+edition: 2026.11.6
+verified: 2026-11-22
+edition_code: P6V8-WKJT
 canonical: https://rollingedition.com/evaluating-llm-applications/a-judge-with-a-rubric
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“Write a rubric a judge can apply,” chapter 5 of Evaluating LLM Applications, Edition 2026.11.5, examples passed Nov 21, 2026. By Rolling Edition, https://rollingedition.com/evaluating-llm-applications/a-judge-with-a-rubric. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Write a rubric a judge can apply,” chapter 5 of Evaluating LLM Applications, Edition 2026.11.6, examples passed Nov 22, 2026. By Rolling Edition, https://rollingedition.com/evaluating-llm-applications/a-judge-with-a-rubric. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Write a rubric a judge can apply
 
@@ -17,7 +17,7 @@ By the end of this chapter you can write a rubric that a judge model applies the
 
 [Chapter 4](checks-in-code) ended where code stops. A check can keep a reply's shape honest and show which section it cites, but it cannot read what the reply claims, so something has to read the claim against the reference. This chapter builds that reader, a judge: a model that reads a reply, compares it with a written reference answer, and writes whether the reply is correct. The assistant answers questions about [sablefile](measure-before-you-change#the-tool-and-its-docs), a command-line tool, and [chapter 1](measure-before-you-change#one-judge) first used this judge. The judge is Qwen3-4B-Instruct-2507, pinned to commit a06e946 of its GGUF conversion, the same model that answers the questions, so the book does not check a model with a stronger one. The judge's replies were recorded once, and every example in this chapter reads those recordings, so its numbers do not move from one run to the next. A team that reports a pass rate from a judge it never checked is reporting a number about the judge, and a reader of the page cannot tell the two apart without the checks this chapter describes.
 
-A judge works from its instructions, and the instructions are the rubric. A rubric is two texts. The system text states the task, the rules and the form the reply must take. The template wraps the request, the reference and the reply in markers, so the judge can tell them apart. The rubric is part of the measurement, not a note that comes before it, because the wording is what the judge is given. This chapter shows how the book writes its rubrics, how each verdict is read, and where a team has to make a choice.
+A judge works from its instructions, and the instructions are the rubric. A rubric is two texts. The system text states the task, the rules and the form the reply must take. The template wraps the request, the reply and any reference in markers, so the judge can tell them apart. The rubric is part of the measurement, not a note that comes before it, because the wording is what the judge is given. This chapter shows how the book writes its rubrics, how each verdict is read, and where a team has to make a choice.
 
 ## What a judge is asked {#what-a-judge-is-asked}
 
@@ -25,7 +25,7 @@ The judge's reply goes to code, and the code reads the first line of it as the v
 
 The book has five rubrics. The answer judge checks a reply about sablefile against the written reference answer for its question. The calibration rubric checks correctness with no reference, on rows from [HelpSteer2](https://huggingface.co/datasets/nvidia/HelpSteer2), a public dataset of human ratings of other models' replies to general prompts, which [chapter 6](calibrate-the-judge#human-ratings) describes. Its dataset card was read on 20 November 2026. Rubric B is a second wording of the calibration task. The pairwise rubric chooses the better of two replies. The faithfulness rubric checks whether an answer is supported by the sections it was given. Each rubric is written as text and carries a hash, and the first example prints the name and the hash of all five. For an item the docs do not cover, the reference is the word none, and the rubric is what tells the judge that a reply passes only when it is the decline sentence.
 
-Example `rubric-text` (Python 3.12.15 · numpy 2.5.5), passing in Edition 2026.11.5:
+Example `rubric-text` (Python 3.12.15 · numpy 2.5.5), passing in Edition 2026.11.6:
 
 ```python
 """The five rubrics the book's judges use, each with the sha256 its recording's manifest holds, and how many lines its system
@@ -116,7 +116,7 @@ A pairwise judge has no scale points to define, and it only has to say which of 
 
 The pairwise example uses human preference pairs from HelpSteer2. Each pair is judged twice: once with the first response shown as A, and once with the second response shown as A. Each verdict is then mapped back to the response it picked, so the two orders can be compared. A pair is consistent when the same response wins in both orders. It is order-changed when the same letter wins in both orders, which means the position decided the verdict; the example's output calls these flipped. Tie and unreadable are the two other kinds.
 
-Example `pairwise-both-orders` (Python 3.12.15 · numpy 2.5.5), passing in Edition 2026.11.5:
+Example `pairwise-both-orders` (Python 3.12.15 · numpy 2.5.5), passing in Edition 2026.11.6:
 
 ```python
 """How the pairwise judge's verdict on each HelpSteer2 preference pair depends on which response is shown as A. Each pair is
@@ -183,11 +183,11 @@ An order-changed pair is one where the verdict followed the position, so it says
 
 The rubric asks for the verdict on the first line and one short sentence of reason on the next. The code reads only the first non-empty line. The check is short: one line has to hold the verdict, and a reply that does not begin with a verdict is not read as one. The reason comes after the verdict, so the reader and the code can both see the pick before the explanation.
 
-`parse_verdict` returns PASS or FAIL when the first non-empty line is exactly that verdict, and it ignores asterisks or backticks around the line. Anything else returns nothing, and that is an unreadable verdict. It is not a FAIL. A FAIL means the judge judged the answer wrong, and an unreadable verdict means the judge gave no judgment at all. The code has two readers of verdicts, and they treat an unreadable verdict differently. `verdicts` in `lib/judging.py` stops with an error, so a run that reads through it cannot count the reply as a FAIL. `readable_verdicts` in `lib/calibration.py` prints each unreadable reply and leaves it out of the verdicts, and so out of the denominator. Most examples that report a rate read through it. A rate that leaves replies out prints their count beside it.
+`parse_verdict` returns PASS or FAIL when the first non-empty line is exactly that verdict, and it ignores asterisks or backticks around the line. Anything else returns nothing, and that is an unreadable verdict. It is not a FAIL. A FAIL means the judge judged the answer wrong, and an unreadable verdict means the judge gave no judgment the code can read. The code has two readers of verdicts, and they treat an unreadable verdict differently. `verdicts` in `lib/judging.py` stops with an error, so a run that reads through it cannot count the reply as a FAIL. `readable_verdicts` in `lib/calibration.py` prints each unreadable reply and leaves it out of the verdicts, and so out of the denominator. Most examples that report a rate read through it. A rate that leaves replies out prints their count beside it.
 
 Fixed replies go through the parser, one line of output each, which prints the verdict, or the label `refused` for a reply with no readable verdict.
 
-Example `parse-verdicts` (Python 3.12.15 · numpy 2.5.5), passing in Edition 2026.11.5:
+Example `parse-verdicts` (Python 3.12.15 · numpy 2.5.5), passing in Edition 2026.11.6:
 
 ```python
 """What lib.contract.parse_verdict accepts and refuses: the verdict on a reply's first non-empty line, PASS or FAIL in capitals,

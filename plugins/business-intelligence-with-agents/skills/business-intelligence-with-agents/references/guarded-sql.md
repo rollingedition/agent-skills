@@ -3,13 +3,13 @@ title: "Business Intelligence with Agents"
 chapter: "Let the agent write SQL inside guards"
 chapter_id: guarded-sql
 book: business-intelligence-with-agents
-edition: 2026.11.16
-verified: 2026-11-19
-edition_code: CSAB-T5TX
+edition: 2026.11.17
+verified: 2026-11-22
+edition_code: 6VBD-766G
 canonical: https://rollingedition.com/business-intelligence-with-agents/guarded-sql
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“Let the agent write SQL inside guards,” chapter 7 of Business Intelligence with Agents, Edition 2026.11.16, examples passed Nov 19, 2026. By Rolling Edition, https://rollingedition.com/business-intelligence-with-agents/guarded-sql. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Let the agent write SQL inside guards,” chapter 7 of Business Intelligence with Agents, Edition 2026.11.17, examples passed Nov 22, 2026. By Rolling Edition, https://rollingedition.com/business-intelligence-with-agents/guarded-sql. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Let the agent write SQL inside guards
 
@@ -27,7 +27,7 @@ Least privilege means that the agent's SQL runs on a connection that can reach w
 
 [Chapter 1](#meet-the-shop)'s `warehouse.connect()` is read-only, but it sees everything: the `raw` schema, the legacy mart and the semantic views. So `agent_warehouse()` in `lib/warehouse.py` copies the seven marts the agent may read, named one by one in `AGENT_TABLES`, into a second database file, and opens it read-only. File access and extensions are off, memory is limited to 1 GB and each query to two threads, and the settings are locked, so a query can't switch any of it back on. A setting is only as good as the attempts that test it, so the example sends six attempts straight to the agent's database, with no guard in front, and then reads DuckDB's catalog.
 
-Example `agent-warehouse` (Python 3.12.15 · duckdb 2.0.0), passing in Edition 2026.11.16:
+Example `agent-warehouse` (Python 3.12.15 · duckdb 2.0.0), passing in Edition 2026.11.17:
 
 ```python
 """The agent's own database holds copies of the seven allowed marts, opened read-only with files, extensions and settings
@@ -97,11 +97,11 @@ What no setting hides is DuckDB's catalog, such as `information_schema` and `duc
 
 [The agent's database](#least-privilege-database) leaves out whole tables, but the shop's people don't all see the same rows and columns of the rest. Five roles ask the agent questions, written down in `examples/data/shop/roles.toml`, which [chapter 9](#who-may-see-what) explains. EMEA's regional lead sees EMEA's rows only, finance sees customers with names and emails masked, and support sees orders without revenue. A role's view of a table returns the rows that role may see, with a masked column holding a constant and a denied column left out. The view, not the parser, should decide what the role reads.
 
-Real warehouses do this with grants. PostgreSQL's documentation shows a view that hides a column, granted to a role that can't read the table beneath it, and warns that such a view can't reliably conceal rows unless its `security_barrier` flag is set ([PostgreSQL](https://www.postgresql.org/docs/current/rules-privileges.html)). Snowflake's secure views exist to limit access to sensitive data ([Snowflake](https://docs.snowflake.com/en/user-guide/views-secure)). Its [row access policies](https://docs.snowflake.com/en/user-guide/security-row-intro) and masking policies attach the same rules to the table itself, so the mask applies wherever the column appears ([Snowflake](https://docs.snowflake.com/en/user-guide/security-column-ddm-intro)). So in production, the agent's warehouse user has a read-only role with `SELECT` on the role's secure views and nothing else.
+Real warehouses do this with grants. PostgreSQL's documentation shows a view that hides a column, granted to a role that can't read the table beneath it, and warns that such a view can't reliably conceal rows unless its `security_barrier` flag is set ([PostgreSQL](https://www.postgresql.org/docs/current/rules-privileges.html)). Snowflake's secure views hide their definition and skip optimizations that could expose filtered rows ([Snowflake](https://docs.snowflake.com/en/user-guide/views-secure)). Its [row access policies](https://docs.snowflake.com/en/user-guide/security-row-intro) and masking policies attach the same rules to the table itself, so the mask applies wherever the column appears ([Snowflake](https://docs.snowflake.com/en/user-guide/security-column-ddm-intro)). So in production, the agent's warehouse user has a read-only role with `SELECT` on the role's secure views and nothing else.
 
 DuckDB has no roles or `GRANT`, and a view can be read only by a connection that can read the tables under it. So `agent_warehouse(con, policy=...)` builds each role its own database: every table in it is the role's view of a mart, written out as a table of the same name, and opened read-only with [the same locked settings](#least-privilege-database). The views come from chapter 9's `Policy.subquery()`, so each rule is written once. The example sends three queries the guard accepts, since it knows tables and columns but not roles, straight to each role's database, then replays a catalog bypass that a draft of the guard let through.
 
-Example `role-database` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.16:
+Example `role-database` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.17:
 
 ```python
 """A role's database, not the guard, decides what the role reads: queries the guard accepts return less from each role's
@@ -177,7 +177,7 @@ A guard can only check what it can see, and SQL as text shows almost nothing: a 
 
 For `gq-017`, net revenue in each of the shop's countries in 2025, [chapter 4](#measure-each-layer)'s recording with all four layers of context holds a reply that groups by a country column of the calendar table. To see what the guard makes of it, the example parses that reply, lists the tree and runs the guard's `check()` on it, then parses one string holding two statements and a broken query, to show where parsing stops.
 
-Example `parse-agent-sql` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.16:
+Example `parse-agent-sql` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.17:
 
 ```python
 """Parse the SQL the model wrote for gq-017 before it runs: its tree, the tables it reads, a column the guard refuses, and
@@ -270,7 +270,7 @@ With the agent's SQL [parsed into a tree](#parse-before-running), the guard can 
 
 One hostile query, sent through the guard and straight to the agent's read-only database, and to a writable copy of the shop in a temporary folder, shows what a write would do. Its CTE deletes every refund over 50 euros, and its outer `SELECT` counts them.
 
-Example `block-a-delete` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.16:
+Example `block-a-delete` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.17:
 
 ```python
 """A DELETE hidden in a CTE: the root says SELECT, the tree walk finds the DELETE, and the read-only warehouse refuses it.
@@ -336,7 +336,7 @@ The second question is which tables. The agent's database already leaves out `ra
 
 A name without a schema can name a CTE, which is visible only in the query whose `WITH` defines it, in that query's subqueries, and to the CTEs after it in the same `WITH`. The guard's `refers_to_cte()` follows those rules, and refuses any other name without a schema. To test the allowlist, the example tries six ways around it, the last a CTE named like DuckDB's catalog, and then runs every golden question's golden SQL through the guard.
 
-Example `block-raw-tables` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.16:
+Example `block-raw-tables` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.17:
 
 ```python
 """The table allowlist: the marts the agent may read, six ways around it that the guard refuses, and the two golden
@@ -402,7 +402,7 @@ A query that only reads [the allowed tables](#read-only-allowlist) can still hur
 
 The costly mistake is [chapter 2](#joins-that-fan-out)'s fan-out taken to its end: orders, lines and refunds in one `FROM` clause with no keys. The plan-size limit refuses the keyless join before anything runs. The example sets that plan beside the same sum joined on `order_id`, checks the limit against the golden queries, and then tries three more things: a `LIMIT` the agent wrote, a query for too many rows, and the keyless join under the timer alone.
 
-Example `explain-before-running` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.16:
+Example `explain-before-running` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.17:
 
 ```python
 """Bound the rows and the cost: EXPLAIN a join that forgot its keys and refuse it, keep the agent's LIMIT, refuse a result
@@ -475,6 +475,69 @@ The keyed join's largest step is a `SEQ_SCAN` of 38,071 rows. Without keys, the 
 
 Of the 32 golden queries the allowlist accepts, 0 have a step without an estimate, and the largest estimate among them is 38,071 rows, against a limit of 10,000,000 rows, a rule of thumb for the shop's size.
 
+Figure 7.1 draws golden estimates, floored at 1,000, and the keyless join, at 60,404 times the limit.
+
+*Figure 7.1. Each golden query's largest row estimate, and the keyless join's, against the guard's limit.*
+
+![Golden queries sit far below the limit, keyless joins far above](https://rollingedition.ai/books/business-intelligence-with-agents/2026.11.17/figures/plan-row-estimates.svg)
+
+Example `figure-plan-row-estimates` (Python 3.12.15 · duckdb 2.0.0 · matplotlib 3.11.2 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.17:
+
+```python
+"""Draw each golden query's largest estimated step, and the keyless join's, against the guard's limit on estimated rows.
+Estimates under 1,000 rows are drawn at 1,000, because DuckDB's estimates for tiny plans change from run to run. The
+printed lines are the values the prose and narration quote: the golden count, the largest golden estimate, and how many
+times the keyless join's estimate is over the limit."""
+import lib  # noqa: F401  (first, so threads and seeds are fixed before any numerical library loads)
+from collections import Counter
+
+from lib.figures import ACCENT, INK, MUTED, new_figure, save
+from lib.golden import load_golden
+from lib.sql_guard import SqlGuard, check, explain
+from lib.warehouse import agent_warehouse, connect
+
+guard = SqlGuard(con := agent_warehouse(connect()))   # the agent's database, where the guard plans each query
+NO_KEYS = """SELECT sum(o.net_revenue_eur) AS net_revenue FROM analytics.fct_orders AS o,
+analytics.fct_order_lines AS l, analytics.fct_refunds AS r"""
+no_keys = explain(con, check(NO_KEYS, guard.schema).sql).largest_estimate
+# The same golden queries as the explain example: gq-034 and gq-037 need tables off the list, so they are left out.
+golden = {q.question_id: explain(con, check(q.golden_sql, guard.schema).sql).largest_estimate
+          for q in load_golden() if q.golden_sql and q.question_id not in ("gq-034", "gq-037")}
+limit = guard.max_estimated_rows
+largest = max(golden.values())
+drawn = [max(estimate, 1_000) for estimate in golden.values()]   # each under 1,000 rows is drawn at 1,000
+
+fig, ax = new_figure(height=2.6)
+seen = Counter()
+offsets = []                                           # each dot with the same drawn value gets its own height
+for value in drawn:
+    offsets.append(seen[value] * 0.05)
+    seen[value] += 1
+ax.scatter(drawn, offsets, color=MUTED, s=18, label="golden queries (under 1,000 at 1,000)")
+ax.scatter([no_keys], [0.6], color=ACCENT, s=40, label="join with no keys")
+ax.axvline(limit, color=INK, linestyle="--", linewidth=1.2, label=f"limit, {limit:,} rows")
+ax.set_xscale("log")
+ax.set_xlim(500, 10 ** 12)                             # starts below the floor, so nothing is drawn under it
+ax.set_yticks([])
+ax.set_xlabel("rows estimated for the largest step, log scale")
+ax.set_ylim(-0.1, 1.2)
+ax.legend(frameon=False, loc="lower right")
+save(fig, "plan-row-estimates")
+
+print(f"golden queries estimated: {len(golden)}")
+print(f"largest golden estimate: {largest:,} rows")
+print(f"join with no keys over the limit: {round(no_keys / limit):,} times")
+```
+
+Output:
+
+```text
+figure: figures/plan-row-estimates.svg
+golden queries estimated: 32
+largest golden estimate: 38,071 rows
+join with no keys over the limit: 60,404 times
+```
+
 A cross product isn't always a mistake, either: DuckDB's plan for the golden query of gq-031, units per order, has one, and that query is correct.
 
 The `LIMIT` needs care. sqlglot's `.limit()` replaces the `LIMIT` a query already has, so a top-five query given `.limit(1001)` ends in `net_revenue DESC LIMIT 1001` and stops being a top five. The guard keeps the smaller limit, which is 5, and sets its own limit one row more than the 1,000 it allows, so it can tell a result that was cut from one that fits. A query for every order is refused: `the query returns more than 1000 rows; aggregate or filter it`. The first 1,000 rows would look like an answer, so a refusal makes the model aggregate.
@@ -491,7 +554,7 @@ The guard plans and runs the agent's query in a worker, a separate process start
 
 The query below compares each order ID with a constant sum over 30 million generated numbers, through list functions the guard's list refuses, which the example lets past so the plan is reached. Its plan is taken first with a small constant, 18, on two connections, and then a worker plans the full query under a half-second deadline.
 
-Example `stop-a-slow-plan` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.16:
+Example `stop-a-slow-plan` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.17:
 
 ```python
 """Stop a slow plan: DuckDB computes a constant while it plans, before any row is read, so a timer's interrupt has
@@ -556,7 +619,7 @@ A first draft of the guard trusted its parse checks and bounds, on chapter 1's c
 
 The reviews' attempts and three smaller ones, replayed against each layer, show which one holds. Some go straight to the agent's database, and each goes through the guard with its 5-second limit.
 
-Example `replay-guard-bypasses` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.16:
+Example `replay-guard-bypasses` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.17:
 
 ```python
 """The critics' attempts to get past the guard (lib/guard_attacks.py), replayed on a temporary copy of the marts: what the
@@ -656,7 +719,7 @@ Repair means giving the model the guard's refusal or the warehouse's error, once
 
 The repair prompt is `GUARD_REPAIR` in `lib/prompts.py`: the model's own reply, the message, and the instruction to reply with corrected SQL or a line that starts `cannot answer:`. `answer_with_repair()` in `lib/sql_guard.py` runs it at most once per question. The recording `guarded-sql-runs` holds only the repair calls, made with the book's pinned model, Qwen3-4B-Instruct-2507 in a 4-bit file, chosen as [chapter 1](#ask-for-sql) explains. Each first reply is replayed from chapter 1's schema-only recording or [chapter 4](#measure-each-layer)'s layered one, and the model was called only where the guard refused that reply or DuckDB failed: 6 times for schema-only SQL and 1 for layered SQL on the dev split. The same run repaired the test split's replies, which [the long-tail section](#metric-or-sql) uses. Scoring the repairs on their own shows whether they help: the example scores both kinds of first reply on the dev split's 17 answer questions, and prints two repairs in full: the layered run for `gq-017` from [the parse section](#parse-before-running), and the schema-only run for `gq-001`, net revenue in fiscal year 2026.
 
-Example `repair-from-error` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.16:
+Example `repair-from-error` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.17:
 
 ```python
 """Repair once from the guard's message: how often one repair turns a refusal into an answer on the dev split, and two
@@ -755,7 +818,7 @@ The shop's warehouse is DuckDB, and most readers' isn't. The same tree can be wr
 
 A long-tail query, net revenue by weekday and month in 2025, shows the quoting problem: the example writes it for Snowflake twice, with the guard's quotes and then without them. A query with DuckDB's `histogram()` aggregate, which is on the guard's function list, shows what the transpiler does with a function it doesn't know.
 
-Example `transpile-to-snowflake` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.16:
+Example `transpile-to-snowflake` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.17:
 
 ```python
 """Transpile the guard's SQL to Snowflake: the quoted table name Snowflake reads, a weekday function that answers differently,
@@ -819,7 +882,7 @@ The database and the guards make the agent's SQL safe to run: limited to its rol
 
 The shop's long tail is the ten answer questions that no metric or dimension in `examples/data/semantic/` covers, such as orders that include a tent, session conversion and discount. 2 of the ten are on the dev split and 8 on the held-out test split. Two questions are too few to score, so the long-tail number comes from test. The guard and the repair prompt were fixed on dev, and nothing changed after we read test once; [chapter 4](#measure-each-layer) already scored the first replies there. We score that path first, then promote one question in a copy of its YAML.
 
-Example `long-tail-score` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.16:
+Example `long-tail-score` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.17:
 
 ```python
 """Guarded SQL on the long tail, the answer questions no metric in the semantic layer covers; then one promoted."""

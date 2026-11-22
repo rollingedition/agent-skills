@@ -3,13 +3,13 @@ title: "Evaluating LLM Applications"
 chapter: "Read the replies to find what to measure"
 chapter_id: read-the-outputs
 book: evaluating-llm-applications
-edition: 2026.11.5
-verified: 2026-11-21
-edition_code: ZZQG-NPXH
+edition: 2026.11.6
+verified: 2026-11-22
+edition_code: P6V8-WKJT
 canonical: https://rollingedition.com/evaluating-llm-applications/read-the-outputs
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“Read the replies to find what to measure,” chapter 2 of Evaluating LLM Applications, Edition 2026.11.5, examples passed Nov 21, 2026. By Rolling Edition, https://rollingedition.com/evaluating-llm-applications/read-the-outputs. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Read the replies to find what to measure,” chapter 2 of Evaluating LLM Applications, Edition 2026.11.6, examples passed Nov 22, 2026. By Rolling Edition, https://rollingedition.com/evaluating-llm-applications/read-the-outputs. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Read the replies to find what to measure
 
@@ -35,7 +35,7 @@ Reading one item takes three steps. Start with the question and its version, sin
 
 The example that follows is where the chapter starts. It prints every dev item with its reference answer and each variant's reply, grouped by kind and sorted by ID, so the three replies to one question sit on adjacent lines. Read across an item's lines, not down one variant's column. The variants fail in different ways on the same question, and that difference is what to see. Each reply is cut to its first 120 characters, and its line says whether the reply declined and what it cited. A reply that holds the decline phrase inside other text is marked as a phrase, not a decline, so you can see where the parser draws the line.
 
-Example `read-replies-dev` (Python 3.12.15 · numpy 2.5.5 · pydantic 2.14.3 · typing-extensions 4.16.0), passing in Edition 2026.11.5:
+Example `read-replies-dev` (Python 3.12.15 · numpy 2.5.5 · pydantic 2.14.3 · typing-extensions 4.16.0), passing in Edition 2026.11.6:
 
 ```python
 """Prints the dev items, grouped by kind and sorted by ID, with each item's reference answer and the baseline,
@@ -504,7 +504,7 @@ Reading 2: no, for comparison. check compares only the hash, so a mode-only chan
   second-model (cites lock-mode): The 1.1 lock file does not care about a file's mode. The mode field is described in lock-mode. [sec:lock-mode]
 ```
 
-Take item q-0005. It asks whether sablefile 2.0 still reads sablefile.lock in the project root, and it is a planted near-miss term, a name close to one the docs use, which catches a careless reply. The baseline says no and cites a section about upgrading. The reference answer says that 2.0 falls back to the file, with a warning, so the baseline's no is wrong. The unfiltered and second-model variants both decline, and the docs do answer the question, so their declines are wrong as well.
+Take item q-0005. It asks whether sablefile 2.0 still reads sablefile.lock in the project root, and it is a planted near-miss term, a name that one version renamed or that the docs use for another concept, which catches a careless reply. The baseline says no and cites a section about upgrading. The reference answer says that 2.0 falls back to the file, with a warning, so the baseline's no is wrong. The unfiltered and second-model variants both decline, and the docs do answer the question, so their declines are wrong as well.
 
 The three replies to q-0005 fail in two different ways. A decline on an answerable item and a confident wrong answer are different failures, and a check that catches one doesn't catch the other. A pass rate would count all three replies as failures and lose that difference. The note on this reply in the data file begins "says 2.0 never reads sablefile.lock; reference says it falls back to it with a warning." Each note says what the reply did and what the reference says, in one sentence, so the grouping that follows rests on something a reader can check. A count can come from different defects, and two replies that both fail a pass rate can be different failures. That is why the replies come before the count.
 
@@ -520,7 +520,7 @@ The counts carry the label "coded by the drafting model (one coder; not human la
 
 The tally example turns the notes into counts, and it checks the codes first. Each dev item has exactly one code per variant, no code names a mode the file doesn't define, and the file carries the label. Then it prints one row per mode and one column per variant, and one labelled line for each count, which are the numbers the prose below quotes.
 
-Example `tally-failure-modes` (Python 3.12.15 · numpy 2.5.5 · pydantic 2.14.3 · typing-extensions 4.16.0), passing in Edition 2026.11.5:
+Example `tally-failure-modes` (Python 3.12.15 · numpy 2.5.5 · pydantic 2.14.3 · typing-extensions 4.16.0), passing in Edition 2026.11.6:
 
 ```python
 """Counts the drafting model's failure codes over the dev items, per variant, and prints one table and one labelled line

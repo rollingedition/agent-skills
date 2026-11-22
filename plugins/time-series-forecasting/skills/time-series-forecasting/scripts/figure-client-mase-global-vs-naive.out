@@ -1,0 +1,6 @@
+clients where seasonal naive has the lower MASE: 7
+margin that counts as narrow, MASE: 0.10
+clients where seasonal naive wins by less than that margin: 4
+largest margin where seasonal naive wins, MASE: 0.48
+client with the largest margin: MT_268
+figure: figures/client-mase-global-vs-naive.svg

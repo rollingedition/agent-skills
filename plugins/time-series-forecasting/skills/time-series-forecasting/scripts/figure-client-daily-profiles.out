@@ -1,0 +1,10 @@
+clients whose average day peaks at a different hour from the total's: 20
+typical client, the median gap among those: MT_090
+median gap across the thirty clients: 0.14
+mean absolute difference from the total's day, largest client: 0.121
+peak hour of the total's average day: 18:00
+peak hour of the typical client's average day: 09:00
+night mean of the total's average day, hours 0 to 5, over its mean: 0.80
+night mean of the largest client's average day, hours 0 to 5, over its mean: 0.97
+night mean of the typical client's average day, hours 0 to 5, over its mean: 0.99
+figure: figures/client-daily-profiles.svg

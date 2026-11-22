@@ -6,24 +6,24 @@ compatibility: "The book's examples ran on Python 3.12.15 and the versions its p
 metadata:
   publisher: "Rolling Edition"
   book: "Open Table Formats"
-  edition: "2026.11.12"
+  edition: "2026.11.13"
   verified: "2026-11-22"
-  examples: "39 of 39 examples pass"
-  edition-code: "CYAZ-TM3D"
+  examples: "45 of 45 examples pass"
+  edition-code: "FWS1-2ZKC"
   source: "https://rollingedition.com/open-table-formats"
 ---
 
 # Open Table Formats
 
-This agent skill is *Open Table Formats*, Edition 2026.11.12, from Rolling Edition. Examples passed Nov 22, 2026: 39 of 39 examples pass. It's built from that edition, never written separately: the procedures below come from the book's sections, and each step links to its section on rollingedition.com, whose page has the section's text and its examples, with their code and output.
+This agent skill is *Open Table Formats*, Edition 2026.11.13, from Rolling Edition. Examples passed Nov 22, 2026: 45 of 45 examples pass. It's built from that edition, never written separately: the procedures below come from the book's sections, and each step links to its section on rollingedition.com, whose page has the section's text and its examples, with their code and output.
 
 ## How to use this skill
 
 - **Pick the procedure that fits the task,** and follow its steps in order. Each step links the section it comes from: read that section before you act on it, with the Rolling Edition MCP server's `get_section` (book `open-table-formats` and the section's ID, the link's last part) or on its page, and adapt it to the project in front of you.
 - **Check against the book.** An example's section shows its code, the versions it ran on and its output. If the project uses other versions, say so before relying on a step.
 - **Use the book's terms as it defines them.** The book's Glossary has each term it defines, in the book's own sentence, with its section: https://rollingedition.com/open-table-formats/glossary. The Rolling Edition MCP server's `define` gives one with its section, its edition and the version it's true for: where the task uses one, it means that.
-- **Is this copy current?** Call `check_code` with `CYAZ-TM3D` on the Rolling Edition MCP server (https://rollingedition.ai/mcp), or compare the edition with the book's page: https://rollingedition.com/open-table-formats
-- **Credit the book** when you quote it or reuse its code: Open Table Formats, Edition 2026.11.12, examples passed Nov 22, 2026. By Rolling Edition, https://rollingedition.com/open-table-formats. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people.
+- **Is this copy current?** Call `check_code` with `FWS1-2ZKC` on the Rolling Edition MCP server (https://rollingedition.ai/mcp), or compare the edition with the book's page: https://rollingedition.com/open-table-formats
+- **Credit the book** when you quote it or reuse its code: Open Table Formats, Edition 2026.11.13, examples passed Nov 22, 2026. By Rolling Edition, https://rollingedition.com/open-table-formats. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people.
 
 The full skill, with the chapters beside it and every example as a script to run at the book's pinned versions, is the `open-table-formats` plugin and the zip on the book's page at rollingedition.ai.
 
@@ -145,7 +145,7 @@ The full skill, with the chapters beside it and every example as a script to run
 
 **When:** Old snapshots or versions keep storage in use, or a cleanup is planned.
 
-1. Decide which snapshots or versions any reader, report or audit may still need. Expire the rest before you remove any file. [Snapshots keep files alive](https://rollingedition.com/open-table-formats/s/snapshots-keep-files-alive)
+1. Decide which snapshots or versions any reader, report or audit may still need. Expire the rest before you remove any file; in Delta Lake, where vacuum does not wait for expiry, set its retention to cover the versions you keep. [Snapshots keep files alive](https://rollingedition.com/open-table-formats/s/snapshots-keep-files-alive)
 2. In Iceberg, expire by snapshot ID. The call deletes no data files. Find the files that no snapshot lists, and remove them only after no writer can commit them. [Expire snapshots with pyiceberg](https://rollingedition.com/open-table-formats/s/expire-snapshots-in-iceberg), [Find orphan files after expiry](https://rollingedition.com/open-table-formats/s/find-orphan-files)
 3. In Delta Lake, run `vacuum` as a dry run and compare its count with the table's history, then run it for real. Keep the default retention unless you have checked the longest read and write. [Dry run first](https://rollingedition.com/open-table-formats/s/vacuum-dry-run-first), [Vacuum a table with deltalake](https://rollingedition.com/open-table-formats/s/vacuum-in-delta-lake)
 4. In DuckLake, expire the snapshots, clean up the scheduled files, then clean up the orphans, each as a dry run before the real call. Use `cleanup_all` only when one catalog owns the data folder and no reader uses those files. [Expire and clean up in DuckLake](https://rollingedition.com/open-table-formats/s/expire-and-clean-up-in-ducklake)
@@ -203,4 +203,4 @@ The full skill, with the chapters beside it and every example as a script to run
 
 ## Reading in another language
 
-When the person you're working with wants to read part of this book in another language, and the Rolling Edition MCP server is connected, first call its `get_section` with `language`: where Rolling Edition has its own translation of the book in that language (`get_contents` lists them), present each section as it comes, with the facts of its `translation`, and translate only the sections it lists as `untranslated`. Otherwise, translate it for them from its sections, read with the Rolling Edition MCP server's `get_section`. Translate the prose faithfully and in full: don't summarize, skip or add anything. Leave these exactly as they are: code, commands, output, file names, identifiers, inline code, package names and versions, numbers and URLs. Where practitioners who read the language usually keep a technical term in English, keep it, and give a short gloss in parentheses the first time, where that helps. Keep the headings and the structure: lists, tables, and the examples in their places. Begin by saying that it's your translation of *Open Table Formats*, Edition 2026.11.12, from Rolling Edition, licensed CC BY-NC 4.0, with the chapter's link, and keep each section's link from its citation block. For a long chapter, translate a section at a time and offer to go on after each. The Rolling Edition MCP server's `read_in_my_language` prompt asks for the same.
+When the person you're working with wants to read part of this book in another language, and the Rolling Edition MCP server is connected, first call its `get_section` with `language`: where Rolling Edition has its own translation of the book in that language (`get_contents` lists them), present each section as it comes, with the facts of its `translation`, and translate only the sections it lists as `untranslated`. Otherwise, translate it for them from its sections, read with the Rolling Edition MCP server's `get_section`. Translate the prose faithfully and in full: don't summarize, skip or add anything. Leave these exactly as they are: code, commands, output, file names, identifiers, inline code, package names and versions, numbers and URLs. Where practitioners who read the language usually keep a technical term in English, keep it, and give a short gloss in parentheses the first time, where that helps. Keep the headings and the structure: lists, tables, and the examples in their places. Begin by saying that it's your translation of *Open Table Formats*, Edition 2026.11.13, from Rolling Edition, licensed CC BY-NC 4.0, with the chapter's link, and keep each section's link from its citation block. For a long chapter, translate a section at a time and offer to go on after each. The Rolling Edition MCP server's `read_in_my_language` prompt asks for the same.

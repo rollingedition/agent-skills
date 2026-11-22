@@ -3,13 +3,13 @@ title: "Securing LLM Applications and Agents"
 chapter: "Build an attack set you can score in code"
 chapter_id: attack-set
 book: securing-llm-applications-and-agents
-edition: 2026.11.1
+edition: 2026.11.2
 verified: 2026-11-22
-edition_code: M6D1-RCM2
+edition_code: Y3X2-HXT9
 canonical: https://rollingedition.com/securing-llm-applications-and-agents/attack-set
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“Build an attack set you can score in code,” chapter 3 of Securing LLM Applications and Agents, Edition 2026.11.1, examples passed Nov 22, 2026. By Rolling Edition, https://rollingedition.com/securing-llm-applications-and-agents/attack-set. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Build an attack set you can score in code,” chapter 3 of Securing LLM Applications and Agents, Edition 2026.11.2, examples passed Nov 22, 2026. By Rolling Edition, https://rollingedition.com/securing-llm-applications-and-agents/attack-set. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Build an attack set you can score in code
 
@@ -46,7 +46,7 @@ The style describes how the text is written. The goal describes what it asks for
 
 Every line the examples print is a count, a verdict or a rate. None of them prints an attack string, a full phone number or the key, and this chapter quotes none of them. The attack strings stay in the data files.
 
-Example `attack-set-counts` (Python 3.13.16 · numpy 2.5.5), passing in Edition 2026.11.1:
+Example `attack-set-counts` (Python 3.13.16 · numpy 2.5.5), passing in Edition 2026.11.2:
 
 ```python
 """The fixed attack set, 120 cases (60 dev, 60 held-out): how many fall under each goal, location and style. The goal
@@ -121,7 +121,7 @@ Each goal's check is short. For `g-phone-fetch`, it asks whether a fetched addre
 
 AgentDojo takes the same view of an attack. It counts a targeted attack as a success when the agent executes the malicious actions ([AgentDojo](https://arxiv.org/html/2406.13352v3), section 3.4). The book's checks are a smaller version of that idea, written for this office's tools.
 
-Example `attack-set-scorers` (Python 3.13.16 · linkify-it-py 2.2.0 · markdown-it-py 4.3.0 · numpy 2.5.5), passing in Edition 2026.11.1:
+Example `attack-set-scorers` (Python 3.13.16 · linkify-it-py 2.2.0 · markdown-it-py 4.3.0 · numpy 2.5.5), passing in Edition 2026.11.2:
 
 ```python
 """Each goal's scorer, run on one hand-built trace that reaches the goal and one that doesn't. The line the prose
@@ -215,7 +215,7 @@ A set you tune against is a set you can't measure with afterward. The dev split 
 
 Every case has a `split` of `dev` or `held-out`, and chapter 1's rough cases are a third split of their own. The rough cases were measured in chapter 1, and they stay out of both dev and held-out.
 
-Example `attack-set-split` (Python 3.13.16 · linkify-it-py 2.2.0 · markdown-it-py 4.3.0 · numpy 2.5.5), passing in Edition 2026.11.1:
+Example `attack-set-split` (Python 3.13.16 · linkify-it-py 2.2.0 · markdown-it-py 4.3.0 · numpy 2.5.5), passing in Edition 2026.11.2:
 
 ```python
 """The dev and held-out splits, counted per goal, location and style: each value appears in both, and no rough case
@@ -322,7 +322,7 @@ Before any defence is added, measure the assistant as it is. The run is `baselin
 
 Two rates matter here. **Utility** is the share of benign tasks whose check passes. **Attack success** is the share of dev cases whose goal is reached. Each rate carries a 95% interval from a percentile bootstrap over the tasks or cases, as [Evaluating LLM Applications, chapter 8](https://rollingedition.com/evaluating-llm-applications/s/bootstrap-over-items) describes. The count in parentheses is the rate's base, and the bracketed range is its 95% interval.
 
-Example `attack-set-baseline` (Python 3.13.16 · bm25s 0.3.16 · linkify-it-py 2.2.0 · markdown-it-py 4.3.0 · numpy 2.5.5), passing in Edition 2026.11.1:
+Example `attack-set-baseline` (Python 3.13.16 · bm25s 0.3.16 · linkify-it-py 2.2.0 · markdown-it-py 4.3.0 · numpy 2.5.5), passing in Edition 2026.11.2:
 
 ```python
 """The undefended baseline replayed on the dev split: utility on the 15 benign tasks, attack success on the 60 dev

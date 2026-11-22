@@ -24,7 +24,7 @@ show("scale rows from whole series", len(full))
 show("last reading of whole series", full["ds"].max().strftime("%b %d, %Y %H:%M"))
 show("test week share of whole-series rows in percent", 100 * test_rows / len(full), digits=3)
 show("clock-change rows in scale history", int(history["quirk"].ne("normal").sum()))   # every quirk but normal; for the lead client these are the clock-change hours, as it has no late start
-show("test week own mean day-to-day difference", seasonal_scale(full[full["ds"] >= first_day - pd.Timedelta(hours=24)]).loc[LEAD], digits=4)   # starts 24 hours early, so its first pair is the first test day against the day before
+show("test week own mean day-to-day difference", seasonal_scale(full[full["ds"] >= first_day - pd.Timedelta(24, unit="h")]).loc[LEAD], digits=4)   # starts 24 hours early, so its first pair is the first test day against the day before
 show("scale from history as recorded", seasonal_scale(history).loc[LEAD], digits=4)          # seasonal_scale returns one value per client, so .loc picks the lead client; the clock-change pairs are kept here
 show("scale from history clock changes masked", seasonal_scale(masked_history).loc[LEAD], digits=4)   # pairs with a NaN are left out of the mean
 show("scale from whole series clock changes masked", seasonal_scale(masked_whole).loc[LEAD], digits=4)

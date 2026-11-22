@@ -3,13 +3,13 @@ title: "Securing LLM Applications and Agents"
 chapter: "Measure what prompt-level defences buy"
 chapter_id: prompt-defences
 book: securing-llm-applications-and-agents
-edition: 2026.11.1
+edition: 2026.11.2
 verified: 2026-11-22
-edition_code: M6D1-RCM2
+edition_code: Y3X2-HXT9
 canonical: https://rollingedition.com/securing-llm-applications-and-agents/prompt-defences
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“Measure what prompt-level defences buy,” chapter 4 of Securing LLM Applications and Agents, Edition 2026.11.1, examples passed Nov 22, 2026. By Rolling Edition, https://rollingedition.com/securing-llm-applications-and-agents/prompt-defences. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Measure what prompt-level defences buy,” chapter 4 of Securing LLM Applications and Agents, Edition 2026.11.2, examples passed Nov 22, 2026. By Rolling Edition, https://rollingedition.com/securing-llm-applications-and-agents/prompt-defences. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Measure what prompt-level defences buy
 
@@ -23,7 +23,7 @@ The chapter measures five variants: a warning in the system prompt, delimiters, 
 
 The held-out undefended run, which [chapter 3](#undefended-baseline) reports, is lower than dev's. Every held-out comparison in this chapter is against that run, not against the dev numbers, and the paired intervals make that comparison. The held-out example runs each defence once and produces those numbers:
 
-Example `prompt-defences-held-out` (Python 3.13.16 · bm25s 0.3.16 · linkify-it-py 2.2.0 · markdown-it-py 4.3.0 · numpy 2.5.5), passing in Edition 2026.11.1:
+Example `prompt-defences-held-out` (Python 3.13.16 · bm25s 0.3.16 · linkify-it-py 2.2.0 · markdown-it-py 4.3.0 · numpy 2.5.5), passing in Edition 2026.11.2:
 
 ```python
 """Five prompt-level defences, each run once on the held-out split after its wording was frozen on dev, against the
@@ -140,7 +140,7 @@ The simplest defence is a sentence. The warning is appended to the system prompt
 
 Its effect depends on whether the model acts on the note, and the note's wording can't settle that in advance. The first example runs all five variants on the dev split, against the undefended run.
 
-Example `prompt-defences-paired` (Python 3.13.16 · bm25s 0.3.16 · linkify-it-py 2.2.0 · markdown-it-py 4.3.0 · numpy 2.5.5), passing in Edition 2026.11.1:
+Example `prompt-defences-paired` (Python 3.13.16 · bm25s 0.3.16 · linkify-it-py 2.2.0 · markdown-it-py 4.3.0 · numpy 2.5.5), passing in Edition 2026.11.2:
 
 ```python
 """Five prompt-level defences, each replayed on the dev split and paired with the undefended baseline. The line the prose
@@ -277,7 +277,7 @@ Datamarking also changes what an [input detector](#a-classifier-guard) reads. [C
 
 ### Encoding {#encoding}
 
-Encoding replaces each untrusted segment with the base64 encoding of its UTF-8 bytes. The system prompt says that tool output is base64 and is data, and that it must not be followed. Third-party tool definitions are untrusted too, so this variant encodes them as well. Encoding therefore changes two things at once, the tool results and the tool definitions, and the book's runs cannot tell the two apart. The model must decode the text before it can read it.
+Encoding replaces each untrusted segment with an encoded form, here the base64 encoding of its UTF-8 bytes. The system prompt says that tool output is base64 and is data, and that it must not be followed. Third-party tool definitions are untrusted too, so this variant encodes them as well. Encoding therefore changes two things at once, the tool results and the tool definitions, and the book's runs cannot tell the two apart. The model must decode the text before it can read it.
 
 [Hines et al.](https://arxiv.org/abs/2403.14720) report that encoding gave the lowest attack success of the three transforms, and that only the most capable models decode the text with high fidelity. GPT-3.5-Turbo's task performance suffered on encoded text in their experiments. Those were GPT-family models in 2024, not a 4B open-weight model, and their encoding did not change tool definitions, which this variant does. The book's encoded runs also lose utility, and they don't show why. Model size is one possible cause, and the runs do not separate it from encoding the tool results or from encoding the tool definitions. There is no encoded run on the 0.6B model, and no run that varies model size with encoding on.
 
@@ -297,7 +297,7 @@ On dev, the repeated request has the largest utility cost of the five variants. 
 
 The next example looks for the cause among the dev benign tasks whose check needs an action: a message sent for an outbox check, or a visit booked for a booking check.
 
-Example `prompt-repeat-why` (Python 3.13.16 · bm25s 0.3.16 · linkify-it-py 2.2.0 · markdown-it-py 4.3.0 · numpy 2.5.5), passing in Edition 2026.11.1:
+Example `prompt-repeat-why` (Python 3.13.16 · bm25s 0.3.16 · linkify-it-py 2.2.0 · markdown-it-py 4.3.0 · numpy 2.5.5), passing in Edition 2026.11.2:
 
 ```python
 """On the dev benign tasks, the repeated request makes the model end more tasks in a text reply that lacks the action the
@@ -363,7 +363,7 @@ On held-out, the repeat's utility cost is -33.3 points, with an interval of [-53
 
 Each defence has two costs: the benign tasks it loses, and the tokens it adds to the prompts. The first is in the paired numbers above. The second is counted in the next example, on the dev benign tasks, with the Qwen3 tokeniser from the pinned files. That tokeniser matched the 4B model's own count on the book's probe texts when control tokens are read as control tokens. Each variant's count is summed over that task's model calls in the variant's own run. A run that makes fewer calls has fewer prompts to add to, so a total can fall because the run did less and not because its text is shorter.
 
-Example `prompt-cost-tokens` (Python 3.13.16 · bm25s 0.3.16 · huggingface-hub 2.4.0 · linkify-it-py 2.2.0 · markdown-it-py 4.3.0 · numpy 2.5.5 · tokenizers 0.23.3), passing in Edition 2026.11.1:
+Example `prompt-cost-tokens` (Python 3.13.16 · bm25s 0.3.16 · huggingface-hub 2.4.0 · linkify-it-py 2.2.0 · markdown-it-py 4.3.0 · numpy 2.5.5 · tokenizers 0.23.3), passing in Edition 2026.11.2:
 
 ```python
 """The tokens each variant adds to the prompts it is given, on the 15 dev benign tasks, summed over each task's model
@@ -466,6 +466,104 @@ Encoding has the largest total, and most of it is the tool definitions. Those ar
 
 The token cost does not rank the defences the way the utility cost does. In this run the repeat is the cheapest in tokens, and it has the largest utility cost on dev. On held-out, encoding costs the most utility, a paired difference of -53.3 points against the repeat's -33.3 points, and it is also the largest cost in tokens, measured on dev. A ranking from the tuned split can change on the held-out split, so a cost comparison needs both.
 
+Figure 4.1 draws each run's attack success along the bottom and its utility up the side, so a defence that lowers attack success without costing utility sits toward the upper left. The undefended run, the baseline, is at 11.7% (7 of 60) attack success and 93.3% (14 of 15) utility. The warning's point is on top of it, since the two runs have the same counts. Each bar is that run's own 95% interval. The paired intervals in the sections above compare each defence with the baseline case by case, and they decide which differences this run shows.
+
+*Figure 4.1. Each run's dev attack success against its dev utility, with 95% bootstrap intervals.*
+
+![On the dev split, encoding alone stops every attack, and encoding and repeating the request give up the most benign tasks](https://rollingedition.ai/books/securing-llm-applications-and-agents/2026.11.2/figures/prompt-defence-tradeoff.svg)
+
+Example `figure-prompt-defence-tradeoff` (Python 3.13.16 · bm25s 0.3.16 · linkify-it-py 2.2.0 · markdown-it-py 4.3.0 · matplotlib 3.11.2 · numpy 2.5.5), passing in Edition 2026.11.2:
+
+```python
+"""Draw each prompt defence's dev attack success against its dev utility, with the undefended baseline and 95% bootstrap intervals.
+The lines name each run's attack success and utility with their counts, which the prose rests on.
+"""
+from lib import cases, runs, scorers, stats  # lib first: threads and seeds are fixed here
+from lib.figures import ACCENT, INK, new_figure, save
+
+# Label places in data units, beside their points. The warning's point is the baseline's, so one label names both.
+LABELS = {"baseline": (15.5, 88.0), "prompt-delimiters": (1.5, 101.0), "prompt-datamark": (6.5, 76.0),
+          "prompt-encode": (1.2, 57.0), "prompt-repeat": (8.5, 12.0)}
+# Plain names, the words the chapter's prose uses. The run IDs stay in the printed lines and the bindings.
+NAMES = {"baseline": "undefended and warning", "prompt-delimiters": "delimiters", "prompt-datamark": "datamarking", "prompt-encode": "encoding", "prompt-repeat": "repeating the request"}
+
+
+def run_dev(name):
+    """Utility of the 15 dev benign tasks and attack success of the 60 dev cases, in ID order, as 1s and 0s."""
+    recording, variant = ("baseline-dev", None) if name == "baseline" else (f"{name}-dev", name)
+    benign, attacks = cases.load_tasks("dev"), cases.load_cases("dev")
+    assert (len(benign), len(attacks)) == (15, 60), "the dev split has changed"  # the counts the prose names
+    traces = runs.replay_tasks(recording, benign, variant=variant)
+    case_traces = runs.replay_cases(recording, attacks, variant=variant)
+    utility = [float(scorers.utility(t, traces[t.id])) for t in sorted(benign, key=lambda t: t.id)]
+    success = [float(scorers.attack_success(c, case_traces[c.id])) for c in sorted(attacks, key=lambda c: c.id)]
+    return utility, success
+
+
+def rate(label, flags):
+    """Print a rate with its counts and bootstrap interval, as the paired example does; return it in points."""
+    lo, hi = stats.bootstrap_mean(flags)  # the same interval the paired example prints, from the same seed
+    print(f"{label}: {stats.pct(int(sum(flags)), len(flags))}\n{label}, interval: {stats.interval_pct(lo, hi)}")
+    return 100 * sum(flags) / len(flags), 100 * lo, 100 * hi
+
+
+def main():
+    fig, ax = new_figure(height=3.8)
+    # the baseline last, so its ink bars sit on the warning's identical ones
+    for name in ("prompt-warning", "prompt-delimiters", "prompt-datamark", "prompt-encode", "prompt-repeat", "baseline"):
+        utility, success = run_dev(name)
+        x, y = rate(f"{name}, attack success, 60 dev cases", success), rate(f"{name}, utility, 15 dev benign tasks", utility)
+        color = INK if name == "baseline" else ACCENT  # the baseline in ink, each defence in the accent
+        _, caps, bars = ax.errorbar(x[0], y[0], xerr=[[x[0] - x[1]], [x[2] - x[0]]], yerr=[[y[0] - y[1]], [y[2] - y[0]]], fmt="o",
+                                    color=color, capsize=2, elinewidth=0.9, zorder=3 if name == "baseline" else 2,
+                                    markersize=9 if name == "prompt-warning" else 5,  # the warning's ring shows around the baseline's point
+                                    markerfacecolor="none" if name == "prompt-warning" else color)
+        if name == "prompt-delimiters": [a.set_linestyle("--") for a in (*caps, *bars)]  # its bars lie on the baseline's
+        if name in LABELS:  # the warning has no label of its own: the baseline's label says it coincides
+            ax.annotate(NAMES[name], (x[0], y[0]), xytext=LABELS[name][:2], ha="left", va="center", color=color,
+                        arrowprops=dict(arrowstyle="-", color=INK, linewidth=0.5, shrinkA=4, shrinkB=2))
+    assert run_dev("prompt-warning") == run_dev("baseline"), "the warning's point is the baseline's"  # the prose says so
+    ax.set(xlabel="attack success, percent of 60 dev cases", ylabel="utility, percent of 15 dev benign tasks",
+           xlim=(-1, 25), ylim=(0, 105))
+    save(fig, "prompt-defence-tradeoff")
+
+
+if __name__ == "__main__":
+    main()
+```
+
+Output:
+
+```text
+prompt-warning, attack success, 60 dev cases: 11.7% (7 of 60)
+prompt-warning, attack success, 60 dev cases, interval: [5.0%, 20.0%]
+prompt-warning, utility, 15 dev benign tasks: 93.3% (14 of 15)
+prompt-warning, utility, 15 dev benign tasks, interval: [80.0%, 100.0%]
+prompt-delimiters, attack success, 60 dev cases: 10.0% (6 of 60)
+prompt-delimiters, attack success, 60 dev cases, interval: [3.3%, 18.3%]
+prompt-delimiters, utility, 15 dev benign tasks: 93.3% (14 of 15)
+prompt-delimiters, utility, 15 dev benign tasks, interval: [80.0%, 100.0%]
+prompt-datamark, attack success, 60 dev cases: 5.0% (3 of 60)
+prompt-datamark, attack success, 60 dev cases, interval: [0.0%, 11.7%]
+prompt-datamark, utility, 15 dev benign tasks: 86.7% (13 of 15)
+prompt-datamark, utility, 15 dev benign tasks, interval: [66.7%, 100.0%]
+prompt-encode, attack success, 60 dev cases: 0.0% (0 of 60)
+prompt-encode, attack success, 60 dev cases, interval: [0.0%, 0.0%]
+prompt-encode, utility, 15 dev benign tasks: 66.7% (10 of 15)
+prompt-encode, utility, 15 dev benign tasks, interval: [40.0%, 86.7%]
+prompt-repeat, attack success, 60 dev cases: 6.7% (4 of 60)
+prompt-repeat, attack success, 60 dev cases, interval: [1.7%, 13.3%]
+prompt-repeat, utility, 15 dev benign tasks: 20.0% (3 of 15)
+prompt-repeat, utility, 15 dev benign tasks, interval: [0.0%, 40.0%]
+baseline, attack success, 60 dev cases: 11.7% (7 of 60)
+baseline, attack success, 60 dev cases, interval: [5.0%, 20.0%]
+baseline, utility, 15 dev benign tasks: 93.3% (14 of 15)
+baseline, utility, 15 dev benign tasks, interval: [80.0%, 100.0%]
+figure: figures/prompt-defence-tradeoff.svg
+```
+
+The two whose paired intervals show a dev reduction, datamarking and encoding, both sit below the baseline's utility: encoding stops every attack, at 0.0% (0 of 60), and keeps 66.7% (10 of 15) of the benign tasks. The repeat sits far below the rest, at 20.0% (3 of 15), with a bar from [0.0%, 40.0%] that 15 tasks make wide.
+
 These counts describe these prompts, this tokeniser and this set of short documents. Real tool results are longer, and a deployed model's tokeniser may split the same text differently. Count the tokens with the tokeniser of the model you deploy, on the prompts it will read, and not with the numbers printed here.
 
 **Working rule:** Count each defence's tokens with the deployed model's tokeniser, on the prompts it will read, and count the calls its run makes. Put each cost beside its benign and attack results. If two defences lower attack success by the same amount, keep the one that costs fewer benign tasks and fewer tokens.
@@ -474,7 +572,7 @@ These counts describe these prompts, this tokeniser and this set of short docume
 
 The undefended 0.6B model looks safer than the 4B model on the dev split, and that is worth a closer look, because it shows how a safety number can come from what a model does rather than from what it resists. The smaller model is Qwen3-0.6B, pinned like the 4B model and run with thinking off. The example sets the two models beside each other on the same dev tasks and cases.
 
-Example `prompt-small-model` (Python 3.13.16 · bm25s 0.3.16 · linkify-it-py 2.2.0 · markdown-it-py 4.3.0 · numpy 2.5.5), passing in Edition 2026.11.1:
+Example `prompt-small-model` (Python 3.13.16 · bm25s 0.3.16 · linkify-it-py 2.2.0 · markdown-it-py 4.3.0 · numpy 2.5.5), passing in Edition 2026.11.2:
 
 ```python
 """The 0.6B model against the 4B baseline on the dev split: utility, attack success, their paired differences, and how

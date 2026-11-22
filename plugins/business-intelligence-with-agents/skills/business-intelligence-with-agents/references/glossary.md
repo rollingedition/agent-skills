@@ -1,13 +1,13 @@
 ---
 title: "Glossary"
 book: "Business Intelligence with Agents"
-edition: "2026.11.16"
+edition: "2026.11.17"
 canonical: "https://rollingedition.com/business-intelligence-with-agents/glossary"
 ---
 
 # Glossary of *Business Intelligence with Agents*
 
-The 144 terms this book defines, as Edition 2026.11.16 has them, each in the book's own sentence. When a task this skill covers uses one, it means what it says here: read its section before you rely on it, and cite the section. Where a definition depends on a package, it says the version this edition pins and runs its examples on. On the web: https://rollingedition.com/business-intelligence-with-agents/glossary
+The 144 terms this book defines, as Edition 2026.11.17 has them, each in the book's own sentence. When a task this skill covers uses one, it means what it says here: read its section before you rely on it, and cite the section. Where a definition depends on a package, it says the version this edition pins and runs its examples on. On the web: https://rollingedition.com/business-intelligence-with-agents/glossary
 
 ## ablation
 
@@ -191,7 +191,7 @@ An answer is correct when the result matches the golden result, or when it decli
 
 ## coverage
 
-Coverage is the share of questions the system doesn't reject
+Coverage is the share of questions the system answers
 
 - Formula: `coverage = questions answered with a number / questions asked`
 - Defined in: [Measure declines, not only accuracy](say-when-it-cannot.md#measure-declines)
@@ -209,7 +209,7 @@ A custom granularity, such as fiscal_year, is a column of the time spine that na
 
 ## DABstep
 
-DABstep asks questions about a payments processor's transactions, scores only the final answer, and keeps most of its tasks hidden for its leaderboard
+DABstep asks questions about a payments processor's transactions, scores only the final answer, and keeps the answers to most of its tasks hidden for its leaderboard
 
 - Also: Data Agent Benchmark for Multi-step Reasoning
 - A kind of: public benchmark
@@ -398,7 +398,7 @@ familiarity, text that has low perplexity for the judge
 
 ## fan-out
 
-Fan-out is what happens when a query joins a table to another that has several rows for each of its rows, and then sums a column of the first.
+Fan-out is what happens when a query joins a table to another that has several rows for each of its rows, and then sums or counts a column of the first.
 
 - A kind of: failure kind
 - A kind of: failure kind
@@ -424,7 +424,7 @@ A forbidden question is answerable, but not for the role asking: the shop's fina
 
 ## foreign entity
 
-A foreign entity is a key that points at another table's primary entity, and it repeats.
+A foreign entity is a key that points at another table's primary entity, and it may repeat.
 
 - Also: foreign entities
 - True for: metricflow 0.214.0
@@ -452,7 +452,7 @@ The freshness check in lib/declining.py compares each feed's newest load with th
 
 ## golden question
 
-A golden question is a question with its checked answer: the golden SQL, written against the owner's definition, the golden result that SQL returns, and the kind of answer expected.
+A golden question is a question with its checked answer: the kind of answer expected and, when the answer is a result, the golden SQL, written against the owner's definition, and the golden result that SQL returns.
 
 - Also: golden questions
 - Defined in: [Run the SQL and check the number](bi-agent-end-to-end.md#check-the-first-number)
@@ -611,7 +611,7 @@ the measure: an aggregation declared on the semantic model, which a metric then 
 
 ## metric
 
-A metric is a business measure written down once, by the people who own it: a name, a description a person can check, one aggregate over one mart, the rule for which rows count, and the dimensions it may be grouped and filtered by.
+A metric is a business measure written down once, by the people who own it: a name, a description a person can check, how it is computed from the marts, the rule for which rows count, and the dimensions it may be grouped and filtered by.
 
 - Also: metrics, defined metric
 - Comes before: metric request
@@ -682,7 +682,7 @@ The golden SQL for gq-002 follows the shop's definition of net revenue, which th
 
 ## NL2SQL-BUGs
 
-One detailed taxonomy, NL2SQL-BUGs, sorts semantic errors in text-to-SQL into 9 categories and 31 subcategories, from 2,018 expert-annotated cases
+One detailed taxonomy, NL2SQL-BUGs, sorts semantic errors in text-to-SQL into 9 categories and 31 subcategories, from 2,018 expert-annotated cases, 999 of them wrong
 
 - Defined in: [Definitions the schema doesn't hold](wrong-numbers.md#definitions-not-in-schema)
 - Address: https://rollingedition.com/concepts/llm-evaluation/nl2sql-bugs
@@ -692,7 +692,6 @@ One detailed taxonomy, NL2SQL-BUGs, sorts semantic errors in text-to-SQL into 9 
 a nonexistent filter value, in PRACTIQ's terms, is a filter value no row holds, such as a region called Europe.
 
 - Also: nonexistent filter values
-- Contrasts with: unanswerable question
 - Defined in: [Kinds of questions the warehouse can't answer](say-when-it-cannot.md#kinds-of-unanswerable)
 - Address: https://rollingedition.com/concepts/artificial-intelligence/nonexistent-filter-value
 
@@ -865,7 +864,7 @@ The shop's finance team defines the refund rate in golden question gq-028: refun
 
 ## regression gate
 
-gate() applies two rules of our choosing: it fails on a stable break, a question the base got right in at least four runs of five and the candidate in at most one, and when the whole interval of the mean difference lies below zero.
+gate() applies two rules of our choosing: it fails on a stable break, a question the base got right in at least four runs of five and the candidate in at most one, or when the whole interval of the mean difference lies below zero.
 
 - Also: CI gate
 - Computed from: paired difference
@@ -970,7 +969,7 @@ Scott's pi estimates chance agreement from the two raters' shares pooled
 
 ## secondary suppression
 
-Secondary suppression, which the handbook also calls complementary suppression (section 4.2.2), plans the breakdowns in advance and suppresses further cells across them.
+Secondary suppression, which the handbook also calls complementary suppression (section 4.2.2), suppresses further cells so that no suppressed cell can be worked out from the totals and the cells shown, across breakdowns planned in advance.
 
 - Also: complementary suppression
 - Defined in: [Subtracting two answers recovers a group](who-may-see-what.md#differencing-limit)
@@ -978,7 +977,7 @@ Secondary suppression, which the handbook also calls complementary suppression (
 
 ## secure view
 
-Snowflake's secure views exist to limit access to sensitive data
+Snowflake's secure views hide their definition and skip optimizations that could expose filtered rows
 
 - Also: secure views
 - Defined in: [Give each role a database of views](guarded-sql.md#views-per-role)
@@ -1100,7 +1099,7 @@ A run that uses all four model calls without an answer is a failure, and grade()
 
 ## structured content
 
-Structured content is what lets a host's code, rather than its model, read an answer's role and filters.
+Structured content, the JSON a tool returns in structuredContent, is what lets a host's code, rather than its model, read an answer's role and filters.
 
 - Also: structuredContent
 - Defined in: [Return answers with their provenance](serve-over-mcp.md#return-provenance)
@@ -1117,7 +1116,7 @@ A structured reply is one the code can parse into a typed object and check field
 
 ## t interval
 
-a t interval, the standard error times Student's t for one fewer degrees of freedom than questions
+a t interval, the mean plus and minus the standard error times Student's t for one fewer degrees of freedom than questions
 
 - Computed from: paired difference
 - Defined in: [Gate a change in CI](catch-regressions.md#gate-a-change)

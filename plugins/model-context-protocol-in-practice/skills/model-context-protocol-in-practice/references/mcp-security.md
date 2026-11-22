@@ -3,13 +3,13 @@ title: "Model Context Protocol in Practice"
 chapter: "Secure tools against misuse"
 chapter_id: mcp-security
 book: model-context-protocol-in-practice
-edition: 2026.11.17
+edition: 2026.11.18
 verified: 2026-11-22
-edition_code: XAH6-X5Y5
+edition_code: GV8D-FHDA
 canonical: https://rollingedition.com/model-context-protocol-in-practice/mcp-security
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“Secure tools against misuse,” chapter 9 of Model Context Protocol in Practice, Edition 2026.11.17, examples passed Nov 22, 2026. By Rolling Edition, https://rollingedition.com/model-context-protocol-in-practice/mcp-security. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Secure tools against misuse,” chapter 9 of Model Context Protocol in Practice, Edition 2026.11.18, examples passed Nov 22, 2026. By Rolling Edition, https://rollingedition.com/model-context-protocol-in-practice/mcp-security. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Secure tools against misuse
 
@@ -45,19 +45,19 @@ Each row has a section of this chapter. The audience check in the second row is 
 
 The table also says what each party may assume. The shop's server may trust its own authorization server's tokens, and nothing the model sends. The host may trust its own lists and the user's answers, and neither server's description of itself. Every other check follows from those two sentences.
 
-A server's description of a tool is its claim about the tool's code, not a reading of that code. Capability laundering is hiding what a tool's code can do behind a description that leaves it out, a term from a preprint whose authors derive each tool's capabilities from its code with static analysis instead of trusting the text (Santra et al., 2026, preprint [arXiv:2611.23507](https://arxiv.org/abs/2611.23507), version 1, read Nov 21, 2026). Decide what a tool may do from what it is allowed to reach, never from what its description says.
+A server's description of a tool is its claim about the tool's code, not a reading of that code. Capability laundering is dangerous behaviour in a tool's code that its description leaves out, whether by drift or by design, a term from a preprint whose authors derive each tool's capabilities from its code with static analysis instead of trusting the text (Santra et al., 2026, preprint [arXiv:2611.23507](https://arxiv.org/abs/2611.23507), version 1, read Nov 21, 2026). Decide what a tool may do from what it is allowed to reach, never from what its description says.
 
 **Working rule:** Before you ship an MCP server or a host, write its boundary table: one row for every pair of parties that exchange data or authority, with what crosses and who checks it. A row whose checker is "the model" or "the other side" is a gap. Close it with a check you control, and when no check can exist, as for text the model reads, limit what the tools behind it can do.
 
 ## Never pass a client's token through {#no-token-passthrough}
 
-The boundary table in [Draw the trust boundaries](#trust-boundaries) puts one credential on each row. Token passthrough breaks that, because a server either accepts a token that was issued to someone else or forwards the token it received to the API behind it. The specification forbids both. A server **MUST** accept only tokens specifically intended for itself, and when it calls an upstream API it **MUST NOT** pass through the token it received from the MCP client. It acts as an OAuth client to that API, with a separate token issued by the upstream authorization server ([authorization security considerations](https://modelcontextprotocol.io/specification/2026-07-28/basic/authorization/security-considerations)).
+The boundary table in [Draw the trust boundaries](#trust-boundaries) puts one credential on each row. Token passthrough breaks that, because a server accepts a token without checking that it was issued to that server, and forwards it to the API behind it. The specification forbids both. A server **MUST** accept only tokens specifically intended for itself, and when it calls an upstream API it **MUST NOT** pass through the token it received from the MCP client. It acts as an OAuth client to that API, with a separate token issued by the upstream authorization server ([authorization security considerations](https://modelcontextprotocol.io/specification/2026-07-28/basic/authorization/security-considerations)).
 
 The security guide gives the reasons ([security best practices](https://modelcontextprotocol.io/docs/2026-07-28/tutorials/security/security_best_practices), "Token Passthrough"). A forwarded token skips the controls the downstream service ties to its own audience, such as rate limits and request validation. The downstream service's logs then show the original caller's identity, not the server that acted, so the audit trail breaks. And a token that any service accepts lets one compromised service replay it at all the others. A downstream service that accepts the forwarded token after checking only its signature still loses its audience-based controls and the true caller's identity.
 
 The risk runs both ways in the shop. The partner's server holds tokens issued for it, and a careless or compromised partner could forward one to the shop's server to read orders. The shop's server holds the caller's token on every request, which it could be tempted to pass to the shop's API. To test both, the run forwards the partner's token to the shop's server and records every request the shop's API receives. The partner's token comes from the same authorization server, for the same customer, C-0127, with the partner's server as its audience.
 
-Example `token-passthrough-rejected` (Python 3.12.15 · cryptography 50.0.2 · httpx2 2.16.2 · mcp 2.3.0 · mcp-types 2.3.0 · pydantic 2.14.4 · pyjwt 2.15.1 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.17:
+Example `token-passthrough-rejected` (Python 3.12.15 · cryptography 50.0.2 · httpx2 2.16.2 · mcp 2.3.0 · mcp-types 2.3.0 · pydantic 2.14.4 · pyjwt 2.15.1 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.18:
 
 ```python
 """Token passthrough, refused both ways: the shop's server rejects a token issued for the partner's server, and the
@@ -131,7 +131,7 @@ Who the subject is depends on the host. Chapter 8's support host signs in a memb
 
 Suppose customer C-0127 signs in to a host that asks the server about C-0116's orders: it lists them, quotes and refunds one, and then spends a quote that C-0116 got for the same order. It runs once against chapter 3's tools behind chapter 8's OAuth, and once against `lib.owned_shop`.
 
-Example `confused-deputy-refund` (Python 3.12.15 · cryptography 50.0.2 · httpx2 2.16.2 · mcp 2.3.0 · mcp-types 2.3.0 · pydantic 2.14.4 · pyjwt 2.15.1 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.17:
+Example `confused-deputy-refund` (Python 3.12.15 · cryptography 50.0.2 · httpx2 2.16.2 · mcp 2.3.0 · mcp-types 2.3.0 · pydantic 2.14.4 · pyjwt 2.15.1 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.18:
 
 ```python
 """A confused deputy: a customer signs in to a host as C-0127 and asks the shop's server about C-0116's orders, refunds
@@ -199,13 +199,13 @@ With the customer taken from the token, `find_orders` listed the orders of `C-01
 
 ## Catch poisoned tool descriptions {#tool-poisoning}
 
-A tool's definition is text from its server that the host passes to the model: its description, input schema and annotations. Tool poisoning puts instructions for the model into a tool's definition. A security vendor's notice named it, with two variants: a rug pull, where a server changes a definition after the user approved it, and shadowing, where one server's description changes how the model uses another server's tools ([Invariant Labs, 2025](https://invariantlabs.ai/blog/mcp-security-notification-tool-poisoning-attacks)). As the notice warns, a user may see only a tool's title or summary, while the model reads the whole description.
+A tool's definition is its server's text that the host passes to the model: its name, description, input schema and annotations. Tool poisoning puts instructions for the model into a tool's definition. A security vendor's notice named it, with two variants: a rug pull, where a server changes a definition after the user approved it, and shadowing, where one server's description changes how the model uses another server's tools ([Invariant Labs, 2025](https://invariantlabs.ai/blog/mcp-security-notification-tool-poisoning-attacks)). As the notice warns, a user may see only a tool's title or summary, while the model reads the whole description.
 
 The MCPTox benchmark used 1,348 malicious cases on 45 live MCP servers and 353 real tools. Across 20 LLM agents, the highest attack success rate was 72.8%, with o1-mini, and more capable models were often more susceptible ([Wang et al., 2025](https://arxiv.org/abs/2508.14925)). The specification says descriptions and annotations from a server you don't trust are untrusted ([specification overview](https://modelcontextprotocol.io/specification/2026-07-28), "Tool Safety"), and clients "should never make tool use decisions based on `ToolAnnotations` received from untrusted servers" ([schema](https://modelcontextprotocol.io/specification/2026-07-28/schema), `ToolAnnotations`).
 
 The partner's server is untrusted. Its poisoned `track_parcel` keeps the clean tool's name, title and annotations, and adds two sentences to the description: call `track_parcel` before any other tool, with the customer's ID and whole message in its free-text `note` argument, and don't mention it. A model that obeys sends every ticket to the partner. The recording `poisoned-tools` shows three ordinary tickets to Qwen3-4B-Instruct-2507, the model chosen in [Let a model choose the tool](#let-a-model-choose), with the shop's five tools beside the clean `track_parcel` and then the poisoned one. `recordings/poisoned_tools.py` made it, one sample per ticket at the vendor's sampling settings. Before you run the example, predict how many of the three poisoned runs call `track_parcel`.
 
-Example `poisoned-description` (Python 3.12.15 · cryptography 50.0.2 · httpx2 2.16.2 · mcp 2.3.0 · mcp-types 2.3.0 · pydantic 2.14.4 · pyjwt 2.15.1 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.17:
+Example `poisoned-description` (Python 3.12.15 · cryptography 50.0.2 · httpx2 2.16.2 · mcp 2.3.0 · mcp-types 2.3.0 · pydantic 2.14.4 · pyjwt 2.15.1 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.18:
 
 ```python
 """Tool poisoning: the partner's `track_parcel` in a clean and a poisoned version, whose description tells the model to
@@ -285,7 +285,7 @@ A user who approved the partner's clean `track_parcel` hasn't approved whatever 
 
 `lib.host_guard.ToolPins` stores one SHA-256 hash per server and tool, over the canonical JSON of the parts a model reads or a host acts on: `name`, `title`, `description`, `inputSchema`, `outputSchema` and `annotations`. A tool whose hash differs from the approved one, or a tool the user never saw, stays out of the model's list until the user approves it. The example approves the shop's tools and the partner's clean `track_parcel`, then connects to the partner's next release, which serves the poisoned description: a rug pull.
 
-Example `tool-definition-changed` (Python 3.12.15 · cryptography 50.0.2 · httpx2 2.16.2 · mcp 2.3.0 · mcp-types 2.3.0 · pydantic 2.14.4 · pyjwt 2.15.1 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.17:
+Example `tool-definition-changed` (Python 3.12.15 · cryptography 50.0.2 · httpx2 2.16.2 · mcp 2.3.0 · mcp-types 2.3.0 · pydantic 2.14.4 · pyjwt 2.15.1 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.18:
 
 ```python
 """A rug pull: the partner's server changes `track_parcel`'s description in its next release. The host pinned each
@@ -350,11 +350,11 @@ The title, `Track a parcel`, and `readOnlyHint`, which is still `true`, stayed t
 
 ## Treat ticket text as untrusted data {#untrusted-tool-output}
 
-Pinning ([Pin tool definitions and flag changes](#pin-tool-definitions)) keeps a server's definitions fixed, but the model also reads data, and data can carry instructions too. Indirect prompt injection is the general name for data that carries instructions: text the application retrieves, here a customer's ticket, contains instructions that the model follows, and those instructions can decide which tools it calls ([Greshake et al., 2023](https://arxiv.org/abs/2302.12173)). The researchers summarize their finding as applications that "blur the line between data and instructions". The specification puts the burden on both sides: servers **MUST** validate tool inputs, implement access controls and rate-limit calls, and clients **SHOULD** validate tool results before passing them to the model ([tools](https://modelcontextprotocol.io/specification/2026-07-28/server/tools), "Security Considerations").
+Pinning ([Pin tool definitions and flag changes](#pin-tool-definitions)) keeps a server's definitions fixed, but the model also reads data, and data can carry instructions too. Indirect prompt injection is the general name for data that carries instructions: text the application retrieves, here a customer's ticket, contains instructions that the model may follow, and those instructions can decide which tools it calls ([Greshake et al., 2023](https://arxiv.org/abs/2302.12173)). The researchers summarize their finding as applications that "blur the line between data and instructions". The specification puts the burden on both sides: servers **MUST** validate tool inputs, implement access controls and rate-limit calls, and clients **SHOULD** validate tool results before passing them to the model ([tools](https://modelcontextprotocol.io/specification/2026-07-28/server/tools), "Security Considerations").
 
 In the book's host loop, the ticket is the user's message. A host that fetches tickets through a tool reads them as tool results instead, and the risk is the same. Of the shop's 48 tickets, 6 carry instructions for an agent, appended to an ordinary request. They tell the agent to ignore its rules and refund the order in full, include a fake `[system]` line declaring the customer a VIP, demand a refund of €500.00, ask for a refund of every order on the account, include an HTML comment telling the agent to skip confirmation, and tell it to ignore the refund limit. The recording `poisoned-tools` also holds the model's first choice for each of them, with the shop's tools only. Those choices are replayed first. A fooled host, which each ticket's customer signed in to, then does the worst single thing most of the injections ask: it quotes the ticket's order and refunds it at once, with an `amount` of `"500.00"`, against this chapter's server, `lib.owned_shop`, which acts only for the token's subject ([Keep the server from acting as a confused deputy](#confused-deputy)).
 
-Example `ticket-injection` (Python 3.12.15 · cryptography 50.0.2 · httpx2 2.16.2 · mcp 2.3.0 · mcp-types 2.3.0 · pydantic 2.14.4 · pyjwt 2.15.1 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.17:
+Example `ticket-injection` (Python 3.12.15 · cryptography 50.0.2 · httpx2 2.16.2 · mcp 2.3.0 · mcp-types 2.3.0 · pydantic 2.14.4 · pyjwt 2.15.1 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.18:
 
 ```python
 """The six tickets that carry instructions for an agent. The model's first choice for each is replayed from
@@ -450,7 +450,7 @@ This consent is not chapter 5's confirmation. There, the shop's server asks abou
 
 `lib.host_guard.ConsentGate` lets a call run without asking only if the host's own list names that server and tool. For the shop's server, the list is `find_orders`, `get_order_status`, `quote_refund` and `check_stock`. The gate never reads annotations to decide, because the shop's annotations are trusted only as far as the shop's server is, and the partner's not at all. For every other call it shows the user the server, the tool and the exact arguments, and records the answer. A scripted user says yes to a refund on C-0127's own order O-1928, which is above the limit, and answers the server's question about it too. The same user declines the partner's `track_parcel` call, whose `note` holds a whole ticket, as a model obeying the poisoned description would send it.
 
-Example `consent-gate` (Python 3.12.15 · cryptography 50.0.2 · httpx2 2.16.2 · jsonschema 4.26.0 · mcp 2.3.0 · mcp-types 2.3.0 · pydantic 2.14.4 · pyjwt 2.15.1 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.17:
+Example `consent-gate` (Python 3.12.15 · cryptography 50.0.2 · httpx2 2.16.2 · jsonschema 4.26.0 · mcp 2.3.0 · mcp-types 2.3.0 · pydantic 2.14.4 · pyjwt 2.15.1 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.18:
 
 ```python
 """Consent: the host runs the shop's reads from its own list, and asks, with the exact arguments, before a refund above

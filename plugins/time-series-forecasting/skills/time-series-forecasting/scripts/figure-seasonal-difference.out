@@ -1,0 +1,8 @@
+history hours: 1344
+mean load, kWh: 52.28
+mean change from the same hour yesterday, kWh: -0.11
+spread of the load (standard deviation), kWh: 16.17
+spread of the change (standard deviation), kWh: 12.51
+correlation of the change with the hour before: 0.92
+correlation of the change with the same hour yesterday: -0.15
+figure: figures/seasonal-difference.svg

@@ -1,17 +1,17 @@
 ---
 title: "Glossary"
 book: "Model Context Protocol in Practice"
-edition: "2026.11.17"
+edition: "2026.11.18"
 canonical: "https://rollingedition.com/model-context-protocol-in-practice/glossary"
 ---
 
 # Glossary of *Model Context Protocol in Practice*
 
-The 69 terms this book defines, as Edition 2026.11.17 has them, each in the book's own sentence. When a task this skill covers uses one, it means what it says here: read its section before you rely on it, and cite the section. Where a definition depends on a package, it says the version this edition pins and runs its examples on. On the web: https://rollingedition.com/model-context-protocol-in-practice/glossary
+The 69 terms this book defines, as Edition 2026.11.18 has them, each in the book's own sentence. When a task this skill covers uses one, it means what it says here: read its section before you rely on it, and cite the section. Where a definition depends on a package, it says the version this edition pins and runs its examples on. On the web: https://rollingedition.com/model-context-protocol-in-practice/glossary
 
 ## access token
 
-An access token is a bearer credential, so whoever holds it can present it.
+In MCP, an access token is a bearer credential, so whoever holds it can present it.
 
 - Defined in: [Bind each token to one server](authorization.md#token-audience)
 - Address: https://rollingedition.com/concepts/artificial-intelligence/access-token
@@ -25,7 +25,7 @@ The specification calls resources application-driven: hosts decide how to use th
 
 ## argument completion
 
-Argument completion lets the host ask the server for suggestions while the user types.
+Argument completion lets the host ask the server for suggestions for an argument of a prompt or a resource template while the user types.
 
 - Defined in: [Complete arguments for the user](resources-and-prompts.md#argument-completion)
 - Address: https://rollingedition.com/concepts/model-context-protocol/argument-completion
@@ -54,7 +54,7 @@ A capability is something a client or server declares it supports, such as a ser
 
 ## capability laundering
 
-Capability laundering is hiding what a tool's code can do behind a description that leaves it out
+Capability laundering is dangerous behaviour in a tool's code that its description leaves out, whether by drift or by design
 
 - Defined in: [Draw the trust boundaries](mcp-security.md#trust-boundaries)
 - Address: https://rollingedition.com/concepts/ai-agents/capability-laundering
@@ -69,7 +69,7 @@ A client is the host's connection to one server
 
 ## Client ID Metadata Document
 
-A Client ID Metadata Document makes the client ID a URL.
+A Client ID Metadata Document makes the client ID an https:// URL at which the client publishes its own metadata.
 
 - Implemented by: mcp 2.3.0
 - Defined in: [Identify the client with a metadata document](authorization.md#client-id-metadata-documents)
@@ -84,14 +84,14 @@ In the classic sense, a confused deputy is a program that holds authority of its
 
 ## consent
 
-Consent is the host asking the user before a call that changes something
+Consent is the host asking the user before a call, especially one changing something
 
 - Defined in: [Shape tools around tasks, not endpoints](design-tools.md#tasks-not-endpoints)
 - Address: https://rollingedition.com/concepts/ai-agents/consent
 
 ## core protocol
 
-The core protocol is what every client and server must implement.
+The core protocol is what the specification itself defines, with no extension.
 
 - Contrasts with: extension
 - Defined in: [Negotiate an extension](tasks-and-extensions.md#negotiate-an-extension)
@@ -99,7 +99,7 @@ The core protocol is what every client and server must implement.
 
 ## destructiveHint
 
-a tool that changes something may destroy or overwrite data, rather than only add to it
+destructiveHint: a tool that changes something may destroy or overwrite data, rather than only add to it
 
 - Also: destructive hint
 - Part of: tool annotation
@@ -108,14 +108,14 @@ a tool that changes something may destroy or overwrite data, rather than only ad
 
 ## DNS rebinding
 
-With DNS rebinding, an attacker's domain can be made to resolve to 127.0.0.1 after the page loads, so the browser treats the local server as part of the attacker's site.
+With DNS rebinding, an attacker's domain can be made to resolve to 127.0.0.1, or another address only the victim's network reaches, after the page loads, so the browser treats the local server as part of the attacker's site.
 
 - Defined in: [Reject requests from other origins](streamable-http.md#validate-origin)
 - Address: https://rollingedition.com/concepts/artificial-intelligence/dns-rebinding
 
 ## dual-era
 
-a dual-era server, which serves both eras on the same endpoint
+a dual-era server, which serves both eras, on the same endpoint or in the same process
 
 - Defined in: [Serve old and new clients through the window](migrate-from-2025.md#serve-both-revisions)
 - Address: https://rollingedition.com/concepts/model-context-protocol/dual-era
@@ -129,7 +129,7 @@ An earliest removal is the date when a feature becomes eligible to go, not when 
 
 ## elicitation
 
-elicitation: a structured question that a server sends and the client shows the user
+elicitation: a request for input that a server sends and the client puts to the user
 
 - Kinds: form mode
 - Kinds: URL mode
@@ -139,7 +139,7 @@ elicitation: a structured question that a server sends and the client shows the 
 
 ## era
 
-A client still learns its server's era: the pinned revision or a 2025 one.
+A client still learns its server's era: the pinned revision's, or legacy, the initialize-based revisions up to 2025-11-25.
 
 - Defined in: [Connect one client per server](build-a-host.md#one-client-per-server)
 - Address: https://rollingedition.com/concepts/model-context-protocol/era
@@ -177,7 +177,7 @@ a tool that needs state from an earlier call gets it as an explicit handle: one 
 
 ## host
 
-The host is the application the user works in.
+The host is the application the user works in, which uses a model.
 
 - The same as: https://rollingedition.com/concepts/ai-agents/mcp-host
 - Defined in: [Separate the host, the client and the server](what-mcp-adds.md#host-client-server)
@@ -193,7 +193,7 @@ The book's host loop, lib.host, is a small host the book writes itself, so each 
 
 ## idempotentHint
 
-calling the tool again with the same arguments has no further effect
+idempotentHint: calling the tool again with the same arguments has no further effect
 
 - Also: idempotent hint
 - Part of: tool annotation
@@ -209,21 +209,21 @@ In implicit poisoning, one tool's metadata steers the agent to a different, more
 
 ## indirect prompt injection
 
-Indirect prompt injection is the general name for data that carries instructions: text the application retrieves, here a customer's ticket, contains instructions that the model follows, and those instructions can decide which tools it calls
+Indirect prompt injection is the general name for data that carries instructions: text the application retrieves, here a customer's ticket, contains instructions that the model may follow, and those instructions can decide which tools it calls
 
 - Defined in: [Treat ticket text as untrusted data](mcp-security.md#untrusted-tool-output)
 - Address: https://rollingedition.com/concepts/large-language-models/indirect-prompt-injection
 
 ## input request
 
-The server answers the call with an input request instead of a result, and the client calls again with the answer.
+The server answers the call with input requests instead of a result, and the client calls again with the answers.
 
 - Defined in: [Ask the user in the middle of a call](multi-round-trip-requests.md)
 - Address: https://rollingedition.com/concepts/model-context-protocol/input-request
 
 ## MCP Apps
 
-MCP Apps is an official extension that changes how a result is shown.
+MCP Apps is an official extension that shows a result as an interactive interface.
 
 - A kind of: extension
 - Defined in: [Know what MCP Apps add](tasks-and-extensions.md#mcp-apps)
@@ -231,7 +231,7 @@ MCP Apps is an official extension that changes how a result is shown.
 
 ## mix-up attack
 
-In a mix-up, an attacker's authorization server gets the host to start a flow with it, then sends the user's browser on to an honest authorization server.
+In a mix-up, an attacker's authorization server gets the host to start a flow with it, then sends the user's browser on to an honest authorization server, so that the host sends the honest server's code to the attacker.
 
 - Also: mix-up
 - Defined in: [Validate the issuer of each response](authorization.md#validate-the-issuer)
@@ -239,7 +239,7 @@ In a mix-up, an attacker's authorization server gets the host to start a flow wi
 
 ## Model Context Protocol
 
-The Model Context Protocol (MCP) is how an application that uses a model gets tools and data from programs it didn't write.
+The Model Context Protocol (MCP) is a standard way an application that uses a model gets tools and data from other programs.
 
 - Also: MCP
 - Implemented by: mcp 2.3.0
@@ -249,7 +249,7 @@ The Model Context Protocol (MCP) is how an application that uses a model gets to
 
 ## Multi Round-Trip Request
 
-a Multi Round-Trip Request, a pattern in which one call can end with a question instead of a result
+a Multi Round-Trip Request, a pattern in which one call can end with a request for input instead of a result
 
 - Implemented by: mcp 2.3.0
 - Defined in: [Ask the user in the middle of a call](multi-round-trip-requests.md)
@@ -257,7 +257,7 @@ a Multi Round-Trip Request, a pattern in which one call can end with a question 
 
 ## openWorldHint
 
-the tool reaches entities outside a closed domain, such as the web
+openWorldHint: the tool may reach entities outside a closed domain, such as the web
 
 - Also: open world hint
 - Part of: tool annotation
@@ -286,23 +286,22 @@ A server's three primitives are its tools, resources and prompts
 
 ## progress
 
-Progress is MCP's answer to a long call: the server reports how far it has got while the call runs
+Progress is MCP's answer to a long call: when the client asks for it, the server reports how far it has got while the call runs
 
 - Also: notifications/progress
-- Part of: core protocol
 - Defined in: [Stream progress on a long call](streamable-http.md#stream-progress)
 - Address: https://rollingedition.com/concepts/model-context-protocol/progress
 
 ## progressive discovery
 
-progressive discovery, a small search tool that returns definitions on demand
+progressive discovery, which gives the model a small search tool and loads definitions on demand
 
 - Defined in: [What goes wrong in production](build-a-host.md#build-a-host-in-production)
 - Address: https://rollingedition.com/concepts/ai-agents/progressive-discovery
 
 ## prompt
 
-A prompt is a template of messages, with arguments, that the server defines and the user picks
+A prompt is a template of messages, with optional arguments, that the server defines and the user picks
 
 - Also: prompts, MCP prompt
 - Defined in: [Prompts are templates the user chooses](what-mcp-adds.md#prompts-user-chooses)
@@ -310,7 +309,7 @@ A prompt is a template of messages, with arguments, that the server defines and 
 
 ## Protected Resource Metadata
 
-Protected Resource Metadata (RFC 9728), a JSON document that names the resource and lists at least one authorization server
+Protected Resource Metadata (RFC 9728), a JSON document that names the resource and, for MCP, lists at least one authorization server
 
 - Implemented by: mcp 2.3.0
 - Defined in: [Find the authorization server from the resource](authorization.md#protected-resource-metadata)
@@ -327,7 +326,7 @@ A protocol error is a JSON-RPC error, for an unknown tool, a request that doesn'
 
 ## readOnlyHint
 
-the tool doesn't change its environment
+readOnlyHint: the tool doesn't change its environment
 
 - Also: read-only hint
 - Part of: tool annotation
@@ -375,7 +374,7 @@ a rug pull, where a server changes a definition after the user approved it
 
 ## server
 
-A server exposes capabilities, such as tools, and knows nothing else about the host.
+A server exposes capabilities, such as tools, and knows about the host only what its requests tell it.
 
 - The same as: https://rollingedition.com/concepts/ai-agents/mcp-server
 - Defined in: [Separate the host, the client and the server](what-mcp-adds.md#host-client-server)
@@ -391,7 +390,7 @@ shadowing, where one server's description changes how the model uses another ser
 
 ## span
 
-an application creates spans, each a named, timed operation with attributes and a parent
+an application creates spans, each a named, timed operation with attributes and, unless it starts a trace, a parent
 
 - Defined in: [Trace calls with OpenTelemetry](test-and-observe.md#trace-with-opentelemetry)
 - Address: https://rollingedition.com/concepts/artificial-intelligence/span
@@ -424,7 +423,7 @@ sticky sessions, which route every request carrying the same Mcp-Session-Id to t
 
 ## Streamable HTTP
 
-For a server that many hosts share, the Model Context Protocol (MCP) defines a second transport, Streamable HTTP.
+The server listens at one HTTP endpoint, and each message a client sends is a POST of its own
 
 - Also: Streamable HTTP transport
 - Defined in: [Serve over Streamable HTTP](streamable-http.md)
@@ -441,7 +440,7 @@ structuredContent: the result's data as JSON that a program can read without par
 
 ## task
 
-a task: the call's work, whose status the client asks for as often as the server suggests, and whose result waits on the server until the client fetches it
+a task: the call's work, whose status the client asks for as often as the server suggests, and whose result waits on the server until the client fetches it or its lifetime runs out
 
 - Contrasts with: progress
 - Defined in: [Run long work as tasks](tasks-and-extensions.md)
@@ -463,7 +462,7 @@ A task's lifetime is its ttlMs, counted from createdAt, or null for no limit, an
 
 ## Tasks extension
 
-With the Tasks extension, the server answers the call at once with a handle to a task
+With the Tasks extension, the server can answer the call at once with a handle to a task
 
 - A kind of: extension
 - Defined in: [Run long work as tasks](tasks-and-extensions.md)
@@ -478,7 +477,7 @@ The completed, failed and cancelled statuses are terminal, and once a task reach
 
 ## token passthrough
 
-a server either accepts a token that was issued to someone else or forwards the token it received to the API behind it
+a server accepts a token without checking that it was issued to that server, and forwards it to the API behind it
 
 - Defined in: [Never pass a client's token through](mcp-security.md#no-token-passthrough)
 - Address: https://rollingedition.com/concepts/artificial-intelligence/token-passthrough
@@ -495,7 +494,7 @@ A tool is a named action with a description and an input schema, and the model d
 
 ## tool annotation
 
-A tool's annotations tell the host what a call will do before it's made
+A tool's annotations hint to the host what a call will do before it's made
 
 - Also: tool annotations, ToolAnnotations
 - Part of: tool definition
@@ -505,7 +504,7 @@ A tool's annotations tell the host what a call will do before it's made
 
 ## tool definition
 
-A tool's definition is text from its server that the host passes to the model: its description, input schema and annotations.
+A tool's definition is its server's text that the host passes to the model: its name, description, input schema and annotations.
 
 - Defined in: [Catch poisoned tool descriptions](mcp-security.md#tool-poisoning)
 - Address: https://rollingedition.com/concepts/ai-agents/tool-definition
@@ -551,7 +550,7 @@ ttlMs, how many milliseconds the result stays fresh, like HTTP's max-age
 
 ## URL mode
 
-In URL mode, the server sends the user to a web page, not a form
+In URL mode, the user answers on a web page, outside the client
 
 - A kind of: elicitation
 - Defined in: [Ask for structured input with elicitation](multi-round-trip-requests.md#elicitation-forms)

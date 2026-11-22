@@ -3,13 +3,13 @@ title: "Language Models from the Ground Up"
 chapter: "From predicting to following instructions"
 chapter_id: from-predicting-to-following
 book: language-models-from-the-ground-up
-edition: 2026.11.17
-verified: 2026-11-19
-edition_code: DR5A-G7ZM
+edition: 2026.11.18
+verified: 2026-11-22
+edition_code: 5E4E-0JVJ
 canonical: https://rollingedition.com/language-models-from-the-ground-up/from-predicting-to-following
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“From predicting to following instructions,” chapter 11 of Language Models from the Ground Up, Edition 2026.11.17, examples passed Nov 19, 2026. By Rolling Edition, https://rollingedition.com/language-models-from-the-ground-up/from-predicting-to-following. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“From predicting to following instructions,” chapter 11 of Language Models from the Ground Up, Edition 2026.11.18, examples passed Nov 22, 2026. By Rolling Edition, https://rollingedition.com/language-models-from-the-ground-up/from-predicting-to-following. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # From predicting to following instructions
 
@@ -27,7 +27,7 @@ Both steps of tuning are training, with the loop of [chapter 8](#update-with-ada
 
 Lay one product out as a request and a response, its name as the request and its description as the response, the way the store's model already reads it. Then compute that model's loss over every token, and over the response's tokens only:
 
-Example `instruction-loss-by-hand` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1), passing in Edition 2026.11.17:
+Example `instruction-loss-by-hand` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1), passing in Edition 2026.11.18:
 
 ```python
 """Computes the store's model's loss on one product laid out as a request and a response, over every token and over
@@ -77,7 +77,7 @@ loss = −log σ(margin)
 
 with σ the logistic function from [chapter 4](#learn-by-predicting-neighbours) ([Rafailov et al., 2023](https://arxiv.org/abs/2305.18290), equation 7). Made-up log-probabilities keep the arithmetic in plain view, so this example uses them, with β = 0.1:
 
-Example `dpo-loss-by-hand` (Python 3.12.15 · numpy 2.5.5), passing in Edition 2026.11.17:
+Example `dpo-loss-by-hand` (Python 3.12.15 · numpy 2.5.5), passing in Edition 2026.11.18:
 
 ```python
 """Computes the DPO margin and loss by hand for two made-up cases, with a fixed beta. The prose's point rests on the
@@ -110,6 +110,64 @@ tuned model favours it less, loss: 0.913
 
 Lowering the loss pushes the preferred response's probability up and the rejected one's down, measured against where the model started. When the tuned model favours the preferred response more than the reference does, the margin is 0.40 and the loss 0.513; when it favours it less, the margin is -0.40 and the loss rises to 0.913.
 
+Figure 11.1 draws the loss against the margin from −4 to 4, with the two cases of the example marked at their margins: 0.40 where the tuned model favours the preferred response more than the reference does, and -0.40 where it favours the preferred response less. The loss falls everywhere across the range. At a margin of zero, where the tuned model favours the preferred response exactly as much as the reference does, the loss is 0.693. Where the tuned model favours the rejected response more than the reference does, the loss keeps climbing, to 4.018 at a margin of −4; where it favours the preferred response more, the loss flattens toward zero.
+
+*Figure 11.1. The DPO loss against the margin, with the two cases of the example marked at their margins.*
+
+![The loss falls steadily as the margin grows, and the two marked cases sit either side of zero](https://rollingedition.ai/books/language-models-from-the-ground-up/2026.11.18/figures/dpo-loss-curve.svg)
+
+Example `figure-dpo-loss-curve` (Python 3.12.15 · matplotlib 3.11.2 · numpy 2.5.5), passing in Edition 2026.11.18:
+
+```python
+"""Draws the DPO loss against the margin, with the two cases of dpo-loss-by-hand marked at their margins.
+The printed losses at the two ends and at zero show the loss climbing on one side and flattening on the other."""
+import numpy as np
+
+from lib.figures import ACCENT, INK, MUTED, new_figure, save
+
+beta = 0.1                                       # as dpo-loss-by-hand sets it
+# the same two cases as dpo-loss-by-hand: (preferred, rejected) under the tuned model, then under the reference model
+cases = {"favours preferred more": (-12.0, -20.0, -14.0, -18.0), "favours it less": (-15.0, -15.0, -14.0, -18.0)}
+brackets = {name: (p - pr) - (q - qr) for name, (p, q, pr, qr) in cases.items()}   # the bracket dpo-loss-by-hand computes
+margins = {name: beta * bracket for name, bracket in brackets.items()}   # margin = beta × bracket, as in the example
+
+
+def loss_at(margin):
+    """-log σ(margin), written so it can't overflow, as dpo-loss-by-hand writes it."""
+    return np.log1p(np.exp(-margin))
+
+
+grid = np.linspace(-4, 4, 401)                   # the margins the two cases reach, with room either side
+assert np.all(np.diff(loss_at(grid)) < 0)        # a larger margin always lowers the loss; the prose states this
+print("loss at a margin of 0:", f"{loss_at(0.0):.3f}")
+print("loss at a margin of -4:", f"{loss_at(-4.0):.3f}")
+print("loss at a margin of 4:", f"{loss_at(4.0):.3f}")
+for name in cases:
+    print(f"{name}, margin:", f"{margins[name]:.2f}")
+
+fig, ax = new_figure(height=3.2)
+ax.plot(grid, loss_at(grid), color=ACCENT, label="loss")
+for name, color, marker in [("favours preferred more", INK, "o"), ("favours it less", MUTED, "s")]:
+    ax.scatter([margins[name]], [loss_at(margins[name])], color=color, marker=marker, s=36, zorder=3, label=name)
+ax.set_xlim(-4, 4)
+ax.set_ylim(0, 4.5)
+ax.set_xlabel("margin = β × (change in preferred's log-probability − change in rejected's)")
+ax.set_ylabel("loss, −log σ(margin)")
+ax.legend(loc="upper right")
+save(fig, "dpo-loss-curve")
+```
+
+Output:
+
+```text
+loss at a margin of 0: 0.693
+loss at a margin of -4: 4.018
+loss at a margin of 4: 0.018
+favours preferred more, margin: 0.40
+favours it less, margin: -0.40
+figure: figures/dpo-loss-curve.svg
+```
+
 **Working rule:** Mask the request out of the loss when you tune a model on requests and responses, and keep the reference model's log-probabilities beside the tuned model's when you train on preferences. Both are small changes to a loop you already have.
 
 ## Ask the base model and the tuned model {#ask-base-and-tuned}
@@ -118,7 +176,7 @@ The store needs descriptions for products that have none, the job [chapter 9](#c
 
 Both models start from [chapter 9](#choosing-the-next-token)'s product, `front porch welcome sign wall décor`. Read what each wrote, then measure all 8 products the recording described, each without a description to draw on:
 
-Example `base-and-tuned` (Python 3.12.15), passing in Edition 2026.11.17:
+Example `base-and-tuned` (Python 3.12.15), passing in Edition 2026.11.18:
 
 ```python
 """Prints what the base and the tuned model wrote for one product with no description, then measures every such product's
@@ -180,7 +238,7 @@ The tuned model answered in the [previous section](#ask-base-and-tuned) because 
 
 The tuned model's full prompt, and its reply beside the one it gives to the same request as plain text, show what it actually read:
 
-Example `chat-template` (Python 3.12.15), passing in Edition 2026.11.17:
+Example `chat-template` (Python 3.12.15), passing in Edition 2026.11.18:
 
 ```python
 """Prints the full prompt the tuned model read, with its chat template, and its reply with and without the template. The
@@ -222,11 +280,11 @@ The system message matters too: it's part of every request the model reads, so a
 
 A model that writes about a product with no facts has to make them up. The fairer test gives it the facts. Both SmolLM2 models are shown a product's name and real description, and asked: `What material is this product made of? Answer in a few words, using only the description.` The tuned model gets it as a request in its template; the base model gets it as a listing to continue, ending `Question:`, the question, and `Answer:`. If the product's data names a material, a good answer names it; if not, a good answer says the description doesn't say.
 
-Checking the answers takes a list of material words, from `wood` and `metal` to `polyester` and `leather`, in the book's shared module `lib.claims`. An answer is **supported** if every material it names is in the product's name or description. An answer is **made up** if it names a material that the product's name and description don't contain. An answer is **declined** if it says the product's data doesn't say, and **none** if it names no material and doesn't decline. The check has limits, and makes judgement calls: it counts engineered wood such as `mdf` and `rubberwood` as wood, it counts `brushed nickel finish` as naming nickel, and it misses a material the list doesn't include. Every answer it classes is recorded for anyone to read. Making up a detail the input doesn't support is one kind of what's called **hallucination** ([Ji et al., 2023](https://arxiv.org/abs/2202.03629)), and this test measures exactly that kind.
+Checking the answers takes a list of material words, from `wood` and `metal` to `polyester` and `leather`, in the book's shared module `lib.claims`. An answer is **supported** if it names a material and every material it names is in the product's name or description. An answer is **made up** if it names a material that the product's name and description don't contain. An answer is **declined** if it says the product's data doesn't say, and **none** if it names no material and doesn't decline. The check has limits, and makes judgement calls: it counts engineered wood such as `mdf` and `rubberwood` as wood, it counts `brushed nickel finish` as naming nickel, and it misses a material the list doesn't include. Every answer it classes is recorded for anyone to read. Making up a detail the input doesn't support is one kind of what's called **hallucination** ([Ji et al., 2023](https://arxiv.org/abs/2202.03629)), and this test measures exactly that kind.
 
 Class each model's answers for 40 products drawn at random, split by whether the product's data names a material. Where the data names none, will the tuned model make up fewer materials than the base model? Decide before you look.
 
-Example `made-up-materials` (Python 3.12.15), passing in Edition 2026.11.17:
+Example `made-up-materials` (Python 3.12.15), passing in Edition 2026.11.18:
 
 ```python
 """Classes both models' answers to the material question, split by whether the product's name or description names a
@@ -298,7 +356,7 @@ the exponential of the average log-probability, the same average that perplexity
 
 Does confidence tell the two kinds apart? Compare the tuned model's confidence in its supported and made-up answers, and count how many of each a threshold of 0.5 per token would keep:
 
-Example `answer-confidence` (Python 3.12.15 · numpy 2.5.5), passing in Edition 2026.11.17:
+Example `answer-confidence` (Python 3.12.15 · numpy 2.5.5), passing in Edition 2026.11.18:
 
 ```python
 """Compares the tuned model's confidence in its supported and made-up answers to the material question, and counts what a
@@ -338,6 +396,62 @@ tuned model, made up answers above 0.5 per token: 3 of 11
 
 Confidence is a signal, not a filter: it shifts the odds, and it lets confident errors through. The made-up answers are less confident on average, 0.45 per token against 0.65 for supported ones. But a threshold of 0.5 per token would keep 21 of 23 supported answers and still let through 3 of 11 made-up ones. With so few answers, these are directions, not rates to rely on.
 
+Figure 11.2 draws each answer as a dot in its group's row, with the threshold dashed. The rows overlap: the least confident supported answer is at 0.440 and the most confident made-up one at 0.654. No threshold keeps every supported answer and drops every made-up one.
+
+*Figure 11.2. Each answer's average probability per token, supported and made up, with the 0.5 threshold dashed.*
+
+![The made-up answers sit lower on average, but the two groups overlap in confidence](https://rollingedition.ai/books/language-models-from-the-ground-up/2026.11.18/figures/confidence-overlap.svg)
+
+Example `figure-confidence-overlap` (Python 3.12.15 · matplotlib 3.11.2 · numpy 2.5.5), passing in Edition 2026.11.18:
+
+```python
+"""Draws each supported and made-up answer's average probability per token as a dot, with the 0.5 threshold, so the two
+groups can be compared by eye. The prose's point rests on the lowest supported and the highest made-up answer."""
+import numpy as np
+
+from lib import claims, recorded
+from lib.figures import ACCENT, INK, MUTED, new_figure, save
+
+asked = recorded.read("instruction-tuning", "answers")
+# only supported and made-up answers are compared, as answer-confidence compares them; the others are left out
+by_kind = {"supported": [], "made up": []}
+for row in asked:
+    kind = claims.classify(row["tuned"]["text"], row["description"], row["name"])
+    if kind in by_kind:
+        # the geometric mean of the token probabilities: exp of their average log-probability, as answer-confidence has it
+        by_kind[kind].append(np.exp(np.mean(np.log(row["tuned"]["token_probabilities"]))))
+lowest_supported = min(by_kind["supported"])
+highest_made_up = max(by_kind["made up"])
+print("lowest supported answer, average probability per token:", f"{lowest_supported:.3f}")
+print("highest made-up answer, average probability per token:", f"{highest_made_up:.3f}")
+# the groups overlap when some supported answer is less confident than some made-up one; the prose states this
+assert lowest_supported < highest_made_up
+
+threshold = 0.5                                       # the same fixed cut answer-confidence uses
+fig, ax = new_figure(height=2.6)
+for row_y, kind, color in [(0, "made up", ACCENT), (1, "supported", INK)]:
+    values = by_kind[kind]
+    # a deterministic spread of the dots up and down their row, so overlapping dots stay visible
+    jitter = [((i * 0.618) % 1 - 0.5) * 0.4 for i in range(len(values))]
+    ax.scatter(values, [row_y + j for j in jitter], color=color, s=28)
+ax.axvline(threshold, color=MUTED, linestyle="--")
+ax.text(threshold + 0.01, 1.45, "threshold 0.5 per token", ha="left", color=MUTED)
+ax.set_xlim(0, 1)
+ax.set_ylim(-0.6, 1.6)
+ax.set_yticks([0, 1], ["made up", "supported"])
+ax.grid(False, axis="y")
+ax.set_xlabel("average probability per token, a geometric mean (1 is certain)")
+save(fig, "confidence-overlap")
+```
+
+Output:
+
+```text
+lowest supported answer, average probability per token: 0.440
+highest made-up answer, average probability per token: 0.654
+figure: figures/confidence-overlap.svg
+```
+
 **Working rule:** Don't use a model's confidence alone to decide whether to trust an answer. Measure how its confidence relates to being right on your own questions, and if you use a threshold, choose it from those measurements and count what it lets through.
 
 ## Find what a longer context loses {#find-what-context-loses}
@@ -346,7 +460,7 @@ The [material question](#measure-made-up-details) gave the model one product at 
 
 Place the asked product among 10 product listings: first, in the middle, or last. Then ask the tuned model, SmolLM2-360M-Instruct, what that product is made of. Count the answers that name only its own materials, as `lib.claims` checks them, for the 14 products whose data names one:
 
-Example `answer-position` (Python 3.12.15), passing in Edition 2026.11.17:
+Example `answer-position` (Python 3.12.15), passing in Edition 2026.11.18:
 
 ```python
 """Counts the tuned model's answers that name only the asked product's own materials, with the product first, in the middle
@@ -393,7 +507,7 @@ Full fine-tuning updates every weight, which for a model of hundreds of millions
 
 A LoRA correction would train far fewer weights; count them on SmolLM2-360M, adapting the query and value weights of every layer, at two ranks, against full fine-tuning. The query weights map 960 numbers to 960; the value weights, because keys and values are grouped, map 960 to 320:
 
-Example `lora-parameters` (Python 3.12.15), passing in Edition 2026.11.17:
+Example `lora-parameters` (Python 3.12.15), passing in Edition 2026.11.18:
 
 ```python
 """Counts what LoRA would train on SmolLM2-360M, adapting the query and value weights of every layer at two ranks, and
@@ -435,7 +549,7 @@ This book doesn't run the fine-tuning: our judgement is that even LoRA, over the
 
 This book has scored every model the same way on names, from [chapter 3](#counting-further-back) on: perplexity per token of the store's tokenizer, on the store's validation names. The test names were kept aside so that choices made by looking at the validation names, such as the kept epochs and the mixing shares, couldn't flatter the results. This final comparison scores the five models that were chosen between on the 4,281 test names, with the mixing shares chosen on validation:
 
-Example `test-names` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1), passing in Edition 2026.11.17:
+Example `test-names` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1), passing in Edition 2026.11.18:
 
 ```python
 """Scores the five models the book chose between on the test names, each name's tokens and its end, and prints each

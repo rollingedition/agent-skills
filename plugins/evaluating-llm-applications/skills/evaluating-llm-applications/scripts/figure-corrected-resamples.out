@@ -1,0 +1,6 @@
+corrected pass rate, 95% interval: [62.1%, 100.0%]
+resamples at the 100% cap: 29.5% (590 of 2000)
+resamples refused, TPR + TNR - 1 below 0.1: 0.1% (2 of 2000)
+resamples in the fullest bin below the cap: 111
+bin width below the cap, in points: 2
+figure: figures/corrected-resamples.svg

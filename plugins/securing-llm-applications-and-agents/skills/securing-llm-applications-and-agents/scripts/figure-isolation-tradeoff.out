@@ -1,0 +1,17 @@
+baseline utility, 15 benign tasks: 93.3% (14 of 15)
+baseline utility, 15 benign tasks, interval: [80.0%, 100.0%]
+baseline attack success, 60 cases: 11.7% (7 of 60)
+baseline attack success, 60 cases, interval: [5.0%, 20.0%]
+utility, design-dual-llm, 15 benign tasks: 80.0% (12 of 15)
+utility, design-dual-llm, 15 benign tasks, interval: [60.0%, 100.0%]
+attack success, design-dual-llm, 60 cases: 3.3% (2 of 60)
+attack success, design-dual-llm, 60 cases, interval: [0.0%, 8.3%]
+utility, design-plan-then-execute, 15 benign tasks: 6.7% (1 of 15)
+utility, design-plan-then-execute, 15 benign tasks, interval: [0.0%, 20.0%]
+attack success, design-plan-then-execute, 60 cases: 5.0% (3 of 60)
+attack success, design-plan-then-execute, 60 cases, interval: [0.0%, 11.7%]
+utility, design-taint, 15 benign tasks: 26.7% (4 of 15)
+utility, design-taint, 15 benign tasks, interval: [6.7%, 46.7%]
+attack success, design-taint, 60 cases: 8.3% (5 of 60)
+attack success, design-taint, 60 cases, interval: [1.7%, 15.0%]
+figure: figures/isolation-tradeoff.svg

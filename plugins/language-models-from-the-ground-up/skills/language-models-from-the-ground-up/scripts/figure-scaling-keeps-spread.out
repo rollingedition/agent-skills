@@ -1,0 +1,9 @@
+sizes drawn: 9
+smallest size drawn: 2
+largest size drawn: 512
+sizes 4, 32 and 256 match scaling-matters: yes
+unscaled, average largest weight at size 512: 0.94
+scaled, lowest average largest weight across sizes: 0.23
+scaled, highest average largest weight across sizes: 0.29
+unscaled rises at every size: yes
+figure: figures/scaling-keeps-spread.svg

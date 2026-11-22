@@ -3,13 +3,13 @@ title: "Evaluating LLM Applications"
 chapter: "Write checks in code for the failures you found"
 chapter_id: checks-in-code
 book: evaluating-llm-applications
-edition: 2026.11.5
-verified: 2026-11-21
-edition_code: ZZQG-NPXH
+edition: 2026.11.6
+verified: 2026-11-22
+edition_code: P6V8-WKJT
 canonical: https://rollingedition.com/evaluating-llm-applications/checks-in-code
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“Write checks in code for the failures you found,” chapter 4 of Evaluating LLM Applications, Edition 2026.11.5, examples passed Nov 21, 2026. By Rolling Edition, https://rollingedition.com/evaluating-llm-applications/checks-in-code. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Write checks in code for the failures you found,” chapter 4 of Evaluating LLM Applications, Edition 2026.11.6, examples passed Nov 22, 2026. By Rolling Edition, https://rollingedition.com/evaluating-llm-applications/checks-in-code. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Write checks in code for the failures you found
 
@@ -21,7 +21,7 @@ A team that writes checks only for the marks it can see reports a clean run and 
 
 ## What a code check can see {#what-a-code-check-can-see}
 
-A code check reads two things: the reply's text, and the item's own data, which holds its reference answer and the list of sections that support it. It gives the same answer on every run, and it costs nothing to run again on a new batch of replies. Those are its strengths. Its limit is that it reads form and membership, never meaning. It can tell whether a reply has a citation, whether the cited ID was in the prompt, and whether the reply is exactly the decline sentence. It can't tell whether the cited section says what the answer says.
+A code check reads the reply's text and data the run already holds: the item's own data, which holds its reference answer and the list of sections that support it, the sections the prompt gave, and the docs' section IDs. It gives the same answer on every run, and it costs nothing to run again on a new batch of replies. Those are its strengths. Its limit is that it reads form and membership, never meaning. It can tell whether a reply has a citation, whether the cited ID was in the prompt, and whether the reply is exactly the decline sentence. It can't tell whether the cited section says what the answer says.
 
 Here is chapter 2's list of modes, each with what a code check can see of it.
 
@@ -35,7 +35,7 @@ Here is chapter 2's list of modes, each with what a code check can see of it.
 
 A program can also do a judge's work when the rule it applies can be written down. In the preprint [*Can Programs Replace LLM Judges?*](https://arxiv.org/abs/2611.24849) (arXiv 2611.24849, v1, read on 21 November 2026), Agichtein and colleagues have a frontier model turn relevance guidelines into one program per topic, for a task this book leaves to other books: labelling which documents answer a search. The authors report that on TREC DL 2019 to 2021 these programs agree with the NIST assessors at the level of Claude Sonnet 5.5 used as a judge. A program like that is written once, gives the same answer on every run and can be read line by line, which are the strengths this section claims for a code check.
 
-**Working rule:** Write a code check for a failure only when the reply and the item already hold the fact the check needs. For a failure whose evidence is the claim itself, send it to a judge with a written rubric, as [chapter 5](a-judge-with-a-rubric) does, and keep the code check for the parts of the failure that can be read.
+**Working rule:** Write a code check for a failure only when the reply, the item or the run already holds the fact the check needs. For a failure whose evidence is the claim itself, send it to a judge with a written rubric, as [chapter 5](a-judge-with-a-rubric) does, and keep the code check for the parts of the failure that can be read.
 
 ## Format checks {#format-checks}
 
@@ -45,7 +45,7 @@ The format check reads the reply, the list of sections the prompt gave, and whet
 
 Run the format check on the baseline's reply to each item, and count each name, with the dev items and the held-out items kept apart.
 
-Example `format-problems-baseline` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pydantic 2.14.3 · typing-extensions 4.16.0), passing in Edition 2026.11.5:
+Example `format-problems-baseline` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pydantic 2.14.3 · typing-extensions 4.16.0), passing in Edition 2026.11.6:
 
 ```python
 """Runs format_problems over the baseline replies to every item, and counts each problem by its fixed name.
@@ -104,7 +104,7 @@ held-out problem unknown-section: 0
 
 The baseline has no format problem on the dev items, 0.0% (0 of 80), or on the held-out items, 0.0% (0 of 40). A zero counts only if the check could have fired, and the next example shows that these checks do fire, on other recordings.
 
-Example `format-problems-variants` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pydantic 2.14.3 · typing-extensions 4.16.0), passing in Edition 2026.11.5:
+Example `format-problems-variants` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pydantic 2.14.3 · typing-extensions 4.16.0), passing in Edition 2026.11.6:
 
 ```python
 """Runs the format check and the order check over the unfiltered and second-model replies to the dev items. The baseline
@@ -196,7 +196,7 @@ A check that never fires on the baseline still earns its place, because it costs
 
 The check runs over the dev items for three recordings: the baseline; the unfiltered variant, which uses the same prompt but retrieves from every version and shows the versions to the model; and prompt-b, chapter 1's quote-first prompt P2 ([two prompts](measure-before-you-change#two-prompts)), which asks the model to quote first the sentence its answer relies on and cites on each line. Its 117 citations come from the same items, so its shares are per citation. Each recording's citations are sorted the same way.
 
-Example `check-citation-support` (Python 3.12.15 · numpy 2.5.5 · pydantic 2.14.3 · typing-extensions 4.16.0), passing in Edition 2026.11.5:
+Example `check-citation-support` (Python 3.12.15 · numpy 2.5.5 · pydantic 2.14.3 · typing-extensions 4.16.0), passing in Edition 2026.11.6:
 
 ```python
 """Sorts each section ID that a reply cites into one outcome, for three recordings, over the dev items.
@@ -290,7 +290,7 @@ A fuzzy match scores how alike two strings are. Python's standard library diffli
 - It counts matches, not meaning. A one-letter typo in a flag scores 0.933 against the right flag, although the flag is wrong. A reply can keep a high score while its one wrong fact changes.
 - It can skip parts of long strings. For sequences of 200 items or more, the documentation treats an item as junk when its repeats make up more than one per cent of the sequence, unless `autojunk` is turned off. For strings, the items are characters, so a reply of 200 characters or more can be affected. The heuristic is built from the second argument, which is the reply when the reference goes first. On the long pair, the default score is 0.480, and with `autojunk=False` it is 0.861.
 
-Example `fuzzy-match` (Python 3.12.15 · numpy 2.5.5), passing in Edition 2026.11.5:
+Example `fuzzy-match` (Python 3.12.15 · numpy 2.5.5), passing in Edition 2026.11.6:
 
 ```python
 """Compares three pairs of sablefile answers with an exact match and with difflib's ratio(), a score from 0 to 1.
@@ -348,13 +348,13 @@ The three pairs are written for this example, so the scores show what each prope
 
 Two word-overlap scores borrowed from other tasks can be used to check generated text. BLEU came from machine translation and ROUGE from summarisation. Both are cheap to compute.
 
-Papineni and colleagues proposed BLEU in 2002 as a quick and inexpensive way to score machine translation. It uses modified n-gram precision ([Papineni and colleagues, 2002](https://aclanthology.org/P02-1040.pdf)). Reiter's review of how well BLEU tracks human judgement found that the evidence supports it for diagnostic evaluation of machine translation systems. It does not support BLEU outside machine translation, for evaluation of individual texts, or for hypothesis testing ([Reiter, 2018](https://aclanthology.org/J18-3002.pdf)). A score that holds for systems doesn't thereby hold for one answer.
+Papineni and colleagues proposed BLEU in 2002 as a quick and inexpensive way to score machine translation, from modified n-gram precision and a brevity penalty ([Papineni and colleagues, 2002](https://aclanthology.org/P02-1040.pdf)). Reiter's review of how well BLEU tracks human judgement found that the evidence supports it for diagnostic evaluation of machine translation systems. It does not support BLEU outside machine translation, for evaluation of individual texts, or for hypothesis testing ([Reiter, 2018](https://aclanthology.org/J18-3002.pdf)). A score that holds for systems doesn't thereby hold for one answer.
 
 Lin defined ROUGE-N as an n-gram recall: the share of the reference's word runs that the candidate covers ([Lin, 2004](https://aclanthology.org/W04-1013.pdf)). That paper is about summaries. A separate study tested metrics borrowed from machine translation on dialogue responses, not on documentation answers. It found they correlate very weakly with human judgement on a general chat data set, and not at all on a technical one, the Ubuntu help data ([Liu and colleagues, 2016](https://arxiv.org/pdf/1603.08023)). That is one study of one task. Sablefile's answers are technical, so the result is a warning, not a measurement of this assistant.
 
-Three questions about sablefile 2.0 show the problem most plainly. Each has a written reference answer, a wrong answer that copies most of the reference's words, and a right answer that says the same thing in few of them. The answers are written for this example, not taken from a recording, so they show that the failure can happen, not how often. The BLEU-style score takes clipped 1- to 4-gram precision, its geometric mean and a brevity penalty. ROUGE-1 F1 counts single words. Both formulas are written out in the example's code. No BLEU or ROUGE package is pinned in this book, and the example reports F1, which combines recall with precision, not the recall Lin defined.
+Three questions about sablefile 2.0 show the problem most plainly. Each has a written reference answer, a wrong answer that copies most of the reference's words, and a right answer that says the same thing in few of them. The answers are written for this example, not taken from a recording, so they show that the failure can happen, not how often. The BLEU-style score takes clipped 1- to 4-gram precision, its geometric mean and a brevity penalty. ROUGE-1 F1 counts the single words a candidate shares with its reference, as an F1. Both formulas are written out in the example's code. No BLEU or ROUGE package is pinned in this book, and the example reports F1, the harmonic mean of recall and precision, not the recall Lin defined.
 
-Example `overlap-misleads` (Python 3.12.15 · numpy 2.5.5), passing in Edition 2026.11.5:
+Example `overlap-misleads` (Python 3.12.15 · numpy 2.5.5), passing in Edition 2026.11.6:
 
 ```python
 """Scores a wrong answer that shares most of its words with the reference above a right answer that shares few.
@@ -443,6 +443,76 @@ pairs where the wrong answer has the higher ROUGE-1 F1: 3 of 3
 The wrong answer outscores the right one on ROUGE-1 F1 in 3 of 3 pairs. For pair one, the wrong answer scores 0.815, and the right answer scores 0.167.
 
 Read the BLEU lines with care. The formula the code writes out has no smoothing, so the score is zero whenever any of the four n-gram orders has no match at all. Each right answer shares single words with its reference but no two-word run, so its two-word precision is zero, and so is its BLEU. That is the formula's behaviour, and it says nothing about whether the answer is good.
+
+Figure 4.1 draws each pair as a row of ROUGE-1 F1 scores, one marker for the wrong answer and one for the right, named in the legend. In every pair the wrong answer scores higher, and its smallest lead over the right answer is 0.509.
+
+*Figure 4.1. Each pair's wrong and right answer, scored by ROUGE-1 F1.*
+
+![In every pair the wrong answer scores a higher ROUGE-1 F1 than the right answer](https://rollingedition.ai/books/evaluating-llm-applications/2026.11.6/figures/overlap-wrong-right.svg)
+
+Example `figure-overlap-wrong-right` (Python 3.12.15 · matplotlib 3.11.2 · numpy 2.5.5), passing in Edition 2026.11.6:
+
+```python
+"""Draws each pair's wrong answer and right answer by ROUGE-1 F1, one row per pair.
+
+The printed counts show the wrong answer scoring higher in every pair, and the smallest gap is the number the prose rests
+on. The pairs and the two functions are copied from overlap-misleads, so this example stands on its own."""
+import lib  # first: fixes the thread counts and seeds before anything else loads
+
+import json
+import re
+from collections import Counter
+from pathlib import Path
+
+from lib.figures import ACCENT, INK, MUTED, new_figure, save
+
+PAIRS = json.loads((Path(__file__).resolve().parent / "data" / "overlap-pairs.json").read_text(encoding="utf-8"))
+
+
+def words(text: str) -> list[str]:
+    """Lowercase runs of letters and digits: `--apply` is the word apply, and `lock.json` is two words."""
+    return re.findall(r"[a-z0-9]+", text.lower())
+
+
+def rouge_1_f1(candidate: str, reference: str) -> float:
+    """ROUGE-1 F1: shared words, counted with repeats up to the smaller count, over both lengths."""
+    cand, ref = words(candidate), words(reference)
+    overlap = sum((Counter(cand) & Counter(ref)).values())
+    if overlap == 0:
+        return 0.0
+    precision, recall = overlap / len(cand), overlap / len(ref)
+    return 2 * precision * recall / (precision + recall)
+
+
+wrong = [rouge_1_f1(p["wrong"], p["reference"]) for p in PAIRS]
+right = [rouge_1_f1(p["right"], p["reference"]) for p in PAIRS]
+gaps = [w - r for w, r in zip(wrong, right)]  # the gap is wrong minus right, pair by pair
+rows = range(len(PAIRS), 0, -1)  # pair 1 on the top row
+
+fig, ax = new_figure(height=2.4)
+ax.hlines(rows, right, wrong, color=MUTED, linewidth=1)  # the grey line joins each pair's two markers
+ax.scatter(wrong, rows, color=ACCENT, marker="o", s=36, label="wrong answer")
+ax.scatter(right, rows, color=INK, marker="D", s=24, label="right answer")
+ax.set(xlim=(0, 1), xlabel="ROUGE-1 F1, 0 to 1",
+       yticks=rows, yticklabels=[f"pair {i}" for i in range(1, len(PAIRS) + 1)])
+ax.legend(frameon=False, loc="lower left", bbox_to_anchor=(0.0, 1.0), ncol=2)  # above the plot, where no marker crosses it
+
+higher = sum(g > 0 for g in gaps)  # a gap above zero means the wrong answer scored higher
+assert higher == len(PAIRS), f"higher in only {higher} pairs"
+print(f"pairs: {len(PAIRS)}")
+print(f"pairs where the wrong answer has the higher ROUGE-1 F1: {higher} of {len(PAIRS)}")
+print(f"smallest wrong-minus-right gap, ROUGE-1 F1: {min(gaps):.3f}")
+save(fig, "overlap-wrong-right")
+```
+
+Output:
+
+```text
+pairs: 3
+pairs where the wrong answer has the higher ROUGE-1 F1: 3 of 3
+smallest wrong-minus-right gap, ROUGE-1 F1: 0.509
+figure: figures/overlap-wrong-right.svg
+```
 
 ROUGE-1 F1 counts single words and ignores their order. A wrong answer that repeats most of the reference's words gets most of the score back, whatever words it gets wrong. Pair three shows it. Its wrong answer scores 0.952. That answer names the file from version 1.1, where the reference names `.sablefile/lock.json`. Every word of the wrong answer appears in the reference, and the only reference word it lacks is `json`. The file name is the part of the answer that matters, and the score can't tell that part from the rest.
 

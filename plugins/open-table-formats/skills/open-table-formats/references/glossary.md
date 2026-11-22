@@ -1,13 +1,13 @@
 ---
 title: "Glossary"
 book: "Open Table Formats"
-edition: "2026.11.12"
+edition: "2026.11.13"
 canonical: "https://rollingedition.com/open-table-formats/glossary"
 ---
 
 # Glossary of *Open Table Formats*
 
-The 50 terms this book defines, as Edition 2026.11.12 has them, each in the book's own sentence. When a task this skill covers uses one, it means what it says here: read its section before you rely on it, and cite the section. Where a definition depends on a package, it says the version this edition pins and runs its examples on. On the web: https://rollingedition.com/open-table-formats/glossary
+The 50 terms this book defines, as Edition 2026.11.13 has them, each in the book's own sentence. When a task this skill covers uses one, it means what it says here: read its section before you rely on it, and cite the section. Where a definition depends on a package, it says the version this edition pins and runs its examples on. On the web: https://rollingedition.com/open-table-formats/glossary
 
 ## append
 
@@ -19,14 +19,14 @@ For an append, the operation is append, which the Iceberg spec describes as "Onl
 
 ## catalog
 
-An Iceberg table needs a catalog, which is the registry that maps a table name to the table's current metadata.
+An Iceberg table needs a catalog, which is the registry that maps a table name to the table's current metadata; a DuckLake catalog holds that metadata itself.
 
 - Defined in: [Create the table in a catalog](first-table.md#create-catalog-and-table)
 - Address: https://rollingedition.com/concepts/table-formats/catalog
 
 ## cleanup
 
-After expiry, cleanup deletes the files that no remaining snapshot lists.
+After expiry, cleanup deletes the files that no remaining snapshot lists, and in Delta Lake vacuum also deletes a file that an older version still lists once its tombstone is past the retention.
 
 - Defined in: [Snapshots keep files alive](expiry-and-cleanup.md#snapshots-keep-files-alive)
 - Address: https://rollingedition.com/concepts/table-formats/cleanup
@@ -57,7 +57,7 @@ Compaction rewrites many small data files into fewer, larger ones.
 
 ## copy
 
-A copy reads the rows of one table at one moment and writes them into another table, in another format.
+A copy reads the rows of one table at one moment and writes them into another table, here in another format.
 
 - Contrasts with: registered name
 - Defined in: [What a copy keeps and loses](migrating-formats.md#what-a-copy-keeps-and-loses)
@@ -65,7 +65,7 @@ A copy reads the rows of one table at one moment and writes them into another ta
 
 ## copy-on-write
 
-In copy-on-write, the writer rewrites each data file that held a matching row and leaves out the deleted rows.
+In copy-on-write, the writer rewrites each data file that held a matching row, leaving out the deleted rows or writing the changed ones.
 
 - Contrasts with: merge-on-read
 - The same as: https://rollingedition.com/concepts/data-warehousing/copy-on-write
@@ -91,7 +91,7 @@ Commits that land after a copy's scan and never reach the copy are the cutover p
 
 ## data file
 
-A data file is a Parquet file that holds rows of a table.
+A data file is a file, Parquet in this book, that holds rows of a table.
 
 - Also: data files
 - Defined in: [Compact the small files that hourly appends leave](compaction.md)
@@ -134,7 +134,7 @@ a delete file that records which rows are gone
 
 ## deletion vector
 
-Delta Lake also has deletion vectors, which record deleted row positions in a file.
+Delta Lake also has deletion vectors, which, like DuckLake's experimental ones, record deleted row positions.
 
 - Also: deletion vectors
 - A kind of: merge-on-read
@@ -158,7 +158,7 @@ A dimension table holds labels, not counts
 
 ## display name
 
-the name readers use is a display name that can change without touching the files
+with it on, every column gets a physical name stored in the files, and the name readers use is a display name that can change without touching the files
 
 - Part of: column mapping
 - Defined in: [Columns are tracked by ID](evolving-schema.md#columns-tracked-by-id)
@@ -166,9 +166,9 @@ the name readers use is a display name that can change without touching the file
 
 ## dry run
 
-A dry run lists the files that a real vacuum would delete and deletes none of them.
+A dry run lists what a real call, such as a vacuum, would delete and deletes none of it.
 
-- True for: deltalake 1.6.6
+- True for: deltalake 1.6.6, duckdb 2.0.0
 - Defined in: [Dry run first](expiry-and-cleanup.md#vacuum-dry-run-first)
 - Address: https://rollingedition.com/concepts/data-engineering/dry-run
 
@@ -213,7 +213,7 @@ the hour transform puts each row under its hour
 
 ## Iceberg REST catalog
 
-The Iceberg REST catalog is a catalog of another kind, a service instead of a file.
+The Iceberg REST catalog is a catalog of another kind, an HTTP API that a service implements, instead of a file.
 
 - Also: REST catalog
 - A kind of: catalog
@@ -223,7 +223,7 @@ The Iceberg REST catalog is a catalog of another kind, a service instead of a fi
 
 ## key
 
-In this book, a row is identified by its key: hour_utc, domain_code and page_title together.
+In this book, a row is identified by its key, the columns that name it: for the pageviews table, hour_utc, domain_code and page_title together.
 
 - Comes before: correction
 - Comes before: upsert
@@ -232,7 +232,7 @@ In this book, a row is identified by its key: hour_utc, domain_code and page_tit
 
 ## manifest
 
-each manifest names data files along with their statistics
+each manifest names data files or delete files along with their statistics
 
 - Also: manifests
 - Part of: metadata
@@ -274,7 +274,7 @@ A table's metadata is a record of the table's schema and of the data files that 
 
 ## metadata file
 
-An Iceberg table keeps a metadata file that names its current snapshot.
+An Iceberg table keeps a metadata file that records its schema, its partition specs and its snapshots, and names the current one.
 
 - Part of: metadata
 - Defined in: [What a table format adds to files](first-table.md#what-a-table-format-adds)
@@ -315,7 +315,7 @@ The Delta Lake protocol defines partitionColumns as an array containing the name
 
 ## physical name
 
-every column gets a physical name stored in the files
+with it on, every column gets a physical name stored in the files
 
 - Part of: column mapping
 - Defined in: [Columns are tracked by ID](evolving-schema.md#columns-tracked-by-id)
@@ -337,7 +337,7 @@ A reader check, in the sense used here, opens the table through the reader's own
 
 ## reader feature
 
-A reader feature in a Delta table's protocol is a promise that every reader handles it, so a reader without it cannot read the table correctly.
+A reader feature in a Delta table's protocol is a requirement that every reader implement it, so a reader without it cannot read the table correctly.
 
 - Also: reader features
 - Defined in: [Deletion vectors need a protocol upgrade](choosing-a-format.md#delta-deletion-vectors)
@@ -345,7 +345,7 @@ A reader feature in a Delta table's protocol is a promise that every reader hand
 
 ## registered name
 
-A registered name is a second route to the same table, not a second table.
+A registered name is a second route to the table as it was when registered, not a live second route: the first commit through either name makes it a second table that shares the old data files.
 
 - Defined in: [Register a table from its metadata file](catalogs.md#register-from-metadata-file)
 - Address: https://rollingedition.com/concepts/data-engineering/registered-name
@@ -377,7 +377,7 @@ An Iceberg snapshot ID is a long integer that the spec requires to be unique
 
 ## snapshot summary
 
-The snapshot summary is what the table records about its own commits
+The snapshot summary is what each snapshot records about the commit that made it
 
 - Also: summary
 - Part of: snapshot
@@ -386,7 +386,7 @@ The snapshot summary is what the table records about its own commits
 
 ## SQL catalog
 
-The pyiceberg SqlCatalog keeps its tables in a database.
+The pyiceberg SqlCatalog keeps its list of tables in a database.
 
 - Also: SqlCatalog
 - True for: pyiceberg 0.12.0
@@ -397,7 +397,7 @@ The pyiceberg SqlCatalog keeps its tables in a database.
 
 ## tombstone
 
-A Delta commit that replaces a file adds a remove action to the log, a tombstone that says the file is no longer part of the table, and the file stays on disk.
+A Delta commit that removes or replaces a file adds a remove action to the log, a tombstone that says the file is no longer part of the table, and the file stays on disk.
 
 - Also: remove action
 - Comes before: vacuum
@@ -415,7 +415,7 @@ An upsert updates the row whose key matches and inserts the row whose key does n
 
 ## vacuum
 
-Vacuum deletes the files whose tombstones are older than the retention.
+Vacuum deletes the files whose tombstones are older than the retention, and the files older than it that the log never mentions.
 
 - True for: deltalake 1.6.6
 - A kind of: cleanup

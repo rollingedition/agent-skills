@@ -3,13 +3,13 @@ title: "Open Table Formats"
 chapter: "Build a first table, end to end"
 chapter_id: first-table
 book: open-table-formats
-edition: 2026.11.12
+edition: 2026.11.13
 verified: 2026-11-22
-edition_code: CYAZ-TM3D
+edition_code: FWS1-2ZKC
 canonical: https://rollingedition.com/open-table-formats/first-table
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“Build a first table, end to end,” chapter 1 of Open Table Formats, Edition 2026.11.12, examples passed Nov 22, 2026. By Rolling Edition, https://rollingedition.com/open-table-formats/first-table. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Build a first table, end to end,” chapter 1 of Open Table Formats, Edition 2026.11.13, examples passed Nov 22, 2026. By Rolling Edition, https://rollingedition.com/open-table-formats/first-table. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Build a first table, end to end
 
@@ -31,9 +31,9 @@ This chapter builds a rough version of that table. It writes the table in three 
 
 You know SQL, Python and Parquet, and you know what a partition is. This chapter does not explain them.
 
-The pageviews table's rows cover six hours of 3 June 2024, from 00:00 to 05:59 UTC. They come from the [Wikimedia pageviews dumps](https://dumps.wikimedia.org/other/pageviews/2024/2024-06/), which the Wikimedia project releases under CC0. The book keeps the 500 most-viewed titles in each hour, across the English, German, French and Japanese editions, after special pages are removed. The day is fixed and in the past, so the dumps for it will not change, and the data in the repository will not go stale. [The data folder's README](https://github.com/rollingedition/book-open-table-formats/blob/8063656c9e0652d673076ad498411b49110ae2d5/examples/data/README.md) gives the source, the licence and the exact cut.
+The pageviews table's rows cover six hours of 3 June 2024, from 00:00 to 05:59 UTC. They come from the [Wikimedia pageviews dumps](https://dumps.wikimedia.org/other/pageviews/2024/2024-06/), which the Wikimedia project releases under CC0. The book keeps the 500 most-viewed titles in each hour, across the English, German, French and Japanese editions, after special pages are removed. The day is fixed and in the past, so the dumps for it will not change, and the data in the repository will not go stale. [The data folder's README](https://github.com/rollingedition/book-open-table-formats/blob/763ac3bc7eb7b59db40f487b38c1ee95058bcd9b/examples/data/README.md) gives the source, the licence and the exact cut.
 
-The data is messy on purpose. Titles carry underscores and non-Latin scripts, and the counts are skewed: the top title in hour 00 has far more views than the title at position 500. Every row in the cut has a `response_bytes` of 0, as the [data folder's README](https://github.com/rollingedition/book-open-table-formats/blob/8063656c9e0652d673076ad498411b49110ae2d5/examples/data/README.md) records. The book keeps the column as the cut gives it, so it is 0 throughout. These values stay in the data, because a table format has to store them as they are.
+The data is messy on purpose. Titles carry underscores and non-Latin scripts, and the counts are skewed: the top title in hour 00 has far more views than the title at position 500. Every row in the cut has a `response_bytes` of 0, as the [data folder's README](https://github.com/rollingedition/book-open-table-formats/blob/763ac3bc7eb7b59db40f487b38c1ee95058bcd9b/examples/data/README.md) records. The book keeps the column as the cut gives it, so it is 0 throughout. These values stay in the data, because a table format has to store them as they are.
 
 ## What a table format adds to files {#what-a-table-format-adds}
 
@@ -41,11 +41,11 @@ Anything that reads the folder sees every file in it. A table format answers tha
 
 Each table format has its own metadata and its own words for these ideas. Iceberg calls the state after a commit a [snapshot](#files-metadata-and-commit). Delta Lake numbers its [versions](#every-commit-is-a-snapshot). DuckLake records its snapshots in a [catalog file](#create-catalog-and-table). This chapter writes all three, so you can see the same rows in each.
 
-Where the metadata sits differs too. An Iceberg table keeps a metadata file that names its current snapshot. In format version 2, which pyiceberg writes, each snapshot points to a manifest list, the manifest list names manifests, and each manifest names data files along with their statistics. The [Iceberg spec](https://iceberg.apache.org/spec/) defines each of those layers. A Delta Lake table keeps an ordered log of commit files in a `_delta_log` folder beside its data, as the [Delta Lake protocol](https://raw.githubusercontent.com/delta-io/delta/v4.4.1/PROTOCOL.md) describes. A DuckLake table keeps its metadata in the catalog file that you attach, and writes its data files into a folder beside that file.
+Where the metadata sits differs too. An Iceberg table keeps a metadata file that records its schema, its [partition specs](#partition-specs-are-versioned) and its snapshots, and names the current one. In format version 2, which pyiceberg writes, each snapshot points to a manifest list, the manifest list names manifests, and each manifest names data files or [delete files](#delete-rows-iceberg-and-delta) along with their statistics. The [Iceberg spec](https://iceberg.apache.org/spec/) defines each of those layers. A Delta Lake table keeps an ordered log of commit files in a `_delta_log` folder beside its data, as the [Delta Lake protocol](https://raw.githubusercontent.com/delta-io/delta/v4.4.1/PROTOCOL.md) describes. A DuckLake table keeps its metadata in the catalog file that you attach, and writes its data files into a folder beside that file.
 
 Six hours go in one at a time, into all three formats, and then each table is read back and its totals compared.
 
-Example `rough-lakehouse` (Python 3.12.15 · deltalake 1.6.6 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.12:
+Example `rough-lakehouse` (Python 3.12.15 · deltalake 1.6.6 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.13:
 
 ```python
 """Load six hours into Iceberg, Delta Lake and DuckLake, then read each table back.
@@ -174,7 +174,7 @@ The [rough-lakehouse](#what-a-table-format-adds) example showed the whole loop, 
 
 ### Create the table in a catalog {#create-catalog-and-table}
 
-An Iceberg table needs a catalog, which is the registry that maps a table name to the table's current metadata. A Delta Lake table is found by its path, with no catalog, and a DuckLake table lives in its catalog file. The book uses pyiceberg's [SQL catalog](#register-iceberg-in-sql-catalog) on SQLite for the Iceberg table. The catalog is one file, and the table's data files go in a warehouse folder beside it. The catalog holds pointers and metadata, not rows. Inside the catalog file, a table name such as `wiki.pageviews_hourly` maps to the location of the table's current metadata file. A commit writes a new metadata file and moves that mapping, so anyone who asks the catalog for the table gets the metadata that the most recent commit wrote. The helper `new_warehouse()` in `examples/lib/lakehouse.py` makes a temporary catalog and warehouse for each run, and removes them when the run ends. Because SQLite is a file and needs no server, the whole catalog runs on a laptop with the network off.
+An Iceberg table needs a catalog, which is the registry that maps a table name to the table's current metadata; a DuckLake catalog holds that metadata itself. A Delta Lake table is found by its path, with no catalog, and a DuckLake table lives in its catalog file. The book uses pyiceberg's [SQL catalog](#register-iceberg-in-sql-catalog) on SQLite for the Iceberg table. The catalog is one file, and the table's data files go in a warehouse folder beside it. The SQL catalog holds pointers, not metadata or rows. Inside the catalog file, a table name such as `wiki.pageviews_hourly` maps to the location of the table's current metadata file. A commit writes a new metadata file and moves that mapping, so anyone who asks the catalog for the table gets the metadata that the most recent commit wrote. The helper `new_warehouse()` in `examples/lib/lakehouse.py` makes a temporary catalog and warehouse for each run, and removes them when the run ends. Because SQLite is a file and needs no server, the whole catalog runs on a laptop with the network off.
 
 The table has five columns, and its schema says what each one holds:
 
@@ -196,7 +196,7 @@ The `hour_utc` column holds a timestamp without a time zone, in UTC, and the two
 
 An append is one commit. Below, pyiceberg creates the table, appends hours 00, 01 and 02 in order, and then lists the snapshots in commit order with their operation and the rows each commit added:
 
-Example `append-hours` (Python 3.12.15 · deltalake 1.6.6 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.12:
+Example `append-hours` (Python 3.12.15 · deltalake 1.6.6 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.13:
 
 ```python
 """Create the Iceberg table, append hours 00 to 02 as three commits, then repeat hour 00.
@@ -269,7 +269,7 @@ rows in table after the repeat: 1998
 
 Hour 00 is one row short: the first commit adds 499 rows, and the next two add 500 each. The privacy check removed one row from hour 00, as the data README explains. The three commits leave 1499 rows in 3 data files, one file for each commit.
 
-Each commit also writes a summary, and pyiceberg returns the snapshots in commit order, which is where the operation and the rows added come from. Each commit's operation is `append`, the append operation the spec defines. The snapshot summary is what the table records about its own commits, so it is the first place to look when a count is wrong.
+Each commit also writes a summary, and pyiceberg returns the snapshots in commit order, which is where the operation and the rows added come from. Each commit's operation is `append`, the append operation the spec defines. The snapshot summary is what each snapshot records about the commit that made it, so it is the first place to look when a count is wrong.
 
 The printed labels, `snapshot 1`, `snapshot 2` and `snapshot 3`, stand in for the snapshot IDs. An Iceberg snapshot ID is a long integer that the spec requires to be unique, and pyiceberg chooses it when the commit is made, so it changes from run to run. Mapping each ID to its position in commit order keeps the printed output the same on every run.
 
@@ -281,7 +281,7 @@ With the table in place, you want to ask it questions. DuckDB runs SQL, but an I
 
 The next example appends hours 00 to 02 to a fresh table and asks it two questions: which five titles drew the most views in hour 00, and how many views the three hours hold in all. It checks that total against the sum the scan itself gives.
 
-Example `scan-into-duckdb` (Python 3.12.15 · deltalake 1.6.6 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.12:
+Example `scan-into-duckdb` (Python 3.12.15 · deltalake 1.6.6 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.13:
 
 ```python
 """Read the current Iceberg snapshot into DuckDB and check the totals.
@@ -380,6 +380,6 @@ The first chapter's path is short, and it hides four problems that you will meet
 - **Unpartitioned tables.** Chapter 1 creates tables without a partition spec. Chapter 4 changes the partitioning. The pyiceberg-core package is pinned beside pyiceberg, because the day and hour transforms in chapter 4 need it.
 - **Inlining off in the examples.** DuckLake examples set `DATA_INLINING_ROW_LIMIT` to 0, so each insert writes a Parquet file and the file counts mean the same thing wherever the book prints them. Chapter 10's `ducklake-inlined-delete` keeps the default, because its point is that a small delete then writes no delete file.
 - **Delta tables are read through deltalake's `QueryBuilder` only.** The reading helper in `examples/lib/lakehouse.py` takes that path, and each later chapter that reads a Delta table uses the same helper.
-- **Real data, not a stand-in.** Each example in this chapter reads the cut of the six public dumps that [the data README](https://github.com/rollingedition/book-open-table-formats/blob/8063656c9e0652d673076ad498411b49110ae2d5/examples/data/README.md) describes. The book ships no generated data for this chapter.
+- **Real data, not a stand-in.** Each example in this chapter reads the cut of the six public dumps that [the data README](https://github.com/rollingedition/book-open-table-formats/blob/763ac3bc7eb7b59db40f487b38c1ee95058bcd9b/examples/data/README.md) describes. The book ships no generated data for this chapter.
 - **SQLite for the Iceberg catalog.** A SQLite file needs no server, so the Iceberg examples run on a laptop with the network off. Those runs also turn off DuckDB's automatic extension download, so a run that needs the network fails instead of fetching.
 - **Labels stand in for IDs.** Printed `snapshot 1`, `snapshot 2` and so on stand in for snapshot IDs, so the output does not change from run to run.

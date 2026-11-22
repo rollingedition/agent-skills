@@ -3,13 +3,13 @@ title: "Evaluating LLM Applications"
 chapter: "Check that answers rest on the cited docs, in the asked version"
 chapter_id: grounded-answers
 book: evaluating-llm-applications
-edition: 2026.11.5
-verified: 2026-11-21
-edition_code: ZZQG-NPXH
+edition: 2026.11.6
+verified: 2026-11-22
+edition_code: P6V8-WKJT
 canonical: https://rollingedition.com/evaluating-llm-applications/grounded-answers
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“Check that answers rest on the cited docs, in the asked version,” chapter 9 of Evaluating LLM Applications, Edition 2026.11.5, examples passed Nov 21, 2026. By Rolling Edition, https://rollingedition.com/evaluating-llm-applications/grounded-answers. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Check that answers rest on the cited docs, in the asked version,” chapter 9 of Evaluating LLM Applications, Edition 2026.11.6, examples passed Nov 22, 2026. By Rolling Edition, https://rollingedition.com/evaluating-llm-applications/grounded-answers. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Check that answers rest on the cited docs, in the asked version
 
@@ -17,11 +17,11 @@ By the end of this chapter you can count whether an answer's citations support w
 
 A correct answer can still be a poor one. The assistant in this book answers questions about sablefile from its documentation, and a reply passes when it matches the reference answer for the version the question asks about. A reply can pass that test and still cite a section that doesn't say what its sentence says, add a detail that no section gives, or take its facts from another version of the docs. A pass rate sees none of these. A reader who checks the citation beside a claim can, which is why the assistant is asked to cite at all.
 
-Four checks sit beside the pass rate, and each has its own count over its own denominator. Citation accuracy asks whether each citation names a section the item lists as supporting. Faithfulness asks whether each claim is in the sections the assistant was shown. Version-correctness asks whether the answer fits the asked version. Outcome against path asks whether a pass came with its section in hand, and whether a fail had it. Citation accuracy and faithfulness leave declines out, since a decline makes no claim to check. Version-correctness and the retrieval table keep the declines, as the pass rate does, and each prints how many declines it holds.
+Four checks sit beside the pass rate, and each has its own count over its own denominator. Citation accuracy asks whether each citation names a section the item lists as supporting in the asked version. Faithfulness asks whether each claim follows from the sections the assistant was shown. Version-correctness asks whether the answer matches the reference for the asked version. Outcome against path asks whether a pass came with its section in hand, and whether a fail had it. Citation accuracy and faithfulness leave declines out, since a decline makes no claim to check. Version-correctness and the retrieval table keep the declines, as the pass rate does, and each prints how many declines it holds.
 
 ## What grounded means here {#what-grounded-means}
 
-An answer is grounded when a reader who follows its citations finds the claim where the citation says it is, in the version they asked about. Three things have to hold for that. The citation must exist in that version and support the sentence it is attached to. Every claim in the answer must follow from the sections the assistant read. And the answer must be right for that version, not merely right for some other version that uses the same words.
+An answer is grounded when a reader who follows its [citations](#citation-accuracy) finds each of its claims where the citation says it is, in the version they asked about. Three things have to hold for that. The citation must exist in that version and support the sentence it is attached to. Every claim in the answer must follow from the sections the assistant read. And the answer must be right for that version, not merely right for some other version that uses the same words.
 
 Take a reader who asks how long a remote fetch waits before it gives up. Suppose the reply gives a plausible answer and cites the section on fetching remote templates, but that section never says how long the wait is. A reader would take the reply as grounded, and the citation looks right. The reader who opens the section finds nothing to support the number. A pass rate would count that reply as correct if the number happened to match the reference. Faithfulness is the check that reads the sections, through a judge. The citation check reads only IDs, and says so.
 
@@ -33,11 +33,11 @@ These failures are different, and each needs its own count. A reply can have a s
 
 A citation is a claim about the docs: this section, in this version, supports the sentence it is attached to. Like any claim, it can be wrong. The section can exist and say something else. It can belong to another version. Or the reply can cite a section the item doesn't list. The Primer covers the sentence-level check, [checking what a cited item supports](https://rollingedition.com/primer-on-search-relevance/s/check-citation-support), and [checking citations against context](https://rollingedition.com/primer-on-search-relevance/s/check-citations-against-context) covers the context a model was given. This book's check is simpler, and [citation checks](checks-in-code#citation-checks) in chapter 4 gives its four outcomes. It matches each cited ID against the item's list of supporting sections for the asked version. It never reads the section, so it says nothing about the sentence.
 
-The code prints two counts from the same replies. The citation rate counts every citation in answered items that is supported. The item rate counts an answered item once if at least one of its citations is supported, so one good citation carries the item. A citation to a section of the asked version that the item does not list is printed as unlisted. That section may well be right, so the check does not call it wrong, and it does not open the section to find out. Reading an unlisted citation is a hand decision. If the section supports the sentence, the item's list of supporting sections is incomplete, and the test set's owner should add it. If it does not, the citation is wrong, and the reply should be read as a failed citation.
+The code prints two counts from the same replies. The citation rate is the share of all citations in answered items that are supported. The item rate counts an answered item once if at least one of its citations is supported, over all answered items, so one good citation carries the item. A citation to a section of the asked version that the item does not list is printed as unlisted. That section may well be right, so the check does not call it wrong, and it does not open the section to find out. Reading an unlisted citation is a hand decision. If the section supports the sentence, the item's list of supporting sections is incomplete, and the test set's owner should add it. If it does not, the citation is wrong, and the reply should be read as a failed citation.
 
 Run it on both splits, and read the item line before the citation line.
 
-Example `citation-accuracy-counts` (Python 3.12.15 · numpy 2.5.5 · pydantic 2.14.3 · typing-extensions 4.16.0), passing in Edition 2026.11.5:
+Example `citation-accuracy-counts` (Python 3.12.15 · numpy 2.5.5 · pydantic 2.14.3 · typing-extensions 4.16.0), passing in Edition 2026.11.6:
 
 ```python
 """Counts the baseline's answered items that cite a supporting section of the asked version, dev and held-out apart.
@@ -139,7 +139,7 @@ The difference from citation accuracy shows up in the middle of an answer. Suppo
 
 Nobody has checked this judge's verdicts against a person's, so every faithfulness rate here is uncalibrated. The judge is also the assistant's own model, Qwen3-4B-Instruct-2507, so it grades answers that model wrote. [Self-preference](when-the-judge-stops-being-reliable#self-preference) explains why that matters, and why this book cannot test it. Calibrating the judge would need human ratings of these replies, which this book doesn't have. [Calibrate the judge](calibrate-the-judge) describes the method, which compares the judge with ratings made by hand. Because these rates are not calibrated, there is nothing for the [transfer assumption](calibrate-the-judge#transfer-assumption) to carry over, and the limits in [where to stop](when-the-judge-stops-being-reliable#where-to-stop) apply to them in full.
 
-Example `faithfulness-rate` (Python 3.12.15 · numpy 2.5.5 · pydantic 2.14.3 · typing-extensions 4.16.0), passing in Edition 2026.11.5:
+Example `faithfulness-rate` (Python 3.12.15 · numpy 2.5.5 · pydantic 2.14.3 · typing-extensions 4.16.0), passing in Edition 2026.11.6:
 
 ```python
 """The faithfulness rate of assistant-baseline's answered items, as judged in judge-faithfulness-baseline, dev and held-out apart.
@@ -225,7 +225,7 @@ The two checks print their own lists. The citation output names the items with n
 
 sablefile has three versions of its docs, 1.0, 1.1 and 2.0, and some questions have different answers in each. A reply can be grounded in a section of 1.1 and still be wrong for a reader on 2.0. The book calls these [version-dependent items](#the-twenty-items). Each has a reference answer for the version the reader asked about, and its check asks whether the reply matches that reference. There are 17 of them on dev and 8 on held-out.
 
-Version-dependent items count in the pass rate with every other item, and they also get their own count, beside it. A reply to one of them is judged against the reference for the asked version, so a correct answer for another version fails. That miss would look like a weak assistant if it were only mixed into the general rate. The judged-correct rate is the count for version-dependent items alone, so a version miss shows on its own line, and a team can see whether a change to retrieval moved it. Declines stay in that denominator, as they do in the pass rate, and each split prints how many it holds.
+Version-dependent items count in the pass rate with every other item, and they also get their own count, beside it. A reply to one of them is judged against the reference for the asked version, so a correct answer for another version fails. That miss would look like a weak assistant if it were only mixed into the general rate. The judged-correct rate is the pass rate for version-dependent items alone, so a version miss shows on its own line, and a team can see whether a change to retrieval moved it. Declines stay in that denominator, as they do in the pass rate, and each split prints how many it holds.
 
 A wrong-version citation is a separate count. It is a citation to a section that exists only in another version. A reply can be right for the asked version and still cite another version's section, and a reader who copies that citation lands in the wrong docs.
 
@@ -233,7 +233,7 @@ This check sees only what the ID tells it. A citation carries an ID, not a versi
 
 Two variants are read here. The baseline retrieves from the index of the asked version only. The unfiltered variant retrieves from the indexes of every version together, and shows each section's version in its header, so the model can see where a section comes from. The unfiltered variant is the one that could cite another version, since it is shown them.
 
-Example `version-correct-answers` (Python 3.12.15 · numpy 2.5.5 · pydantic 2.14.3 · typing-extensions 4.16.0), passing in Edition 2026.11.5:
+Example `version-correct-answers` (Python 3.12.15 · numpy 2.5.5 · pydantic 2.14.3 · typing-extensions 4.16.0), passing in Edition 2026.11.6:
 
 ```python
 """Reads the 25 version-dependent items for two variants: whether the judge passed the answer for the asked version, and whether a
@@ -318,7 +318,7 @@ items where the wrong-version flag differs: 0
 
 Across every version-dependent item, the wrong-version share is 0.0% (0 of 25) for the baseline and 0.0% (0 of 25) for the unfiltered variant. A zero says only that the check flagged no ID. The next example shows how few IDs it could have flagged.
 
-Example `version-check-detail` (Python 3.12.15 · numpy 2.5.5 · pydantic 2.14.3 · typing-extensions 4.16.0), passing in Edition 2026.11.5:
+Example `version-check-detail` (Python 3.12.15 · numpy 2.5.5 · pydantic 2.14.3 · typing-extensions 4.16.0), passing in Edition 2026.11.6:
 
 ```python
 """The two counts behind the version check, and the version-dependent items where the variants' verdicts differ, by split.
@@ -396,7 +396,7 @@ Retrieval is BM25 over the sections of the asked version. It is deterministic: t
 
 Dev items with no supporting section of the asked version are left out of the table. Those are the unanswerable items, since no section of their asked version exists for retrieval to find. Their count is 13.
 
-Example `retrieval-path` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pydantic 2.14.3 · typing-extensions 4.16.0), passing in Edition 2026.11.5:
+Example `retrieval-path` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pydantic 2.14.3 · typing-extensions 4.16.0), passing in Edition 2026.11.6:
 
 ```python
 """Sets the baseline's judge verdict against whether a supporting section reached the top k, for each dev item that has one.
@@ -480,7 +480,7 @@ Read the PASS row first. The cell for passes with the section in the top k holds
 
 The FAIL row is where the other checks come in. Of the failures with the section in the top k, 5 are declines, and the rest are answers. [Declining when the docs don't say](declining-when-the-docs-dont-say) covers what a decline means when the docs hold the answer. The example below splits the cell.
 
-Example `fail-with-section` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pydantic 2.14.3 · typing-extensions 4.16.0), passing in Edition 2026.11.5:
+Example `fail-with-section` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pydantic 2.14.3 · typing-extensions 4.16.0), passing in Edition 2026.11.6:
 
 ```python
 """The dev items the baseline failed although a listed section of the asked version was in its top k, split into declines and answers.

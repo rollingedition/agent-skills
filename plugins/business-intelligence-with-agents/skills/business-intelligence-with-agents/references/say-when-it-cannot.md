@@ -3,13 +3,13 @@ title: "Business Intelligence with Agents"
 chapter: "Say when the answer can't be given"
 chapter_id: say-when-it-cannot
 book: business-intelligence-with-agents
-edition: 2026.11.16
-verified: 2026-11-19
-edition_code: CSAB-T5TX
+edition: 2026.11.17
+verified: 2026-11-22
+edition_code: 6VBD-766G
 canonical: https://rollingedition.com/business-intelligence-with-agents/say-when-it-cannot
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“Say when the answer can't be given,” chapter 8 of Business Intelligence with Agents, Edition 2026.11.16, examples passed Nov 19, 2026. By Rolling Edition, https://rollingedition.com/business-intelligence-with-agents/say-when-it-cannot. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Say when the answer can't be given,” chapter 8 of Business Intelligence with Agents, Edition 2026.11.17, examples passed Nov 22, 2026. By Rolling Edition, https://rollingedition.com/business-intelligence-with-agents/say-when-it-cannot. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Say when the answer can't be given
 
@@ -27,7 +27,7 @@ The research gives both kinds names you can use. PRACTIQ, a conversational text-
 
 We can audit each golden decline against the warehouse before trusting its label. The shop's golden questions, from [chapter 3](#cover-declines-and-roles), include eight whose right answer is a decline, four in each split, and each carries a `decline_type`: two ambiguous and two unanswerable per split. The audit prints each one with its category in PRACTIQ's terms, or TrustSQL's for the forecast, and searches both schemas for a column whose name matches the words the question needs. Then it answers two ambiguous questions in each of their readings, from the semantic layer. One of the ambiguous questions has no reading to answer: "Who are our best customers?", `gq-019`, is ambiguous in PRACTIQ's terms, but no metric or dimension ranks customers, so its right reply is a decline, not a question back.
 
-Example `unanswerable-cases` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.16:
+Example `unanswerable-cases` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.17:
 
 ```python
 """The golden questions whose right answer is a decline: which are ambiguous, which are unanswerable, and why.
@@ -106,7 +106,7 @@ No column in `raw` or `analytics` is named for shipping, product views, delivery
 
 The ambiguous questions have answers, too many of them. For "Which region is doing best?" in fiscal 2026, the layer names EMEA by net revenue and by orders, and APAC by the lowest refund rate. For revenue in Q2 of 2025, it gives 415,495.84 euros of net revenue for the calendar quarter, and 467,081.90 for the fiscal one, which runs from May to July. Each of those numbers is right for one reading and wrong for the others, and nothing in the result says which reading produced it.
 
-A third kind looks unanswerable and isn't: a nonexistent filter value, in PRACTIQ's terms, is a filter value no row holds, such as a region called `Europe`. In the shop, [chapter 6's validation](#validate-the-request) refuses it and names the regions that exist, so the model can correct its request instead of declining.
+A third kind is unanswerable in PRACTIQ and often isn't in the shop: a nonexistent filter value, in PRACTIQ's terms, is a filter value no row holds, such as a region called `Europe`. In the shop, [chapter 6's validation](#validate-the-request) refuses it and names the regions that exist, so the model can correct its request instead of declining.
 
 **Working rule:** Sort every question your golden set marks as a decline into ambiguous or unanswerable, and name its category, so you know which reply it needs. Ask back on an ambiguous question only when every reading is answerable, and decline an unanswerable one with what's missing. For each unanswerable question, find the column or value nearby that a model could mistake for the answer, because that's the wrong number you're guarding against.
 
@@ -120,7 +120,7 @@ The recording `decline-runs` holds the pinned model's replies to that prompt for
 
 A kind helps only when the agent picks it, so we print the kinds and who decides each, send `cannot_answer` a call without one, and replay the four dev decline questions and one answerable question the agent declined.
 
-Example `cannot-answer-tool` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.16:
+Example `cannot-answer-tool` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.17:
 
 ```python
 """Decline with a kind from a fixed list and a reason, so declines can be checked and counted like answers.
@@ -220,7 +220,7 @@ Freshness has to come from the data, not from the warehouse's table metadata. Sn
 
 The shop's generator gives every raw table a `_loaded_at` column, the time the nightly load brought the row in, at 02:00 UTC the day after the event, and the marts carry it through. Its refunds feed stopped after June 26, 2026, while orders run to June 30. Some metrics keep changing after their period ends. The refund rate, `refund_rate`, divides refunded euros by the gross revenue of the same orders, and counts each refund on its order's day. A refund comes weeks after its order, so a month's rate keeps rising until every refund on its orders has come. A metric's settling window, as we call it, is the time until every event it counts for a period has come. The freshness check in `lib/declining.py` compares each feed's newest load with the end of the period a request filters on, plus the settling window of the metrics that read the feed. `FEEDS` names, for each table a metric reads, the feed whose loads decide its freshness, and `SETTLING_DAYS` gives the window of each metric counted on an earlier date than its events; every other metric's is zero. Loads are in UTC and the shop's days are local, so the period ends when its last local day ends in the region furthest behind UTC. We measure the window from the data, run the check with it, and estimate why May and June fall short.
 
-Example `stale-refunds` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.16:
+Example `stale-refunds` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.17:
 
 ```python
 """Check freshness before answering: refunds stopped loading after June 26, 2026, and arrive weeks after the order.
@@ -305,6 +305,64 @@ refund rate, 2026-04, checked: 6.74%, data as of 2026-06-27 02:00:00
 
 On orders placed before March 2026, old enough for all their refunds to have come, 56% of refunds came within 30 days of the order and 93% within 45, and the longest took 49 days. So the refund rate's window is 49 days, the longest delay the shop has seen.
 
+Figure 8.1 shows refunds arriving until day 49.
+
+*Figure 8.1. The share of refunds that have come, by days from the order, for orders placed before March 2026.*
+
+![A month read early misses later refunds](https://rollingedition.ai/books/business-intelligence-with-agents/2026.11.17/figures/refund-settling.svg)
+
+Example `figure-refund-settling` (Python 3.12.15 · duckdb 2.0.0 · matplotlib 3.11.2 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.17:
+
+```python
+"""Draw the share of refunds that have come, by days from the order, for orders placed before March 2026, whose refunds have all had time to come.
+The prose rests on the share at the window, which is the longest delay: every refund has come by then, and not a day earlier."""
+import lib  # noqa: F401  (first, so threads and seeds are fixed before any numerical library loads)
+from collections import Counter
+
+from lib.declining import _JOINED, _LAG, SETTLING_DAYS
+from lib.figures import ACCENT, INK, MUTED, new_figure, save
+from lib.warehouse import connect
+
+con = connect()
+# _JOINED is the refunds joined to their orders, and _LAG is the days from the order's local day to the refund's day:
+# the same join and lag stale-refunds uses, declared in lib.declining.
+lags = [d for (d,) in con.execute(f"SELECT {_LAG} {_JOINED} WHERE o.order_date_local < DATE '2026-03-01'").fetchall()]
+n = len(lags)
+longest = max(lags)
+assert longest == SETTLING_DAYS["order_refunds"]   # the window the refund-rate check uses is this longest delay
+counts = Counter(lags)
+days = list(range(longest + 1))
+share, running = [], 0
+for day in days:                                    # a refund counts from the day it came, so the share never falls
+    running += counts[day]
+    share.append(running / n)
+assert share[-1] == 1 and share[-2] < 1   # every refund has come on the window's last day, and not a day before
+
+fig, ax = new_figure(height=2.8)
+ax.step(days, share, where="post", color=ACCENT, label="refunds that have come, orders placed before March 2026")
+ax.axvline(longest, color=MUTED, linestyle="--", linewidth=1, zorder=1, label=f"settling window, {longest} days")  # behind the curve, so its last rise shows
+ax.set_xlabel("days from the order to the refund")
+ax.set_ylabel("share of refunds that have come")
+ax.set_xlim(0, longest + 1)
+ax.set_ylim(0, 1)
+ax.yaxis.set_major_formatter(lambda y, _: f"{y:.0%}")
+ax.legend(frameon=False, loc="upper left")
+save(fig, "refund-settling")
+
+print(f"refunds drawn: {n}")
+print(f"longest days: {longest}")
+print(f"share of refunds that have come at the window: {share[-1]:.0%}")
+```
+
+Output:
+
+```text
+figure: figures/refund-settling.svg
+refunds drawn: 929
+longest days: 49
+share of refunds that have come at the window: 100%
+```
+
 Without a check, the layer reports June's refund rate as 0.54%, against 6.85% for May, which looks normal. June's fall has two causes: some of June's refunds were made but never loaded, and most haven't been made yet. The twelve settled months, May 2025 to April 2026, estimate each. Their refund rate is 7.21%, and with each month's refunds counted only to the point the refunds feed's last load reaches for June, they give 1.17%.
 
 Most of June's shortfall is refunds not yet made: the stale feed explains only 8% of it. May is short too, for the same two reasons, and the stale feed explains 33% of its shortfall. These are estimates from other months, not measurements.
@@ -323,7 +381,7 @@ We decline a period that hasn't settled rather than answer with a warning, as a 
 
 `provenance_card()` in `lib/declining.py` prints an answer with its provenance: the result, each metric's name and the definition its owner wrote in the semantic layer, the filters, the role, the data as of, the freshness check for each feed and, optionally, the SQL. A decline's card is its kind, its reason and the role. Three of the declining agent's runs, replayed with their cards, show what a card catches: net revenue by region in March 2026, which it got right; total revenue by sales region in 2025, which it got wrong; and the cost of shipping, which it declined.
 
-Example `answer-with-provenance` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.16:
+Example `answer-with-provenance` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.17:
 
 ```python
 """Show the provenance with every answer: the metric's definition, filters, role, freshness and the SQL that ran.
@@ -409,7 +467,7 @@ The third card is a decline with its kind and its reason, `not_in_data`, and the
 
 [Declines](#decline-with-a-reason), the [freshness check](#check-freshness) and provenance change how the agent fails, and a score has to show which way. Accuracy doesn't. It counts a decline on an answerable question as a miss, the same as a wrong number, so an agent that guesses scores no worse than one that declines. Kalai and colleagues argue that grading this way rewards guessing ([Kalai et al.](https://arxiv.org/abs/2509.04664)). Two pairs of measures separate the cases, and one score weighs them.
 
-Decline precision and recall treat a question whose right answer is a decline as a positive, and a run that ended without a number, by a decline or a question back, as a predicted positive. Decline precision asks how many of the agent's declines were due; decline recall asks how many of the due declines the agent made. Coverage and selective risk come from selective prediction. Coverage is the share of questions the system doesn't reject, and selective risk is the error rate on the questions the system answers ([Geifman and El-Yaniv](https://arxiv.org/abs/1705.08500)). Lowering the bar for answering raises coverage and usually risk. TrustSQL's penalty score weighs them. In the penalty score, each question scores one point for a right answer or a right decline, nothing for declining an answerable question, and minus c for a wrong number, including an answer to a question it should have declined; the score is the mean over the questions ([Lee et al.](https://arxiv.org/abs/2403.15879)). TrustSQL's questions to decline are unanswerable ones only, and it leaves resolving ambiguity out of its scope. We score the ambiguous questions too, as questions to decline, and count a question back on one as a right decline, so our score is TrustSQL's adapted to the shop's golden set. With c at 0 it is the share of correct replies, as accuracy is; with c large, one wrong number cancels many right ones. As formulas, where a wrong number includes any number given for a question that should be declined:
+Decline precision and recall treat a question whose right answer is a decline as a positive, and a run that ended without a number, by a decline or a question back, as a predicted positive. Decline precision asks how many of the agent's declines were due; decline recall asks how many of the due declines the agent made. Coverage and selective risk come from selective prediction. Coverage is the share of questions the system answers, and selective risk is the error rate on the questions the system answers ([Geifman and El-Yaniv](https://arxiv.org/abs/1705.08500)). Lowering the bar for answering raises coverage and usually risk. TrustSQL's penalty score weighs them. In the penalty score, each question scores one point for a right answer or a right decline, nothing for declining an answerable question, and minus c for a wrong number, including an answer to a question it should have declined; the score is the mean over the questions ([Lee et al.](https://arxiv.org/abs/2403.15879)). TrustSQL's questions to decline are unanswerable ones only, and it leaves resolving ambiguity out of its scope. We score the ambiguous questions too, as questions to decline, and count a question back on one as a right decline, so our score is TrustSQL's adapted to the shop's golden set. With c at 0 it is the share of correct replies, as accuracy is; with c large, one wrong number cancels many right ones. As formulas, where a wrong number includes any number given for a question that should be declined:
 
 ```text
 decline precision = correct declines / all declines
@@ -421,7 +479,7 @@ penalty score     = (right answers + correct declines − c × wrong numbers) / 
 
 A run that hit the step limit is neither a decline nor an answer: it adds nothing to the score and counts as unanswered for coverage. `Tally` in `lib/declining.py` computes all five. We run chapter 6's metrics-first agent and the declining agent on the same 21 dev questions, 17 answerable and 4 to decline, so the measures compare like with like, and print each one with c at 3, the cost [the prompt](#decline-with-a-reason) states, and at 10, a value TrustSQL uses. Choosing c is a judgement about what a wrong number costs, not a measurement.
 
-Example `decline-precision-recall` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.16:
+Example `decline-precision-recall` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.17:
 
 ```python
 """Measure declines, not only accuracy: precision, recall, coverage, selective risk and a penalty score, on dev.

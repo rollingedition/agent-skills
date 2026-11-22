@@ -3,13 +3,13 @@ title: "Business Intelligence with Agents"
 chapter: "Route questions to governed metrics first"
 chapter_id: metrics-first
 book: business-intelligence-with-agents
-edition: 2026.11.16
-verified: 2026-11-19
-edition_code: CSAB-T5TX
+edition: 2026.11.17
+verified: 2026-11-22
+edition_code: 6VBD-766G
 canonical: https://rollingedition.com/business-intelligence-with-agents/metrics-first
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“Route questions to governed metrics first,” chapter 6 of Business Intelligence with Agents, Edition 2026.11.16, examples passed Nov 19, 2026. By Rolling Edition, https://rollingedition.com/business-intelligence-with-agents/metrics-first. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Route questions to governed metrics first,” chapter 6 of Business Intelligence with Agents, Edition 2026.11.17, examples passed Nov 22, 2026. By Rolling Edition, https://rollingedition.com/business-intelligence-with-agents/metrics-first. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Route questions to governed metrics first
 
@@ -27,7 +27,7 @@ The shop's agent gets its metric tools from `lib/metric_tools.py`, a module this
 
 Look first at what the agent sees. The example builds the prompt and prints net revenue's line of the catalog, then calls `describe_metric` for the refund rate, and sizes one golden question, `gq-002`, net revenue in each region in March 2026, under the schema-only prompt from [chapter 1](#ask-for-sql) and under this one. Both sizes are the token counts the model's runtime reported when the calls were recorded.
 
-Example `metric-tools` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.16:
+Example `metric-tools` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.17:
 
 ```python
 """Give the agent the semantic layer's metrics instead of the warehouse's tables, and compare what each prompt holds.
@@ -97,7 +97,7 @@ Qwen's chat template for the model this book records with asks for each tool cal
 
 The shop's case is golden question `gq-003`, net revenue by sales channel in calendar 2025. Schema-only SQL failed it in chapter 1 by filtering `fct_orders` on a `calendar_year` column that exists only in `dim_date`. The recording `metric-agent-runs` holds the same model's replies to the metrics-first prompt for all 48 golden questions. It was made by `recordings/record_metrics_first.py` with the pinned model file, Qwen's recommended sampling and a seed reset before every call, like every recording in this book. `gq-003`'s run, replayed, shows the reply, the request and what the layer did with it.
 
-Example `model-returns-a-request` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.16:
+Example `model-returns-a-request` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.17:
 
 ```python
 """The model returns a metric request, not SQL, and the layer compiles that request. The prose rests on the `matches golden`
@@ -172,7 +172,7 @@ A [parsed request](#request-not-sql) is well-formed, which isn't the same as rig
 
 A person might type three requests the layer refuses: orders by customer email, which no semantic model defines; net revenue by product category, which would fan out; and net revenue for a region called `Europe`. The model's own first request for `gq-002` comes next: the code runs it unvalidated to show what would have happened, then follows its corrected request to its answer.
 
-Example `reject-unknown-dimension` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.16:
+Example `reject-unknown-dimension` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.17:
 
 ```python
 """Validate a metric request against the layer and the warehouse before it runs, and show what would run without it.
@@ -246,7 +246,7 @@ The `ask_back` tool ends the run with a question to the person and the options t
 
 Four dev questions should end in a question back or a reason: two are ambiguous, `gq-019`, about our best customers, and `gq-020`, about which region is doing best, and two can't be answered, a forecast and the cost of shipping. The last tool of each run is printed for all four. Then the code prints the questions the agent asked for `gq-019` and `gq-005`, the answer it gave for `gq-020`, and a check the recorded runs didn't have.
 
-Example `clarify-best-customers` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.16:
+Example `clarify-best-customers` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.17:
 
 ```python
 """Ask back when a question could mean several metrics: the layer supplies each option's definition to the person.
@@ -337,7 +337,7 @@ So far the book has followed [single runs](#validate-the-request). The measureme
 
 Each run gets at most four model calls. A run that uses all four model calls without an answer is a failure, and `grade()` scores it as `step limit`, apart from the declines the model chose. Every run on both splits, for each approach, is replayed and counted by tool: model calls, refused requests, runs that reached a correct answer after a refusal, and clarifications by kind of question.
 
-Example `metrics-first-score` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.16:
+Example `metrics-first-score` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.17:
 
 ```python
 """Score metrics-first against the schema-only baseline on both splits: dev for tuning, test once for the final number.
@@ -433,6 +433,93 @@ Metrics-first gets more questions right than schema-only SQL on both splits. On 
 
 That isn't the same as never failing. Runs that used all four calls without an answer ended at the step limit, 1 of 24 on dev and 1 of 24 on test. The dev run is `gq-007`; the test run, `gq-039`. The runs took 43 model calls across the dev split. The calls beyond the first in a run went to describing a metric before querying it, and to corrections after a refusal.
 
+Where each approach's misses go is what Figure 6.1 shows. Schema-only SQL's misses are wrong answers and errors, 14 and 8 on dev, and metrics-first has no errors on either split. Its drop on test is declines: the declined segment holds 6 answerable questions the run left unanswered, declined or asked back, and its dev bar has none.
+
+*Figure 6.1. Each approach's outcomes on the dev and test splits, out of 24 questions.*
+
+![On dev, metrics-first's bar is mostly correct answers, and on test a declined segment takes part of it](https://rollingedition.ai/books/business-intelligence-with-agents/2026.11.17/figures/outcomes-by-approach.svg)
+
+Example `figure-outcomes-by-approach` (Python 3.12.15 · duckdb 2.0.0 · matplotlib 3.11.2 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.17:
+
+```python
+"""Draw each approach's outcomes on each split as bars of 24 golden questions: correct, wrong, error, declined and step limit.
+The prose rests on the printed count of each outcome per bar, graded as metrics-first-score grades them. Declined counts
+answerable questions the run left unanswered, declined or asked back; declining a question that should be declined is correct."""
+import lib  # noqa: F401  (first, so threads and seeds are fixed before any numerical library loads)
+from collections import Counter, defaultdict
+
+from matplotlib.patches import Patch
+
+from lib.agent import run_agent
+from lib.figures import ACCENT, INK, MUTED, RULE, new_figure, save
+from lib.golden import golden_result, grade, load_golden, schema_only_outcome
+from lib.metric_tools import MetricToolbox, catalog
+from lib.model import RecordedModel
+from lib.prompts import metrics_first_prompt
+from lib.semantic import load
+from lib.warehouse import connect, describe_schema
+
+con, layer = connect(), load()
+schema, system = describe_schema(con), metrics_first_prompt(catalog(layer))
+agent_model, sql_model = RecordedModel("metric-agent-runs"), RecordedModel("schema-only-sql")
+counts = defaultdict(Counter)
+for q in load_golden():
+    trace = run_agent(q.question, system, agent_model, MetricToolbox(con, layer, role=q.role), max_steps=4)  # four calls at most
+    counts[q.split, "metrics-first"][grade(q, trace.answer, golden_result(con, q))] += 1
+    counts[q.split, "schema-only"][schema_only_outcome(con, sql_model, schema, q)] += 1
+
+# Each outcome has a colour and a line hatch, so the legend tells them apart without colour; drawn left to right.
+OUTCOMES = (("correct", ACCENT, None, ACCENT), ("wrong", INK, "/", RULE), ("error", MUTED, "-", RULE),
+            ("declined", RULE, "\\", MUTED), ("step limit", "none", "x", INK))
+ROWS = [(split, approach) for split in ("dev", "test") for approach in ("schema-only", "metrics-first")]
+for split, approach in ROWS:
+    for outcome, *_ in OUTCOMES:
+        print(f"{split} {approach} {outcome}: {counts[split, approach][outcome]}")
+    assert sum(counts[split, approach].values()) == 24, f"{split} {approach} does not hold 24 questions"
+
+fig, ax = new_figure(height=3.4)
+# Bars are placed by height from the bottom, so the first row is counted from the top: y runs from the last row down to 0.
+for y, (split, approach) in zip(range(len(ROWS))[::-1], ROWS):
+    left = 0
+    for outcome, face, hatch, edge in OUTCOMES:
+        n = counts[split, approach][outcome]
+        if n:                                  # a zero count draws no segment
+            ax.barh(y, n, left=left, height=0.6, facecolor=face, hatch=hatch, edgecolor=edge, linewidth=0.8)
+        left += n
+ax.set_yticks(range(len(ROWS))[::-1], [f"{approach}, {split} split" for split, approach in ROWS])
+ax.set(xlim=(0, 24), xticks=range(0, 25, 4), xlabel="golden questions out of 24 on the split")
+ax.grid(axis="y", visible=False)
+handles = [Patch(facecolor=f, edgecolor=e, hatch=h, label=o) for o, f, h, e in OUTCOMES]
+ax.legend(handles=handles, loc="lower left", bbox_to_anchor=(0, 1.02), ncol=3, handlelength=2.2)
+save(fig, "outcomes-by-approach")
+```
+
+Output:
+
+```text
+dev schema-only correct: 2
+dev schema-only wrong: 14
+dev schema-only error: 8
+dev schema-only declined: 0
+dev schema-only step limit: 0
+dev metrics-first correct: 16
+dev metrics-first wrong: 7
+dev metrics-first error: 0
+dev metrics-first declined: 0
+dev metrics-first step limit: 1
+test schema-only correct: 3
+test schema-only wrong: 13
+test schema-only error: 8
+test schema-only declined: 0
+test schema-only step limit: 0
+test metrics-first correct: 10
+test metrics-first wrong: 7
+test metrics-first error: 0
+test metrics-first declined: 6
+test metrics-first step limit: 1
+figure: figures/outcomes-by-approach.svg
+```
+
 The test split is the number to report, and it is much lower than dev. Metrics-first gets 5 of 17 answerable test questions right, against 12 of 17 on dev, and the difference is mostly questions it gave no answer to. Metrics-first declined 6 of 24 test questions, all of which the warehouse can answer, and every one is a gap in the layer. Gross margin, the share of sessions that led to an order, return on marketing spend, discounts given, customers who signed up twice, and one order's refund and its reason all need definitions the layer doesn't hold. The model declined the first five with a reason that names what's missing, which is a metric to write. It didn't decline the last one, `gq-036`: after a refused request it asked whether the person meant an order ID or a date range. That was 1 clarification on an answerable test question. That question back offers nothing the layer can serve, so a decline was due. [Chapter 3](#cover-declines-and-roles) found that marketing and support ask answerable questions only in the test split, and the shop's layer was written around the questions finance and the analyst ask, so nothing tuned on dev could reveal those gaps.
 
 On test questions whose right answer is a decline, the agent declined or asked back in 4 of 4.
@@ -445,7 +532,7 @@ This is one model, one sampled reply per call and one synthetic warehouse, so th
 
 [The score](#measure-metrics-first) says how many runs failed, but not why. The why is in the traces, and it decides what to fix: a metric, a description, a check or an access rule. Each run that wasn't correct is laid out call by call: the tool and arguments the model sent, and the first line of what came back. It also prints the request for `gq-008`, a correct run that the dev wrong answers are set beside, and asks the layer for the request `gq-039`'s run was reaching for.
 
-Example `metrics-first-misses` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.16:
+Example `metrics-first-misses` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.17:
 
 ```python
 """Read every metrics-first run that wasn't correct, call by call, and ask the layer what gq-039's run was reaching for.

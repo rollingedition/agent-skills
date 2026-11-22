@@ -1,0 +1,10 @@
+tasks: 20
+grid: 0.05 to 0.95 in steps of 0.01
+observed proportion: 0.25
+coverage at the observed proportion: 89.5%
+proportions on the grid under the 95% label: 90 of 91
+lowest coverage on the grid: 63.9%
+proportions with the lowest coverage: 0.05 and 0.95
+highest coverage on the grid: 95.9%
+proportion with the highest coverage: 0.50
+figure: figures/naive-range-coverage.svg

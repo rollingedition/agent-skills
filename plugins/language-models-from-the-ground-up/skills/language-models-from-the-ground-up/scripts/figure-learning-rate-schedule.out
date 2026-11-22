@@ -1,0 +1,7 @@
+share of the run spent warming up: 1.2%
+first step at or below half the peak: 9,269
+share of the run from that step to the last: 46%
+largest gap from a saved step size: 4.3e-19
+warm-up is a straight line: yes
+decay never rises: yes
+figure: figures/learning-rate-schedule.svg

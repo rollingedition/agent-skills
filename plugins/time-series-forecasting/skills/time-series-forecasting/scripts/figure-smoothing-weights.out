@@ -1,0 +1,7 @@
+weight on the newest reading, alpha 0.2: 0.20
+readings that carry half the weight, alpha 0.2: 4
+weight left on readings older than a day, alpha 0.2: 0.0047
+weight on the newest reading, alpha 0.5: 0.50
+readings that carry half the weight, alpha 0.5: 1
+weight left on readings older than a day, alpha 0.5: 0.0000
+figure: figures/smoothing-weights.svg

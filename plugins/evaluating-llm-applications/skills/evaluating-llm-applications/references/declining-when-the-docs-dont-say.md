@@ -3,13 +3,13 @@ title: "Evaluating LLM Applications"
 chapter: "Decline when the docs don't say, and measure both kinds of error"
 chapter_id: declining-when-the-docs-dont-say
 book: evaluating-llm-applications
-edition: 2026.11.5
-verified: 2026-11-21
-edition_code: ZZQG-NPXH
+edition: 2026.11.6
+verified: 2026-11-22
+edition_code: P6V8-WKJT
 canonical: https://rollingedition.com/evaluating-llm-applications/declining-when-the-docs-dont-say
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“Decline when the docs don't say, and measure both kinds of error,” chapter 10 of Evaluating LLM Applications, Edition 2026.11.5, examples passed Nov 21, 2026. By Rolling Edition, https://rollingedition.com/evaluating-llm-applications/declining-when-the-docs-dont-say. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Decline when the docs don't say, and measure both kinds of error,” chapter 10 of Evaluating LLM Applications, Edition 2026.11.6, examples passed Nov 22, 2026. By Rolling Edition, https://rollingedition.com/evaluating-llm-applications/declining-when-the-docs-dont-say. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Decline when the docs don't say, and measure both kinds of error
 
@@ -39,7 +39,7 @@ Three variants change one thing each. `prompt-b` runs prompt P2, which quotes th
 
 Counting both errors for each recording takes one example, decline-rates. It reads all four recordings on the dev split and on the held-out split, prints each rate with its counts, and names the items behind each error. Its output shows which answerable items each recording declined and which unanswerable items it answered.
 
-Example `decline-rates` (Python 3.12.15 · numpy 2.5.5 · pydantic 2.14.3 · typing-extensions 4.16.0), passing in Edition 2026.11.5:
+Example `decline-rates` (Python 3.12.15 · numpy 2.5.5 · pydantic 2.14.3 · typing-extensions 4.16.0), passing in Edition 2026.11.6:
 
 ```python
 """Counts the two decline errors for each recording, on dev and on held-out: answerable items declined (false refusals)
@@ -170,7 +170,7 @@ The grid runs from 0.00 to 10.00 in steps of a quarter, above every dev score. F
 
 The sweep runs in tune-guard-dev, which prints both rates at every step of the grid and then the rule's pick. It opens with the check that matters most: the recorded sections of each item must match what the index returns, or the scores would describe a retrieval that never made the replies.
 
-Example `tune-guard-dev` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pydantic 2.14.3 · typing-extensions 4.16.0), passing in Edition 2026.11.5:
+Example `tune-guard-dev` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pydantic 2.14.3 · typing-extensions 4.16.0), passing in Edition 2026.11.6:
 
 ```python
 """Sweeps the decline guard's threshold over dev replies of the unfiltered recording, printing both rates at each
@@ -323,6 +323,74 @@ The false answers don't fall until 4.00, where the false answer rate is 7.7% (1 
 
 No line of the sweep lowers both rates below the no-guard line. Each threshold that lowers the false answers raises the false refusals, and each threshold that leaves the refusals alone leaves the answers alone. On dev, the guard makes a trade and no improvement.
 
+*Figure 10.1. The two rates and their sum at each threshold, on dev.*
+
+![Raising the threshold trades false answers for false refusals](https://rollingedition.ai/books/evaluating-llm-applications/2026.11.6/figures/guard-threshold.svg)
+
+Example `figure-guard-threshold` (Python 3.12.15 · bm25s 0.3.16 · matplotlib 3.11.2 · numpy 2.5.5 · pydantic 2.14.3 · typing-extensions 4.16.0), passing in Edition 2026.11.6:
+
+```python
+"""Draws the dev false refusal rate and false answer rate against the guard's threshold, with their sum dashed and the
+rule's pick marked. The printed lines are the first threshold, the last threshold at the lowest sum, and that sum. The
+asserts check that the pick is the rule's, that the sum is lowest up to its last tie and higher after, that a higher threshold
+never lowers the false refusals or raises the false answers, and that both rates change across the sweep."""
+import lib  # first: fixes the thread counts and seeds before anything else loads
+
+from fractions import Fraction
+
+from lib.figures import ACCENT, INK, MUTED, new_figure, save
+from lib.guard import GRID, denominators, errors, pick_threshold, rows
+
+dev = rows("dev")  # the same recording, items and grid as tune-guard-dev
+answerable, unanswerable = denominators(dev)
+refusal, answer, total = [], [], []
+for threshold in GRID:
+    refusals, answers = errors(dev, threshold)
+    refusal.append(len(refusals) / answerable)
+    answer.append(len(answers) / unanswerable)
+    total.append(Fraction(len(refusals), answerable) + Fraction(len(answers), unanswerable))  # exact, so ties are real
+
+chosen = pick_threshold(dev)
+lowest = min(total)
+last_tie = max(i for i, t in enumerate(total) if t == lowest)  # the last grid index at the lowest sum, read from the data
+print(f"first threshold on the grid: {GRID[0]:.2f}")
+print(f"last threshold at the lowest sum: {GRID[last_tie]:.2f}")
+print(f"lowest sum of the two rates: {100 * float(lowest):.1f}%")
+
+# The section's conclusion, that the rule's pick is no guard, rests on this: at 0.00 no score falls below the threshold.
+assert chosen == 0.0, f"tune-guard-dev's recorded pick is 0.00, not {chosen:.2f}"
+assert chosen == GRID[total.index(lowest)], "the pick is the lowest threshold with the smallest sum"
+assert set(total[:last_tie + 1]) == {lowest} and min(total[last_tie + 1:]) > lowest, "the sum must be lowest up to the last tie and higher after"  # the slice includes the last tie
+# Raising the threshold only adds declines: refusals never fall, answers never rise. The figure's trade rests on this.
+assert all(a <= b for a, b in zip(refusal, refusal[1:])), "a higher threshold must not lower the false refusal rate"
+assert all(a >= b for a, b in zip(answer, answer[1:])), "a higher threshold must not raise the false answer rate"
+assert answer[-1] < answer[0] and refusal[-1] > refusal[0], "the sweep must trade one error for the other"
+
+fig, ax = new_figure(height=3.0)
+ax.plot(GRID, [100 * r for r in refusal], color=ACCENT, label="false refusal rate")
+ax.plot(GRID, [100 * a for a in answer], color=INK, label="false answer rate")
+ax.plot(GRID, [100 * float(t) for t in total], color=MUTED, linestyle="--", label="sum of the two rates")
+ax.axvline(chosen, color=MUTED, linestyle=":", linewidth=1.0)  # the rule's pick, labelled beside the line
+ax.text(chosen + 0.2, 3, f"rule's pick: {chosen:.2f}", color=MUTED)  # low on the plot, where no line runs
+ax.set_xlim(-0.5, 10.5)
+ax.set_ylim(0, 105)
+ax.set_xlabel("guard threshold: a top score below it is declined")
+ax.set_ylabel("rate on dev, in percent points")  # the dashed sum is two rates added, so it is in points too
+ax.legend(frameon=False, loc="lower left", bbox_to_anchor=(0.0, 1.0), ncol=3)  # above the plot, where no line crosses it
+save(fig, "guard-threshold")
+```
+
+Output:
+
+```text
+first threshold on the grid: 0.00
+last threshold at the lowest sum: 2.00
+lowest sum of the two rates: 27.9%
+figure: figures/guard-threshold.svg
+```
+
+Figure 10.1 draws both rates against the threshold, with the dashed sum and the pick marked. The dashed sum is flat at its lowest, 27.9%, from 0.00 to 2.00, and higher after.
+
 The sweep also shows the limit of the score. The top score of `q-0018` is 3.762, and the top score of `q-0039` is 4.592. A threshold catches `q-0018` only from 4.00 up, where the false refusal rate is already 40.0% (16 of 40). It catches `q-0039` only from 4.75 up. No cut catches both answered items with fewer than half of the answerable items declined. The likely cause is the score itself: it counts shared words, and a section about the same command can share many words with a question that section doesn't answer. That is a reading of the sweep, not a measured fact. Testing it would mean scoring the items by hand, which this chapter does not do.
 
 The rule's pick is 0.00. At that threshold the false refusal rate is 12.5% (5 of 40). The false answer rate is 15.4% (2 of 13). Both are the same as the recorded replies with no guard. The pick is a tie-break, not a finding. The lines from 0.00 to 2.00 have the same sum, and the rule takes the lowest of them, so the guard the rule chooses is no guard.
@@ -345,7 +413,7 @@ The threshold also belongs to the assistant that produced the replies. The score
 
 The held-out split was run once, with the threshold frozen at 0.00. The run is guard-held-out, and it first asserts that the dev rule (described in [the guard](#a-guard)) still picks that value. A change to the dev data or to the rule therefore stops the run before any held-out number prints.
 
-Example `guard-held-out` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pydantic 2.14.3 · typing-extensions 4.16.0), passing in Edition 2026.11.5:
+Example `guard-held-out` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pydantic 2.14.3 · typing-extensions 4.16.0), passing in Edition 2026.11.6:
 
 ```python
 """Applies the decline guard, with its threshold frozen from dev, to the held-out items of the unfiltered recording, and
@@ -425,7 +493,7 @@ The chapter's decisions are these:
 
 This chapter does not cover attacks. A user who tries to make the assistant say what it shouldn't is a security question with its own threats and defences, and a separate book is planned for it, *Securing LLM Applications and Agents*. The decline rates here measure honest questions about the docs, and nothing in them tells you how an assistant behaves under pressure from a user who is trying to break it.
 
-Other researchers have measured the same trade on other models, and the claims are worth knowing without borrowing their numbers. XSTest is a test suite of safe prompts that look unsafe. Its authors built it because models refuse safe prompts that use wording similar to unsafe ones, or that touch a sensitive topic ([Röttger and colleagues, 2024](https://arxiv.org/abs/2308.01263)). OR-Bench, published at ICML 2025, measured many models and reports that the extra safety of safety-tuned models often came with more over-refusal ([Cui and colleagues, 2024](https://arxiv.org/abs/2405.20947)). A survey of abstention in language models gives the general name for a model's refusal to answer, and it organises abstention by the query, the model and human values ([Wen and colleagues, 2024](https://arxiv.org/abs/2407.18418)). A 2026 benchmark in healthcare reports over-refusal of benign prompts in that domain, on its own set of prompts ([Zhang and colleagues, 2026](https://arxiv.org/abs/2601.17642)).
+Other researchers have measured the same trade on other models, and the claims are worth knowing without borrowing their numbers. XSTest is a test suite of safe prompts that look unsafe, with unsafe prompts beside them as contrasts. Its authors built it because models refuse safe prompts that use wording similar to unsafe ones, or that touch a sensitive topic ([Röttger and colleagues, 2024](https://arxiv.org/abs/2308.01263)). OR-Bench, published at ICML 2025, measured many models and reports that the extra safety of safety-tuned models often came with more over-refusal ([Cui and colleagues, 2024](https://arxiv.org/abs/2405.20947)). A survey of abstention in language models gives the general name for a model's refusal to answer, and it organises abstention by the query, the model and human values ([Wen and colleagues, 2024](https://arxiv.org/abs/2407.18418)). A 2026 benchmark in healthcare reports over-refusal of benign prompts in that domain, on its own set of prompts ([Zhang and colleagues, 2026](https://arxiv.org/abs/2601.17642)).
 
 These papers test other models on other sets, so their rates don't carry over to this assistant. What carries over is their shape, which is the claim this chapter tests on its own case. On this set, the guard can lower false answers only by declining more answerable items, which is a trade of false answers for false refusals. Prompt and retrieval changes can move both errors, and the unfiltered variant did. The only results this chapter reports are the book's own runs.
 

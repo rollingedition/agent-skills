@@ -3,13 +3,13 @@ title: "Evaluating LLM Applications"
 chapter: "Measure a judge's errors against human ratings, then correct a pass rate"
 chapter_id: calibrate-the-judge
 book: evaluating-llm-applications
-edition: 2026.11.5
-verified: 2026-11-21
-edition_code: ZZQG-NPXH
+edition: 2026.11.6
+verified: 2026-11-22
+edition_code: P6V8-WKJT
 canonical: https://rollingedition.com/evaluating-llm-applications/calibrate-the-judge
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“Measure a judge's errors against human ratings, then correct a pass rate,” chapter 6 of Evaluating LLM Applications, Edition 2026.11.5, examples passed Nov 21, 2026. By Rolling Edition, https://rollingedition.com/evaluating-llm-applications/calibrate-the-judge. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Measure a judge's errors against human ratings, then correct a pass rate,” chapter 6 of Evaluating LLM Applications, Edition 2026.11.6, examples passed Nov 22, 2026. By Rolling Edition, https://rollingedition.com/evaluating-llm-applications/calibrate-the-judge. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Measure a judge's errors against human ratings, then correct a pass rate
 
@@ -35,7 +35,7 @@ The split decides how the numbers may be used. Dev is where the book sets anythi
 
 Agreement is the share of rows on which the judge and the human give the same verdict. It can mislead when one verdict dominates. A judge that passes everything agrees well with a sample that is mostly PASS, and agreement alone cannot tell that judge from a careful one. The fix is to ask what agreement the two verdicts would reach by chance, from their two PASS rates alone, and then take the chance out. Kappa does that. For two raters on pass or fail, kappa is the observed agreement minus the chance agreement, divided by one minus the chance agreement. [The kappa statistic, a review by McHugh](https://hrcak.srce.hr/file/132393), gives that formula. Kappa is one when the two raters agree on every row.
 
-Example `calibration-agreement` (Python 3.12.15 · numpy 2.5.5), passing in Edition 2026.11.5:
+Example `calibration-agreement` (Python 3.12.15 · numpy 2.5.5), passing in Edition 2026.11.6:
 
 ```python
 """How often the reference-free correctness judge agrees with the human ratings on the HelpSteer2 sample, and Cohen's kappa
@@ -85,7 +85,7 @@ Agreement measures closeness to the human labels, not whether the replies are ri
 
 Chapter 5 described a second calibration wording, rubric B. The calibration rubric, rubric A from here on, says that a reply which makes no false claim is "not incorrect". Rubric B rewords it: it says "right" where A says "not incorrect", and it drops the points about misleading and confidence. Rubric B was recorded on dev only. The next example sets the two wordings side by side on the same dev rows.
 
-Example `rubric-b-agreement` (Python 3.12.15 · numpy 2.5.5), passing in Edition 2026.11.5:
+Example `rubric-b-agreement` (Python 3.12.15 · numpy 2.5.5), passing in Edition 2026.11.6:
 
 ```python
 """How often the second rubric's verdicts agree with the human ratings on the HelpSteer2 sample, beside the first rubric's,
@@ -173,7 +173,7 @@ paired difference, dev: +3.3 points, 95% interval [-1.1, +7.8] points, n = 90
 paired difference, dev, reading: no difference detected at n = 90
 ```
 
-No difference shown on dev. Agreement under rubric B is 74.4% (67 of 90). Under rubric A, on the same rows, it is 71.1% (64 of 90). The paired difference is +3.3 points, 95% interval [-1.1, +7.8] points, n = 90. For each dev row, the code scores 1 when a wording agrees with the humans and 0 when it does not. The paired difference is rubric B's score minus rubric A's, averaged over the dev rows, and its interval is bootstrapped over those rows. The example's reading of that interval is no difference detected at n = 90.
+No difference shown on dev. Agreement under rubric B is 74.4% (67 of 90). Under rubric A, on the same rows, it is 71.1% (64 of 90). The paired difference is +3.3 points, 95% interval [-1.1, +7.8] points, n = 90. For each dev row, the code scores 1 when a wording agrees with the humans and 0 when it does not. The paired difference is the variant's score minus the baseline's, here rubric B's agreement score minus rubric A's, averaged over the dev rows, and its interval is bootstrapped over those rows. The example's reading of that interval is no difference detected at n = 90.
 
 The interval includes zero, so the dev estimate does not show that rubric B is better. Rubric B has no held-out run, so its dev estimate has no second check. Its unreadable replies are 0 of 90 replies, so no reply was left out.
 
@@ -183,7 +183,7 @@ The interval includes zero, so the dev estimate does not show that rubric B is b
 
 Agreement and kappa say how often the judge agrees with the humans. They do not say which way it errs. The two rates that do are the true positive rate and the true negative rate. The true positive rate, TPR, is the share of human PASS rows that the judge passes. The true negative rate, TNR, is the share of human FAIL rows that the judge fails. A judge that passes too much has a high TPR and a low TNR, because its errors are false passes. A judge that fails too much is the reverse. The correction in the next section needs both rates, since each one fixes a different error.
 
-Example `tpr-tnr` (Python 3.12.15 · numpy 2.5.5), passing in Edition 2026.11.5:
+Example `tpr-tnr` (Python 3.12.15 · numpy 2.5.5), passing in Edition 2026.11.6:
 
 ```python
 """The judge's true positive rate and true negative rate on the HelpSteer2 sample, with the counts beside each, on dev, on
@@ -234,7 +234,7 @@ The observed pass rate counts two kinds of verdict: true passes the judge caught
 
 The correction has a limit. It divides by TPR + TNR - 1. A judge whose two rates sit near what chance would give has a denominator near zero, and then small errors in either rate become large swings in the corrected rate. The book's code refuses to correct when that denominator is below 0.1, and it raises an error instead of printing a rate. The run below stays well clear of that floor. In practice a team does four things in order: measure TPR and TNR on a calibration set kept apart from the set it will correct, check that the denominator clears the floor, apply the correction to the observed rate over the readable replies, and write the transfer assumption beside the result.
 
-Example `corrected-pass-rate` (Python 3.12.15 · numpy 2.5.5 · pydantic 2.14.3 · typing-extensions 4.16.0), passing in Edition 2026.11.5:
+Example `corrected-pass-rate` (Python 3.12.15 · numpy 2.5.5 · pydantic 2.14.3 · typing-extensions 4.16.0), passing in Edition 2026.11.6:
 
 ```python
 """The baseline's answer-judge pass rate over the test items the judge gave a readable verdict, corrected for the judge's errors
@@ -310,7 +310,7 @@ The input is the baseline's answer-judge verdicts for the test items, all 120 of
 
 The observed pass rate over the readable items is 76.5% (91 of 119). The correction uses TPR and TNR from dev, and those are the only rows it may use. Its TPR on dev is 80.4% (37 of 46). Its TNR on dev is 61.4% (27 of 44).
 
-The corrected rate is 90.5%. The corrected rate estimates the share of sablefile's replies that a person would pass, under the book's correctness cut. It is not the judge's pass rate, which is the observed rate above, and it is not the assistant's accuracy. The estimate holds only if the judge's errors on sablefile's answers match its errors on HelpSteer2 rows. That is the [transfer assumption](#transfer-assumption), and the TPR and TNR above come from a reference-free judge rating other models' responses, while the answer judge checks sablefile's replies against a reference.
+The corrected rate is 90.5%. The corrected rate estimates the share of sablefile's readable replies that a person would pass, under the book's correctness cut. It is not the judge's pass rate, which is the observed rate above, and it is not the assistant's accuracy. The estimate holds only if the judge's errors on sablefile's answers match its errors on HelpSteer2 rows. That is the [transfer assumption](#transfer-assumption), and the TPR and TNR above come from a reference-free judge rating other models' responses, while the answer judge checks sablefile's replies against a reference.
 
 The corrected rate is higher than the observed rate, and the crossover point shows why. The observed rate sits above the crossover point, where the judge reads low. At that rate the judge's misses on true passes outweigh its false passes, so the correction raises it.
 
@@ -320,7 +320,7 @@ The result is also close to the code's ceiling. The code clips the corrected rat
 
 ## How much one row moves the corrected rate {#how-much-one-row-moves-it}
 
-Example `correction-sensitivity` (Python 3.12.15 · numpy 2.5.5 · pydantic 2.14.3 · typing-extensions 4.16.0), passing in Edition 2026.11.5:
+Example `correction-sensitivity` (Python 3.12.15 · numpy 2.5.5 · pydantic 2.14.3 · typing-extensions 4.16.0), passing in Edition 2026.11.6:
 
 ```python
 """How much the corrected pass rate of corrected-pass-rate depends on its inputs. A 95% bootstrap interval resamples both the
@@ -372,6 +372,78 @@ corrected, TNR one row lower: 90.0%
 
 The example resamples both the dev rows and the readable items, 2,000 times, with the book's fixed seed, and it reads the spread of the corrected rate. The 95% interval is [62.1%, 100.0%]. It is wide, because TPR and TNR each rest on a few dozen dev rows, and its upper end is the cap itself. Some resamples reach the cap. Their share is 29.5% (590 of 2000). Resamples refused for a denominator under 0.1 are 0.1% (2 of 2000), and the interval is taken over the rest.
 
+*Figure 6.1. The corrected pass rate over the bootstrap resamples, with the cap and the interval's ends.*
+
+![The resamples pile up at the 100% cap, a bar taller than any bin below it, so the interval's top end is the cap](https://rollingedition.ai/books/evaluating-llm-applications/2026.11.6/figures/corrected-resamples.svg)
+
+Example `figure-corrected-resamples` (Python 3.12.15 · matplotlib 3.11.2 · numpy 2.5.5 · pydantic 2.14.3 · typing-extensions 4.16.0), passing in Edition 2026.11.6:
+
+```python
+"""Draws the bootstrap distribution of the corrected pass rate over the 2,000 resamples of correction-sensitivity: the bars
+below the 100% cap, and the bar at the cap. The printed lines are the ones correction-sensitivity prints, and the asserts
+check that the bars hold every kept resample and that the upper end of the interval is the cap."""
+import lib  # first: fixes the thread counts and seeds before anything else loads
+
+import numpy as np
+from matplotlib.ticker import PercentFormatter
+
+from lib.calibration import MIN_DENOMINATOR, correction_interval, helpsteer2_judgments, readable_verdicts
+from lib.figures import ACCENT, INK, MUTED, new_figure, save
+from lib.judging import passed
+from lib.prompts import REF_SHA256
+from lib.stats import RESAMPLES, interval_pct, pct
+from lib.testset import load_items
+
+found, _ = readable_verdicts("judge-answers-baseline", [item.id for item in load_items()], REF_SHA256)
+dev_rows, item_passes = helpsteer2_judgments("dev"), passed(found)
+lo, hi, capped, refused = correction_interval(dev_rows, item_passes)
+
+# correction_interval keeps only the ends: this redraws its resamples, with the same generator, seed and draw order.
+judge, human = (np.array([getattr(j, f) for j in dev_rows], dtype=bool) for f in ("judge_pass", "human_pass"))
+rng = np.random.default_rng(lib.SEED)
+dev, item = (rng.integers(0, n, size=(RESAMPLES, n)) for n in (judge.size, item_passes.size))  # dev rows first, readable items second
+pass_s, fail_s = human[dev].sum(axis=1), (~human[dev]).sum(axis=1)
+tpr = (judge[dev] & human[dev]).sum(axis=1) / np.maximum(pass_s, 1)  # a resample with no PASS row is refused below
+tnr = (~judge[dev] & ~human[dev]).sum(axis=1) / np.maximum(fail_s, 1)
+usable = (pass_s > 0) & (fail_s > 0) & (tpr + tnr - 1.0 >= MIN_DENOMINATOR)
+rates = np.clip((item_passes[item].mean(axis=1)[usable] + tnr[usable] - 1.0) / (tpr + tnr - 1.0)[usable], 0.0, 1.0)  # clipped to [0, 1] as correction_interval clips it
+
+assert np.allclose(np.quantile(rates, [0.025, 0.975]), [lo, hi]) and hi == 1.0, "the resamples must give the interval"
+assert int((~usable).sum()) == refused and int((rates >= 1.0).sum()) == capped, "counts must match correction-sensitivity"
+BIN = 0.02  # the width of each bin below the cap, in rate units: two points
+counts, edges = np.histogram(rates[rates < 1.0], bins=np.append(np.arange(np.floor(rates[rates < 1.0].min() / BIN) * BIN, 1.0, BIN), 1.0))  # bins below the cap, BIN wide
+assert counts.sum() + capped == rates.size and capped > counts.max(), "every kept resample must be drawn, the cap tallest"
+
+print(f"corrected pass rate, 95% interval: {interval_pct(lo, hi)}")
+print(f"resamples at the 100% cap: {pct(capped, RESAMPLES)}")
+print(f"resamples refused, TPR + TNR - 1 below 0.1: {pct(refused, RESAMPLES)}")
+print(f"resamples in the fullest bin below the cap: {counts.max()}")
+print(f"bin width below the cap, in points: {BIN * 100:.0f}")
+
+fig, ax = new_figure(height=2.8)
+ax.bar((edges[:-1] + edges[1:]) / 2, counts, width=0.016, color=INK, label="resamples below the cap")
+ax.bar(1.02, capped, width=0.016, color=ACCENT, label="resamples at the 100% cap")  # just past the 100% line, clear of the bins
+ax.text(1.024, capped, "cap", ha="left", va="bottom")  # names the bar, starting clear of the 100% line at its left
+ax.vlines([lo, hi], 0, 1, transform=ax.get_xaxis_transform(), color=MUTED, linestyle="--", label="ends of the middle 95%")  # full height; the upper end is the cap itself
+ax.xaxis.set_major_formatter(PercentFormatter(xmax=1.0))
+ax.set(xlabel="corrected pass rate, clipped to 0% to 100%", ylabel="resamples")
+ax.legend(frameon=False, loc="lower left", bbox_to_anchor=(0.0, 1.0), ncol=2)  # above the plot, where no bar or line crosses it
+save(fig, "corrected-resamples")
+```
+
+Output:
+
+```text
+corrected pass rate, 95% interval: [62.1%, 100.0%]
+resamples at the 100% cap: 29.5% (590 of 2000)
+resamples refused, TPR + TNR - 1 below 0.1: 0.1% (2 of 2000)
+resamples in the fullest bin below the cap: 111
+bin width below the cap, in points: 2
+figure: figures/corrected-resamples.svg
+```
+
+Figure 6.1 shows those resamples as bars. The bar at the cap, drawn beside the 100% line, is taller than any bin below it. The bins below the cap are 2 points wide, and the fullest one holds 111 resamples.
+
 The one-row moves are these. If one dev row that humans passed had been judged PASS rather than FAIL, TPR would be one row higher, and the corrected rate would be 86.0%. If one such row had been judged FAIL, TPR would be one row lower, and the corrected rate would be 95.5%. For TNR, one dev row that humans failed and the judge passed would change the rate to 91.0% if it were judged FAIL, and to 90.0% if it were judged PASS. TPR is the rate to watch: one row there moves the answer by four to five points, while one row of TNR moves it by about half a point.
 
 The interval covers the sampling of the dev rows and the readable items. It does not cover the transfer assumption. A judge whose errors differ on sablefile's replies could move the rate by more than the resamples show.
@@ -398,7 +470,7 @@ Each pair is a HelpSteer2 prompt with two responses and a human preference betwe
 
 Before you run the example, predict whether a pair that counts only when both orders pick the human's response will score above or below either order taken alone. Then check the guess against the output.
 
-Example `pairwise-agreement` (Python 3.12.15 · numpy 2.5.5), passing in Edition 2026.11.5:
+Example `pairwise-agreement` (Python 3.12.15 · numpy 2.5.5), passing in Edition 2026.11.6:
 
 ```python
 """How often the pairwise judge's verdict agrees with the human preference on each HelpSteer2 pair, dev and held-out apart.

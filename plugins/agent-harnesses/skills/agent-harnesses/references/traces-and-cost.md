@@ -3,13 +3,13 @@ title: "Agent Harnesses"
 chapter: "Trace each run and count what it cost"
 chapter_id: traces-and-cost
 book: agent-harnesses
-edition: 2026.11.6
+edition: 2026.11.7
 verified: 2026-11-22
-edition_code: 3KM9-2NP7
+edition_code: YNMR-JA84
 canonical: https://rollingedition.com/agent-harnesses/traces-and-cost
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“Trace each run and count what it cost,” chapter 11 of Agent Harnesses, Edition 2026.11.6, examples passed Nov 22, 2026. By Rolling Edition, https://rollingedition.com/agent-harnesses/traces-and-cost. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Trace each run and count what it cost,” chapter 11 of Agent Harnesses, Edition 2026.11.7, examples passed Nov 22, 2026. By Rolling Edition, https://rollingedition.com/agent-harnesses/traces-and-cost. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Trace each run and count what it cost
 
@@ -25,7 +25,7 @@ A trace is a file with one JSON object per line. The format has a name, JSON Lin
 
 Replaying the [chapter 1](#tools-and-a-loop) run on T-01 writes its steps in this form. The replay reads the recorded reply for each step, so the trace is the same on every run.
 
-Example `trace-one-run` (Python 3.12.15 · pydantic 2.14.4), passing in Edition 2026.11.6:
+Example `trace-one-run` (Python 3.12.15 · numpy 2.5.5 · pydantic 2.14.4), passing in Edition 2026.11.7:
 
 ```python
 """The chapter 1 recorded run of T-01 as JSON lines: one record per step, with run-scoped IDs and the recorded token
@@ -114,7 +114,7 @@ Each record in the [trace](#one-line-per-event) carries two token counts, in the
 
 Summing the stored step counts per task, and for the set, is the job of the next example. It checks each task's sums against the totals the manifest stores for that task, and it checks the set's prompt sum against the sum of those task totals.
 
-Example `token-counts-from-recording` (Python 3.12.15), passing in Edition 2026.11.6:
+Example `token-counts-from-recording` (Python 3.12.15 · numpy 2.5.5), passing in Edition 2026.11.7:
 
 ```python
 """The token counts of the task-set recording, summed per task and for the set, read from the stored counts. Replay
@@ -191,7 +191,7 @@ The recording's manifest stores the model file and its SHA-256, but not the sett
 
 Here a parent starts a child on T-04, a task that asks for an inch unit. The child's recorded run ends with a finish that changes files. A scripted person says no to that change, so the gate holds the finish, and the child hands back with a question.
 
-Example `child-trace-under-parent` (Python 3.12.15 · pydantic 2.14.4), passing in Edition 2026.11.6:
+Example `child-trace-under-parent` (Python 3.12.15 · numpy 2.5.5 · pydantic 2.14.4), passing in Edition 2026.11.7:
 
 ```python
 """A parent starts a child on T-04, whose recorded run ends with a finish that changes files. The gate holds that finish
@@ -279,7 +279,7 @@ With the stored counts [summed per task](#token-counts), a run's cost is three n
 
 Grouping the stored counts by how each run ended puts the step-capped runs beside the others, so the cost of each stop reason shows in the same output.
 
-Example `cost-as-counts` (Python 3.12.15), passing in Edition 2026.11.6:
+Example `cost-as-counts` (Python 3.12.15 · numpy 2.5.5), passing in Edition 2026.11.7:
 
 ```python
 """The cost of the task-set runs as counts only: steps, tool calls and tokens, summed per way a run ended. The cost is
@@ -336,6 +336,89 @@ The step-capped runs took 112 of 220 steps and 335801 of 572605 prompt tokens. T
 None of the step-capped runs is done: the count reads 0 of 7. A step-capped run ends with neither a `finish` nor a handoff, so the zero follows from [the done rule](#score) whatever its files hold. The ask_user group's one done is T-18, whose count comes through a path match ([chapter 10](#t18-path)). The zero says nothing about how close any step-capped run came, and this chapter does not read it as a finding about the tasks.
 
 Judgement, not a measurement: the step-capped line is the cost of runs that spent their tokens and did not finish. A token budget on the run's total tokens, not the per-request prompt budget of [chapter 5](#context-budgets), would have stopped those runs sooner. Its price is the chance of stopping a run that would have finished on a later step, and this recording cannot show that chance, because each step-capped run stopped at the cap and wrote no later step. The prompt count is what makes the cost grow: the loop sends the whole transcript again at every step. Counting the step-capped runs whose prompt count rises at every step gives 7 of 7. A step budget counts steps, so for a long run it says less about the cost than the tokens do. If a token budget is set, the harness should end the run with its own stop reason and its own counts, so that a cut by the budget can be told apart from a cut by the step cap.
+
+Figure 11.1 draws each recorded run as one point, with its steps along the bottom and its prompt tokens, summed over the run, up the side. The marker shape shows how the run ended: hollow circles ended with a `finish`, hollow squares asked the person, and hollow diamonds hit the step cap. The 7 diamonds stand in one column at the cap of 16 steps, and every one of them is higher than any run that ended another way: the lowest of them totals 33951 prompt tokens, and the highest of the others 33630.
+
+*Figure 11.1. Each run's steps against its prompt tokens, marked by how it ended.*
+
+![The step-capped runs stand in one column at the cap, above every run that ended another way](https://rollingedition.ai/books/agent-harnesses/2026.11.7/figures/tokens-against-steps.svg)
+
+Example `figure-tokens-against-steps` (Python 3.12.15 · matplotlib 3.11.2 · numpy 2.5.5), passing in Edition 2026.11.7:
+
+```python
+"""Each recorded run as one point: its steps against its prompt tokens, summed over the run, marked by how it ended.
+The point rests on the step-capped runs sitting in one column at the cap, above every other run, and on the dashed
+line for steps alone: every run's prompt total sits above it, because each step's prompt carries the steps before it."""
+from lib.figures import ACCENT, INK, MUTED, new_figure, save
+from lib.models import load_recording
+
+manifest, rows = load_recording("task-set")
+tasks = sorted(manifest["tasks"], key=lambda t: (t["steps"], t["task"]))  # ties in steps are broken by task ID
+cap = manifest["step_cap"]
+capped = [t for t in tasks if t["ended"] == "step_cap"]
+others = [t for t in tasks if t["ended"] != "step_cap"]
+assert all(t["steps"] == cap for t in capped), "a step-capped run stops at the cap"
+assert min(t["prompt_tokens"] for t in capped) > max(t["prompt_tokens"] for t in others)
+assert sum(r["step"] == 1 for r in rows) == len(tasks), "one first step per run"
+first = sum(r["prompt_tokens"] for r in rows if r["step"] == 1) / len(tasks)  # the mean first-step prompt, in tokens
+assert all(t["prompt_tokens"] > t["steps"] * first for t in tasks), "every run sits above steps times the first prompt"
+
+
+def share(key):  # the step-capped runs' part of the whole set, in per cent
+    return 100 * sum(t[key] for t in capped) / sum(t[key] for t in tasks)
+
+
+def per_step(group):  # prompt tokens a step, over a group of runs
+    return sum(t["prompt_tokens"] for t in group) // sum(t["steps"] for t in group)
+
+
+fig, ax = new_figure(height=3.2)
+for ending, color, marker, words in (("finish", INK, "o", "ended with a finish"), ("ask_user", MUTED, "s", "asked the person"), ("step_cap", ACCENT, "D", "hit the step cap")):
+    group = [t for t in tasks if t["ended"] == ending]  # hollow, so two runs at one spot show as two rings
+    ax.scatter([t["steps"] for t in group], [t["prompt_tokens"] for t in group], facecolors="none", edgecolors=color,
+               marker=marker, s=30, linewidths=1.2, label=f"{words}, {len(group)} runs")
+ax.plot([tasks[0]["steps"], cap], [tasks[0]["steps"] * first, cap * first], color=INK, linestyle="--", linewidth=1.0,  # tasks[0] took the fewest
+        label="every step at the first step's prompt")
+ax.set_xlabel("steps the run took")
+ax.set_ylabel("prompt tokens, summed over its steps")
+ax.set_xlim(tasks[0]["steps"] - 1, cap + 1)
+ax.set_ylim(bottom=0)
+ax.legend(frameon=False, loc="upper left")
+
+print(f"runs drawn: {len(tasks)}")
+print(f"runs above the dashed line: {sum(t['prompt_tokens'] > t['steps'] * first for t in tasks)} of {len(tasks)}")
+print(f"lowest prompt total, step-capped runs: {min(t['prompt_tokens'] for t in capped)}")
+print(f"highest prompt total, other runs: {max(t['prompt_tokens'] for t in others)}")
+print(f"step-capped runs: {len(capped)}")
+print(f"step cap, in steps: {cap}")
+print(f"mean first-step prompt, in tokens: {first:.0f}")
+print(f"step-capped share of steps: {share('steps'):.1f}%")
+print(f"step-capped share of prompt tokens: {share('prompt_tokens'):.1f}%")
+print(f"prompt tokens per step, step-capped runs: {per_step(capped)}")
+print(f"prompt tokens per step, other runs: {per_step(others)}")
+save(fig, "tokens-against-steps")
+```
+
+Output:
+
+```text
+runs drawn: 20
+runs above the dashed line: 20 of 20
+lowest prompt total, step-capped runs: 33951
+highest prompt total, other runs: 33630
+step-capped runs: 7
+step cap, in steps: 16
+mean first-step prompt, in tokens: 1044
+step-capped share of steps: 50.9%
+step-capped share of prompt tokens: 58.6%
+prompt tokens per step, step-capped runs: 2998
+prompt tokens per step, other runs: 2192
+figure: figures/tokens-against-steps.svg
+```
+
+The dashed line is what a run would cost if every step sent only the first step's prompt, 1044 tokens on average. 20 of 20 runs sit above it, because every step's prompt carries the steps before it, as [the prompt at each step](#where-tokens-go) in chapter 5 shows. The step-capped runs average 2998 prompt tokens a step, and the other runs 2192.
+
+So the step-capped runs carry more of the cost than their steps suggest: 50.9% of the steps, but 58.6% of the prompt tokens.
 
 [Chapter 12](#when-an-agent-is-the-wrong-design) compares an agent with a [fixed pipeline](#fixed-pipeline-first) in these same units, and the units are only useful if every run reports them the same way.
 

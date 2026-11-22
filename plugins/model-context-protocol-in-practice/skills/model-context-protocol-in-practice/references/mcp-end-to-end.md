@@ -3,13 +3,13 @@ title: "Model Context Protocol in Practice"
 chapter: "MCP end to end"
 chapter_id: mcp-end-to-end
 book: model-context-protocol-in-practice
-edition: 2026.11.17
+edition: 2026.11.18
 verified: 2026-11-22
-edition_code: XAH6-X5Y5
+edition_code: GV8D-FHDA
 canonical: https://rollingedition.com/model-context-protocol-in-practice/mcp-end-to-end
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“MCP end to end,” chapter 1 of Model Context Protocol in Practice, Edition 2026.11.17, examples passed Nov 22, 2026. By Rolling Edition, https://rollingedition.com/model-context-protocol-in-practice/mcp-end-to-end. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“MCP end to end,” chapter 1 of Model Context Protocol in Practice, Edition 2026.11.18, examples passed Nov 22, 2026. By Rolling Edition, https://rollingedition.com/model-context-protocol-in-practice/mcp-end-to-end. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # MCP end to end
 
@@ -17,7 +17,7 @@ By the end of this chapter you can put an existing HTTP API behind a Model Conte
 
 A customer writes to Fernhill Supply, a small online shop for kitchen and garden goods, to ask where an order is. The answer lives in Fernhill Supply's systems, not in the ticket, so a model in the support team's host can answer only if something lets it look the order up. This chapter takes on that problem, and [Meet the shop and its API](#the-shop) introduces the shop in full.
 
-The Model Context Protocol (MCP) is how an application that uses a model gets tools and data from programs it didn't write. Three roles share the work, and the book keeps their names exact. The **[host](#host-client-server)** is the application the user works in, such as a support desk or a coding assistant. A **[client](#host-client-server)** is the host's connection to one server. A **[server](#host-client-server)** exposes capabilities, such as tools a model can call ([specification overview](https://modelcontextprotocol.io/specification/2026-07-28)). The messages between a client and a server are JSON-RPC 2.0.
+The Model Context Protocol (MCP) is a standard way an application that uses a model gets tools and data from other programs. Three roles share the work, and the book keeps their names exact. The **[host](#host-client-server)** is the application the user works in, such as a support desk or a coding assistant. A **[client](#host-client-server)** is the host's connection to one server. A **[server](#host-client-server)** exposes capabilities, such as tools a model can call ([specification overview](https://modelcontextprotocol.io/specification/2026-07-28)). The messages between a client and a server are JSON-RPC 2.0.
 
 This chapter builds a rough version of the whole thing: an API, a server with one tool, a client, a wire trace and one recorded model choice. Each later chapter makes one of those parts solid.
 
@@ -35,7 +35,7 @@ The shop already has the "before" that every chapter wraps: **the shop's API**, 
 
 Before wrapping the API, run it the way any client would: once with the key, once without it, and once for an order that doesn't exist.
 
-Example `start-the-shop-api` (Python 3.12.15 · httpx2 2.16.2 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.17:
+Example `start-the-shop-api` (Python 3.12.15 · httpx2 2.16.2 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.18:
 
 ```python
 """Start the shop's existing HTTP API on loopback and call it three ways: with its key, without it, and for an order
@@ -98,7 +98,7 @@ In the Python SDK the server class is `MCPServer`, imported from `mcp.server.mcp
 
 The shop's first server is called `shop-orders`, and its one tool, `get_order_status`, wraps `GET /orders/{order_id}`. It reads the API's address and key from its environment, so they never appear in the code or on the wire. Server examples follow one pattern: the file defines the server, and with no arguments it starts a client that launches the same file with `--serve` and lists the tools. Run it to see the tool the way a model receives it.
 
-Example `order-status-server` (Python 3.12.15 · cryptography 50.0.2 · httpx2 2.16.2 · mcp 2.3.0 · mcp-types 2.3.0 · pydantic 2.14.4 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.17:
+Example `order-status-server` (Python 3.12.15 · cryptography 50.0.2 · httpx2 2.16.2 · mcp 2.3.0 · mcp-types 2.3.0 · pydantic 2.14.4 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.18:
 
 ```python
 """The shop's first MCP server: one tool, get_order_status, that wraps GET /orders/{order_id} on the shop's API. The
@@ -178,7 +178,7 @@ The command is `sys.executable`, the Python running the example, rather than `"p
 
 The next example makes three calls to show failures from the client's side: one for a real order, one for an order ID that doesn't exist, and one from a second client that forgets the environment.
 
-Example `call-order-status` (Python 3.12.15 · cryptography 50.0.2 · httpx2 2.16.2 · mcp 2.3.0 · mcp-types 2.3.0 · pydantic 2.14.4 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.17:
+Example `call-order-status` (Python 3.12.15 · cryptography 50.0.2 · httpx2 2.16.2 · mcp 2.3.0 · mcp-types 2.3.0 · pydantic 2.14.4 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.18:
 
 ```python
 """Launch the shop's server over stdio and call get_order_status for a real order and a wrong one, then for a server
@@ -247,7 +247,7 @@ A faithful trace needs a real subprocess. The SDK's in-process client, `Client(s
 
 To see the wire, run the call for order O-2476 from [the client example](#call-a-tool-from-a-client) through the relay. Three of its messages print in full, and the rest on one line each.
 
-Example `trace-first-call` (Python 3.12.15 · cryptography 50.0.2 · httpx2 2.16.2 · mcp 2.3.0 · mcp-types 2.3.0 · pydantic 2.14.4 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.17:
+Example `trace-first-call` (Python 3.12.15 · cryptography 50.0.2 · httpx2 2.16.2 · mcp 2.3.0 · mcp-types 2.3.0 · pydantic 2.14.4 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.18:
 
 ```python
 """Record every message the client and the shop's server exchange for one tool call, and print them in order. The point
@@ -375,7 +375,7 @@ Examples here never call a model, because its output isn't deterministic and exa
 
 The uncertain part is the model, so the example gives it three tickets: one quotes an order ID the way the shop writes it, one gives a bare order number, and one asks about stock, which no tool on this server can answer.
 
-Example `host-picks-a-tool` (Python 3.12.15 · cryptography 50.0.2 · httpx2 2.16.2 · mcp 2.3.0 · mcp-types 2.3.0 · pydantic 2.14.4 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.17:
+Example `host-picks-a-tool` (Python 3.12.15 · cryptography 50.0.2 · httpx2 2.16.2 · mcp 2.3.0 · mcp-types 2.3.0 · pydantic 2.14.4 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.18:
 
 ```python
 """The book's host loop shows three tickets and the server's tools to a model, then calls the tool the model chooses, from recorded replies in examples/data/recorded/. The point rests on the three `tool` lines."""

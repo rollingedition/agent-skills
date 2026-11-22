@@ -3,13 +3,13 @@ title: "Language Models from the Ground Up"
 chapter: "Words as vectors"
 chapter_id: words-as-vectors
 book: language-models-from-the-ground-up
-edition: 2026.11.17
-verified: 2026-11-19
-edition_code: DR5A-G7ZM
+edition: 2026.11.18
+verified: 2026-11-22
+edition_code: 5E4E-0JVJ
 canonical: https://rollingedition.com/language-models-from-the-ground-up/words-as-vectors
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“Words as vectors,” chapter 4 of Language Models from the Ground Up, Edition 2026.11.17, examples passed Nov 19, 2026. By Rolling Edition, https://rollingedition.com/language-models-from-the-ground-up/words-as-vectors. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Words as vectors,” chapter 4 of Language Models from the Ground Up, Edition 2026.11.18, examples passed Nov 22, 2026. By Rolling Edition, https://rollingedition.com/language-models-from-the-ground-up/words-as-vectors. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Words as vectors
 
@@ -25,7 +25,7 @@ Every model so far has treated tokens as names: `patio` is one entry in a table 
 
 Give the 2,000 most frequent tokens of the training text one-hot vectors, and compare `patio` with `outdoor`, with `sofa` and with itself. Those 2,000 are about half of the store tokenizer's vocabulary, which keeps every matrix in this chapter small enough to compute in seconds:
 
-Example `one-hot-vectors` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1), passing in Edition 2026.11.17:
+Example `one-hot-vectors` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1), passing in Edition 2026.11.18:
 
 ```python
 """One-hot vectors for the 2,000 most frequent tokens, and the cosine similarity of patio with outdoor, with sofa and with
@@ -77,7 +77,7 @@ The way out is to describe a word by the company it keeps. Two words that appear
 
 Count co-occurrences in the training split's names and descriptions, and list what sits most often near `patio`:
 
-Example `cooccurrence-counts` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1), passing in Edition 2026.11.17:
+Example `cooccurrence-counts` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1), passing in Edition 2026.11.18:
 
 ```python
 """Counts how often each of the 2,000 kept tokens appears within two tokens of another, and lists the six tokens seen most
@@ -133,7 +133,7 @@ return np.where(counts > 0, np.maximum(pmi, 0), 0.0)
 
 Reweighting is meant to stop frequent neighbours dominating, so swap the raw counts for PPMI and list `patio`'s strongest neighbours again:
 
-Example `ppmi-neighbours` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1), passing in Edition 2026.11.17:
+Example `ppmi-neighbours` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1), passing in Edition 2026.11.18:
 
 ```python
 """Reweights the co-occurrence counts with positive PMI, and lists the six tokens with the strongest weight beside patio.
@@ -171,11 +171,11 @@ PPMI vectors are already useful: two tokens with similar PPMI rows have similar 
 
 ## Compress counts into dense vectors {#compress-into-dense-vectors}
 
-A [PPMI vector](#weigh-by-surprise) of 2,000 numbers, mostly zeros, has a lot of room and little information. Compressing it into a short, dense vector keeps the strongest patterns of co-occurrence, drops the noise, and puts tokens with related neighbours close together even when they share few exact neighbours. The tool is the **singular value decomposition**, SVD, which finds the 64 directions that together reconstruct the PPMI rows best, and weights each by how much of the rows it explains. A token's 64 weighted coordinates along those directions are its new vector: an **embedding**, a dense vector that stands for a token. The method `lib.vectors.svd_vectors` computes them, scales each to unit length, and `lib.vectors.nearest` finds the tokens with the highest cosine similarity to any vector.
+A [PPMI vector](#weigh-by-surprise) of 2,000 numbers, mostly zeros, has a lot of room and little information. Compressing it into a short, dense vector keeps the strongest patterns of co-occurrence, drops the noise, and puts tokens with related neighbours close together even when they share few exact neighbours. The tool is the **singular value decomposition**, SVD, which finds the directions that reconstruct the PPMI rows best, in order, so that the first 64 together reconstruct them best of any 64, and weights each by how much of the rows it explains. A token's 64 weighted coordinates along those directions are its new vector: an **embedding**, a dense vector that stands for a token. The method `lib.vectors.svd_vectors` computes them, scales each to unit length, and `lib.vectors.nearest` finds the tokens with the highest cosine similarity to any vector.
 
 Six tokens' four nearest neighbours show what the 64 numbers keep:
 
-Example `svd-neighbours` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1), passing in Edition 2026.11.17:
+Example `svd-neighbours` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1), passing in Edition 2026.11.18:
 
 ```python
 """Compresses the PPMI matrix into 64 numbers per token, and lists the four nearest neighbours of six tokens. The prose's
@@ -207,6 +207,88 @@ cosine(patio, outdoor): 0.84
 
 Every token now has 64 numbers, and its neighbours read like a thesaurus built for a furniture store. `patio` and `outdoor` are each other's nearest neighbour, at a cosine similarity of 0.84, where their one-hot vectors scored zero. `sofa` sits beside `sectional`, `chaise` and `loveseat`; `oak` beside `walnut` and `espresso`, a wood finish; `blue` beside other colours; and `48` beside other sizes in inches.
 
+Figure 4.1 draws a handful of these tokens from each of several kinds of word, chosen by hand: each kind starts from one of the tokens above and adds others of its kind. The first of the figure's own directions, not the SVD's, splits the groups: the centres of seating and outdoor lie on one side and those of materials and colours on the other. A direction's sign is a convention, so only the split counts: the centre of seating is at -0.50, and that of materials at 0.41.
+
+*Figure 4.1. Each token's vector as a point, on the two directions along which the vectors spread most. Markers show each group.*
+
+![The centres of the seating and outdoor groups fall on one side of the figure's first direction, those of materials and colours on the other](https://rollingedition.ai/books/language-models-from-the-ground-up/2026.11.18/figures/token-map.svg)
+
+Example `figure-token-map` (Python 3.12.15 · matplotlib 3.11.2 · numpy 2.5.5 · pandas 3.1.1), passing in Edition 2026.11.18:
+
+```python
+"""Draws the SVD vectors of tokens from four kinds of word on the two directions along which they spread most. It prints
+how much of that spread the picture keeps, the cosine similarity within and between the kinds, and each kind's centre on
+the first direction: the prose reads those, never distances off the picture."""
+from lib.vectors import svd_vectors                              # the same 64-number vectors svd-neighbours.py uses
+
+import numpy as np
+
+from lib.figures import ACCENT, INK, MUTED, new_figure, save
+
+# picked by hand: each group starts from one of the six tokens svd-neighbours lists; the rest are words of its kind,
+# some of them that list's neighbours and some not. The seating group is the one the prose names first, so ACCENT.
+groups = {                                                       # name: (tokens, marker and colour, as the legend shows them)
+    "materials": (["oak", "walnut", "pine", "teak", "espresso"], dict(color=MUTED, marker="o")),
+    "seating": (["sofa", "sectional", "loveseat", "chaise", "recliner"], dict(color=ACCENT, marker="s")),
+    "outdoor": (["patio", "porch", "outdoor", "bistro", "umbrella"], dict(color=INK, marker="^")),
+    "colours": (["blue", "green", "beige", "white", "black"], dict(edgecolors=INK, facecolors="none", marker="D")),
+}
+vectors, vocabulary = svd_vectors()
+words = [w for tokens, _ in groups.values() for w in tokens]
+labels = np.array([name for name, (tokens, _) in groups.items() for _ in tokens])
+# the vocabulary marks each word's last token with "</w>", so a word's vector is found by adding that suffix
+chosen = vectors[[list(vocabulary).index(w + "</w>") for w in words]]  # unit-length rows, so chosen @ chosen.T is the cosine matrix
+
+# the two principal directions of the chosen vectors; each sign is fixed so every machine draws the same picture
+_, singular, directions = np.linalg.svd(chosen - chosen.mean(axis=0), full_matrices=False)
+directions[:2] *= np.sign(directions[:2].sum(axis=1, keepdims=True))
+points = (chosen - chosen.mean(axis=0)) @ directions[:2].T
+print(f"variance held by the two drawn directions: {(singular[:2] ** 2).sum() / (singular ** 2).sum():.2f}")
+print(f"variance left out of the picture: {(singular[2:] ** 2).sum() / (singular ** 2).sum():.2f}")
+
+pairs = np.triu_indices(len(words), k=1)                        # each pair once, never a token with itself
+same = (labels[:, None] == labels[None, :])[pairs]
+sims = (chosen @ chosen.T)[pairs]
+print(f"mean cosine within a group: {sims[same].mean():.2f}")
+print(f"mean cosine between groups: {sims[~same].mean():.2f}")
+assert sims[same].mean() > sims[~same].mean()
+print("within a group more similar than between: yes")
+centre = {name: points[labels == name, 0].mean() for name in groups}
+for name in groups:
+    print(f"centre of {name}, first direction: {centre[name]:.2f}")
+assert max(centre["seating"], centre["outdoor"]) < min(centre["materials"], centre["colours"])
+print("seating and outdoor centres on one side of materials and colours: yes")
+
+fig, ax = new_figure(height=3.6)
+for name, (tokens, style) in groups.items():
+    ax.scatter(points[labels == name, 0], points[labels == name, 1], s=28, label=name, **style)
+nudge = {"sofa": (-30, -10), "sectional": (2, -11), "porch": (-6, 6), "outdoor": (6, -10)}   # keep close labels apart
+for word, (x, y) in zip(words, points):
+    ax.annotate(word, (x, y), xytext=nudge.get(word, (4, 3)), textcoords="offset points", fontsize=8, color=INK)
+ax.set_xlabel("first principal direction (arbitrary units)")
+ax.set_ylabel("second principal direction (arbitrary units)")
+ax.legend(loc="best", fontsize=8)
+save(fig, "token-map")
+```
+
+Output:
+
+```text
+variance held by the two drawn directions: 0.55
+variance left out of the picture: 0.45
+mean cosine within a group: 0.71
+mean cosine between groups: 0.30
+within a group more similar than between: yes
+centre of materials, first direction: 0.41
+centre of seating, first direction: -0.50
+centre of outdoor, first direction: -0.41
+centre of colours, first direction: 0.51
+seating and outdoor centres on one side of materials and colours: yes
+figure: figures/token-map.svg
+```
+
+The picture is a partial view. Judged in all 64 dimensions, the average cosine similarity between two tokens from the same group is 0.71, and between tokens from different groups 0.30. The two drawn directions hold 0.55 of these vectors' variance, the total spread of the vectors around their average, so the picture leaves out the rest; the similarities are the better test.
+
 None of that was taught. The method never saw a definition of `sofa`, a list of colours or a hint that `48` is a number. It found that these tokens appear among the same kinds of neighbours in the store's text, and the SVD put them close together because of it. That's the property [chapter 3](#counting-further-back)'s counts lacked: whatever a model learns about `patio bar stool` can now carry over, through the embeddings, to `outdoor bar stool`.
 
 **Working rule:** Compress PPMI with SVD to between 50 and 300 dimensions, and check the result the way this section does: list a handful of tokens' nearest neighbours and read them. If the neighbours are mostly frequent function words, the reweighting went wrong; if they're unrelated, the window or the vocabulary is too small.
@@ -229,7 +311,7 @@ np.add.at(outputs, noise, -rate * fake[:, :, None] * v[:, None, :])     # move e
 
 Run three updates on one real pair, `patio` and `umbrella`, with `sofa` and `48` as noise tokens. The centre vectors start small and random and the neighbour vectors at zero, as `lib.skipgram.train` starts them:
 
-Example `skipgram-step` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1), passing in Edition 2026.11.17:
+Example `skipgram-step` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1), passing in Edition 2026.11.18:
 
 ```python
 """Three updates of skip-gram with negative sampling on one real pair, patio and umbrella, with sofa and 48 as noise tokens,
@@ -283,7 +365,7 @@ Training skip-gram on all the store's training text runs millions of updates, an
 
 Ask the recorded skip-gram vectors for the same six tokens' neighbours, and compare them with the [SVD's](#compress-into-dense-vectors):
 
-Example `skipgram-neighbours` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1), passing in Edition 2026.11.17:
+Example `skipgram-neighbours` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1), passing in Edition 2026.11.18:
 
 ```python
 """Reads the skip-gram vectors and training losses that recordings/skipgram.py saved, and lists the same six tokens' four
@@ -332,7 +414,7 @@ Embeddings famously support analogies by arithmetic: if the difference between `
 
 Three analogies on the [skip-gram vectors](#compare-learned-and-counted) show where the arithmetic holds and where it breaks, and the nearest neighbours of three tokens they raise show why:
 
-Example `analogies` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1), passing in Edition 2026.11.17:
+Example `analogies` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1), passing in Edition 2026.11.18:
 
 ```python
 """Three analogies on the skip-gram vectors, each answered by the tokens nearest b minus a plus c; whether lamps and light
@@ -383,7 +465,7 @@ Embeddings for tokens give, with one more step, embeddings for whole texts: aver
 
 Averaging every training name's skip-gram vectors turns each name into one vector. Rare words, most often a product line's name, print as `[name]`, as [chapter 1](#load-the-store-text) explained. Two queries show what that buys: `outdoor bar`, the prefix that stumped [chapter 3](#counting-further-back)'s 4-gram model, and `patio umbrella`:
 
-Example `name-vectors` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1), passing in Edition 2026.11.17:
+Example `name-vectors` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1), passing in Edition 2026.11.18:
 
 ```python
 """Averages each training name's skip-gram token vectors into one unit-length vector, and prints the four training names

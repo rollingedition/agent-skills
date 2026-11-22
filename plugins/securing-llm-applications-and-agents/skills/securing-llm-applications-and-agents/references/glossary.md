@@ -1,17 +1,17 @@
 ---
 title: "Glossary"
 book: "Securing LLM Applications and Agents"
-edition: "2026.11.1"
+edition: "2026.11.2"
 canonical: "https://rollingedition.com/securing-llm-applications-and-agents/glossary"
 ---
 
 # Glossary of *Securing LLM Applications and Agents*
 
-The 23 terms this book defines, as Edition 2026.11.1 has them, each in the book's own sentence. When a task this skill covers uses one, it means what it says here: read its section before you rely on it, and cite the section. Where a definition depends on a package, it says the version this edition pins and runs its examples on. On the web: https://rollingedition.com/securing-llm-applications-and-agents/glossary
+The 23 terms this book defines, as Edition 2026.11.2 has them, each in the book's own sentence. When a task this skill covers uses one, it means what it says here: read its section before you rely on it, and cite the section. Where a definition depends on a package, it says the version this edition pins and runs its examples on. On the web: https://rollingedition.com/securing-llm-applications-and-agents/glossary
 
 ## adaptive attacker
 
-A real attacker sees what happened and tries again.
+A real attacker is adaptive: it sees what happened and tries again.
 
 - Defined in: [Red-team the assistant with an adaptive attacker](adaptive-attacker.md)
 - Address: https://rollingedition.com/concepts/llm-security/adaptive-attacker
@@ -32,7 +32,7 @@ An asset is anything the office would lose, or anything an attacker would want: 
 
 ## attack success
 
-Attack success says how often the attack works.
+Attack success is the share of attack runs in which the attacker's goal check passes.
 
 - Also: attack success rate
 - Defined in: [The office and its assistant](attack-and-measure.md#the-office-and-its-assistant)
@@ -54,14 +54,14 @@ Delimiters wrap each untrusted segment in markers, and the system prompt says wh
 
 ## dual LLM
 
-The dual LLM splits the assistant in two.
+The dual LLM splits the assistant in two, so that the tool-holding model never reads the untrusted text.
 
 - Defined in: [The dual LLM](isolation-by-design.md#dual-llm)
 - Address: https://rollingedition.com/concepts/llm-security/dual-llm
 
 ## encoding
 
-Encoding replaces each untrusted segment with the base64 encoding of its UTF-8 bytes.
+Encoding replaces each untrusted segment with an encoded form, here the base64 encoding of its UTF-8 bytes.
 
 - Defined in: [Encoding](prompt-defences.md#encoding)
 - Address: https://rollingedition.com/concepts/llm-security/spotlight-encoding
@@ -83,7 +83,7 @@ the hidden context in the system prompt, which holds the office's internal bank-
 
 ## input detector
 
-An input detector is a classifier, labelled input (detector) in this book.
+An input detector, labelled input (detector) in this book, is a classifier that scores how likely a piece of text is to be an injection.
 
 - Also: injection detector
 - Defined in: [A classifier guard](injection-detectors.md#a-classifier-guard)
@@ -105,7 +105,7 @@ The location is where the injected text sits.
 
 ## outbound allowlist
 
-an outbound allowlist, a rule in the harness that acts on each call before the call runs
+an outbound allowlist, a rule in the harness that, before each call runs, refuses a message to a recipient or a page fetch from a host it does not list
 
 - Also: allowlist
 - Defined in: [An outbound allowlist](attack-and-measure.md#an-outbound-allowlist)
@@ -113,7 +113,7 @@ an outbound allowlist, a rule in the harness that acts on each call before the c
 
 ## plan-then-execute
 
-Plan-then-execute fixes the plan before the reply is read.
+Plan-then-execute fixes the plan before any tool result is read.
 
 - Defined in: [Plan-then-execute](isolation-by-design.md#plan-then-execute)
 - Address: https://rollingedition.com/concepts/ai-agents/plan-then-execute
@@ -169,14 +169,14 @@ Taint labels follow a value's origin.
 
 ## utility
 
-Utility says what the assistant does with no attack at all.
+Utility is the share of benign task runs whose task check passes.
 
 - Defined in: [The office and its assistant](attack-and-measure.md#the-office-and-its-assistant)
 - Address: https://rollingedition.com/concepts/llm-security/utility
 
 ## utility under attack
 
-Utility under attack says what the attack costs the user.
+Utility under attack is the share of attack runs in which the benign task carried by the case still passes its check.
 
 - Defined in: [The office and its assistant](attack-and-measure.md#the-office-and-its-assistant)
 - Address: https://rollingedition.com/concepts/llm-security/utility-under-attack

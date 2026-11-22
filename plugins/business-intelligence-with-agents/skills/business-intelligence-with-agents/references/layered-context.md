@@ -3,13 +3,13 @@ title: "Business Intelligence with Agents"
 chapter: "Give the agent layered context"
 chapter_id: layered-context
 book: business-intelligence-with-agents
-edition: 2026.11.16
-verified: 2026-11-19
-edition_code: CSAB-T5TX
+edition: 2026.11.17
+verified: 2026-11-22
+edition_code: 6VBD-766G
 canonical: https://rollingedition.com/business-intelligence-with-agents/layered-context
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“Give the agent layered context,” chapter 4 of Business Intelligence with Agents, Edition 2026.11.16, examples passed Nov 19, 2026. By Rolling Edition, https://rollingedition.com/business-intelligence-with-agents/layered-context. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Give the agent layered context,” chapter 4 of Business Intelligence with Agents, Edition 2026.11.17, examples passed Nov 22, 2026. By Rolling Edition, https://rollingedition.com/business-intelligence-with-agents/layered-context. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Give the agent layered context
 
@@ -23,7 +23,7 @@ A schema tells a model which tables exist, what their columns are called and wha
 
 The book's measure of this is the golden questions, which chapter 3 built: questions with a verified answer, scored on the dev split while context and prompts are tuned, and once on the held-out test split. Every layer in this chapter is added to the schema, so the schema is the first layer, and the place to start is what it leaves open. `build_context()` in `lib/context.py`, the shared module that builds every layer in this chapter, returns the schema layer when it's asked for nothing else.
 
-Example `schema-digest` (Python 3.12.15 · duckdb 2.0.0), passing in Edition 2026.11.16:
+Example `schema-digest` (Python 3.12.15 · duckdb 2.0.0), passing in Edition 2026.11.17:
 
 ```python
 """What the schema tells a model about revenue, and three March 2026 totals that all fit it. The three printed totals
@@ -83,7 +83,7 @@ The shop's notes live in `examples/data/shop/columns.toml`, one entry per table 
 
 The recording `context-layers` shows what the notes do once the examples replay it. The recording holds the pinned model's SQL for every dev question of kind `answer`, written once with each layer set this chapter measures, using the prompt `LAYERED_SQL` in `lib/prompts.py`. The recording was made by `recordings/record_context_layers.py`, with the same model, sampling and seed as chapter 1's, and the examples replay it by the hash of the exact messages.
 
-Example `column-descriptions` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.16:
+Example `column-descriptions` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.17:
 
 ```python
 """Add the column notes on columns whose names mislead, and count the dev questions they fix and break under the recorded
@@ -140,7 +140,7 @@ The shop's glossary is `examples/data/shop/glossary.toml`. Its entries define re
 
 The glossary wasn't written blind, and the book's history shows how it changed. In the same change that recorded the model's first dev replies, with the schema alone, the entry for orders was corrected: it had said that order counts leave out cancelled orders, which disagreed with the finance team's golden SQL. The entries for units sold and for customers who ordered were added in that change too, and the column note on `status` was reworded to match. Later, after the test questions had been recorded with the schema alone, the refund-rate entry was changed to the book-wide definition that chapter 5 uses and that test question `gq-028` also follows: refunded amount divided by gross revenue, because a refund pays back tax and only gross revenue includes it. Each change made the glossary agree with golden SQL that it was then scored against. That is how a dev score gets fitted to dev, and [the check on test](#check-layers-on-test) comes back to what it costs.
 
-Example `glossary-context` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.16:
+Example `glossary-context` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.17:
 
 ```python
 """Add the business glossary on top of the column notes, and count what it changes on the dev questions. The gq-002
@@ -199,7 +199,7 @@ The shop's verified queries live in `examples/data/shop/verified_queries.toml`. 
 
 Retrieval in `lib/context.py` is lexical, with no embeddings. `question_terms()` lowercases the question, drops common words and masks three kinds of word: numbers, month names and the shop's three region codes. Every other word stays as it is. `QueryIndex` scores each verified question against the masked question with TF-IDF and cosine similarity, and `search()` keeps at most three matches that score at least 0.4. This is a cheap stand-in for the selection in [Gao et al.](https://arxiv.org/abs/2308.15363), not a reproduction of it: it masks far fewer words, and it drops the second step, which compares draft SQL.
 
-Example `retrieve-similar-queries` (Python 3.12.15 · duckdb 2.0.0), passing in Edition 2026.11.16:
+Example `retrieve-similar-queries` (Python 3.12.15 · duckdb 2.0.0), passing in Edition 2026.11.17:
 
 ```python
 """Retrieve the verified queries most like a question, by TF-IDF over the masked question's words. The matches kept at the
@@ -259,7 +259,7 @@ Fitting a context to a budget means deciding what to leave out, and that decisio
 
 Token counts in `lib/context.py` are estimates: `estimate_tokens()` divides the number of characters by 3.5, because the examples don't load the model's tokenizer. Below, that estimate is set against the count the model's tokenizer reported when the prompt was recorded, and the context for the average-order-value question, `gq-009`, is fitted to an illustrative budget of 2,400 tokens under two priorities.
 
-Example `context-token-budget` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.16:
+Example `context-token-budget` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.17:
 
 ```python
 """Fit one question's layered context to a token budget, and check the token estimate against the model's count. The
@@ -316,7 +316,7 @@ Each layer so far was judged by the questions it fixed and broke. To choose whic
 
 The shop's dev split has 24 golden questions. This chapter scores the 17 of kind `answer`. The other 7 should be declined, because the warehouse can't answer them or the role asking may not see the answer, and a prompt that only writes SQL can't decline, so they would score as wrong under every layer set; chapters 8 and 9 score them. Each layer set adds one layer to the one before: the schema alone, then column notes, then the glossary, then up to three retrieved verified queries. The outcomes come from `grade()` in `lib/golden.py`, as in every chapter: correct when the result matches the golden result, wrong when it runs and doesn't, error when it doesn't run. The first layer set, the schema alone, isn't [chapter 3's baseline](#golden-questions) either. That baseline used the schema-only prompt and scored every question in each split, while this run uses the layered prompt `LAYERED_SQL` with no other layer filled in and scores the answer questions only, so its numbers differ.
 
-Example `layer-ablation-dev` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.16:
+Example `layer-ablation-dev` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.17:
 
 ```python
 """Score each layer set on the dev split's answer questions, replaying the recorded model's SQL for each, and print the
@@ -409,9 +409,94 @@ Column notes and verified queries raise the score; the glossary doesn't. The sch
 
 The grid shows where the change came from. Against the run with the glossary, retrieved examples fixed 5 questions and broke 0. Two of the fixes are new: the fiscal-quarter question `gq-010` and the order count by region `gq-013`, whose nearest verified queries show exactly the join and the count they needed. The other three, `gq-002`, `gq-009` and `gq-016`, are the questions the glossary run had lost, so there the examples won back what the glossary had cost.
 
+Figure 4.1 draws each layer set at its mean context tokens, which count the layers' text alone, without the instructions and the question. Correct answers are the solid line and errors the dashed one, and each point is labelled by its layer set. The column notes add 6 more correct answers and 1087 more context tokens, more than either the glossary or the verified queries add on either count. The verified queries add 167 tokens, the fewest, and gain nearly as many correct answers as the notes. The glossary adds no correct answers.
+
+*Figure 4.1. Correct answers and errors on the dev questions, by each layer set's context tokens.*
+
+![Correct answers rise with the column notes and again with the verified queries, while the glossary adds tokens and no correct answers](https://rollingedition.ai/books/business-intelligence-with-agents/2026.11.17/figures/layers-correct-and-tokens.svg)
+
+Example `figure-layers-correct-and-tokens` (Python 3.12.15 · duckdb 2.0.0 · matplotlib 3.11.2 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.17:
+
+```python
+"""Plot each layer set on the dev split's answer questions: context tokens against correct answers, with errors as a second
+line. The printed lines are the points the prose rests on: each layer set's totals, and each added layer's step, which
+the asserts check in the order the prose gives."""
+from lib.context import LAYER_SETS, build_context, grade_with_context
+from lib.figures import ACCENT, MUTED, new_figure, save
+from lib.golden import load_golden
+from lib.model import RecordedModel
+from lib.warehouse import connect
+
+con = connect()
+model = RecordedModel("context-layers")
+dev = [q for q in load_golden() if q.split == "dev" and q.kind == "answer"]   # the questions layer-ablation-dev scores
+short = ("schema", "+columns", "+glossary", "+verified")                      # each layer set's name on the figure
+
+tokens, correct, errors = [], [], []
+for layers, name in zip(LAYER_SETS, short):
+    outcomes = [grade_with_context(con, model, q, layers) for q in dev]      # graded as layer-ablation-dev grades them
+    tokens.append(sum(build_context(con, q.question, layers).tokens for q in dev) // len(dev))   # mean context tokens
+    correct.append(outcomes.count("correct"))
+    errors.append(outcomes.count("error"))
+    print(f"{name} context tokens: {tokens[-1]}\n{name} correct: {correct[-1]}\n{name} errors: {errors[-1]}")
+print(f"dev answer questions: {len(dev)}")
+
+# Each added layer's step: the difference from the layer set before it, on the same line of the output.
+gain = [correct[i] - correct[i - 1] for i in range(1, 4)]    # correct answers the layer adds
+step = [tokens[i] - tokens[i - 1] for i in range(1, 4)]      # context tokens the layer adds
+for i, name in enumerate(short[1:]):
+    print(f"{name} adds correct: {gain[i]}\n{name} adds context tokens: {step[i]}")
+# Indexes: 0 is the column notes, 1 the glossary, 2 the verified queries.
+assert gain[0] > gain[1] and gain[0] > gain[2], "the column notes gain the most correct answers"
+assert gain[1] == 0, "the glossary adds no correct answers"
+assert step[0] > step[1] > step[2], "the column notes add the most tokens, the verified queries the fewest"
+assert gain[2] >= gain[0] - 1, "the verified queries gain nearly as many correct answers as the column notes"
+
+fig, ax = new_figure(height=3.4)
+ax.plot(tokens, correct, color=ACCENT, marker="o", label="correct answers")
+ax.plot(tokens, errors, color=MUTED, linestyle="--", marker="o", markersize=4, label="errors (the query doesn't run)")
+# Each label's offset in points, and its alignment. The glossary's flat segment runs into the label on its left, the
+# dashed line runs under the column notes' error label to the right, and the schema's error point sits on the solid line.
+place = {("correct", "+glossary"): ((0, 8), "center", "bottom"), ("errors", "schema"): ((-7, 0), "right", "center"),
+         ("errors", "+columns"): ((0, 7), "center", "bottom")}
+for series, values, color in (("correct", correct, ACCENT), ("errors", errors, MUTED)):
+    for x, y, name in zip(tokens, values, short):
+        (dx, dy), ha, va = place.get((series, name), ((-7, 0), "right", "center") if series == "correct" else ((7, 0), "left", "center"))
+        ax.annotate(name, (x, y), textcoords="offset points", xytext=(dx, dy), ha=ha, va=va, color=color)
+ax.set(xlim=(0, max(tokens) * 1.25), ylim=(-1, len(dev)), yticks=range(0, len(dev) + 1, 2),
+       xlabel="context tokens per question, estimated (mean over the dev answer questions)", ylabel=f"answers out of {len(dev)}")
+ax.legend(loc="upper left")
+save(fig, "layers-correct-and-tokens")
+```
+
+Output:
+
+```text
+schema context tokens: 912
+schema correct: 3
+schema errors: 5
++columns context tokens: 1999
++columns correct: 9
++columns errors: 1
++glossary context tokens: 2608
++glossary correct: 9
++glossary errors: 0
++verified context tokens: 2775
++verified correct: 14
++verified errors: 1
+dev answer questions: 17
++columns adds correct: 6
++columns adds context tokens: 1087
++glossary adds correct: 0
++glossary adds context tokens: 609
++verified adds correct: 5
++verified adds context tokens: 167
+figure: figures/layers-correct-and-tokens.svg
+```
+
 The totals say how much each layer helped. The failures say what the next layer should be, so the next two examples read them, starting with the schema-only queries that don't run.
 
-Example `missing-columns-schema-only` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.16:
+Example `missing-columns-schema-only` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.17:
 
 ```python
 """Why the dev queries written with the schema alone don't run: the column each one names, and the analytics tables that have it.
@@ -468,7 +553,7 @@ These are the mistakes column notes are for. With the notes, 1 query in the whol
 
 A second script prints the query for each dev question that all four layers still don't get right.
 
-Example `what-stays-wrong` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.16:
+Example `what-stays-wrong` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.17:
 
 ```python
 """The dev questions that stay wrong with all four layers, each with its query, and a check of whether gq-007 fails only on
@@ -558,7 +643,7 @@ This is the book's measurement on one synthetic warehouse and one 4-billion-para
 
 The [ablation](#measure-each-layer) chose all four layers on the dev split, the questions the chapter tuned on. The set that scored best there still has to be checked once on the held-out test split, together with the schema alone, so the comparison isn't flattered by having been chosen on the same questions. The recording `context-layers-test` holds the model's SQL for the 17 test questions of kind `answer`, under those two layer sets only. Each test question is also scored against its best-matching verified query, for the paragraphs that follow.
 
-Example `best-layers-on-test` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.16:
+Example `best-layers-on-test` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.17:
 
 ```python
 """Choose the best layer set on the dev split, then score it once on the held-out test split beside the schema alone. The

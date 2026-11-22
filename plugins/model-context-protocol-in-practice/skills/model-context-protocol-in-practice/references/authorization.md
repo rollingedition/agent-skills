@@ -3,13 +3,13 @@ title: "Model Context Protocol in Practice"
 chapter: "Authorize clients with OAuth"
 chapter_id: authorization
 book: model-context-protocol-in-practice
-edition: 2026.11.17
+edition: 2026.11.18
 verified: 2026-11-22
-edition_code: XAH6-X5Y5
+edition_code: GV8D-FHDA
 canonical: https://rollingedition.com/model-context-protocol-in-practice/authorization
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“Authorize clients with OAuth,” chapter 8 of Model Context Protocol in Practice, Edition 2026.11.17, examples passed Nov 22, 2026. By Rolling Edition, https://rollingedition.com/model-context-protocol-in-practice/authorization. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Authorize clients with OAuth,” chapter 8 of Model Context Protocol in Practice, Edition 2026.11.18, examples passed Nov 22, 2026. By Rolling Edition, https://rollingedition.com/model-context-protocol-in-practice/authorization. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Authorize clients with OAuth
 
@@ -30,13 +30,13 @@ Everything runs on 127.0.0.1 over plain HTTP. That is acceptable for local devel
 
 ## Find the authorization server from the resource {#protected-resource-metadata}
 
-A client that has only a server's URL must learn from the server where to get a token, and the pinned revision does this in two steps. First, MCP servers MUST publish Protected Resource Metadata (RFC 9728), a JSON document that names the resource and lists at least one authorization server ([authorization](https://modelcontextprotocol.io/specification/2026-07-28/basic/authorization)). A request without a token gets 401, and its `WWW-Authenticate` header points to that document in a `resource_metadata` parameter. A client that finds no such parameter tries the well-known URI, `/.well-known/oauth-protected-resource` with the server's path inserted, and then without the path ([authorization server discovery](https://modelcontextprotocol.io/specification/2026-07-28/basic/authorization/authorization-server-discovery)). Second, the client fetches the authorization server's own metadata (RFC 8414), which lists its endpoints and what it supports.
+A client that has only a server's URL must learn from the server where to get a token, and the pinned revision does this in two steps. First, MCP servers MUST publish Protected Resource Metadata (RFC 9728), a JSON document that names the resource and, for MCP, lists at least one authorization server ([authorization](https://modelcontextprotocol.io/specification/2026-07-28/basic/authorization)). A request without a token gets 401, and its `WWW-Authenticate` header points to that document in a `resource_metadata` parameter. A client that finds no such parameter tries the well-known URI, `/.well-known/oauth-protected-resource` with the server's path inserted, and then without the path ([authorization server discovery](https://modelcontextprotocol.io/specification/2026-07-28/basic/authorization/authorization-server-discovery)). Second, the client fetches the authorization server's own metadata (RFC 8414), which lists its endpoints and what it supports.
 
 Two values must match along the way. The `resource` in the server's metadata must be identical to the URL the client used, or the client must not use the metadata ([RFC 9728, section 3.3](https://www.rfc-editor.org/rfc/rfc9728.txt)). And the `issuer` in the authorization server's metadata must be identical to the issuer the client built the well-known URL from ([RFC 8414, section 3.3](https://www.rfc-editor.org/rfc/rfc8414.txt)). Both checks stop a client from trusting a document that describes some other server.
 
 The shop's server states its own URL, and the authorization server states its issuer. The SDK does the server's half when you give `MCPServer` an `AuthSettings` and a token verifier: `issuer_url` names the authorization server, `resource_server_url` is the server's own endpoint URL, and `required_scopes` lists the scopes every request needs. The shop's server requires `orders:read` and `stock:read`, because every ticket needs one or both. `refunds:write` comes later, and only when a refund needs it. The token verifier is `lib.auth_server.JwtVerifier`, which checks a token's signature, issuer and expiry. On loopback the port, and so the resource URL, is known only once the socket is open. So the server is built in a function of its base URL, and `serve_built` from `lib.auth_server` opens the socket first. Then the example plays a client: it sends `tools/list` with no token and follows the answer.
 
-Example `discover-the-authorization-server` (Python 3.12.15 · cryptography 50.0.2 · httpx2 2.16.2 · mcp 2.3.0 · mcp-types 2.3.0 · pydantic 2.14.4 · pyjwt 2.15.1 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.17:
+Example `discover-the-authorization-server` (Python 3.12.15 · cryptography 50.0.2 · httpx2 2.16.2 · mcp 2.3.0 · mcp-types 2.3.0 · pydantic 2.14.4 · pyjwt 2.15.1 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.18:
 
 ```python
 """Protect the shop's server with OAuth, then follow its 401 to the authorization server, as a client does. The point
@@ -105,7 +105,7 @@ The authorization server's metadata names the URL the client fetched it from as 
 
 [Find the authorization server from the resource](#protected-resource-metadata) tells the host where to get a token. The authorization server still has to know which client is asking, and a host meets MCP servers it has never seen, so it can't have registered with each one's authorization server in advance. The pinned revision ranks the ways to get a client ID. Pre-registered client information comes first, if there is any. A Client ID Metadata Document comes next, if the authorization server advertises `client_id_metadata_document_supported`. Dynamic Client Registration follows, and the user is asked only when none of these is available ([client registration](https://modelcontextprotocol.io/specification/2026-07-28/basic/authorization/client-registration)).
 
-A Client ID Metadata Document makes the client ID a URL. The client publishes a JSON document at an `https://` URL with a path, and that URL is its `client_id`. The document must contain at least `client_id`, equal to the URL exactly, `client_name` and `redirect_uris` ([client registration](https://modelcontextprotocol.io/specification/2026-07-28/basic/authorization/client-registration)). The authorization server fetches the document when the client first appears, checks the ID and the redirect URI against it, and may cache it by its HTTP headers. It must not follow redirects while fetching, and it must not cache an error ([metadata document draft -02](https://www.ietf.org/archive/id/draft-ietf-oauth-client-id-metadata-document-02.txt)).
+A Client ID Metadata Document makes the client ID an `https://` URL at which the client publishes its own metadata. The URL must have a path, and the document there is JSON. The document must contain at least `client_id`, equal to the URL exactly, `client_name` and `redirect_uris` ([client registration](https://modelcontextprotocol.io/specification/2026-07-28/basic/authorization/client-registration)). The authorization server fetches the document when the client first appears, checks the ID and the redirect URI against it, and may cache it by its HTTP headers. It must not follow redirects while fetching, and it must not cache an error ([metadata document draft -02](https://www.ietf.org/archive/id/draft-ietf-oauth-client-id-metadata-document-02.txt)).
 
 A document can't carry a shared secret, because `client_secret` is forbidden. A client identified this way is therefore public, and it relies on PKCE, or proves itself with a key pair through `private_key_jwt` ([draft -02, section 4.1](https://www.ietf.org/archive/id/draft-ietf-oauth-client-id-metadata-document-02.txt)). The MCP specification links draft -00 of that document, and we cite draft -02, the later text. A client ID from a document works with any authorization server. A pre-registered or registered client ID, by contrast, is bound to the server that issued it, and the pinned revision forbids reusing it with another ([client registration](https://modelcontextprotocol.io/specification/2026-07-28/basic/authorization/client-registration)).
 
@@ -115,7 +115,7 @@ The support team's host publishes its document at `https://support.fernhill.exam
 
 The code prints the document's key values, runs the server's checks on it and on three broken copies, gives the SDK an `http://` client ID, and then connects twice, to an authorization server that supports metadata documents and to one that doesn't.
 
-Example `publish-client-metadata` (Python 3.12.15 · cryptography 50.0.2 · httpx2 2.16.2 · mcp 2.3.0 · mcp-types 2.3.0 · pydantic 2.14.4 · pyjwt 2.15.1 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.17:
+Example `publish-client-metadata` (Python 3.12.15 · cryptography 50.0.2 · httpx2 2.16.2 · mcp 2.3.0 · mcp-types 2.3.0 · pydantic 2.14.4 · pyjwt 2.15.1 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.18:
 
 ```python
 """The support host's Client ID Metadata Document, the checks an authorization server makes on it, and the SDK's client
@@ -192,7 +192,7 @@ The `resource` parameter (RFC 8707) names the server the token is for, by the se
 
 The SDK's client runs that whole flow for the host, and the example watches it from the authorization server's side. `lib.oauth_client.connect` gives the client an `OAuthClientProvider` with the host's metadata document URL and a scripted browser in place of a person. The browser opens the authorization URL, follows the redirects, and stops at the first one addressed to the redirect URI. The person's consent at the authorization server is scripted too: the signed-in user grants every requested scope that their role allows. The example calls `get_order_status`, reads what the authorization server logged, and then sends the authorization server three requests the SDK never would.
 
-Example `token-with-pkce` (Python 3.12.15 · cryptography 50.0.2 · httpx2 2.16.2 · jsonschema 4.26.0 · mcp 2.3.0 · mcp-types 2.3.0 · pydantic 2.14.4 · pyjwt 2.15.1 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.17:
+Example `token-with-pkce` (Python 3.12.15 · cryptography 50.0.2 · httpx2 2.16.2 · jsonschema 4.26.0 · mcp 2.3.0 · mcp-types 2.3.0 · pydantic 2.14.4 · pyjwt 2.15.1 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.18:
 
 ```python
 """The SDK's client gets a token for the shop's server with the authorization code grant, PKCE S256 and the resource
@@ -266,13 +266,13 @@ One check falls to the host. The SDK's client always sends `S256`, but it never 
 
 ## Bind each token to one server {#token-audience}
 
-The token from [Get a token with PKCE](#authorization-code-with-pkce) names the shop's server in `aud`, because the host sent `resource`. That protects no one unless the server checks it. An access token is a bearer credential, so whoever holds it can present it. Suppose the support host also connects to a partner's MCP server that trusts the same authorization server. The partner's server receives the tokens the host gets for it. If the shop's server accepted them, the partner's operator could replay them at the shop. RFC 8707 says the authorization server SHOULD restrict each token's audience to the requested resource, so that a token "legitimately presented to a resource cannot then be taken by that resource and presented elsewhere" ([RFC 8707](https://www.rfc-editor.org/rfc/rfc8707.txt)). The other half belongs to the server: MCP servers MUST validate that a token was issued for them as its audience, and MUST NOT accept or pass on any other token ([authorization](https://modelcontextprotocol.io/specification/2026-07-28/basic/authorization)).
+The token from [Get a token with PKCE](#authorization-code-with-pkce) names the shop's server in `aud`, because the host sent `resource`. That protects no one unless the server checks it. In MCP, an access token is a bearer credential, so whoever holds it can present it. Suppose the support host also connects to a partner's MCP server that trusts the same authorization server. The partner's server receives the tokens the host gets for it. If the shop's server accepted them, the partner's operator could replay them at the shop. RFC 8707 says the authorization server SHOULD restrict each token's audience to the requested resource, so that a token "legitimately presented to a resource cannot then be taken by that resource and presented elsewhere" ([RFC 8707](https://www.rfc-editor.org/rfc/rfc8707.txt)). The other half belongs to the server: MCP servers MUST validate that a token was issued for them as its audience, and MUST NOT accept or pass on any other token ([authorization](https://modelcontextprotocol.io/specification/2026-07-28/basic/authorization)).
 
 In the Python SDK at `mcp` 2.3.0, the server's half is off by default. `AuthSettings.validate_token_resource` decides whether the server refuses a token whose `AccessToken.resource` isn't `resource_server_url`. Left unset, it warns with `MCPDeprecationWarning` and behaves as `False`, and version 3.0 makes `True` the default (`mcp/server/auth/settings.py`). The SDK compares the two as URLs. The case of the scheme and host, a default port or a trailing slash makes no difference (`mcp/server/auth/middleware/bearer_auth.py`), and the comparison uses whatever your token verifier puts in `AccessToken.resource`. The other way is a verifier that checks `aud` itself.
 
 Two tokens show which check does the work. The example signs both with the shop's authorization server's key, one for the shop's server and one for the partner's, `https://partner.example/mcp`, and presents each to the shop's server in three configurations: the SDK's default, `validate_token_resource=True`, and a verifier that passes the shop's URL to the JWT library as the expected audience.
 
-Example `wrong-audience-rejected` (Python 3.12.15 · cryptography 50.0.2 · httpx2 2.16.2 · mcp 2.3.0 · mcp-types 2.3.0 · pydantic 2.14.4 · pyjwt 2.15.1 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.17:
+Example `wrong-audience-rejected` (Python 3.12.15 · cryptography 50.0.2 · httpx2 2.16.2 · mcp 2.3.0 · mcp-types 2.3.0 · pydantic 2.14.4 · pyjwt 2.15.1 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.18:
 
 ```python
 """A token issued for another server, presented to the shop's server: the SDK's default accepts it, and it's refused once
@@ -338,7 +338,7 @@ We recommend `validate_token_resource=True`, which `lib.protected_shop` sets. It
 
 ## Validate the issuer of each response {#validate-the-issuer}
 
-Binding the audience, as [Bind each token to one server](#token-audience) does, keeps a token from working at the wrong server. A mix-up attack strikes earlier, at the authorization code. A host that talks to several authorization servers sends each code to whichever server it believes answered. In a mix-up, an attacker's authorization server gets the host to start a flow with it, then sends the user's browser on to an honest authorization server. The honest server's code arrives at the host's redirect URI. The host, still believing it is talking to the attacker, sends the code to the attacker's token endpoint. PKCE alone doesn't stop this, "because the client transmits the `code_verifier` to the attacker's token endpoint" ([security best practices](https://modelcontextprotocol.io/docs/2026-07-28/tutorials/security/security_best_practices)). Nor does `resource`, which the attacker rewrites in the request it forwards.
+Binding the audience, as [Bind each token to one server](#token-audience) does, keeps a token from working at the wrong server. A mix-up attack strikes earlier, at the authorization code. A host that talks to several authorization servers sends each code to whichever server it believes answered. In a mix-up, an attacker's authorization server gets the host to start a flow with it, then sends the user's browser on to an honest authorization server, so that the host sends the honest server's code to the attacker. The honest server's code arrives at the host's redirect URI, and the host, still believing it is talking to the attacker, uses the attacker's token endpoint. PKCE alone doesn't stop this, "because the client transmits the `code_verifier` to the attacker's token endpoint" ([security best practices](https://modelcontextprotocol.io/docs/2026-07-28/tutorials/security/security_best_practices)). Nor does `resource`, which the attacker rewrites in the request it forwards.
 
 The defence is the `iss` parameter of RFC 9207. The authorization server names itself in its redirect, and the client compares that name with the server it sent the user to. The pinned revision introduced this check ([changelog](https://modelcontextprotocol.io/specification/2026-07-28/changelog)). Before redirecting, the client records the issuer from the authorization server's validated metadata, and it compares `iss` with that record by exact string comparison, with no normalisation of case, ports or slashes ([authorization](https://modelcontextprotocol.io/specification/2026-07-28/basic/authorization)).
 
@@ -346,7 +346,7 @@ The rules are conditional. Authorization servers SHOULD include `iss`, and one t
 
 The attacker in the shop's case is the partner, and `MixUp` from `lib.auth_server` plays it. The partner's MCP server names the attacker's authorization server, which copies the metadata of the shop's authorization server without `iss` support. Its authorization endpoint forwards the browser to the shop's authorization server, carrying the host's own request rewritten to ask for the shop's server and every scope. The host's client ID is a metadata document URL, which works with any authorization server, so the shop's authorization server sees a request from the real support host.
 
-Example `mix-up-attack-blocked` (Python 3.12.15 · cryptography 50.0.2 · httpx2 2.16.2 · mcp 2.3.0 · mcp-types 2.3.0 · pydantic 2.14.4 · pyjwt 2.15.1 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.17:
+Example `mix-up-attack-blocked` (Python 3.12.15 · cryptography 50.0.2 · httpx2 2.16.2 · mcp 2.3.0 · mcp-types 2.3.0 · pydantic 2.14.4 · pyjwt 2.15.1 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.18:
 
 ```python
 """A mix-up attack on the support host, run against a shop server that sends `iss` and one that omits it. The point rests
@@ -413,7 +413,7 @@ So `lib.tool_scopes.require` decides on what the server will execute, with the c
 
 The middleware denies by default: a tool missing from the map is refused. Methods that name nothing, such as `tools/list`, need only the endpoint's scopes, and any other method, such as `prompts/get`, `resources/read` or `tasks/get`, gets 403. `lib.protected_shop` maps all five tools, and `lib.tool_scopes.hide_unscoped` can hide the tools a token can't call ([Keep the tool list small](#keep-the-tool-list-small)). With the two read scopes, the example lists the tools with hiding off and on, then sends hand-written calls.
 
-Example `refund-needs-a-scope` (Python 3.12.15 · cryptography 50.0.2 · httpx2 2.16.2 · mcp 2.3.0 · mcp-types 2.3.0 · pydantic 2.14.4 · pyjwt 2.15.1 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.17:
+Example `refund-needs-a-scope` (Python 3.12.15 · cryptography 50.0.2 · httpx2 2.16.2 · mcp 2.3.0 · mcp-types 2.3.0 · pydantic 2.14.4 · pyjwt 2.15.1 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.18:
 
 ```python
 """The shop's server refuses a refund without `refunds:write` with a 403 challenge, decided on the parsed body rather than
@@ -502,7 +502,7 @@ Step-up is the 403 from [Scope tools by what the token allows](#scopes-per-tool)
 
 A support lead and a staff member without that role each refund order O-1004 through the SDK's client. The refund, €24.98, is within the policy limit, so no confirmation is involved. The scripted consent lets the lead grant all three scopes and the other user only the two read scopes.
 
-Example `step-up-for-refunds` (Python 3.12.15 · cryptography 50.0.2 · httpx2 2.16.2 · jsonschema 4.26.0 · mcp 2.3.0 · mcp-types 2.3.0 · pydantic 2.14.4 · pyjwt 2.15.1 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.17:
+Example `step-up-for-refunds` (Python 3.12.15 · cryptography 50.0.2 · httpx2 2.16.2 · jsonschema 4.26.0 · mcp 2.3.0 · mcp-types 2.3.0 · pydantic 2.14.4 · pyjwt 2.15.1 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.18:
 
 ```python
 """Step-up: the SDK's client meets the refund's 403, authorizes again for the union of its scopes and `refunds:write`, and

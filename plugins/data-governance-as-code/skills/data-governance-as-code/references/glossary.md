@@ -1,13 +1,13 @@
 ---
 title: "Glossary"
 book: "Data Governance as Code"
-edition: "2026.11.33"
+edition: "2026.11.34"
 canonical: "https://rollingedition.com/data-governance-as-code/glossary"
 ---
 
 # Glossary of *Data Governance as Code*
 
-The 151 terms this book defines, as Edition 2026.11.33 has them, each in the book's own sentence. When a task this skill covers uses one, it means what it says here: read its section before you rely on it, and cite the section. Where a definition depends on a package, it says the version this edition pins and runs its examples on. On the web: https://rollingedition.com/data-governance-as-code/glossary
+The 151 terms this book defines, as Edition 2026.11.34 has them, each in the book's own sentence. When a task this skill covers uses one, it means what it says here: read its section before you rely on it, and cite the section. Where a definition depends on a package, it says the version this edition pins and runs its examples on. On the web: https://rollingedition.com/data-governance-as-code/glossary
 
 ## access log
 
@@ -99,7 +99,7 @@ A catalog lists a platform's tables and their schemas
 
 ## catalog label
 
-labels, ownership or classification that a catalog returns with a table, per table and per field ID, kept out of properties on purpose
+labels, metadata such as ownership or classification that a catalog returns with a table or view, per object and per field ID, kept out of properties on purpose
 
 - Also: labels
 - Contrasts with: table property
@@ -108,7 +108,7 @@ labels, ownership or classification that a catalog returns with a table, per tab
 
 ## Cedar schema
 
-A schema declares every type of entity, the kinds of principal and resource a request can name, with its attributes
+A schema declares every type of entity, the kinds of principal and resource a request can name, with its attributes, and each action with the principals and resources it applies to
 
 - Comes before: policy validation
 - Defined in: [Write the same rules in Cedar](access-policies-as-code.md#the-same-rules-in-cedar)
@@ -207,7 +207,7 @@ lib.pii adds a third measure, coverage: whether every character of a labelled sp
 
 ## coverage check
 
-The coverage check is the catalog check, lib.metadata.problems, run on the branch's platform, and for each column nobody classified it adds what a rule on column names suggests
+The coverage check is the catalog check, lib.metadata.problems with lib.metadata.dropped, run on the branch's platform, and for each column nobody classified it adds what a rule on column names suggests, from the rules chapter 3 writes, and it flags a column classified less strictly than its name suggests.
 
 - Defined in: [Fail the pull request that adds an unclassified column](governance-end-to-end.md#fail-the-pull-request)
 - Address: https://rollingedition.com/concepts/data-governance/coverage-check
@@ -248,7 +248,7 @@ Everything else a rule needs besides the request, such as each user's groups and
 
 ## dataset
 
-A dataset is a table or file, named by a namespace and a name that together identify it.
+A dataset is any discrete body of data, such as a table or file, named by a namespace and a name that together identify it.
 
 - Also: datasets
 - Defined in: [Send a run event from every pipeline](lineage-from-pipelines.md#send-run-events)
@@ -336,9 +336,8 @@ Our second rule makes the deprecation warning a required step: a column may leav
 
 ## differencing
 
-Differencing, comparing consecutive reports, is the attack Denning, Denning and Schwartz called a tracker.
+Differencing subtracts answers for nearly identical groups
 
-- Also: tracker
 - Contrasts with: minimum group size
 - Defined in: [Hold back small groups in reports](enforcing-policies-on-queries.md#hold-back-small-groups)
 - Address: https://rollingedition.com/concepts/data-governance/differencing
@@ -467,7 +466,7 @@ Saltzer and Schroeder's principle of fail-safe defaults is to "Base access decis
 
 ## federated computational governance
 
-federated computational governance, "a set of global rules - rules applied to all data products and their interfaces - to ensure a healthy and interoperable ecosystem"
+federated computational governance, a decision-making model that creates "a set of global rules - rules applied to all data products and their interfaces - to ensure a healthy and interoperable ecosystem"
 
 - Defined in: [Layer domain rules on the global rules](governance-in-ci.md#run-global-and-domain-rules)
 - Address: https://rollingedition.com/concepts/data-governance/federated-computational-governance
@@ -623,14 +622,14 @@ last4 keeps the last four digits of a card number, after removing anything that 
 
 ## lineage
 
-Lineage is where each column's data came from, and where it goes.
+Lineage is where each table's and each column's data came from, and where it goes.
 
 - Defined in: [Lineage from pipelines](lineage-from-pipelines.md)
 - Address: https://rollingedition.com/concepts/data-pipelines/lineage
 
 ## lineage graph
 
-With column lineage in every COMPLETE event, the platform has a graph: columns are nodes, and each input field is an edge to the column or table it feeds.
+With column lineage in every COMPLETE event, the platform has a graph: columns, and tables fed as a whole, are nodes, and each transformation of an input field is an edge to the column or table it feeds.
 
 - Computed from: column lineage
 - Defined in: [Find what a column change breaks](lineage-from-pipelines.md#impact-of-a-column-change)
@@ -638,7 +637,7 @@ With column lineage in every COMPLETE event, the platform has a graph: columns a
 
 ## locality-sensitive hashing
 
-LSH cuts each signature into b bands of r rows
+MinHash LSH cuts signatures into b bands of r rows
 
 - Also: LSH
 - True for: datasketch 2.0.0
@@ -649,7 +648,7 @@ LSH cuts each signature into b bands of r rows
 
 ## manifest
 
-a manifest lists data files, with each file's column statistics
+a manifest lists data or delete files, with each file's column statistics
 
 - Also: manifests
 - The same as: https://rollingedition.com/concepts/data-engineering/manifest
@@ -674,7 +673,7 @@ Merge-on-read leaves the data file alone and writes a delete file beside it.
 
 ## metadata
 
-A catalog's metadata is what you know about each table that the data doesn't say: who owns it, which part of the business it belongs to, what it holds, and how each column must be protected.
+Beyond the schema, a catalog's metadata is what you know about each table that the data doesn't say: who owns it, which part of the business it belongs to, what it holds, and how each column must be protected.
 
 - Defined in: [Keep the metadata in a reviewed file](a-catalog-you-can-test.md#keep-metadata-in-a-reviewed-file)
 - Address: https://rollingedition.com/concepts/data-governance/metadata
@@ -824,7 +823,7 @@ the platform team, the team answerable for tables without an owner
 
 ## policy
 
-A policy is code that answers whether a request may go ahead.
+A policy is code that answers whether a request may go ahead, and on what terms.
 
 - Also: policies
 - Defined in: [Access policies as code](access-policies-as-code.md)
@@ -877,7 +876,7 @@ A pre-commit hook is the other place a check can run, on the author's machine, b
 
 ## precision
 
-precision, the share of each label's detections that match a labelled span
+precision, the share of each label's detections matching a labelled span of its type
 
 - Measured from: truth
 - Defined in: [Measure a detector against labelled spans](finding-personal-data.md#measure-against-labelled-spans)
@@ -983,7 +982,7 @@ recall, the share of labelled spans of each type that a detector finds with a la
 
 ## recognizer
 
-Presidio's analyzer runs recognizers: regular expressions with checksums, phone-number parsing, and a named-entity model reached through an NLP engine.
+Presidio's analyzer runs recognizers, entity finders: regular expressions with checksums, phone-number parsing, and a named-entity model reached through an NLP engine.
 
 - Also: recognizers
 - True for: presidio-analyzer 2.2.366
@@ -1008,7 +1007,7 @@ redact is a NULL cast to the column's type, so the column keeps its type for any
 
 ## redact_contacts
 
-redact_contacts replaces emails and phone numbers in free text with [email] and [phone].
+redact_contacts replaces emails and long digit runs in free text with [email] and [phone].
 
 - A kind of: column mask
 - Defined in: [Write each mask as SQL in one place](enforcing-policies-on-queries.md#write-masks-as-sql)
@@ -1092,7 +1091,7 @@ A run is one occurrence of a job, identified by a UUID the client generates, and
 
 ## run event
 
-A run reports itself through run events: a START when it begins, then one terminal event, COMPLETE, FAIL or ABORT
+A run reports itself through run events: a START when it begins, any RUNNING events, OTHER events for more metadata at any time before the end, then one terminal event, COMPLETE, FAIL or ABORT
 
 - Also: run events
 - Defined in: [Send a run event from every pipeline](lineage-from-pipelines.md#send-run-events)
@@ -1148,7 +1147,7 @@ skip on error, which the documentation defines as "if a policy's evaluation retu
 
 ## snapshot expiry
 
-Expiry removes snapshots, not files.
+PyIceberg's expiry removes snapshots, not files.
 
 - Also: expiry
 - True for: pyiceberg 0.12.0

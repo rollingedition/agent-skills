@@ -3,13 +3,13 @@ title: "Language Models from the Ground Up"
 chapter: "Choosing the next token"
 chapter_id: choosing-the-next-token
 book: language-models-from-the-ground-up
-edition: 2026.11.17
-verified: 2026-11-19
-edition_code: DR5A-G7ZM
+edition: 2026.11.18
+verified: 2026-11-22
+edition_code: 5E4E-0JVJ
 canonical: https://rollingedition.com/language-models-from-the-ground-up/choosing-the-next-token
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“Choosing the next token,” chapter 9 of Language Models from the Ground Up, Edition 2026.11.17, examples passed Nov 19, 2026. By Rolling Edition, https://rollingedition.com/language-models-from-the-ground-up/choosing-the-next-token. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Choosing the next token,” chapter 9 of Language Models from the Ground Up, Edition 2026.11.18, examples passed Nov 22, 2026. By Rolling Edition, https://rollingedition.com/language-models-from-the-ground-up/choosing-the-next-token. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Choosing the next token
 
@@ -25,7 +25,7 @@ The simplest decoder is **greedy**: at every step, take the single likeliest tok
 
 A product with no description is the store's need, so start with one: `front porch welcome sign wall décor`, decoded greedily for up to 60 tokens. Then take a second product, `5 light light bulb`, and print the probability that its description is empty:
 
-Example `greedy-description` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1), passing in Edition 2026.11.17:
+Example `greedy-description` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1), passing in Edition 2026.11.18:
 
 ```python
 """Greedy decoding writes one description of a product that has none, and shows how it repeats itself, and how likely
@@ -85,7 +85,7 @@ The greedy description also says the sign is `made of natural wood`, which nothi
 
 Which description do you expect beam search to rank likeliest for the welcome sign? Run it twice, with a beam of 4. The first run completes the search query `outdoor bar` by up to 4 tokens, the end of the name included, the way a search box might offer whole phrases; the second writes the welcome sign's description and prints the likeliest text overall and per token, its total log-probability divided by its length.
 
-Example `beam-search` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1), passing in Edition 2026.11.17:
+Example `beam-search` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1), passing in Edition 2026.11.18:
 
 ```python
 """Beam search with a beam of four, on a search query and on a product's description. The prose quotes the two
@@ -139,7 +139,7 @@ A temperature below 1 sharpens the distribution, giving more of the probability 
 
 To see what temperature does to one real choice, stop the greedy description early and read the next token's distribution at three temperatures. For each one, the example prints the three likeliest tokens, how many cover 90% of the probability, and how much falls outside temperature 1's 90% cover.
 
-Example `temperature-by-hand` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1), passing in Edition 2026.11.17:
+Example `temperature-by-hand` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1), passing in Edition 2026.11.18:
 
 ```python
 """The next token's distribution after the first nine tokens of the greedy description, at three temperatures, and how
@@ -193,6 +193,66 @@ The temperature sets how far the probability spreads. After `this welcome sign i
 
 That tail is the risk in sampling. Most tokens in it are wrong here, and at temperature 1 a sampler draws from it about once in every ten tokens, more often as the temperature rises.
 
+The higher the temperature, the more probability lies past the 40 likeliest tokens: 0.1% at 0.5, 14.6% at 1, and 50.8% at 1.5. Figure 9.1 draws the likeliest tokens at each temperature, on a log scale.
+
+*Figure 9.1. The likeliest next tokens after the temperature example's text, at three temperatures, on a log scale.*
+
+![The higher the temperature, the flatter the curve, and the more probability lies past the likeliest tokens drawn](https://rollingedition.ai/books/language-models-from-the-ground-up/2026.11.18/figures/temperature-flattens.svg)
+
+Example `figure-temperature-flattens` (Python 3.12.15 · matplotlib 3.11.2 · numpy 2.5.5 · pandas 3.1.1), passing in Edition 2026.11.18:
+
+```python
+"""Draws the 40 likeliest next tokens after the temperature example's text, at temperatures 0.5, 1 and 1.5, on a log scale.
+The printed shares outside the 40 drawn show the shape: the higher the temperature, the more probability sits in the tail."""
+import numpy as np
+
+from lib import decoding, transformer
+from lib.figures import ACCENT, INK, MUTED, new_figure, save
+
+start = decoding.prompt("front porch welcome sign wall décor")
+so_far = decoding.generate(start, longest=9)                  # the same nine greedy tokens temperature-by-hand stops at
+logits = decoding.next_logits(start + so_far)
+ranks = np.arange(1, 41)
+outside = {}
+fig, ax = new_figure(height=3.8)
+for temperature, color, style in [(0.5, INK, "-"), (1.0, ACCENT, "-"), (1.5, MUTED, "--")]:
+    probabilities = transformer.softmax(logits / temperature)    # divide the logits, then softmax, as temperature-by-hand does
+    top = np.sort(probabilities)[::-1]                          # likeliest first, at this temperature
+    outside[temperature] = 1 - top[:40].sum()
+    print(f"temperature {temperature}, probability of the likeliest token: {top[0]:.3f}")
+    print(f"temperature {temperature}, probability of the 40th likeliest token: {top[39]:.5f}")
+    print(f"temperature {temperature}, probability outside the 40 drawn: {outside[temperature]:.1%}")
+    ax.plot(ranks, top[:40], color=color, linestyle=style, marker="o", markersize=2.5, label=f"temperature {temperature}")
+
+# A higher temperature leaves more probability past the 40th token, and a lower one less: the claim the figure shows.
+assert outside[0.5] < outside[1.0] < outside[1.5]
+print("tail grows with temperature: yes")
+ax.set_yscale("log")
+ax.set_xticks([1, 5, 10, 20, 30, 40])
+ax.set_xlabel("rank of the next token, likeliest first")
+ax.set_ylabel("probability, log scale")
+ax.legend(frameon=False)
+save(fig, "temperature-flattens")
+```
+
+Output:
+
+```text
+temperature 0.5, probability of the likeliest token: 0.605
+temperature 0.5, probability of the 40th likeliest token: 0.00003
+temperature 0.5, probability outside the 40 drawn: 0.1%
+temperature 1.0, probability of the likeliest token: 0.262
+temperature 1.0, probability of the 40th likeliest token: 0.00186
+temperature 1.0, probability outside the 40 drawn: 14.6%
+temperature 1.5, probability of the likeliest token: 0.087
+temperature 1.5, probability of the 40th likeliest token: 0.00321
+temperature 1.5, probability outside the 40 drawn: 50.8%
+tail grows with temperature: yes
+figure: figures/temperature-flattens.svg
+```
+
+In the figure, the line for 0.5 falls steeply, from 0.605 for its likeliest token to 0.00003 for its 40th. The dashed line for 1.5 starts lowest, with its likeliest token at 0.087, and its 40th token still holds 0.00321.
+
 **Working rule:** Treat temperature as the dial between predictable and varied text. Keep it at or a little below 1 for text that should stay close to what the training text usually says, such as product descriptions. A lower temperature makes text more predictable, not more accurate.
 
 ## Sample, and cut the tail {#sample-and-cut-the-tail}
@@ -209,7 +269,7 @@ Top-p adapts to the model's confidence, where top-k doesn't. At the point in the
 
 Four samplers, each from the same random seed, write the welcome sign's description up to 40 tokens: sampling at temperature 1, sampling at 0.7, top-k with k = 20, and top-p with p = 0.9. Then the example replays the temperature-1 sample, listing the tokens drawn from outside each step's 90% nucleus, which top-p 0.9 would have cut.
 
-Example `sample-descriptions` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1), passing in Edition 2026.11.17:
+Example `sample-descriptions` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1), passing in Edition 2026.11.18:
 
 ```python
 """Four samplers write the same description from one seed, and the temperature-1 draws are then replayed to mark the
@@ -274,7 +334,7 @@ Single samples show the flavour of each method; measurements show the trade-offs
 
 How close does each setting come to real text? Draw 20 validation products at random from those with a description, write a description for each with every method, and compare them with the real ones, cut at the same 60-token limit:
 
-Example `measure-decoding` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1), passing in Edition 2026.11.17:
+Example `measure-decoding` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1), passing in Edition 2026.11.18:
 
 ```python
 """Seven ways of choosing the next token, measured on the same 20 product descriptions: how often each repeats
@@ -369,11 +429,11 @@ What the measures can't say is whether a description is true. A description can 
 
 ## Penalize repetition {#penalize-repetition}
 
-[Greedy decoding's](#choose-the-likeliest-token) loops can also be fixed without sampling. Keskar and colleagues proposed a **repetition penalty**: divide the logit of every token already generated by a factor θ above 1, so it becomes less likely ([Keskar et al., 2019](https://arxiv.org/abs/1909.05858), section 4.1). Dividing a negative logit would raise it, so implementations multiply negative logits by θ, as `lib.decoding.penalize` does, so the token becomes less likely either way. Keskar and colleagues found a factor around 1.2 balanced avoiding repetition against writing sensibly.
+[Greedy decoding's](#choose-the-likeliest-token) loops can also be fixed without sampling. Keskar and colleagues proposed a **repetition penalty**: divide the logit of every token already generated by a factor θ above 1, so that, where the logit is positive, it becomes less likely ([Keskar et al., 2019](https://arxiv.org/abs/1909.05858), section 4.1). Dividing a negative logit would raise it, so implementations multiply negative logits by θ, as `lib.decoding.penalize` does, so the token becomes less likely either way. Keskar and colleagues found a factor around 1.2 balanced avoiding repetition against writing sensibly.
 
 Go back to where the [greedy description](#choose-the-likeliest-token) was about to write `distressed` a second time. Apply the penalty by hand to the next token's logits, check the result against `lib.decoding.penalize`, and compare the probabilities before and after. Then write it greedily with the penalty, to see whether the loop goes:
 
-Example `repetition-penalty-by-hand` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1), passing in Edition 2026.11.17:
+Example `repetition-penalty-by-hand` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1), passing in Edition 2026.11.18:
 
 ```python
 """The repetition penalty applied by hand to the next token's logits, checked against lib.decoding.penalize, and then
@@ -429,7 +489,7 @@ The [greedy example](#choose-the-likeliest-token) found the model ready to write
 
 The bulb that greedy decoding left empty is the test case. Decode it twice, with no minimum and then with a minimum of 10 tokens; the output first gives the chance its description ends at once:
 
-Example `minimum-length` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1), passing in Edition 2026.11.17:
+Example `minimum-length` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1), passing in Edition 2026.11.18:
 
 ```python
 """Greedy decoding of the bulb's description, without a minimum length and with one that forbids the end marker until

@@ -3,13 +3,13 @@ title: "Language Models from the Ground Up"
 chapter: "Attention"
 chapter_id: attention
 book: language-models-from-the-ground-up
-edition: 2026.11.17
-verified: 2026-11-19
-edition_code: DR5A-G7ZM
+edition: 2026.11.18
+verified: 2026-11-22
+edition_code: 5E4E-0JVJ
 canonical: https://rollingedition.com/language-models-from-the-ground-up/attention
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“Attention,” chapter 6 of Language Models from the Ground Up, Edition 2026.11.17, examples passed Nov 19, 2026. By Rolling Edition, https://rollingedition.com/language-models-from-the-ground-up/attention. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Attention,” chapter 6 of Language Models from the Ground Up, Edition 2026.11.18, examples passed Nov 22, 2026. By Rolling Edition, https://rollingedition.com/language-models-from-the-ground-up/attention. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Attention
 
@@ -17,7 +17,7 @@ By the end of this chapter you can compute attention by hand: score how well eac
 
 [Chapter 5](#a-neural-language-model)'s window model predicted the next token of the store's names and descriptions from exactly four earlier tokens, joined side by side, each slot with its own weights. That design has two limits. It can't see a fifth token back, however much it matters, and it learns about a token in the first slot separately from the same token in the third. The store sells furniture and home goods online, and its descriptions show why the first limit hurts: a description often repeats words from the product's name, tens of tokens later, as in `protect your outdoor patio furniture from harsh elements with this outdoor patio furniture cover`. A model that can look back at the name sees which word comes next. One that sees only the last four tokens, `this outdoor patio furniture`, has to guess among everything that follows those words in other products.
 
-**Attention** lets every position look at every earlier one, and decide from their contents how much each matters. It was introduced to let a translation model look back at the words of the sentence it was translating ([Bahdanau et al., 2015](https://arxiv.org/abs/1409.0473)). It is the core of the transformer ([Vaswani et al., 2017](https://arxiv.org/abs/1706.03762)), the design of the open models this book reads in [chapter 10](#inside-an-open-model). This chapter builds attention on its own, then reads it inside the book's small transformer, which this book calls the store's model: a transformer trained once on the store's text, which [chapter 7](#the-transformer-block) assembles part by part.
+**Attention** lets every position look at other positions, in a language model every earlier one, and decide from their contents how much each matters. It was introduced to let a translation model look back at the words of the sentence it was translating ([Bahdanau et al., 2015](https://arxiv.org/abs/1409.0473)). It is the core of the transformer ([Vaswani et al., 2017](https://arxiv.org/abs/1706.03762)), the design of the open models this book reads in [chapter 10](#inside-an-open-model). This chapter builds attention on its own, then reads it inside the book's small transformer, which this book calls the store's model: a transformer trained once on the store's text, which [chapter 7](#the-transformer-block) assembles part by part.
 
 ## Look back with a weighted average {#look-back-with-a-weighted-average}
 
@@ -35,7 +35,7 @@ where Q, K and V hold every position's query, key and value as rows ([Vaswani et
 
 To watch the arithmetic on something small, take four tokens of the store's text, the start marker and `sled coffee table`, a table whose base is shaped like a sled's runners. Give each a random vector of 8 numbers, as an untrained embedding table would, and compute attention with random 8-by-4 query, key and value matrices:
 
-Example `attention-by-hand` (Python 3.12.15 · numpy 2.5.5), passing in Edition 2026.11.17:
+Example `attention-by-hand` (Python 3.12.15 · numpy 2.5.5), passing in Edition 2026.11.18:
 
 ```python
 """Computes one attention layer by hand for four tokens, with random matrices. The prose's point rests on the
@@ -86,7 +86,7 @@ The mask also makes training efficient. With it, one pass over a text predicts e
 
 A change to the last token can reach `coffee` only if `coffee` is allowed to look ahead. Apply the mask to the same four tokens' scores, replace `table` with a different vector, and measure how far the output at `coffee` moves, without the mask and with it:
 
-Example `causal-mask` (Python 3.12.15 · numpy 2.5.5), passing in Edition 2026.11.17:
+Example `causal-mask` (Python 3.12.15 · numpy 2.5.5), passing in Edition 2026.11.18:
 
 ```python
 """Applies the causal mask to the same four tokens, then changes the last token and measures how far the output at
@@ -150,7 +150,7 @@ Attention's formula divides every score by √d, and the reason is in the dot pr
 
 The store's model makes this concrete: its [heads](#several-heads) work with queries and keys of 32 numbers. Draw random queries and keys of three sizes, 4, 32 and 256, score each query against 16 keys with and without the division, and report the largest weight in each row, averaged over 1,000 queries. Guess first: with 256 numbers and no division, how large is a row's biggest weight on average?
 
-Example `scaling-matters` (Python 3.12.15 · numpy 2.5.5), passing in Edition 2026.11.17:
+Example `scaling-matters` (Python 3.12.15 · numpy 2.5.5), passing in Edition 2026.11.18:
 
 ```python
 """Measures the largest softmax weight in each row, at three sizes of query and key, with and without dividing by the
@@ -182,6 +182,83 @@ size 256, scaled, average largest weight in a row: 0.25
 
 Without the division, the largest weight grows with the size: 0.45 with 4 numbers, 0.78 with 32, the size of the store's model's heads, and 0.92 with 256. At the larger sizes, each query attends mostly to one key before any training has happened. With the division, the largest weight stays at 0.25 at every size: spread over several keys, though not evenly, since 16 equal weights would be about 0.06 each.
 
+Figure 6.1 draws the same averages at 9 sizes, from 2 to 512, with the division and without it. Its points at 4, 32 and 256 are the values printed above, which the example checks. The unscaled line rises at every size, to 0.94 at 512.
+
+*Figure 6.1. Average largest weight in a row, unscaled and scaled, for queries and keys at each size drawn.*
+
+![The unscaled weight climbs as the vectors grow, while the scaled weight stays in a narrow band](https://rollingedition.ai/books/language-models-from-the-ground-up/2026.11.18/figures/scaling-keeps-spread.svg)
+
+Example `figure-scaling-keeps-spread` (Python 3.12.15 · matplotlib 3.11.2 · numpy 2.5.5), passing in Edition 2026.11.18:
+
+```python
+"""Draws the average largest weight in a row against the size of each query and key, from 2 to 512, with and without
+dividing by the square root of the size. The printed lines are the values the prose quotes, and the asserts check the
+unscaled line rises at every size and that the three sizes of scaling-matters print the same values."""
+from lib.figures import ACCENT, INK, new_figure, save
+
+import numpy as np
+from matplotlib.ticker import NullLocator
+
+SIZES = [2 ** k for k in range(1, 10)]                  # 2 to 512, powers of two
+# scaling-matters draws 4, 32 and 256 first from one seed, so draw those three first and the others after: the points
+# at those sizes are then the same numbers scaling-matters prints
+ORDER = [4, 32, 256] + [size for size in SIZES if size not in (4, 32, 256)]
+PRINTED = {("unscaled", 4): 0.45, ("scaled", 4): 0.25, ("unscaled", 32): 0.78, ("scaled", 32): 0.24,
+           ("unscaled", 256): 0.92, ("scaled", 256): 0.25}   # scaling-matters.out, copied so a change there fails here
+
+rng = np.random.default_rng(2026)                       # the seed scaling-matters uses
+unscaled, scaled = {}, {}
+for size in ORDER:
+    # 1,000 queries and 16 keys, numbers with mean 0 and variance 1, as scaling-matters draws them
+    queries, keys = rng.normal(0, 1, (1000, size)), rng.normal(0, 1, (16, size))
+    for divide in [False, True]:
+        scores = queries @ keys.T / (np.sqrt(size) if divide else 1)
+        weights = np.exp(scores - scores.max(1, keepdims=True))   # subtract each row's largest score before exp
+        weights /= weights.sum(1, keepdims=True)
+        (scaled if divide else unscaled)[size] = weights.max(1).mean()
+
+for (label, size), value in PRINTED.items():
+    assert round((scaled if label == "scaled" else unscaled)[size], 2) == value
+unscaled_line = np.array([unscaled[s] for s in SIZES])
+scaled_line = np.array([scaled[s] for s in SIZES])
+assert (np.diff(unscaled_line) > 0).all()                           # the unscaled average rises at every step
+print("sizes drawn:", len(SIZES))
+print("smallest size drawn:", SIZES[0])
+print("largest size drawn:", SIZES[-1])
+print("sizes 4, 32 and 256 match scaling-matters: yes")
+print("unscaled, average largest weight at size 512:", f"{unscaled_line[-1]:.2f}")
+print("scaled, lowest average largest weight across sizes:", f"{scaled_line.min():.2f}")
+print("scaled, highest average largest weight across sizes:", f"{scaled_line.max():.2f}")
+print("unscaled rises at every size: yes")
+
+fig, ax = new_figure(height=3.0)
+ax.plot(SIZES, unscaled_line, color=ACCENT, marker="o", markersize=3, label="unscaled")
+ax.plot(SIZES, scaled_line, color=INK, marker="o", markersize=3, label="scaled by the square root of the size")
+ax.set_xscale("log", base=2)
+ax.set_xticks(SIZES, [str(s) for s in SIZES])
+ax.xaxis.set_minor_locator(NullLocator())               # one label per power of two, no minor ticks
+ax.set(xlabel="size of each query and key, in numbers (log scale)", ylabel="average largest weight in a row",
+       ylim=(0, 1))
+ax.legend(loc="center right")
+save(fig, "scaling-keeps-spread")
+```
+
+Output:
+
+```text
+sizes drawn: 9
+smallest size drawn: 2
+largest size drawn: 512
+sizes 4, 32 and 256 match scaling-matters: yes
+unscaled, average largest weight at size 512: 0.94
+scaled, lowest average largest weight across sizes: 0.23
+scaled, highest average largest weight across sizes: 0.29
+unscaled rises at every size: yes
+figure: figures/scaling-keeps-spread.svg
+```
+
+Across all the sizes drawn, the scaled line's averages stay within 0.23 and 0.29, a narrow range around the value printed above for 256.
+
 That's the state training should start from. Every position looks at several others, so the gradients reach all of them, and training sharpens the weights where sharp weights help. A trained head can still put most of its weight on one position, as some of the [store's model's heads](#read-trained-heads) do; the scaling only keeps heads from starting there.
 
 **Working rule:** Divide attention scores by the square root of the query's size, as the transformer paper does. A few models, such as T5, leave the division out and fold the factor into how the query weights start instead ([source](https://github.com/huggingface/transformers/blob/v4.46.0/src/transformers/models/t5/modeling_t5.py)), so check which a model does before you load its weights. If you change how queries and keys are computed or initialized, print the average largest weight of an untrained model and expect it to be well below 1.
@@ -194,7 +271,7 @@ Splitting the numbers keeps the cost about the same as one head over all of them
 
 Run two heads over four positions of random vectors, with the causal mask, and see whether the last position looks at the same places in each:
 
-Example `attention-heads` (Python 3.12.15 · numpy 2.5.5), passing in Edition 2026.11.17:
+Example `attention-heads` (Python 3.12.15 · numpy 2.5.5), passing in Edition 2026.11.18:
 
 ```python
 """Runs two heads of causal attention over four positions, each head working in four of the eight numbers, then mixes
@@ -246,7 +323,7 @@ Random matrices show the arithmetic; a trained model shows what attention is for
 
 The question is where the model looks for `cover` in a validation product it never trained on, `double chaise patio furniture cover`, whose description repeats the end of its name. Stop at the description's second `furniture`, where the next token is `cover`, and print the model's probability for `cover`, and each head's three largest weights in the first and last layers. `current:` marks the position being predicted from, `name:` a token in the name, and `description:` an earlier token in the description:
 
-Example `trained-attention` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1), passing in Edition 2026.11.17:
+Example `trained-attention` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1), passing in Edition 2026.11.18:
 
 ```python
 """Runs the store's trained model on one validation product, up to the description's second furniture, and prints where
@@ -324,7 +401,7 @@ its weight on from, after the description's earlier furniture: 0.00
 
 The model gives `cover` a probability of 0.97, and the heads show where it may have looked. In the first layer, one head attends mostly to the current token, `furniture`, and the other three spread their weight over the description and the name so far. In the last layer, head 1 puts 0.48 of its weight on `cover` in the name, many tokens back: the token that followed `furniture` in the name. The description's own earlier `furniture` was followed by `from`, and that head gives `from` only 0.00. A second last-layer head also puts its largest weight on the name's `cover`.
 
-That pattern has a name. Olsson and colleagues found pairs of heads that work this way in small models made only of attention layers, and heads with the same behaviour in large models. They call the later head of each pair an **induction head**: a head in an earlier layer copies each token's predecessor into its position, and the induction head uses that to find earlier positions that followed the current token, and attends to them ([Olsson et al., 2022](https://arxiv.org/abs/2209.11895)). The weights above are consistent with that behaviour, but weights show where a head drew its average from, not what the model used, so the [next section](#test-what-the-model-copies) tests it.
+That pattern has a name. Olsson and colleagues found pairs of heads that work this way in small models made only of attention layers, and heads with the same behaviour in large models. They call the later head of each pair an **induction head**: a head in an earlier layer copies each token's predecessor into its position, and the induction head uses that to find earlier positions that followed the current token, attends to them, and copies their token into the prediction ([Olsson et al., 2022](https://arxiv.org/abs/2209.11895)). The weights above are consistent with that behaviour, but weights show where a head drew its average from, not what the model used, so the [next section](#test-what-the-model-copies) tests it.
 
 **Working rule:** Inspect a trained model by starting with specific tokens in texts you understand, where you know what the model should look at. Treat what the weights suggest as a hypothesis, and test it by changing the input, as the next section does.
 
@@ -334,7 +411,7 @@ If the model predicts `cover` by copying it from the name, then changing the nam
 
 Keep the description and change the name: as sold, without `cover`, or ending in `set`. The probabilities of `cover` and `set` at one position show whether the prediction follows the name. Then count what follows `this outdoor patio furniture` in the training descriptions, the four tokens a window model would see:
 
-Example `copy-from-the-name` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1), passing in Edition 2026.11.17:
+Example `copy-from-the-name` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1), passing in Edition 2026.11.18:
 
 ```python
 """Changes the name of one validation product and reads the model's probabilities for cover and set at the same position,
@@ -394,7 +471,7 @@ One text can mislead; an average over many shows a head's habits. One habit wort
 
 Average each head's weight on the previous token over the first 300 validation products, and compare the head with most weight on the previous token with an even spread, which puts 1 / (i + 1) on each of the i + 1 tokens position i can see:
 
-Example `previous-token-heads` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1), passing in Edition 2026.11.17:
+Example `previous-token-heads` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1), passing in Edition 2026.11.18:
 
 ```python
 """Averages each head's weight on the previous token over 300 validation products, and sets the largest average beside
@@ -439,6 +516,82 @@ an even spread's weight on the previous token: 0.07
 
 The head that puts the most weight on the previous token is layer 4, head 3, with 0.35 on average. An even spread, averaged the same way, would put 0.07 there, so that head favours the previous token about five times over. Several heads in the later layers put a quarter or more of their weight there, and the first layer's heads put much less: in the [trained-attention example](#read-trained-heads), one of them attended mostly to the current token.
 
+Figure 6.2 shows one short text through two of these heads: the start marker, the name `copper wire basket`, `<sep>` and the first tokens of its description. Layer 4, head 3 puts more weight on the previous token than an even spread would: 0.35 on average, against 0.15 for an even spread over the same positions. Layer 1, head 1 puts almost none there, averaging 0.03, and most of its weight on the current token, averaging 0.96. Every weight above the diagonal is zero in both heads. One short text shows the pattern, not its size: the averages over 300 products above are the measure.
+
+*Figure 6.2. Attention weights of two heads over the start marker, copper wire basket, its separator and the start of its description.*
+
+![Layer 4, head 3 puts more weight on the previous token than layer 1, head 1, which puts almost none there](https://rollingedition.ai/books/language-models-from-the-ground-up/2026.11.18/figures/previous-token-pattern.svg)
+
+Example `figure-previous-token-pattern` (Python 3.12.15 · matplotlib 3.11.2 · numpy 2.5.5 · pandas 3.1.1), passing in Edition 2026.11.18:
+
+```python
+"""Draws the attention weights of two heads over one short text: the start marker, the name copper wire basket, <sep>
+and the start of its description. The heads are the two the previous-token averages name, most and least weight on the
+previous token, found by the same measure over the same 300 products."""
+from lib import transformer
+from lib.figures import ACCENT, RULE, new_figure, save
+from lib.products import product_texts
+from lib.store import load_products
+
+import numpy as np
+from matplotlib.colors import LinearSegmentedColormap, to_rgb
+
+NAME, LENGTH = "copper wire basket", 14                 # ordinary words, so no product line is named; the first 14 tokens
+_, vocabulary, manifest = transformer.load()
+
+# each head's weight on the previous token, averaged over positions 1 and later, then over the 300 products
+on_previous = np.mean([[w[:, np.arange(1, len(ids)), np.arange(len(ids) - 1)].mean(1)
+                        for w in transformer.forward(ids, keep=True)[1]] for ids, _ in product_texts("validation", 300)], axis=0)
+HEADS = [tuple(int(k) + 1 for k in np.unravel_index(f(on_previous), on_previous.shape)) for f in (np.argmax, np.argmin)]  # (layer, head) from 1
+assert HEADS == [(4, 3), (1, 1)]                         # the heads the prose names: a retrained model that moves them fails here
+
+product = load_products("validation").query("name == @NAME").iloc[0]
+ids = transformer.product_ids(product["name"], product["description"], {t: i for i, t in enumerate(vocabulary)}, manifest["settings"]["longest"])[:LENGTH]
+labels = [vocabulary[i].removesuffix("</w>") for i in ids]   # the tokenizer's end-of-word mark is noise on a page
+n = len(ids)
+_, attention = transformer.forward(ids, keep=True)
+print("tokens:", " ".join(labels))
+print("an even spread's weight on the previous token:", f"{np.mean(1 / np.arange(3, n + 1)):.2f}")
+
+# ACCENT at a weight's opacity over RULE: a weight of 0 shows RULE, 1 shows ACCENT, and no colour outside the palette
+cmap = LinearSegmentedColormap.from_list("accent-by-weight", [(*to_rgb(ACCENT), 0.0), (*to_rgb(ACCENT), 1.0)], N=20)
+fig, axes = new_figure(columns=2, height=3.6, sharex=False)
+for ax, (layer, head) in zip(axes, HEADS):
+    weights = attention[layer - 1][head - 1]             # (positions, positions): row = query, column = key; lists count from 0
+    # positions 2 and later have a previous token other than the start marker; position 1's previous token is the start marker
+    print(f"layer {layer}, head {head}, average weight on the previous token: {weights[np.arange(2, n), np.arange(1, n - 1)].mean():.2f}")
+    # the current token, averaged over the positions after the start marker
+    print(f"layer {layer}, head {head}, average weight on the current token: {weights[np.arange(1, n), np.arange(1, n)].mean():.2f}")
+    assert np.triu(weights, k=1).max() == 0              # the causal mask leaves exactly zero above the diagonal
+    ax.set_facecolor(RULE)
+    image = ax.pcolormesh(np.ma.masked_equal(weights, 0), cmap=cmap, vmin=0, vmax=1, linewidth=0)   # exact zeros are not drawn
+    ax.set(xlim=(0, n), ylim=(n, 0), aspect="equal")     # row 0, the start marker, at the top
+    ax.set_xticks(np.arange(n) + 0.5, labels, rotation=60, fontsize=7)
+    ax.set_yticks(np.arange(n) + 0.5, labels, fontsize=7)
+    ax.grid(False)
+    ax.tick_params(length=0)
+    ax.set(xlabel="key: the token attended to", ylabel="query: the token attending", title=f"layer {layer}, head {head}")
+print("weights above the diagonal are zero in both heads: yes")
+axes[1].set_ylabel("")                                   # the rows are the same tokens, so they are labelled once
+axes[1].tick_params(labelleft=False)
+bar = fig.colorbar(image, ax=axes, label="attention weight")   # one scale for both panels
+bar.outline.set_visible(False)
+save(fig, "previous-token-pattern")
+```
+
+Output:
+
+```text
+tokens: <s> copper wire basket <sep> this copper wire basket is the perfect accent for
+an even spread's weight on the previous token: 0.15
+layer 4, head 3, average weight on the previous token: 0.35
+layer 4, head 3, average weight on the current token: 0.19
+layer 1, head 1, average weight on the previous token: 0.03
+layer 1, head 1, average weight on the current token: 0.96
+weights above the diagonal are zero in both heads: yes
+figure: figures/previous-token-pattern.svg
+```
+
 No head is purely a previous-token head; each mixes it with other habits. A head's average says what it does most, not all it does, so describing a head as having one job oversimplifies.
 
 **Working rule:** Describe a trained head by measured averages, such as its weight on the previous token, the current token or the start marker, over a few hundred texts. Compare each with what an even spread would give, averaged the same way, so a number such as 0.3 can be read as large or small.
@@ -447,7 +600,7 @@ No head is purely a previous-token head; each mixes it with other habits. A head
 
 Attention's promise was to see past [chapter 5](#a-neural-language-model)'s four-token window, which predicts from the current token and the three before it. Whether the store's model does is measurable. How much lands beyond the window? For every description token in the first 300 validation products, leaving out the end marker, add up the weight each head puts on tokens 4 or more positions back, the nearest a four-token window can't see, and separately the weight on the two markers, `<s>` and `<sep>`. Average over tokens, heads and layers, and compare with an even spread over the positions each token can see:
 
-Example `attention-reaches-back` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1), passing in Edition 2026.11.17:
+Example `attention-reaches-back` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1), passing in Edition 2026.11.18:
 
 ```python
 """Measures how much attention a description token puts on tokens four or more positions back, and on the two markers,

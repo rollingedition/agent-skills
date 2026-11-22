@@ -1,0 +1,11 @@
+variance held by the two drawn directions: 0.55
+variance left out of the picture: 0.45
+mean cosine within a group: 0.71
+mean cosine between groups: 0.30
+within a group more similar than between: yes
+centre of materials, first direction: 0.41
+centre of seating, first direction: -0.50
+centre of outdoor, first direction: -0.41
+centre of colours, first direction: 0.51
+seating and outdoor centres on one side of materials and colours: yes
+figure: figures/token-map.svg

@@ -6,24 +6,24 @@ compatibility: "The book's examples ran on Python 3.12.15 and the versions its p
 metadata:
   publisher: "Rolling Edition"
   book: "Evaluating LLM Applications"
-  edition: "2026.11.5"
-  verified: "2026-11-21"
-  examples: "54 of 54 examples pass"
-  edition-code: "ZZQG-NPXH"
+  edition: "2026.11.6"
+  verified: "2026-11-22"
+  examples: "58 of 58 examples pass"
+  edition-code: "P6V8-WKJT"
   source: "https://rollingedition.com/evaluating-llm-applications"
 ---
 
 # Evaluating LLM Applications
 
-This agent skill is *Evaluating LLM Applications*, Edition 2026.11.5, from Rolling Edition. Examples passed Nov 21, 2026: 54 of 54 examples pass. It's built from that edition, never written separately: the procedures below come from the book's sections, and each step links to its section on rollingedition.com, whose page has the section's text and its examples, with their code and output.
+This agent skill is *Evaluating LLM Applications*, Edition 2026.11.6, from Rolling Edition. Examples passed Nov 22, 2026: 58 of 58 examples pass. It's built from that edition, never written separately: the procedures below come from the book's sections, and each step links to its section on rollingedition.com, whose page has the section's text and its examples, with their code and output.
 
 ## How to use this skill
 
 - **Pick the procedure that fits the task,** and follow its steps in order. Each step links the section it comes from: read that section before you act on it, with the Rolling Edition MCP server's `get_section` (book `evaluating-llm-applications` and the section's ID, the link's last part) or on its page, and adapt it to the project in front of you.
 - **Check against the book.** An example's section shows its code, the versions it ran on and its output. If the project uses other versions, say so before relying on a step.
 - **Use the book's terms as it defines them.** The book's Glossary has each term it defines, in the book's own sentence, with its section: https://rollingedition.com/evaluating-llm-applications/glossary. The Rolling Edition MCP server's `define` gives one with its section, its edition and the version it's true for: where the task uses one, it means that.
-- **Is this copy current?** Call `check_code` with `ZZQG-NPXH` on the Rolling Edition MCP server (https://rollingedition.ai/mcp), or compare the edition with the book's page: https://rollingedition.com/evaluating-llm-applications
-- **Credit the book** when you quote it or reuse its code: Evaluating LLM Applications, Edition 2026.11.5, examples passed Nov 21, 2026. By Rolling Edition, https://rollingedition.com/evaluating-llm-applications. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people.
+- **Is this copy current?** Call `check_code` with `P6V8-WKJT` on the Rolling Edition MCP server (https://rollingedition.ai/mcp), or compare the edition with the book's page: https://rollingedition.com/evaluating-llm-applications
+- **Credit the book** when you quote it or reuse its code: Evaluating LLM Applications, Edition 2026.11.6, examples passed Nov 22, 2026. By Rolling Edition, https://rollingedition.com/evaluating-llm-applications. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people.
 
 The full skill, with the chapters beside it and every example as a script to run at the book's pinned versions, is the `evaluating-llm-applications` plugin and the zip on the book's page at rollingedition.ai.
 
@@ -80,9 +80,9 @@ The full skill, with the chapters beside it and every example as a script to run
 
 ## Write code checks
 
-**When:** a failure can be read from the reply and the item alone: a format, a citation ID, a decline.
+**When:** a failure can be read from the reply, the item or the run: a format, a citation ID, a decline.
 
-1. Write a code check only when the reply and item hold the fact it needs. Send claim-level failures to a judge ([What a code check can see](https://rollingedition.com/evaluating-llm-applications/s/what-a-code-check-can-see)).
+1. Write a code check only when the reply, item or run holds the fact it needs. Send claim-level failures to a judge ([What a code check can see](https://rollingedition.com/evaluating-llm-applications/s/what-a-code-check-can-see)).
 2. Run format and order checks on every reply before a judge reads it, and report counts per split ([Format checks](https://rollingedition.com/evaluating-llm-applications/s/format-checks)).
 3. Count a citation as supported only when its ID is on the item's list. Read each unlisted citation against its section before you call it a problem ([Support](https://rollingedition.com/evaluating-llm-applications/s/citation-support)).
 4. Whether a listed section supports its sentence is a judgement the ID check cannot make. Read it, or use the answer-level faithfulness judge ([Faithfulness](https://rollingedition.com/evaluating-llm-applications/s/faithfulness)).
@@ -209,4 +209,4 @@ The full skill, with the chapters beside it and every example as a script to run
 
 ## Reading in another language
 
-When the person you're working with wants to read part of this book in another language, and the Rolling Edition MCP server is connected, first call its `get_section` with `language`: where Rolling Edition has its own translation of the book in that language (`get_contents` lists them), present each section as it comes, with the facts of its `translation`, and translate only the sections it lists as `untranslated`. Otherwise, translate it for them from its sections, read with the Rolling Edition MCP server's `get_section`. Translate the prose faithfully and in full: don't summarize, skip or add anything. Leave these exactly as they are: code, commands, output, file names, identifiers, inline code, package names and versions, numbers and URLs. Where practitioners who read the language usually keep a technical term in English, keep it, and give a short gloss in parentheses the first time, where that helps. Keep the headings and the structure: lists, tables, and the examples in their places. Begin by saying that it's your translation of *Evaluating LLM Applications*, Edition 2026.11.5, from Rolling Edition, licensed CC BY-NC 4.0, with the chapter's link, and keep each section's link from its citation block. For a long chapter, translate a section at a time and offer to go on after each. The Rolling Edition MCP server's `read_in_my_language` prompt asks for the same.
+When the person you're working with wants to read part of this book in another language, and the Rolling Edition MCP server is connected, first call its `get_section` with `language`: where Rolling Edition has its own translation of the book in that language (`get_contents` lists them), present each section as it comes, with the facts of its `translation`, and translate only the sections it lists as `untranslated`. Otherwise, translate it for them from its sections, read with the Rolling Edition MCP server's `get_section`. Translate the prose faithfully and in full: don't summarize, skip or add anything. Leave these exactly as they are: code, commands, output, file names, identifiers, inline code, package names and versions, numbers and URLs. Where practitioners who read the language usually keep a technical term in English, keep it, and give a short gloss in parentheses the first time, where that helps. Keep the headings and the structure: lists, tables, and the examples in their places. Begin by saying that it's your translation of *Evaluating LLM Applications*, Edition 2026.11.6, from Rolling Edition, licensed CC BY-NC 4.0, with the chapter's link, and keep each section's link from its citation block. For a long chapter, translate a section at a time and offer to go on after each. The Rolling Edition MCP server's `read_in_my_language` prompt asks for the same.

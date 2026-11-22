@@ -2,16 +2,18 @@
 # Pins for the book's examples: a full exact set, compiled from the direct pins below with
 # `uv pip compile requirements.in --python-version 3.13 --python-platform x86_64-manylinux_2_36 --index-strategy unsafe-best-match`
 # (torch from the PyTorch CPU index). (revised Nov 21)
-# The examples replay recorded replies and run the detector. They never import llama_cpp: that is the recording
-# runtime's (recordings/requirements.txt). Checked by `re-check examples` before the runtime is built.
+# The examples replay recorded replies and run the detector, and matplotlib draws the figures in the style lib/figures.py
+# sets. They never import llama_cpp: that is the recording runtime's (recordings/requirements.txt).
+# Checked by `re-check examples` before the runtime is built.
 # Direct pins and licences, read from installed metadata (Nov 21, 2026): bm25s 0.3.16 MIT; markdown-it-py 4.3.0 MIT;
 # linkify-it-py 2.2.0 MIT; transformers 5.23.0 Apache-2.0; huggingface-hub 2.4.0 Apache-2.0; tokenizers 0.23.3
 # Apache-2.0; numpy 2.5.5 BSD-3-Clause and others; torch 2.15.0+cpu Apache-2.0 and others; pydantic 2.14.4 MIT;
-# picklescan 1.0.5 MIT; pytest 9.2.0 MIT; mcp 2.3.0 MIT (full expressions in each package's metadata). (revised Nov 21)
+# picklescan 1.0.5 MIT; pytest 9.2.0 MIT; mcp 2.3.0 MIT; matplotlib 3.11.2 PSF-based Matplotlib License (full expressions in
+# each package's metadata). (revised Nov 22)
 # The CPU wheel is tagged manylinux_2_28, which installs on manylinux_2_36.
 # Direct pins: bm25s==0.3.16, numpy==2.5.5, transformers==5.23.0, torch==2.15.0+cpu, huggingface-hub==2.4.0,
 # tokenizers==0.23.3, markdown-it-py==4.3.0, linkify-it-py==2.2.0, pydantic==2.14.4, picklescan==1.0.5, pytest==9.2.0,
-# mcp==2.3.0. (revised Nov 21)
+# mcp==2.3.0, matplotlib==3.11.2. (revised Nov 22)
 # transformers is 5.23.0, not 5.24.0: Renovate's 3-day release age rules out 5.24.0. (revised Nov 21)
 # modelscan is not pinned: it needs Python below 3.13. picklescan flags a harmless print pickle at its pin. (revised Nov 21)
 annotated-doc==0.0.7
@@ -36,12 +38,18 @@ click==8.5.1
     # via
     #   huggingface-hub
     #   uvicorn
+contourpy==1.4.0
+    # via matplotlib
 cryptography==50.0.2
     # via pyjwt
+cycler==0.12.1
+    # via matplotlib
 filelock==4.2.12
     # via
     #   huggingface-hub
     #   torch
+fonttools==4.68.0
+    # via matplotlib
 fsspec==2026.9.0
     # via
     #   huggingface-hub
@@ -75,6 +83,8 @@ jsonschema==4.26.0
     # via mcp
 jsonschema-specifications==2025.9.1
     # via jsonschema
+kiwisolver==1.5.1
+    # via matplotlib
 linkify-it-py==2.2.0
     # via -r requirements.in
 markdown-it-py==4.3.0
@@ -83,6 +93,8 @@ markdown-it-py==4.3.0
     #   rich
 markupsafe==3.0.4
     # via jinja2
+matplotlib==3.11.2
+    # via -r requirements.in
 mcp==2.3.0
     # via -r requirements.in
 mcp-types==2.3.0
@@ -97,16 +109,21 @@ numpy==2.5.5
     # via
     #   -r requirements.in
     #   bm25s
+    #   contourpy
+    #   matplotlib
     #   transformers
 opentelemetry-api==1.45.2
     # via mcp
 packaging==26.3
     # via
     #   huggingface-hub
+    #   matplotlib
     #   pytest
     #   transformers
 picklescan==1.0.5
     # via -r requirements.in
+pillow==13.0.0
+    # via matplotlib
 pluggy==1.7.0
     # via pytest
 pycparser==3.12
@@ -125,8 +142,12 @@ pygments==2.21.0
     #   rich
 pyjwt==2.15.1
     # via mcp
+pyparsing==3.3.3
+    # via matplotlib
 pytest==9.2.0
     # via -r requirements.in
+python-dateutil==4.0.0
+    # via matplotlib
 python-multipart==0.0.34
     # via mcp
 pyyaml==6.0.4
@@ -192,5 +213,7 @@ typing-inspection==0.4.5
     # via
     #   mcp
     #   pydantic
+tzdata==2026.6
+    # via python-dateutil
 uvicorn==0.54.0
     # via mcp

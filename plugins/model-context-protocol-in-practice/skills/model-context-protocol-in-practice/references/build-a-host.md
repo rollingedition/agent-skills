@@ -3,13 +3,13 @@ title: "Model Context Protocol in Practice"
 chapter: "Build a host that works through tickets"
 chapter_id: build-a-host
 book: model-context-protocol-in-practice
-edition: 2026.11.17
+edition: 2026.11.18
 verified: 2026-11-22
-edition_code: XAH6-X5Y5
+edition_code: GV8D-FHDA
 canonical: https://rollingedition.com/model-context-protocol-in-practice/build-a-host
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“Build a host that works through tickets,” chapter 10 of Model Context Protocol in Practice, Edition 2026.11.17, examples passed Nov 22, 2026. By Rolling Edition, https://rollingedition.com/model-context-protocol-in-practice/build-a-host. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Build a host that works through tickets,” chapter 10 of Model Context Protocol in Practice, Edition 2026.11.18, examples passed Nov 22, 2026. By Rolling Edition, https://rollingedition.com/model-context-protocol-in-practice/build-a-host. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Build a host that works through tickets
 
@@ -23,7 +23,7 @@ This chapter builds that host, which we call **the support host**, in a new modu
 
 ## Connect one client per server {#one-client-per-server}
 
-A host that uses several servers holds several clients, and the specification is exact about the shape: the host creates each client, and each client talks to exactly one server ([architecture](https://modelcontextprotocol.io/specification/2026-07-28/architecture/index.md)). At the pinned revision there is no `initialize` handshake to share, because every request carries its version and the client's capabilities in `_meta` ([versioning](https://modelcontextprotocol.io/specification/2026-07-28/basic/versioning.md)), as [Carry the version and capabilities on every request](#request-meta) explains. A client still learns its server's era: the pinned revision or a 2025 one. The specification asks clients to cache that era "for the lifetime of the server process (stdio) or origin (HTTP)" ([versioning](https://modelcontextprotocol.io/specification/2026-07-28/basic/versioning.md)).
+A host that uses several servers holds several clients, and the specification is exact about the shape: the host creates each client, and each client talks to exactly one server ([architecture](https://modelcontextprotocol.io/specification/2026-07-28/architecture/index.md)). At the pinned revision there is no `initialize` handshake to share, because every request carries its version and the client's capabilities in `_meta` ([versioning](https://modelcontextprotocol.io/specification/2026-07-28/basic/versioning.md)), as [Carry the version and capabilities on every request](#request-meta) explains. A client still learns its server's era: the pinned revision's, or legacy, the `initialize`-based revisions up to 2025-11-25. The specification asks clients to cache that era "for the lifetime of the server process (stdio) or origin (HTTP)" ([versioning](https://modelcontextprotocol.io/specification/2026-07-28/basic/versioning.md)).
 
 The Python SDK offers a class for several servers, `ClientSessionGroup`, and it looks like the natural choice. At `mcp` 2.3.0 it isn't one. Its `connect_to_server` always calls `session.initialize()`, the 2025 handshake, and never sends the `server/discover` probe that the pinned revision starts with (`mcp/client/session_group.py`; [session groups](https://py.sdk.modelcontextprotocol.io/v2/client/session-groups/index.md)). The SDK's own servers speak both eras, so a group still connects, but on the older revision, where a server pushes its input requests instead of returning them in a Multi Round-Trip Request. That would quietly undo chapter 5.
 
@@ -31,7 +31,7 @@ A group can also take a session you already hold, through `connect_with_session`
 
 The support host uses one `mcp.Client` per server instead. Each runs in its default auto mode, which probes `server/discover` and falls back to the handshake only for a server that doesn't answer it (`mcp/client/client.py`). The host keeps the clients in a map keyed by a prefix its own configuration assigns: `shop` for the shop's server, launched over stdio from `lib.support_shop`, and `partner` for the partner's server, `lib.partner`, connected in-process. The code connects both, gives the shop's server to a `ClientSessionGroup`, and reconnects to the shop's server with the era the first connection learned.
 
-Example `connect-two-servers` (Python 3.12.15 · cryptography 50.0.2 · httpx2 2.16.2 · mcp 2.3.0 · mcp-types 2.3.0 · pydantic 2.14.4 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.17:
+Example `connect-two-servers` (Python 3.12.15 · cryptography 50.0.2 · httpx2 2.16.2 · mcp 2.3.0 · mcp-types 2.3.0 · pydantic 2.14.4 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.18:
 
 ```python
 """Two clients under their own prefixes each settle their own revision, and the SDK's ClientSessionGroup settles the
@@ -104,7 +104,7 @@ The shop's case makes the collision concrete. Suppose the partner's next release
 
 The support host names every tool `{prefix}.{tool}`. It uses `.` as the separator because `.` is in the allowed set and reads like a path. `TicketHost.route` turns a name the model used back into the server's prefix and the tool's name on the wire, and returns nothing for an unknown name.
 
-Example `tool-name-collision` (Python 3.12.15 · cryptography 50.0.2 · httpx2 2.16.2 · mcp 2.3.0 · mcp-types 2.3.0 · pydantic 2.14.4 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.17:
+Example `tool-name-collision` (Python 3.12.15 · cryptography 50.0.2 · httpx2 2.16.2 · mcp 2.3.0 · mcp-types 2.3.0 · pydantic 2.14.4 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.18:
 
 ```python
 """The partner's next release adds its own get_order_status, and ClientSessionGroup refuses it beside the shop's. The
@@ -188,7 +188,7 @@ That is why `lib.support_shop` derives each `quote_id` from a counter, hashed wi
 
 Ticket T-0009 shows the loop when the first guess is wrong. The customer asks what a refund would be on order "o7144". The order they mean is O-1744, and O-7144 doesn't exist.
 
-Example `work-one-ticket` (Python 3.12.15 · cryptography 50.0.2 · httpx2 2.16.2 · jsonschema 4.26.0 · mcp 2.3.0 · mcp-types 2.3.0 · pydantic 2.14.4 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.17:
+Example `work-one-ticket` (Python 3.12.15 · cryptography 50.0.2 · httpx2 2.16.2 · jsonschema 4.26.0 · mcp 2.3.0 · mcp-types 2.3.0 · pydantic 2.14.4 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.18:
 
 ```python
 """The support host works one ticket and prints each model turn: the tool call, its outcome, and what went back to the
@@ -278,7 +278,7 @@ The Python SDK splits the work. `Client.call_tool` runs the retry loop itself, u
 
 The shop's API holds a refund above the refund policy's limit of €150.00 until a support lead releases it, and `issue_refund` asks for that release with a one-field form. Two such refunds run through the support host's own `call` method, the path a model's tool call takes, and a scripted lead accepts the first and declines the second.
 
-Example `host-answers-elicitation` (Python 3.12.15 · cryptography 50.0.2 · httpx2 2.16.2 · jsonschema 4.26.0 · mcp 2.3.0 · mcp-types 2.3.0 · pydantic 2.14.4 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.17:
+Example `host-answers-elicitation` (Python 3.12.15 · cryptography 50.0.2 · httpx2 2.16.2 · jsonschema 4.26.0 · mcp 2.3.0 · mcp-types 2.3.0 · pydantic 2.14.4 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.18:
 
 ```python
 """Two refunds above the policy limit, each held by an input request from the shop's server. The host shows the lead
@@ -367,7 +367,7 @@ Input requests bring the user into a call; resources bring documents into the mo
 
 The shop's server lists its 6 policies as resources, with the annotations that [Expose the policies as resources](#policies-as-resources) gave them. All are for the assistant. The refund policy has priority 1.0, and the others have 0.5. The refund policy matters most to the model, because it says what may be refunded and that a refund above the limit waits for a lead. The support host's rule is its own: attach every resource the server marks for the assistant with a priority of at least 0.8, once, after the tools in the system prompt. The model never chooses, so a ticket's text can't pull a document into the context.
 
-Example `attach-a-policy-resource` (Python 3.12.15 · cryptography 50.0.2 · httpx2 2.16.2 · mcp 2.3.0 · mcp-types 2.3.0 · pydantic 2.14.4 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.17:
+Example `attach-a-policy-resource` (Python 3.12.15 · cryptography 50.0.2 · httpx2 2.16.2 · mcp 2.3.0 · mcp-types 2.3.0 · pydantic 2.14.4 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.18:
 
 ```python
 """The host attaches the shop's policies that the server marks for the assistant at a high priority, and the model never
@@ -449,7 +449,7 @@ The recording `ticket-runs` holds the model's replies for this run's 102 model c
 
 Of those batches, 1 worked a single ticket, T-0007, and the rest worked the queue. The queue's replay uses the single-ticket batch's replies for T-0007, because its messages match. By the manifest's timings, a call took 16.5 seconds on average on the CPU, and the longest batch took 8.0 minutes. The manifest, in `examples/data/recorded/ticket-runs/`, lists the batches, the model file by revision and hash, the sampling, the prompt's hash and the host's settings.
 
-Example `work-the-ticket-queue` (Python 3.12.15 · cryptography 50.0.2 · httpx2 2.16.2 · jsonschema 4.26.0 · mcp 2.3.0 · mcp-types 2.3.0 · pydantic 2.14.4 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.17:
+Example `work-the-ticket-queue` (Python 3.12.15 · cryptography 50.0.2 · httpx2 2.16.2 · jsonschema 4.26.0 · mcp 2.3.0 · mcp-types 2.3.0 · pydantic 2.14.4 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.18:
 
 ```python
 """The host works every one of the shop's tickets against both servers and counts the outcomes, the first tools and the
@@ -552,7 +552,7 @@ This is one run of one model, on one prompt, with one seed, sampled at temperatu
 
 The support host works the queue on one machine, against two servers it can see. In production the same parts fail in ways a replayed run never shows, and each is visible if you know where to look.
 
-**The tool list outgrows the context.** Every tool's definition goes into every model call. The support host's 6 tools and one policy already make a system prompt of 6239 characters, as [Put resources in the model's context](#resources-in-context) measured. Each server you add pays that again on every turn of every ticket. The client best practices page suggests switching to progressive discovery, a small search tool that returns definitions on demand, once definitions take more than a threshold share of the context window, "for example, 1%-5%" ([client best practices](https://modelcontextprotocol.io/docs/2026-07-28/develop/clients/client-best-practices.md)). That threshold is a rule of thumb, not a measurement. The sign is time to first token rising with each server, and tool choices getting worse as the list grows.
+**The tool list outgrows the context.** Every tool's definition goes into every model call. The support host's 6 tools and one policy already make a system prompt of 6239 characters, as [Put resources in the model's context](#resources-in-context) measured. Each server you add pays that again on every turn of every ticket. The client best practices page suggests switching to progressive discovery, which gives the model a small search tool and loads definitions on demand, once definitions take more than a threshold share of the context window, "for example, 1%-5%" ([client best practices](https://modelcontextprotocol.io/docs/2026-07-28/develop/clients/client-best-practices.md)). That threshold is a rule of thumb, not a measurement. The sign is time to first token rising with each server, and tool choices getting worse as the list grows.
 
 **A changing tool list breaks the prompt cache.** A server that adds or removes a tool mid-conversation changes the `tools` array, and the provider's prompt cache with it ([client best practices](https://modelcontextprotocol.io/docs/2026-07-28/develop/clients/client-best-practices.md)). The support host lists tools once per connection and prefixes every name, so a new tool on one server doesn't rename the others. When a `list_changed` notification arrives, apply the new list between tickets, not inside one, and run it past chapter 9's pins first ([Pin tool definitions and flag changes](#pin-tool-definitions)).
 

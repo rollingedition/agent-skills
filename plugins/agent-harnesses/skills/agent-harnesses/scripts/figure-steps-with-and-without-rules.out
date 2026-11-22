@@ -1,0 +1,9 @@
+task set step cap: 16
+runs: 20
+runs the rules shortened: 12
+steps saved in all: 94
+steps saved on the runs that hit the step cap: 61
+done runs: 5
+steps of the done runs as recorded: 27
+steps of the done runs with both rules: 27
+figure: figures/steps-with-and-without-rules.svg

@@ -3,13 +3,13 @@ title: "Language Models from the Ground Up"
 chapter: "Tokens"
 chapter_id: tokens
 book: language-models-from-the-ground-up
-edition: 2026.11.17
-verified: 2026-11-19
-edition_code: DR5A-G7ZM
+edition: 2026.11.18
+verified: 2026-11-22
+edition_code: 5E4E-0JVJ
 canonical: https://rollingedition.com/language-models-from-the-ground-up/tokens
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“Tokens,” chapter 2 of Language Models from the Ground Up, Edition 2026.11.17, examples passed Nov 19, 2026. By Rolling Edition, https://rollingedition.com/language-models-from-the-ground-up/tokens. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Tokens,” chapter 2 of Language Models from the Ground Up, Edition 2026.11.18, examples passed Nov 22, 2026. By Rolling Edition, https://rollingedition.com/language-models-from-the-ground-up/tokens. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Tokens
 
@@ -25,7 +25,7 @@ Cutting text into words gives a model tokens that carry meaning, which is why [c
 
 The validation names are the 10% of the store's products that no model learns from, kept aside to show how a model handles text it hasn't seen. Those names show how far words fall short. Count the validation words the training names never use, and sort them into rare words and ordinary ones:
 
-Example `unseen-words` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1), passing in Edition 2026.11.17:
+Example `unseen-words` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1), passing in Edition 2026.11.18:
 
 ```python
 """Counts the validation words that the training names never use, then sorts them into rare words and ordinary ones.
@@ -73,7 +73,7 @@ Going to the other extreme fixes the gap. If every character is a token, the voc
 
 Test whether characters close the gap for the store's names. Compare the characters in training and validation names, and count the validation names' tokens both ways:
 
-Example `character-tokens` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1), passing in Edition 2026.11.17:
+Example `character-tokens` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1), passing in Edition 2026.11.18:
 
 ```python
 """Compares the characters of the training names with those of the validation names, and counts the validation tokens
@@ -125,11 +125,11 @@ Words are too coarse and characters too fine, so the method most open generative
 3. Merge the most frequent pair into one new symbol everywhere, and add it to the vocabulary.
 4. Repeat from step 2, as many times as the vocabulary size you want.
 
-The list of merges, in the order they were learned, is the tokenizer. To encode a word, spell it as characters and apply the merges in the same order.
+A tokenizer cuts text into tokens; a BPE tokenizer is the list of merges, in the order they were learned, applied to the characters it starts from. To encode a word, spell it as characters and apply the merges in the same order.
 
 Eight merges, run by hand on the training names, are enough to show every step. Each merge prints as it happens, and the last line shows how `table` is spelled after all eight:
 
-Example `merge-pairs-by-hand` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1), passing in Edition 2026.11.17:
+Example `merge-pairs-by-hand` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1), passing in Edition 2026.11.18:
 
 ```python
 """Runs the merge algorithm by hand on the training names for eight merges, printing each one and how table is spelled
@@ -191,7 +191,7 @@ The algorithm in the [previous section](#merge-frequent-pairs) recounts every pa
 
 The store's tokenizer learns 4,000 merges from the training names and descriptions together, because the book's models will learn from both. Five short texts, two product names and three pairs of words, show what it does with an unseen word and with similar ones:
 
-Example `store-tokenizer` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1), passing in Edition 2026.11.17:
+Example `store-tokenizer` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1), passing in Edition 2026.11.18:
 
 ```python
 """Learns 4,000 merges from the training names and descriptions, then encodes five short texts with the resulting
@@ -240,7 +240,7 @@ A model still has to learn what a new product line is, but it can at least predi
 
 Learning 16,000 merges once and reading the first 0, 1,000, 2,000, 4,000, 8,000 and 16,000 of them gives six tokenizers. The first k merges of a longer run are exactly the merges a k-merge run would learn. Each one gets three measures: the different tokens the training text uses, the tokens each validation word becomes, and the share of those different tokens that the training text shows fewer than 20 times. The different tokens a text uses are its **token types**. Before reading the table, decide what each end should show:
 
-Example `vocabulary-size` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1), passing in Edition 2026.11.17:
+Example `vocabulary-size` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1), passing in Edition 2026.11.18:
 
 ```python
 """Learns 16,000 merges once, then reads the first 0, 1,000, 2,000, 4,000, 8,000 and 16,000 of them as six tokenizers.
@@ -291,6 +291,82 @@ The store's tokenizer sits where sequences are short and few tokens are rare. At
 
 With no merges, every token is a character, so tokens are frequent but words are long: a word takes more than five tokens, and 49% of the token types are rare, because the descriptions contain unusual characters. With many merges, words are short but rare types pile up: from 8,000 merges the rare share climbs, and at 16,000 it's 53%, because most of the extra merges cover words the training text barely contains.
 
+Figure 2.1 draws both measures for 16 settings, from no merges to 16,000, with tokens per word above and the share of rare token types below, on one merge axis.
+
+*Figure 2.1. Tokens per word, and the share of rare token types, for 0 to 16,000 merges.*
+
+![Tokens per word falls steeply and then flattens, while the share of rare token types falls to a low point and then climbs](https://rollingedition.ai/books/language-models-from-the-ground-up/2026.11.18/figures/merges-trade-off.svg)
+
+Example `figure-merges-trade-off` (Python 3.12.15 · matplotlib 3.11.2 · numpy 2.5.5 · pandas 3.1.1), passing in Edition 2026.11.18:
+
+```python
+"""Draw tokens per word and the share of rare token types for 16 merge counts, from none to 16,000, on one merge axis.
+The printed lines are the values the prose quotes, and the asserts check the two shape claims it makes."""
+from collections import Counter
+
+from lib import bpe
+from lib.figures import ACCENT, INK, new_figure, save
+from lib.store import load_products, words
+
+import numpy as np
+from matplotlib.ticker import FuncFormatter, PercentFormatter
+
+GRID = [0, 500, 1000, 1500, 2000, 2500, 3000, 4000, 5000, 6000, 7000, 8000, 10000, 12000, 14000, 16000]
+
+training, validation = load_products("train"), load_products("validation")
+counts = Counter(w for text in training["name"] + " " + training["description"] for w in words(text))
+merges = bpe.train(counts, merges=max(GRID))         # the first k merges of one longer run are a k-merge tokenizer
+validation_words = [w for text in validation["name"] + " " + validation["description"] for w in words(text)]
+
+per_word, rare = [], []
+for k in GRID:
+    encode = bpe.Tokenizer(merges[:k], bpe.alphabet(counts)).encode_word if k else bpe.symbols   # no merges: characters
+    seen = Counter(t for w, n in counts.items() for t in encode(w) for _ in range(n))   # each token counted as often as its word
+    per_word.append(sum(len(encode(w)) for w in validation_words) / len(validation_words))
+    rare.append(sum(1 for n in seen.values() if n < 20) / len(seen))   # rare: seen fewer than 20 times in the training text
+
+low = int(np.argmin(rare))                           # argmin keeps the first, so ties go to fewer merges
+slopes = np.diff(rare) / np.diff(GRID)               # slopes[i]: the rise per merge from setting i to setting i + 1
+steepest = int(np.argmax(slopes))
+assert (slopes[:low] <= 0).all() and (slopes[low:] >= 0).all()   # down to the low point, up after it
+assert (per_word[0] - per_word[4]) / 2000 > (per_word[4] - per_word[-1]) / 14000   # per merge: [4] is 2,000, [-1] 16,000
+
+print("settings drawn:", len(GRID))
+print("merges with the fewest rare token types:", f"{GRID[low]:,}")
+print("rare token types at 12,000 merges:", f"{rare[GRID.index(12000)]:.0%}")
+print("steepest rise in rare token types starts at merges:", f"{GRID[steepest]:,}")
+print("steepest rise in rare token types ends at merges:", f"{GRID[steepest + 1]:,}")   # the next setting on the grid
+print("tokens per word falls faster before 2,000 merges than after: yes")
+print("rare token types fall to a low, then climb, across the settings: yes")
+
+fig, (top, bottom) = new_figure(rows=2, height=4.4)
+top.plot(GRID, per_word, color=INK, marker="o", markersize=3, label="tokens per word")
+bottom.plot(GRID, rare, color=ACCENT, marker="o", markersize=3, label="rare token types")
+top.set(ylabel="tokens per word", ylim=(0, None))
+bottom.set(ylabel="share of token types\nseen under 20 times", ylim=(0, None),   # the top limit fits the data
+           xlabel="merges learned by the tokenizer", xticks=[0, 4000, 8000, 12000, 16000])
+bottom.yaxis.set_major_formatter(PercentFormatter(1.0))
+bottom.xaxis.set_major_formatter(FuncFormatter(lambda x, _: f"{x:,.0f}"))
+top.legend(loc="upper right")
+bottom.legend(loc="upper center")
+save(fig, "merges-trade-off")
+```
+
+Output:
+
+```text
+settings drawn: 16
+merges with the fewest rare token types: 2,000
+rare token types at 12,000 merges: 32%
+steepest rise in rare token types starts at merges: 10,000
+steepest rise in rare token types ends at merges: 12,000
+tokens per word falls faster before 2,000 merges than after: yes
+rare token types fall to a low, then climb, across the settings: yes
+figure: figures/merges-trade-off.svg
+```
+
+Tokens per word falls steeply and then flattens, and the rare share falls to a low and then climbs, with no reversal across the grid. The low sits at 2,000 merges. The finer grid also shows where the climb steepens, which the vocabulary-size example's settings don't: the steepest rise per merge runs from 10,000 to 12,000 merges, where the share reaches 32%. That is the trade-off: fewer merges leave longer words, and more merges leave more rare types.
+
 The vocabulary size also sets part of the model's size. A neural language model, from [chapter 5](#a-neural-language-model) on, stores a vector of numbers for every token in its vocabulary, and scores every token in the vocabulary at every step it predicts. A vocabulary four times as large means four times as many of those vectors to learn, and four times as many scores to compute at every step, whatever the text. For the small models this book trains on a laptop, that cost matters as much as sequence length.
 
 So the store's tokenizer uses 4,000 merges: past that, each merge buys little length and adds a token that the book's small models can't learn well. Large open models use vocabularies of tens of thousands of tokens or more, SmolLM2's has 49,152, because they learn from far more text, so even their rarer tokens occur often enough.
@@ -303,7 +379,7 @@ Open language models ship their tokenizer as a file beside their weights. Readin
 
 Encode three product names both ways, and count each tokenizer's tokens per validation name:
 
-Example `smollm2-tokens` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1 · tokenizers 0.23.3), passing in Edition 2026.11.17:
+Example `smollm2-tokens` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1 · tokenizers 0.23.3), passing in Edition 2026.11.18:
 
 ```python
 """Encodes three product names with SmolLM2's tokenizer and with the store's, then counts the tokens per validation name
@@ -369,7 +445,7 @@ SmolLM2's tokenizer file looks like a black box until you see that it holds the 
 
 Check the file's merges: merge the library's pre-tokenizer pieces of three product names by hand, earliest-learned pair first as the [store's tokenizer](#train-the-store-tokenizer) does, and compare the result with the library's tokens:
 
-Example `merges-by-hand` (Python 3.12.15 · tokenizers 0.23.3), passing in Edition 2026.11.17:
+Example `merges-by-hand` (Python 3.12.15 · tokenizers 0.23.3), passing in Edition 2026.11.18:
 
 ```python
 """Applies SmolLM2's learned merges by hand, earliest first, to the pieces its pre-tokenizer makes of three product names.

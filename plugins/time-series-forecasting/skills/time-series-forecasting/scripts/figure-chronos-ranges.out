@@ -1,0 +1,7 @@
+hours scored: 72
+readings inside the 80% range: 59
+readings inside the 95% range: 71
+coverage 80, lead Chronos: 0.819
+coverage 95, lead Chronos: 0.986
+MAE, lead Chronos median, kWh: 4.35
+figure: figures/chronos-ranges.svg

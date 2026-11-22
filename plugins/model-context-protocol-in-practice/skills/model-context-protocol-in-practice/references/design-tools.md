@@ -3,13 +3,13 @@ title: "Model Context Protocol in Practice"
 chapter: "Design tools a model can use"
 chapter_id: design-tools
 book: model-context-protocol-in-practice
-edition: 2026.11.17
+edition: 2026.11.18
 verified: 2026-11-22
-edition_code: XAH6-X5Y5
+edition_code: GV8D-FHDA
 canonical: https://rollingedition.com/model-context-protocol-in-practice/design-tools
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“Design tools a model can use,” chapter 3 of Model Context Protocol in Practice, Edition 2026.11.17, examples passed Nov 22, 2026. By Rolling Edition, https://rollingedition.com/model-context-protocol-in-practice/design-tools. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Design tools a model can use,” chapter 3 of Model Context Protocol in Practice, Edition 2026.11.18, examples passed Nov 22, 2026. By Rolling Edition, https://rollingedition.com/model-context-protocol-in-practice/design-tools. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Design tools a model can use
 
@@ -32,12 +32,12 @@ This chapter rebuilds `shop-support` in `lib.shop_tools`, a shared module, so th
 - `find_orders` searches one customer's orders by status or by the date placed. It calls the API's order list and adds a date filter the API doesn't have.
 - `get_order_status` looks up one order by its ID, as in chapter 1.
 - `quote_refund` works out what a refund would be, and changes nothing.
-- `issue_refund` makes the refund from a quote. Above the policy's limit the shop's API holds it for a person ([Return an input request instead of a result](#return-an-input-request)); within the limit, nothing in this chapter asks anyone. **Consent** is the host asking the user before a call that changes something, and it arrives in [Ask for consent before side effects](#consent-before-side-effects).
+- `issue_refund` makes the refund from a quote. Above the policy's limit the shop's API holds it for a person ([Return an input request instead of a result](#return-an-input-request)); within the limit, nothing in this chapter asks anyone. **Consent** is the host asking the user before a call, especially one changing something, and it arrives in [Ask for consent before side effects](#consent-before-side-effects).
 - `check_stock` reports one product's stock in each warehouse.
 
 The module also holds `endpoint_tools()`, the list a one-tool-per-endpoint generator writes for the same API, so the two shapes can be compared. Both lists print with each tool's required arguments. Then ticket T-0024, "please refund the aluminium muffin tray on o2415", runs both ways.
 
-Example `tools-from-endpoints` (Python 3.12.15 · cryptography 50.0.2 · httpx2 2.16.2 · jsonschema 4.26.0 · mcp 2.3.0 · mcp-types 2.3.0 · pydantic 2.14.4 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.17:
+Example `tools-from-endpoints` (Python 3.12.15 · cryptography 50.0.2 · httpx2 2.16.2 · jsonschema 4.26.0 · mcp 2.3.0 · mcp-types 2.3.0 · pydantic 2.14.4 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.18:
 
 ```python
 """Two tool lists for the same API, one tool per endpoint as a generator writes them and the shop's five task tools, then
@@ -126,7 +126,7 @@ The eight were picked by hand from the shop's ticket queue, not sampled: two ask
 
 The model is the one every recording in this book uses: Qwen3-4B-Instruct-2507, run on the CPU with llama.cpp, as [Let a model choose the tool](#let-a-model-choose) set it up. The script `recordings/description_choices.py` made this recording, `description-choices`, sampling one reply per ticket and set at temperature 0.7 with one fixed seed. Scoring looks only at the first tool the model calls, not at its arguments. A ticket's right first tool is the one the shop's data tags it with, with one change: `issue_refund` needs a `quote_id`, so a refund request starts with `quote_refund`.
 
-Example `vague-description-wrong-tool` (Python 3.12.15 · cryptography 50.0.2 · httpx2 2.16.2 · mcp 2.3.0 · mcp-types 2.3.0 · pydantic 2.14.4 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.17:
+Example `vague-description-wrong-tool` (Python 3.12.15 · cryptography 50.0.2 · httpx2 2.16.2 · mcp 2.3.0 · mcp-types 2.3.0 · pydantic 2.14.4 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.18:
 
 ```python
 """Predict, then run: eight of the shop's tickets and the same five tools, shown to the model with three sets of
@@ -231,7 +231,7 @@ The schema does two jobs. It shows the model the shape of a valid call, and it l
 
 The Python SDK builds the schema from the function's type hints, and pydantic's `Annotated[..., Field(...)]` adds constraints to them ([tools](https://py.sdk.modelcontextprotocol.io/v2/servers/tools/)). The shop's server defines its ID types once. `OrderId` is a string with `pattern=r"^O-\d{4}$"`, and `CustomerId` and `Sku` work the same way. `find_orders` takes `status` as a `Literal` of the five order statuses, `placed_since` as a `date`, and `limit` as an integer with `ge=1, le=50`. The schema the SDK built from those hints prints first. Then `find_orders` is called three ways: with three bad arguments at once, with a number sent as a string, and with the date the recorded model sent for ticket T-0013 in [Write descriptions the model reads](#write-tool-descriptions). That ticket asked for orders "since 12 Jun".
 
-Example `reject-bad-arguments` (Python 3.12.15 · cryptography 50.0.2 · httpx2 2.16.2 · jsonschema 4.26.0 · mcp 2.3.0 · mcp-types 2.3.0 · pydantic 2.14.4 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.17:
+Example `reject-bad-arguments` (Python 3.12.15 · cryptography 50.0.2 · httpx2 2.16.2 · jsonschema 4.26.0 · mcp 2.3.0 · mcp-types 2.3.0 · pydantic 2.14.4 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.18:
 
 ```python
 """find_orders' typed inputs: the JSON Schema the SDK builds from them, one result that names three rejected arguments,
@@ -318,7 +318,7 @@ The output schema serves the host's code more than the model. Code can branch on
 
 The Python SDK builds the output schema from the function's return type. Primitive types, `None`, lists and unions are wrapped in `{"result": ...}`. Pydantic models, `TypedDict`s, dataclasses and `dict[str, ...]` aren't ([structured output](https://py.sdk.modelcontextprotocol.io/v2/servers/structured-output/); `mcp/server/mcpserver/utilities/func_metadata.py`). `quote_refund` returns `RefundQuote`, a pydantic model with the quote's ID, the order, the SKU, the amount, the policy limit, `within_limit` and the quote's lifetime in seconds. Quoting order O-2289 for ticket T-0006 with no SKU, so the quote covers the whole order, shows the structured result. A second server then has one tool that returns the same amount as a bare string, to show the wrapper.
 
-Example `refund-quote-structured` (Python 3.12.15 · cryptography 50.0.2 · httpx2 2.16.2 · jsonschema 4.26.0 · mcp 2.3.0 · mcp-types 2.3.0 · pydantic 2.14.4 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.17:
+Example `refund-quote-structured` (Python 3.12.15 · cryptography 50.0.2 · httpx2 2.16.2 · jsonschema 4.26.0 · mcp 2.3.0 · mcp-types 2.3.0 · pydantic 2.14.4 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.18:
 
 ```python
 """quote_refund returns a pydantic model, so the SDK publishes its output schema and returns structuredContent; a tool
@@ -405,7 +405,7 @@ The shop's server follows that test. A missing order, an order that isn't refund
 4. a call to a server started with the wrong key;
 5. a call after the shop's API has stopped.
 
-Example `tool-error-versus-protocol-error` (Python 3.12.15 · cryptography 50.0.2 · httpx2 2.16.2 · mcp 2.3.0 · mcp-types 2.3.0 · pydantic 2.14.4 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.17:
+Example `tool-error-versus-protocol-error` (Python 3.12.15 · cryptography 50.0.2 · httpx2 2.16.2 · mcp 2.3.0 · mcp-types 2.3.0 · pydantic 2.14.4 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.18:
 
 ```python
 """Five failures and the path each takes: three tool execution errors the model reads (isError results), a crash the
@@ -479,12 +479,12 @@ One more mistake skips both paths: a tool that returns an error message as an or
 
 ## Mark what a tool changes with annotations {#tool-annotations}
 
-The errors in [the previous section](#tool-errors) tell the model what went wrong after a call. A tool's annotations tell the host what a call will do before it's made, so the host can decide whether to ask for consent first. The specification wants a person able to say no to any tool call, as [Let a model choose the tool](#let-a-model-choose) quoted. A tool's `annotations` hold a title and four hints ([schema](https://modelcontextprotocol.io/specification/2026-07-28/schema), `ToolAnnotations`):
+The errors in [the previous section](#tool-errors) tell the model what went wrong after a call. A tool's annotations hint to the host what a call will do before it's made, so the host can decide whether to ask for consent first. The specification wants a person able to say no to any tool call, as [Let a model choose the tool](#let-a-model-choose) quoted. A tool's `annotations` hold a title and four hints ([schema](https://modelcontextprotocol.io/specification/2026-07-28/schema), `ToolAnnotations`):
 
 - `readOnlyHint`: the tool doesn't change its environment. The default is false.
 - `destructiveHint`: a tool that changes something may destroy or overwrite data, rather than only add to it. The default is true.
 - `idempotentHint`: calling the tool again with the same arguments has no further effect. The default is false.
-- `openWorldHint`: the tool reaches entities outside a closed domain, such as the web. The default is true.
+- `openWorldHint`: the tool may reach entities outside a closed domain, such as the web. The default is true.
 
 `destructiveHint` and `idempotentHint` mean something only when `readOnlyHint` is false. The defaults describe the worst case, so to a careful host a tool with no annotations is destructive, not idempotent, and reaches the open world. Annotations go into the Python SDK as `ToolAnnotations(read_only_hint=..., destructive_hint=..., idempotent_hint=..., open_world_hint=...)` to the `tool()` decorator ([tools](https://py.sdk.modelcontextprotocol.io/v2/servers/tools/)).
 
@@ -492,7 +492,7 @@ The shop's four reading tools carry `read_only_hint=True` and `open_world_hint=F
 
 The code works out what a host should assume about each tool, filling in the default wherever a hint is missing, and applies a consent rule to the result. It includes the endpoint tool `post_refunds`, which has no annotations. Then it calls `issue_refund` twice with one quote, and `POST /refunds` twice with one amount.
 
-Example `annotate-the-refund-tool` (Python 3.12.15 · cryptography 50.0.2 · httpx2 2.16.2 · jsonschema 4.26.0 · mcp 2.3.0 · mcp-types 2.3.0 · pydantic 2.14.4 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.17:
+Example `annotate-the-refund-tool` (Python 3.12.15 · cryptography 50.0.2 · httpx2 2.16.2 · jsonschema 4.26.0 · mcp 2.3.0 · mcp-types 2.3.0 · pydantic 2.14.4 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.18:
 
 ```python
 """What each tool's annotations tell a host, with the specification's defaults filled in where a hint is missing, and
@@ -583,7 +583,7 @@ The host puts every tool from [the previous sections](#tool-annotations), with i
 
 The cost is easier to measure than to guess. When the recording script ran, it also counted, with the recording model's tokenizer, how many tokens each tool takes in the host's prompt. The check adds up those counts for the revised tools, the vague ones from [Write descriptions the model reads](#write-tool-descriptions) and the endpoint tools, and measures their bytes. It refuses to run if a tool has changed since its tokens were counted.
 
-Example `tool-list-size` (Python 3.12.15 · cryptography 50.0.2 · httpx2 2.16.2 · mcp 2.3.0 · mcp-types 2.3.0 · pydantic 2.14.4 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.17:
+Example `tool-list-size` (Python 3.12.15 · cryptography 50.0.2 · httpx2 2.16.2 · mcp 2.3.0 · mcp-types 2.3.0 · pydantic 2.14.4 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.18:
 
 ```python
 """What the shop's tool list costs in the host's prompt: bytes, and tokens counted with the recording model's tokenizer
@@ -651,7 +651,83 @@ recording context tokens: 4096
 
 Most of the cost is in the schemas. The shop's five revised tools take 970 tokens in the prompt, against 136 for the rest of the host's instructions. With vague descriptions they take 620, so the revised descriptions make up about a third of the list's cost. The endpoint tools take 288: one-line descriptions, and schemas with no patterns, enums or descriptions of their own. The revised schemas are the same ones that caught the bad arguments in [Type inputs with JSON Schema](#type-tool-inputs). The full `tools/list` result is larger still, because it also carries output schemas, titles and annotations that the host's prompt leaves out, as the output's byte counts show.
 
-At about 194 tokens a tool, 20 tools like these would take about 3880 tokens before the model reads the ticket: nearly all of the 4096-token context the recordings run with. That figure is arithmetic, not a measurement, and real tools vary in size. A shorter list also lowers the chance that two descriptions overlap, which was the draft's problem with `get_order_status` and `quote_refund` ([Write descriptions the model reads](#write-tool-descriptions)).
+*Figure 3.1. Tokens each set of tools takes in the host's prompt, against the recording's context.*
+
+![The revised tool list and the host's instructions fill well under half of the recording's context, and no one tool dominates](https://rollingedition.ai/books/model-context-protocol-in-practice/2026.11.18/figures/tool-list-tokens.svg)
+
+Example `figure-tool-list-tokens` (Python 3.12.15 · cryptography 50.0.2 · httpx2 2.16.2 · matplotlib 3.11.2 · mcp 2.3.0 · mcp-types 2.3.0 · pydantic 2.14.4 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.18:
+
+```python
+"""Draw what each set of tools costs in the host's prompt: the hatched instructions, then one segment per tool, for each set.
+The prose rests on the revised bar's share of the context and on its smallest and largest tool, all printed."""
+import asyncio
+import json
+
+from matplotlib.patches import Patch
+from mcp import Client
+
+from lib import shop_tools
+from lib.figures import ACCENT, INK, MUTED, RULE, new_figure, save
+from lib.host import RECORDED, tool_specs
+
+counted = json.loads((RECORDED / "description-choices" / "prompt_tokens.json").read_text())
+INSTRUCTIONS, CONTEXT = counted["prompt_without_tools"], counted["context"]
+
+
+async def main() -> None:
+    async with Client(shop_tools.create_server()) as client:
+        listed = (await client.list_tools()).tools
+    vague = shop_tools.with_descriptions(listed, shop_tools.VAGUE_DESCRIPTIONS)
+    sets = [("endpoint", shop_tools.endpoint_tools(), INK), ("vague", vague, MUTED), ("revised", listed, ACCENT)]
+
+    fig, ax = new_figure(height=4.8)
+    for row, (label, tools, color) in enumerate(sets):
+        # tokens as the recording script counted them; tool-list-size.py stops if a tool changed since
+        counts = [counted[label][spec["name"]]["tokens"] for spec in tool_specs(tools)]
+        total = INSTRUCTIONS + sum(counts)
+        print(f"{label} prompt tokens with instructions: {total}")
+        ax.barh(row, INSTRUCTIONS, height=0.5, facecolor="none", edgecolor=color, hatch="///", linewidth=0.8)
+        left = INSTRUCTIONS
+        for tokens in counts:
+            ax.barh(row, tokens, left=left, height=0.5, color=color, edgecolor=RULE, linewidth=1.2)
+            left += tokens
+        ax.text(total + 70, row, f"{total:,} tokens", va="center", color=color)
+        if label == "revised":
+            print(f"smallest revised tool tokens: {min(counts)}")
+            print(f"largest revised tool tokens: {max(counts)}")
+            share = 100 * total / CONTEXT
+
+    ax.grid(axis="y", visible=False)
+    ax.axvline(CONTEXT, color=INK, linestyle="--", linewidth=1)
+    ax.text(CONTEXT - 60, 2.45, f"recording context, {CONTEXT:,} tokens", ha="right", va="bottom", color=INK)
+    ax.set(xlim=(0, CONTEXT * 1.03), xlabel="tokens in the host's prompt", yticks=range(3),
+           yticklabels=[s[0] for s in sets])
+    key = [Patch(facecolor="none", edgecolor=INK, hatch="///", label="hatched: host instructions without tools")]
+    fig.legend(handles=key, loc="outside lower center", fontsize=6.5, handlelength=1.5)
+    print("context tokens:", CONTEXT)
+    print(f"revised with instructions share of context: {share:.1f}%")
+    save(fig, "tool-list-tokens")
+
+
+asyncio.run(main())
+```
+
+Output:
+
+```text
+endpoint prompt tokens with instructions: 424
+vague prompt tokens with instructions: 756
+revised prompt tokens with instructions: 1106
+smallest revised tool tokens: 127
+largest revised tool tokens: 271
+context tokens: 4096
+revised with instructions share of context: 27.0%
+figure: figures/tool-list-tokens.svg
+```
+
+Figure 3.1 draws each set, instructions hatched, against the context line: the revised list fills 27.0% of it, each tool 127 to 271 tokens.
+
+At about 194 tokens a tool, 20 tools like these would take about 3880 tokens before the model reads the ticket: nearly all of the 4096-token context the recordings run with. That number is arithmetic, not a measurement, and real tools vary in size. A shorter list also lowers the chance that two descriptions overlap, which was the draft's problem with `get_order_status` and `quote_refund` ([Write descriptions the model reads](#write-tool-descriptions)).
 
 A server keeps its list short by serving one audience. The shop's server serves support tickets, so the stock recount isn't on it. At the pinned revision a server can't trim its list for one connection, though the list may vary by the authorization a request presents, and it comes in a fixed order ([Cache list results](#cache-list-results)). That section covers the cache hints on the result, and [Scope tools by what the token allows](#scopes-per-tool) shows a list that varies by token.
 

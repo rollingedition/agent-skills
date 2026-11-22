@@ -1,7 +1,7 @@
 {
   "name": "securing-llm-applications-and-agents",
   "displayName": "Securing LLM Applications and Agents",
-  "version": "2026.11.1",
+  "version": "2026.11.2",
   "description": "How an assistant with tools and data is turned against its users, and which defences measurably stop it: prompt injection, exfiltration, tool misuse and third-party code, on a property office's assistant.",
   "author": {
     "name": "Rolling Edition",

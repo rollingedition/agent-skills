@@ -3,13 +3,13 @@ title: "Language Models from the Ground Up"
 chapter: "Counting further back"
 chapter_id: counting-further-back
 book: language-models-from-the-ground-up
-edition: 2026.11.17
-verified: 2026-11-19
-edition_code: DR5A-G7ZM
+edition: 2026.11.18
+verified: 2026-11-22
+edition_code: 5E4E-0JVJ
 canonical: https://rollingedition.com/language-models-from-the-ground-up/counting-further-back
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“Counting further back,” chapter 3 of Language Models from the Ground Up, Edition 2026.11.17, examples passed Nov 19, 2026. By Rolling Edition, https://rollingedition.com/language-models-from-the-ground-up/counting-further-back. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Counting further back,” chapter 3 of Language Models from the Ground Up, Edition 2026.11.18, examples passed Nov 22, 2026. By Rolling Edition, https://rollingedition.com/language-models-from-the-ground-up/counting-further-back. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Counting further back
 
@@ -25,7 +25,7 @@ An **n-gram model** predicts each token from the n − 1 tokens before it: a [bi
 
 Scored on the names they were counted from, with no smoothing, the orders show what a model does with text it has already memorized:
 
-Example `ngram-memorizes` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1), passing in Edition 2026.11.17:
+Example `ngram-memorizes` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1), passing in Edition 2026.11.18:
 
 ```python
 """Counts the n-grams of orders 1 to 5 in the training names, and scores each order on those same names with no smoothing.
@@ -76,7 +76,7 @@ Memorizing the training names says nothing about new ones. A model can only use 
 
 Settle on a number first: for 4-grams, what share of the validation names' 4-grams never occur in the training names? The share for every order from 1 to 5 follows:
 
-Example `unseen-ngrams` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1), passing in Edition 2026.11.17:
+Example `unseen-ngrams` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1), passing in Edition 2026.11.18:
 
 ```python
 """Counts, for each order from 1 to 5, the share of the validation names' n-grams that never occur in the training names.
@@ -116,7 +116,7 @@ The two examples together are the core problem of counting. Longer contexts pred
 
 ## Mix short and long contexts {#mix-short-and-long-contexts}
 
-The obvious fix for unseen long contexts is to fall back on shorter ones. **Interpolation** falls back smoothly: the probability of a token is a weighted mix of what the trigram, bigram and unigram counts say, so a long context the model has seen contributes its sharp prediction, and the shorter ones fill in what it hasn't. With weights λ₃, λ₂ and λ₁ that sum to one:
+The obvious fix for unseen long contexts is to fall back on shorter ones. **Interpolation** falls back smoothly: the probability of a token is a weighted mix of what the counts of each order say (here trigram, bigram and unigram), so a long context the model has seen contributes its sharp prediction, and the shorter ones fill in what it hasn't. With weights λ₃, λ₂ and λ₁ that sum to one:
 
 P(token | a b) = λ₃ · P₃(token | a b) + λ₂ · P₂(token | b) + λ₁ · P₁(token)
 
@@ -124,7 +124,7 @@ where each P is a maximum-likelihood estimate from counts, as in [chapter 1's pr
 
 Hand-set weights make the idea plain. Take an interpolated trigram with 0.6, 0.3 and 0.09 for the three orders, and the last 0.01 spread evenly over every token, so no token gets probability zero. When a context was never seen, its weight passes to the orders below, so the probabilities still sum to one:
 
-Example `interpolate-orders` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1), passing in Edition 2026.11.17:
+Example `interpolate-orders` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1), passing in Edition 2026.11.18:
 
 ```python
 """Builds an interpolated trigram model by hand, with fixed weights, and an add-one bigram model on the same tokens.
@@ -206,7 +206,7 @@ When a model backs off to a shorter context, it's asking a specific question: ho
 
 Among the 300 most frequent tokens in the training names, these three come after the fewest different tokens for how often they occur, set beside two ordinary product words:
 
-Example `continuation-counts` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1), passing in Edition 2026.11.17:
+Example `continuation-counts` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1), passing in Edition 2026.11.18:
 
 ```python
 """Counts, for each token in the training names, how often it occurs and how many different tokens come right before it.
@@ -248,7 +248,7 @@ This is the insight behind Kneser-Ney smoothing ([Kneser and Ney, 1995](https://
 
 ## Smooth with Kneser-Ney {#smooth-with-kneser-ney}
 
-Kneser-Ney smoothing combines [interpolation of orders](#mix-short-and-long-contexts) with [continuation counts](#count-contexts-a-token-follows). At each order, Kneser-Ney subtracts a fixed **discount** d from every count it has seen, and gives the probability it took to the next order down, so a context seen often keeps nearly all its own prediction, and a context seen rarely leans on the shorter context, with the discount it frees going to tokens that turn up in many contexts.
+Kneser-Ney smoothing combines discounting, [interpolation of orders](#mix-short-and-long-contexts) and [continuation counts](#count-contexts-a-token-follows). At each order, Kneser-Ney subtracts a fixed **discount** d from every count it has seen, and gives the probability it took to the next order down, so a context seen often keeps nearly all its own prediction, and a context seen rarely leans on the shorter context, with the discount it frees going to tokens that turn up in many contexts.
 
 The same formula applies at every order. Below the highest, the counts are continuation counts, except for n-grams that start a text, which keep their raw counts, as the KenLM toolkit does. For a context h and a token w, with c(h w) the count of the pair, c(h) the count of the context, and N(h) the number of different tokens seen after h:
 
@@ -258,7 +258,7 @@ The book's shared module `lib.ngrams` implements interpolated Kneser-Ney as Chen
 
 Before trusting the module, work out one probability by hand: `stool` after a name that starts `patio bar`, order by order. Set it beside the module's answer, and beside the module's probabilities after this context, summed over every token:
 
-Example `kneser-ney-by-hand` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1), passing in Edition 2026.11.17:
+Example `kneser-ney-by-hand` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1), passing in Edition 2026.11.18:
 
 ```python
 """Works out the probability of stool after a name that starts patio bar, order by order, with the chapter's formula.
@@ -308,7 +308,7 @@ Worked by hand, the formula gives 0.8621 for `stool`, the same as the module's 0
 
 Kneser-Ney models of every order from 1 to 5, scored on the validation names, show whether longer contexts now pay off:
 
-Example `kneser-ney-by-order` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1), passing in Edition 2026.11.17:
+Example `kneser-ney-by-order` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1), passing in Edition 2026.11.18:
 
 ```python
 """Builds Kneser-Ney models of orders 1 to 5 on the training names, scores each on the validation names, and estimates a
@@ -348,6 +348,92 @@ Kneser-Ney beats the hand-weighted interpolated trigram from the [interpolation 
 
 Longer contexts now help on new text, instead of only on the text the model counted, up to a point: validation perplexity falls from 46.9 for the bigram to 23.1 for the 4-gram, then rises to 23.5 for the 5-gram. The step from trigram to 4-gram is small, and the 5-gram is worse, because by then most contexts are unseen and the extra order adds noise. The discount, too, can be estimated from the counts: Chen and Goodman give D = n₁ / (n₁ + 2 n₂), where n₁ and n₂ are the numbers of n-grams seen once and twice, and on the store's 4-grams it's 0.82, close to the default.
 
+Figure 3.1 scores one Kneser-Ney model per order on both sets of names. On the names it was counted from, the model keeps improving as the order grows, from 4.7 at the 4-gram to 3.8 at the 5-gram, while on the validation names it stops improving. The gap between the two scores is what the figure measures, and it widens with the order: from 18.4 at the 4-gram to 19.7 at the 5-gram.
+
+*Figure 3.1. Perplexity of one Kneser-Ney model per order, orders 1 to 5, on the training names and on the validation names; log scale.*
+
+![One Kneser-Ney model's training perplexity keeps falling with order, while its validation perplexity bottoms out at the 4-gram, so the gap widens](https://rollingedition.ai/books/language-models-from-the-ground-up/2026.11.18/figures/perplexity-by-order.svg)
+
+Example `figure-perplexity-by-order` (Python 3.12.15 · matplotlib 3.11.2 · numpy 2.5.5 · pandas 3.1.1), passing in Edition 2026.11.18:
+
+```python
+"""Builds one Kneser-Ney model per order from 1 to 5, scores each on the training names and on the validation names, and
+draws both against the order. The gap between the two lines is what the prose reads: how far the model does better on text
+it counted than on text it has not seen."""
+from lib.figures import ACCENT, INK, MUTED, new_figure, save
+from lib.names import name_tokens
+from lib.ngrams import KneserNey, perplexity
+
+from matplotlib.ticker import NullFormatter
+
+train, validation = name_tokens("train"), name_tokens("validation")
+orders = [1, 2, 3, 4, 5]
+train_perplexity, validation_perplexity = [], []
+for n in orders:
+    # the same model is scored on both sets, so the two lines differ only in the text, and the gap between them is the model's
+    model = KneserNey(train, n)
+    train_perplexity.append(perplexity(model, train))
+    validation_perplexity.append(perplexity(model, validation))
+    print(f"Kneser-Ney {n}-gram training perplexity: {train_perplexity[-1]:.1f}")
+    print(f"Kneser-Ney {n}-gram validation perplexity: {validation_perplexity[-1]:.1f}")
+
+best = orders[validation_perplexity.index(min(validation_perplexity))]
+print(f"lowest validation perplexity order: {best}")
+gap = [v - t for v, t in zip(validation_perplexity, train_perplexity)]
+# lists start at order 1, so the entry for order n is at index n - 1
+print(f"gap at the {best}-gram: {gap[best - 1]:.1f}")
+print(f"gap at the 5-gram: {gap[4]:.1f}")
+# the training line falls at every order, because a longer context always fits the text it was counted from
+assert all(a > b for a, b in zip(train_perplexity, train_perplexity[1:]))
+print("training perplexity falls at every order: yes")
+# on new text the validation line stops improving at its lowest order, and the gap is wider at the 5-gram
+# the same offset: validation_perplexity[best - 1] is the lowest order's score
+assert best == 4 and validation_perplexity[4] >= validation_perplexity[best - 1]
+print("validation perplexity does not improve after the 4-gram: yes")
+# gap[4] is the 5-gram, gap[best - 1] the lowest order's gap
+assert gap[4] > gap[best - 1]
+print("gap widens from the 4-gram to the 5-gram: yes")
+
+fig, ax = new_figure()
+ax.plot(orders, validation_perplexity, color=ACCENT, marker="o", markersize=3,
+        label="Kneser-Ney model, validation names")
+ax.plot(orders, train_perplexity, color=INK, linestyle="--", marker="o", markersize=3,
+        label="Kneser-Ney model, training names")
+ax.fill_between(orders, train_perplexity, validation_perplexity, color=MUTED, alpha=0.15, linewidth=0,
+                label="gap between the two")
+ax.set_yscale("log")
+ax.yaxis.set_minor_formatter(NullFormatter())       # log ticks only at the labelled values, so the axis stays readable
+ax.set_yticks([3, 10, 30, 100, 300, 1000])
+ax.set_yticklabels(["3", "10", "30", "100", "300", "1000"])
+ax.set_xticks(orders)
+ax.set_xlabel("order of the model, n (n - 1 tokens of context)")
+ax.set_ylabel("perplexity per token, log scale")
+ax.legend(frameon=False, loc="upper right")
+save(fig, "perplexity-by-order")
+```
+
+Output:
+
+```text
+Kneser-Ney 1-gram training perplexity: 676.4
+Kneser-Ney 1-gram validation perplexity: 687.2
+Kneser-Ney 2-gram training perplexity: 29.6
+Kneser-Ney 2-gram validation perplexity: 46.9
+Kneser-Ney 3-gram training perplexity: 7.3
+Kneser-Ney 3-gram validation perplexity: 24.9
+Kneser-Ney 4-gram training perplexity: 4.7
+Kneser-Ney 4-gram validation perplexity: 23.1
+Kneser-Ney 5-gram training perplexity: 3.8
+Kneser-Ney 5-gram validation perplexity: 23.5
+lowest validation perplexity order: 4
+gap at the 4-gram: 18.4
+gap at the 5-gram: 19.7
+training perplexity falls at every order: yes
+validation perplexity does not improve after the 4-gram: yes
+gap widens from the 4-gram to the 5-gram: yes
+figure: figures/perplexity-by-order.svg
+```
+
 **Working rule:** Smooth n-gram models with interpolated Kneser-Ney and a discount of 0.75 unless held-out text says otherwise. Raise the order only while validation perplexity keeps falling noticeably, and stop when a step barely helps or hurts, as the step from 4-gram to 5-gram does. A variant, modified Kneser-Ney, uses three discounts instead of one and is the one toolkits such as KenLM build; it would likely lower the [baseline](#the-baseline) a little, and this book keeps the single discount because it's easier to follow by hand.
 
 ## Autocomplete with three tokens of context {#autocomplete-with-more-context}
@@ -356,7 +442,7 @@ A longer context should fix the search box's worst suggestion from [chapter 1](#
 
 Do the suggestions change from `bar` to `patio bar` to `outdoor bar`? Take the 4-gram model's three likeliest next tokens after each. Each prefix is treated as the start of a name, as a shopper's typing is, and each suggestion shows its token without the end-of-word marker:
 
-Example `ngram-autocomplete` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1), passing in Edition 2026.11.17:
+Example `ngram-autocomplete` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1), passing in Edition 2026.11.18:
 
 ```python
 """Asks the 4-gram model for its three likeliest next tokens after bar, patio bar and outdoor bar, each typed as the start

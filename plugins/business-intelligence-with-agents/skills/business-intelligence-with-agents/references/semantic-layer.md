@@ -3,13 +3,13 @@ title: "Business Intelligence with Agents"
 chapter: "Define metrics once in a semantic layer"
 chapter_id: semantic-layer
 book: business-intelligence-with-agents
-edition: 2026.11.16
-verified: 2026-11-19
-edition_code: CSAB-T5TX
+edition: 2026.11.17
+verified: 2026-11-22
+edition_code: 6VBD-766G
 canonical: https://rollingedition.com/business-intelligence-with-agents/semantic-layer
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“Define metrics once in a semantic layer,” chapter 5 of Business Intelligence with Agents, Edition 2026.11.16, examples passed Nov 19, 2026. By Rolling Edition, https://rollingedition.com/business-intelligence-with-agents/semantic-layer. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Define metrics once in a semantic layer,” chapter 5 of Business Intelligence with Agents, Edition 2026.11.17, examples passed Nov 22, 2026. By Rolling Edition, https://rollingedition.com/business-intelligence-with-agents/semantic-layer. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Define metrics once in a semantic layer
 
@@ -23,7 +23,7 @@ This chapter builds the shop's semantic layer in MetricFlow's YAML, compiles it 
 
 ## Describe each table as a semantic model {#entities-measures-dimensions}
 
-A semantic model is one table described for the layer: which table it reads, the entities it holds, the dimensions it offers and the time dimension its numbers are counted on. An entity is a key with a type. A primary entity is unique in its table, so other tables can join to it many rows to one. A foreign entity is a key that points at another table's primary entity, and it repeats. That one word, primary or foreign, is what lets a layer join tables without repeating rows, so it is the most important thing you declare. The shop's whole layer lives in `examples/data/semantic/`: one file per semantic model, one `metrics.yml`, and one `project_configuration.yml`, which names the time spine, a table with one row per day.
+A semantic model is one table described for the layer: which table it reads, the entities it holds, the dimensions it offers and the time dimension its numbers are counted on. An entity is a key with a type. A primary entity is unique in its table, so other tables can join to it many rows to one. A foreign entity is a key that points at another table's primary entity, and it may repeat. That one word, primary or foreign, is what lets a layer join tables without repeating rows, so it is the most important thing you declare. The shop's whole layer lives in `examples/data/semantic/`: one file per semantic model, one `metrics.yml`, and one `project_configuration.yml`, which names the time spine, a table with one row per day.
 
 Older MetricFlow specs have a third kind of element, the measure: an aggregation declared on the semantic model, which a metric then names. dbt's documentation for its spec in dbt v1.12 and later says "Measures are deprecated in the new spec and are replaced with simple metrics" ([dbt Labs](https://docs.getdbt.com/docs/build/latest-metrics-spec)). The shop's YAML follows that direction. Each simple metric names its semantic model, its aggregation and its expression itself, in the standalone document shape that MetricFlow's own parser reads: one `semantic_model:` or `metric:` per YAML document, and tables named by `node_relation`. Here is the shop's orders model, shortened, and net revenue, the metric chapter 1 defined in Python:
 
@@ -66,7 +66,7 @@ The orders model's time dimension is `order_date_local`, the order's local busin
 
 Parsing won't reveal a wrong declaration, so the code loads the layer and checks its definitions against the warehouse: every expression must run, and every primary entity must be unique in its table. It repeats the check on a copy with one mistake, in which the order lines declare `order` as their primary entity.
 
-Example `load-semantic-models` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.16:
+Example `load-semantic-models` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.17:
 
 ```python
 """Load the shop's semantic layer from YAML, list what each semantic model declares, and check it against the warehouse."""
@@ -132,7 +132,7 @@ Dimension names follow MetricFlow's convention, so a request reads the same in e
 
 Chapter 1's question is the first test: golden question `gq-002` asks, "What was net revenue in each region in March 2026?" As a request, it is `net_revenue` grouped by `order__region` and filtered to March 2026. The code prints the request and its SQL, runs it, and checks the answer against the golden result. Then it sends a filter value holding SQL of its own, and asks for a dimension the layer doesn't define.
 
-Example `compile-net-revenue` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.16:
+Example `compile-net-revenue` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.17:
 
 ```python
 """Compile one metric request to SQL with the book's semantic layer, run it, and check it against the golden answer. The printed `matches golden: yes` line is the fact the prose states."""
@@ -208,7 +208,7 @@ The [compiled request](#compile-a-metric-request) read one table. Many questions
 
 The shop's case is a category manager's question: net revenue by product category in 2025. Net revenue is summed per order, in `analytics.fct_orders`, and a product's category is reached through the order lines, several per order. The layer refuses `net_revenue` by `product__category`. A hand-written join runs beside that refusal, since it returns a number without error, and the line-level metric is asked for instead.
 
-Example `entity-join-no-fanout` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.16:
+Example `entity-join-no-fanout` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.17:
 
 ```python
 """Ask for net revenue by product category: the layer refuses the fan-out join and points to a line-level metric. The printed `inflated by` and `difference from net revenue` lines are the facts the prose states."""
@@ -281,6 +281,75 @@ The layer refuses the request and says why: `'net_revenue' is summed per order, 
 
 `line_net_revenue` is net revenue counted on the lines themselves, in the `order_lines` semantic model, with net revenue's rule on cancelled orders. Its SQL joins the lines to products and to orders, both many rows to one, so no line repeats. The categories add up to 1,651,526.96 euros, 0.90 away from net revenue. That gap is rounding, not fan-out: the warehouse rounds each line's amount and each order's total to the cent separately, and over a year of lines the cents add up.
 
+Figure 5.1 draws the five semantic models as boxes, with an arrow from each model to the model where one of its foreign entities is primary. The hops where many rows share one primary row are drawn in accent, and there are 3 of them. Each order has 2.56 lines on average, and no order has more than 6 lines, so a sum over orders joined to their lines counts each order once for each line. A sum on the lines follows an arrow to the primary side, where each line meets one order, which is why `line_net_revenue` is safe. In general, a sum that follows an arrow repeats nothing, while a sum defined on the primary side and joined back across a hop where many rows share one primary row repeats once per row.
+
+The hop from refunds is not one of those: refunds come to 0.07 per order, and no order has more than 1. The layer still goes by the declaration, as it did when it refused the category request, and refunds' `order` is declared foreign, whatever the data holds.
+
+*Figure 5.1. The five semantic models, with an arrow from each foreign entity to the model where it is primary.*
+
+![Each accented arrow points from a model with many rows to the model where they share one primary row, so a sum on the primary side repeats if it is joined back against the arrow](https://rollingedition.ai/books/business-intelligence-with-agents/2026.11.17/figures/entity-graph.svg)
+
+Example `figure-entity-graph` (Python 3.12.15 · duckdb 2.0.0 · matplotlib 3.11.2 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.17:
+
+```python
+"""Draw the shop's five semantic models as boxes, with an arrow from each model with a foreign entity to the model
+where that entity is primary. An arrow is marked many, and drawn in accent, where some primary row has more than one
+row on the foreign side. A sum that follows an arrow repeats nothing; a sum on the primary side joined back across a
+many arrow repeats once per row. The printed lines are the facts the prose states."""
+import lib  # noqa: F401  (first, so threads and seeds are fixed before any numerical library loads)
+from matplotlib.patches import FancyBboxPatch
+
+from lib.figures import ACCENT, INK, MUTED, new_figure, save
+from lib.semantic import load
+from lib.warehouse import connect
+
+# Hand-chosen box centres and label anchors, so the drawing is fixed.
+POS = {"customers": (0.13, 0.78), "orders": (0.50, 0.78), "refunds": (0.13, 0.20),
+       "order_lines": (0.50, 0.20), "products": (0.87, 0.20)}
+LABEL = {("orders", "customers"): (0.315, 0.90, "center"), ("order_lines", "orders"): (0.53, 0.49, "left"),
+         ("order_lines", "products"): (0.685, 0.05, "center"), ("refunds", "orders"): (0.36, 0.60, "right")}
+
+layer, con = load(), connect()
+owner = {m.primary_entity: m for m in layer.semantic_models.values()}   # the model where each entity is primary
+fig, ax = new_figure(height=3.4)
+ax.set_xlim(0, 1), ax.set_ylim(0, 1), ax.set_axis_off()
+boxes = {n: ax.add_patch(FancyBboxPatch((x - 0.12, y - 0.085), 0.24, 0.17, fc="none", ec=INK,
+                                        boxstyle="round,pad=0,rounding_size=0.02")) for n, (x, y) in POS.items()}
+for name, (x, y) in POS.items(): ax.text(x, y, name, ha="center", va="center", color=INK, fontsize=10)
+fan_out = 0
+for model in layer.semantic_models.values():
+    for entity in (e for e in model.entities.values() if e.type == "foreign"):
+        target = owner[entity.name]
+        groups = f"SELECT count(*) AS n FROM {model.table} GROUP BY {entity.expr}"
+        most = con.execute(f"SELECT max(n) FROM ({groups})").fetchone()[0]
+        many = most > 1
+        fan_out += many
+        if entity.name == "order":  # the two order hops the prose quotes
+            per = con.execute(f"SELECT count(*) * 1.0 / (SELECT count(*) FROM {target.table}) FROM {model.table}")
+            print(f"{model.name} rows per order: {per.fetchone()[0]:.2f}\nmost {model.name} rows for one order: {most}")
+        # a many hop is solid and accent; the other is dashed too, so colour is never alone
+        look = dict(color=ACCENT, lw=2.2) if many else dict(color=MUTED, lw=1.2, ls="--")
+        ax.annotate("", xy=POS[target.name], xytext=POS[model.name], xycoords="axes fraction",
+                    arrowprops=dict(arrowstyle="-|>", patchA=boxes[model.name], patchB=boxes[target.name], **look))
+        text = (f"{entity.name}: many {model.name} per {entity.name}" if many
+                else f"{entity.name}: {model.name} per {entity.name}, at most {most}")
+        x, y, align = LABEL[(model.name, target.name)]
+        ax.text(x, y, text, ha=align, va="center", color=look["color"], fontsize=9)
+print(f"hops with many rows per primary row: {fan_out}")
+save(fig, "entity-graph")
+```
+
+Output:
+
+```text
+order_lines rows per order: 2.56
+most order_lines rows for one order: 6
+refunds rows per order: 0.07
+most refunds rows for one order: 1
+hops with many rows per primary row: 3
+figure: figures/entity-graph.svg
+```
+
 When a request needs numbers from two tables, a layer doesn't join the tables first. It aggregates each metric in its own table, then joins the aggregated results on the dimensions they share; MetricFlow uses full outer joins for that step ([dbt Labs](https://docs.getdbt.com/docs/build/join-logic)), and so does the book's compiler. Each sum is complete before any join, so no join can repeat its rows.
 
 The protection holds only as far as the declarations are true. Declare the lines' `order` entity primary, as the [loading example](#entities-measures-dimensions) did on purpose, and the layer would join orders to lines without complaint.
@@ -295,7 +364,7 @@ The shop's finance team defines the refund rate in golden question `gq-028`: ref
 
 The tempting version is why this example matters: averaging each order's refund rate per region looks right and isn't. Beside it sits the layer's rate for fiscal 2026, which the example compiles.
 
-Example `refund-rate-metric` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.16:
+Example `refund-rate-metric` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.17:
 
 ```python
 """A ratio metric divides two separately aggregated sums, and averaging per-order ratios gives a different number. The printed `matches golden: yes` lines are the facts the prose states."""
@@ -403,7 +472,7 @@ The shop's [fiscal year](#meet-the-shop) starts on February 1 and is named for t
 
 Grouping net revenue by fiscal and calendar quarter shows how far apart the two calendars sit when a year starts in February. Two golden questions about first fiscal quarters close the check.
 
-Example `fiscal-quarter-grain` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.16:
+Example `fiscal-quarter-grain` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.17:
 
 ```python
 """Group net revenue by fiscal quarter, a custom grain from the time spine, and by calendar quarter, a standard one. The printed `matches golden: yes` lines are the facts the prose states."""
@@ -483,7 +552,7 @@ The [shop's YAML](#entities-measures-dimensions) is portable only if a productio
 
 The two compilers should return the same rows, so the example checks 8 requests: simple, ratio and derived metrics, a two-hop join, the fiscal grains and two time dimensions on one table. Each pair runs on the shop's warehouse and its rows are compared. The run also prints MetricFlow's SQL for chapter 1's question, and its refusal of the [join section's](#join-through-entities) request.
 
-Example `metricflow-agrees` (Python 3.12.15 · duckdb 2.0.0 · metricflow 0.214.0 · pydantic 2.14.3 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.16:
+Example `metricflow-agrees` (Python 3.12.15 · duckdb 2.0.0 · metricflow 0.214.0 · pydantic 2.14.3 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.17:
 
 ```python
 """Compile the same requests with MetricFlow and with the book's compiler, run both, and compare the results. The printed `requests that agree` line is the fact the prose states."""
@@ -583,7 +652,7 @@ MetricFlow's SQL is longer, with a comment naming each step, and reaches the sam
 
 MetricFlow also asks more of the YAML than the book's compiler does: every semantic model that a simple metric counts on needs a time dimension of its own. The next code builds the engine twice. The copy points `order_lines` at `analytics.fct_order_lines`, the analytics table, which has no order day, and drops the model's time dimension.
 
-Example `metricflow-needs-a-date` (Python 3.12.15 · duckdb 2.0.0 · metricflow 0.214.0 · pydantic 2.14.3 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.16:
+Example `metricflow-needs-a-date` (Python 3.12.15 · duckdb 2.0.0 · metricflow 0.214.0 · pydantic 2.14.3 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.17:
 
 ```python
 """Show that MetricFlow won't build its engine when a fact's semantic model has no date of its own."""
@@ -634,7 +703,7 @@ The shop's YAML builds a `MetricFlowEngine`. The copy doesn't: MetricFlow raises
 
 A layer that compiles to an expression tree, as [the book's compiler does](#compile-a-metric-request), can write that tree for another warehouse. sqlglot 30.31.0 calls itself "a transpiler, not a validator", warns that some queries can't be translated between some dialects, and by default makes a best-effort translation unless `unsupported_level` is set to raise ([PyPI](https://pypi.org/project/sqlglot/30.27.0/)). Each dialect's refund rate by calendar quarter differs in two lines, the quarter and the division, so the example prints those two for each dialect. It also prints BigQuery's quarter as sqlglot writes it from an uncast column.
 
-Example `transpile-metric-sql` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.16:
+Example `transpile-metric-sql` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.17:
 
 ```python
 """Write one compiled metric request in six warehouses' dialects, and show what transpiling doesn't check. The printed quarter and ratio lines per dialect, and the `bigquery without the cast` line, are the facts the prose states."""

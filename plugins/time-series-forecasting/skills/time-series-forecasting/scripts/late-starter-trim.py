@@ -27,7 +27,7 @@ def fit_and_score(hist, c):
     sf = StatsForecast(models=[AutoETS(season_length=24)], freq="h", n_jobs=1)
     sf.fit(df=fill_clock_change_hours(hist)[["unique_id", "ds", "y"]])   # clock-change hours filled from their neighbouring hours, as elsewhere
     fc = sf.predict(h=HORIZON)
-    actual = masked[(masked["ds"] >= c) & (masked["ds"] < c + pd.Timedelta(hours=HORIZON))]   # the day's 24 readings, to score against
+    actual = masked[(masked["ds"] >= c) & (masked["ds"] < c + pd.Timedelta(HORIZON, unit="h"))]   # the day's 24 readings, to score against
     joined = fc.merge(actual[["ds", "y"]], on="ds", how="left")
     # the form's method name, the mean forecast, the day's MAE, and the mean of the readings
     return sf.fitted_[0, 0].model_["method"], float(joined["AutoETS"].mean()), float((joined["y"] - joined["AutoETS"]).abs().mean()), float(joined["y"].mean())

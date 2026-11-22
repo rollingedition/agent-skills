@@ -1,0 +1,4 @@
+layers from 5 on in which most heads do: 21 of 28
+highest first-token weight, layers 1 to 4: 0.34
+highest first-token weight, layers 5 to 32: 1.00
+figure: figures/first-token-sinks.svg

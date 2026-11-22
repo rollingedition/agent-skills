@@ -14,8 +14,14 @@ cffi==2.1.1
     # via cryptography
 click==8.5.1
     # via uvicorn
+contourpy==1.4.0
+    # via matplotlib
 cryptography==50.0.2
     # via pyjwt
+cycler==0.12.1
+    # via matplotlib
+fonttools==4.68.0
+    # via matplotlib
 h11==0.16.0
     # via
     #   httpcore2
@@ -34,14 +40,24 @@ jsonschema==4.26.0
     # via mcp
 jsonschema-specifications==2025.9.1
     # via jsonschema
+kiwisolver==1.5.1
+    # via matplotlib
+matplotlib==3.11.2
+    # via -r base.in
 mcp==2.3.0
     # via -r base.in
 mcp-types==2.3.0
     # via mcp
+numpy==2.5.5
+    # via
+    #   contourpy
+    #   matplotlib
 opentelemetry-api==1.45.2
     # via mcp
 packaging==26.3
     # via pytest
+pillow==13.0.0
+    # via matplotlib
 pluggy==1.7.0
     # via pytest
 pycparser==3.12
@@ -57,8 +73,12 @@ pygments==2.21.0
     # via pytest
 pyjwt==2.15.1
     # via mcp
+pyparsing==3.3.3
+    # via matplotlib
 pytest==9.2.0
     # via -r base.in
+python-dateutil==4.0.0
+    # via matplotlib
 python-multipart==0.0.34
     # via mcp
 referencing==0.37.0
@@ -95,5 +115,7 @@ typing-inspection==0.4.5
     # via
     #   mcp
     #   pydantic
+tzdata==2026.6
+    # via python-dateutil
 uvicorn==0.54.0
     # via mcp

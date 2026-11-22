@@ -3,13 +3,13 @@ title: "Securing LLM Applications and Agents"
 chapter: "Keep the defences from regressing"
 chapter_id: regression-gates
 book: securing-llm-applications-and-agents
-edition: 2026.11.1
+edition: 2026.11.2
 verified: 2026-11-22
-edition_code: M6D1-RCM2
+edition_code: Y3X2-HXT9
 canonical: https://rollingedition.com/securing-llm-applications-and-agents/regression-gates
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“Keep the defences from regressing,” chapter 12 of Securing LLM Applications and Agents, Edition 2026.11.1, examples passed Nov 22, 2026. By Rolling Edition, https://rollingedition.com/securing-llm-applications-and-agents/regression-gates. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Keep the defences from regressing,” chapter 12 of Securing LLM Applications and Agents, Edition 2026.11.2, examples passed Nov 22, 2026. By Rolling Edition, https://rollingedition.com/securing-llm-applications-and-agents/regression-gates. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Keep the defences from regressing
 
@@ -29,7 +29,7 @@ The utility floor is measured against the undefended run, so the baseline's reco
 
 The next example runs the gate on two runs: one with the defence switched off, and one with a single case changed. It prints both checks for each run, and then a sweep that shows how many successes the attack check tolerates.
 
-Example `gate-catches-a-regression` (Python 3.13.16 · bm25s 0.3.16 · linkify-it-py 2.2.0 · markdown-it-py 4.3.0 · numpy 2.5.5), passing in Edition 2026.11.1:
+Example `gate-catches-a-regression` (Python 3.13.16 · bm25s 0.3.16 · linkify-it-py 2.2.0 · markdown-it-py 4.3.0 · numpy 2.5.5), passing in Edition 2026.11.2:
 
 ```python
 """The gate fails a run with the defence off, on its attack check, and passes a one-case change that is within noise.
@@ -130,7 +130,7 @@ The thresholds come from one place. The recording script `recordings/gate_thresh
 
 The next example prints the dev numbers the rule reads, and the two checks it gives the defended run.
 
-Example `gate-thresholds` (Python 3.13.16 · bm25s 0.3.16 · linkify-it-py 2.2.0 · markdown-it-py 4.3.0 · numpy 2.5.5), passing in Edition 2026.11.1:
+Example `gate-thresholds` (Python 3.13.16 · bm25s 0.3.16 · linkify-it-py 2.2.0 · markdown-it-py 4.3.0 · numpy 2.5.5), passing in Edition 2026.11.2:
 
 ```python
 """The gate's thresholds come from dev, once, and the defended run passes both checks on its interval bounds.
@@ -187,6 +187,82 @@ The rule has two parts, and each one is a sentence about a bound.
 
 The ceiling is the defended run's upper bound, with one more of its held cases counted as a success, rounded up to a whole point. On dev the defended run reads 6.7%, upper bound 15.0%. With one more case counted as a success, its upper bound is 16.7%, so the stored ceiling is 0.17. The extra case is the noise allowance. Without it, a gate would fail on one case of noise alone.
 
+Reading the bound instead of the rate puts the pass line at a smaller count of successes. Figure 12.1 draws the low counts of the sweep from [the gate section](#the-gate), in which the first cases in ID order succeed. The lower line is the observed rate, the upper line is the upper bound the check reads, and the dashed line is the stored ceiling. The dotted line marks the largest count that passes.
+
+*Figure 12.1. The observed rate and its interval's upper bound as the first dev cases in ID order succeed, with the stored ceiling and the pass line.*
+
+![In the sweep, the upper bound of attack success crosses the stored ceiling at a smaller count of successes than the observed rate does](https://rollingedition.ai/books/securing-llm-applications-and-agents/2026.11.2/figures/gate-boundary.svg)
+
+Example `figure-gate-boundary` (Python 3.13.16 · bm25s 0.3.16 · linkify-it-py 2.2.0 · markdown-it-py 4.3.0 · matplotlib 3.11.2 · numpy 2.5.5), passing in Edition 2026.11.2:
+
+```python
+"""The gate reads the upper bound of attack success, so its pass line falls well below the count where the rate reaches the ceiling.
+
+The sweep is the regression example's: the first k dev cases in ID order succeed, and the attack check runs on each count.
+The figure draws the observed rate and the bound against k, with the stored ceiling as a line.
+"""
+from lib import gate  # lib first: threads and seeds are fixed here
+from lib.figures import ACCENT, INK, MUTED, new_figure, save
+
+
+def main():
+    thresholds = gate.Thresholds.load()  # the ceiling that gate-thresholds chose from dev
+    baseline = gate.dev_run("baseline")
+    defended = gate.dev_run("enforce-args")
+    cases = sorted(defended.attack)
+
+    counts, rates, bounds, passing = [], [], [], []
+    for k in range(13):  # 0 to 12 of the 60 cases: the region where the pass line falls
+        swept = gate.Run(f"{k} successes", {case: i < k for i, case in enumerate(cases)}, defended.utility)
+        rate, _, hi = gate.attack_interval(swept)  # the rate and the upper bound the check reads
+        counts.append(k)
+        rates.append(100 * rate)
+        bounds.append(100 * hi)
+        if gate.gate(swept, baseline, thresholds)[0].passed:
+            passing.append(k)
+
+    ceiling = 100 * thresholds.attack_upper_max
+    largest = max(passing)
+    smallest_fail = min(k for k in counts if k not in passing)
+    # The count where the rate alone would reach the ceiling, for comparison with the pass line the bound sets.
+    rate_reaches = next(k for k, r in zip(counts, rates) if r >= ceiling)
+    print(f"ceiling, stored: {ceiling:.1f}%")
+    print(f"largest count that passes, of {len(cases)} cases: {largest}")
+    print(f"smallest count that fails, of {len(cases)} cases: {smallest_fail}")
+    print(f"upper bound at the largest passing count: {bounds[largest]:.1f}%")
+    print(f"upper bound at the smallest failing count: {bounds[smallest_fail]:.1f}%")
+    print(f"count at which the rate alone reaches the ceiling: {rate_reaches}")
+
+    fig, ax = new_figure(height=3.2)
+    ax.plot(counts, rates, color=INK, marker="o", markersize=3, label="observed rate")
+    ax.plot(counts, bounds, color=ACCENT, marker="o", markersize=3, label="upper bound of the interval")
+    ax.axhline(ceiling, color=MUTED, linestyle="--", label="stored ceiling")
+    ax.axvline(largest, color=MUTED, linestyle=":", linewidth=0.8, label="largest count that passes")
+    ax.set_xlabel(f"successes among {len(cases)} dev cases")
+    ax.set_ylabel("percent")
+    ax.set_xticks(counts)
+    ax.legend(loc="upper left")
+    save(fig, "gate-boundary")
+
+
+if __name__ == "__main__":
+    main()
+```
+
+Output:
+
+```text
+ceiling, stored: 17.0%
+largest count that passes, of 60 cases: 5
+smallest count that fails, of 60 cases: 6
+upper bound at the largest passing count: 16.7%
+upper bound at the smallest failing count: 20.0%
+count at which the rate alone reaches the ceiling: 11
+figure: figures/gate-boundary.svg
+```
+
+The bound is 16.7% at the largest count that passes, under the ceiling, and 20.0% at the smallest count that fails. The rate alone first reaches the ceiling at 11 successes.
+
 The floor is the lower bound of the paired utility difference, defended minus baseline, rounded down to a step of five points. On dev that lower bound is +0.0%, so the stored floor is +0.00.
 
 The floor is strict, and the book chose it on purpose. The benign set has 15 tasks on dev. A run that loses one benign task has a paired difference of one task lost, and the bootstrap's lower bound then falls under zero, so the gate fails it. A floor of zero therefore means that any lost benign task fails the gate on dev, and a defence that costs utility will fail here. A team that accepts some lost utility for a larger gain in safety may loosen the floor. The place to do that is the rule in the gate's code, applied on dev, with the new value stored and the reason written next to it. It is never done by looking at held-out first.
@@ -205,7 +281,7 @@ The security log holds only what detecting and answering an incident needs. It i
 
 The next example builds the log from the replayed dev runs of the undefended run and of each defence the log covers. It prints the first lines and the counts, then runs two queries on the log alone.
 
-Example `security-events-log` (Python 3.13.16 · bm25s 0.3.16 · huggingface-hub 2.4.0 · linkify-it-py 2.2.0 · markdown-it-py 4.3.0 · numpy 2.5.5 · tokenizers 0.23.3 · torch 2.15.0+cpu · transformers 5.23.0), passing in Edition 2026.11.1:
+Example `security-events-log` (Python 3.13.16 · bm25s 0.3.16 · huggingface-hub 2.4.0 · linkify-it-py 2.2.0 · markdown-it-py 4.3.0 · numpy 2.5.5 · tokenizers 0.23.3 · torch 2.15.0+cpu · transformers 5.23.0), passing in Edition 2026.11.2:
 
 ```python
 """The security log as sorted JSON lines, and the two queries an incident responder runs on the log alone.
@@ -327,7 +403,7 @@ A team that reports to an auditor or a security lead needs the defences in the t
 
 The next example prints that table, and it asserts that the table covers exactly the defences that have a recording the example can replay.
 
-Example `standards-report` (Python 3.13.16 · bm25s 0.3.16 · linkify-it-py 2.2.0 · markdown-it-py 4.3.0 · numpy 2.5.5), passing in Edition 2026.11.1:
+Example `standards-report` (Python 3.13.16 · bm25s 0.3.16 · linkify-it-py 2.2.0 · markdown-it-py 4.3.0 · numpy 2.5.5), passing in Edition 2026.11.2:
 
 ```python
 """Each defence the book measures, with its label and the confirmed risk IDs it addresses.

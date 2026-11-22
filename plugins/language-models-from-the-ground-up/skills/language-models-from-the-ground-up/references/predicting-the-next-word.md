@@ -3,13 +3,13 @@ title: "Language Models from the Ground Up"
 chapter: "Predicting the next word"
 chapter_id: predicting-the-next-word
 book: language-models-from-the-ground-up
-edition: 2026.11.17
-verified: 2026-11-19
-edition_code: DR5A-G7ZM
+edition: 2026.11.18
+verified: 2026-11-22
+edition_code: 5E4E-0JVJ
 canonical: https://rollingedition.com/language-models-from-the-ground-up/predicting-the-next-word
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“Predicting the next word,” chapter 1 of Language Models from the Ground Up, Edition 2026.11.17, examples passed Nov 19, 2026. By Rolling Edition, https://rollingedition.com/language-models-from-the-ground-up/predicting-the-next-word. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Predicting the next word,” chapter 1 of Language Models from the Ground Up, Edition 2026.11.18, examples passed Nov 22, 2026. By Rolling Edition, https://rollingedition.com/language-models-from-the-ground-up/predicting-the-next-word. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Predicting the next word
 
@@ -29,7 +29,7 @@ The store's text, which every example in this book learns from, is real. It come
 
 Before counting anything, look at the text: the size of each split, and a few names:
 
-Example `store-text` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1), passing in Edition 2026.11.17:
+Example `store-text` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1), passing in Edition 2026.11.18:
 
 ```python
 """Counts the store's products in each split and the words in its training names, then prints one ordinary training name
@@ -79,7 +79,7 @@ Two details make the counts complete. A name's first word follows nothing, and i
 
 Start with a word whose next word matters to the search box, `coffee`. The example counts every pair in the training names, then lists what followed it:
 
-Example `count-next-words` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1), passing in Edition 2026.11.17:
+Example `count-next-words` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1), passing in Edition 2026.11.18:
 
 ```python
 """Counts every word pair in the training names, padded with start and end markers, and lists the words that most often
@@ -127,11 +127,11 @@ Counts say what happened, but a language model needs probabilities: how likely e
 
 P(v | w) = count(w v) / count(w)
 
-Read it as "the probability of `v`, given `w`". Estimating probabilities from the fraction of times something happened is called **maximum likelihood estimation**: of all the probability tables you could choose, it's the one that makes the training text likeliest ([Jurafsky and Martin, chapter 3](https://web.stanford.edu/~jurafsky/slp3/3.pdf)).
+Read it as "the probability of `v`, given `w`". Estimating probabilities from the fraction of times something happened is an example of **maximum likelihood estimation**: of all the probability tables you could choose, it's the one that makes the training text likeliest ([Jurafsky and Martin, chapter 3](https://web.stanford.edu/~jurafsky/slp3/3.pdf)).
 
 Apply the formula to `coffee` and four words that might follow it, printing each probability beside the counts behind it, and then the sum over every word that followed `coffee`:
 
-Example `next-word-probabilities` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1), passing in Edition 2026.11.17:
+Example `next-word-probabilities` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1), passing in Edition 2026.11.18:
 
 ```python
 """Divides how often each of four words followed coffee by how often coffee was followed by anything, then prints the sum of the
@@ -162,6 +162,71 @@ The probabilities of every word that followed `coffee` add up to 1.0, as a distr
 
 The fourth line is the one to remember. `coffee lamp` never occurs in the training names, so its probability is 0.000  (0 of 1260). The model doesn't say that a coffee lamp is unlikely; it says a coffee lamp is impossible. For a furniture store that's a reasonable bet, but the same zero applies to every pair the model hasn't seen, including perfectly ordinary ones. That's the flaw this chapter ends on.
 
+A bigram model's prediction is a whole distribution over the next word, and its shape depends on the word before it. Figure 1.1 draws, for the 15 likeliest words after `coffee` and after the start marker, how much of the probability they hold as each one is added in turn, most likely first.
+
+*Figure 1.1. The share of probability held by the likeliest words after coffee and after the start of a name, one more word at a time.*
+
+![After coffee one word takes most of the probability, while the start of a name spreads it across many words](https://rollingedition.ai/books/language-models-from-the-ground-up/2026.11.18/figures/next-word-distribution.svg)
+
+Example `figure-next-word-distribution` (Python 3.12.15 · matplotlib 3.11.2 · numpy 2.5.5 · pandas 3.1.1), passing in Edition 2026.11.18:
+
+```python
+"""Draws how much of the probability after coffee and after the start marker the likeliest words hold, one more word at a time.
+The printed shares show the shape: after coffee one word holds most of it, after the start marker fifteen words hold little."""
+from lib.bigrams import END, START, Bigrams
+from lib.figures import ACCENT, INK, new_figure, save
+from lib.store import is_ordinary, load_products
+
+model = Bigrams(load_products("train")["name"])          # the same counts next-word-probabilities uses, training split only
+contexts = [("coffee", "coffee", ACCENT), (START, "start marker", INK)]   # START is <s>, the marker before every name
+
+
+def shown(word: str) -> str:
+    """The word as the figure prints it; a product line's name is hidden, as everywhere in this book."""
+    if word == END:
+        return "end marker"
+    return word if is_ordinary(word) else "[name]"
+
+
+fig, ax = new_figure(height=3.8)                         # one axis from 0 to 1 for both contexts, so their lines compare directly
+for word, name, color in contexts:
+    # Sort by count, then by word, so ties come out in the same order on every run.
+    ranked = sorted(model.counts[word].items(), key=lambda item: (-item[1], item[0]))[:15]
+    total = model.totals[word]                           # every word that followed this context, not only the 15 drawn
+    # The share held by the 1, 2, ... 15 likeliest words: the line the figure draws, ending at the share of the 15.
+    cumulative = [sum(n for _, n in ranked[:k]) / total for k in range(1, len(ranked) + 1)]
+    ax.plot(range(1, len(cumulative) + 1), cumulative, color=color, marker="o", markersize=3, label=f"after {name}")
+    print(f"likeliest word after {name}: {shown(ranked[0][0])}")
+    print(f"top probability after {name}: {cumulative[0]:.3f}")
+    print(f"words that followed {name}: {len(model.counts[word])}")
+    print(f"share of probability in the 15 drawn, after {name}: {cumulative[-1]:.3f}")
+
+ax.set_xticks(range(1, 16))
+ax.set_ylim(0, 1)
+ax.set_xlabel("number of likeliest words counted, most likely first")
+ax.set_ylabel("share of the probability they hold")
+ax.legend(loc="center right")
+save(fig, "next-word-distribution")
+```
+
+Output:
+
+```text
+likeliest word after coffee: table
+top probability after coffee: 0.896
+words that followed coffee: 29
+share of probability in the 15 drawn, after coffee: 0.989
+likeliest word after start marker: 3
+top probability after start marker: 0.006
+words that followed start marker: 19570
+share of probability in the 15 drawn, after start marker: 0.040
+figure: figures/next-word-distribution.svg
+```
+
+A confident prediction and a spread-out one come from the same model. After `coffee`, the likeliest word is table, and it alone holds 0.896; the 15 likeliest words hold 0.989 of the probability.
+
+After the start marker the line barely leaves the floor. The likeliest word holds 0.006, and the 15 likeliest hold only 0.040, because the first word of a name is one of 19570 different words.
+
 **Working rule:** Derive probabilities from counts by division, and check that each word's probabilities sum to one; a sum that doesn't is a bug in the counting. Treat a probability as only as good as the count under it: 0.9 from 1,000 pairs is evidence, while 1.0 from a single pair is an anecdote.
 
 ## Suggest the next word as a shopper types {#suggest-next-words}
@@ -170,7 +235,7 @@ Autocomplete, the store's first need, wants the likeliest next words, and a prob
 
 Five typed prefixes, from one word to two, show where the suggestions help and where they go wrong. Three suggestions come back for each:
 
-Example `autocomplete` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1), passing in Edition 2026.11.17:
+Example `autocomplete` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1), passing in Edition 2026.11.18:
 
 ```python
 """Asks the bigram model for its three likeliest next words after five typed prefixes, then counts the training names that
@@ -210,11 +275,11 @@ The last line shows the model's real limit. A shopper who types `patio bar` gets
 
 ## Generate names one word at a time {#generate-one-word-at-a-time}
 
-The same probability table can write text as well as complete it. To **generate**, start at `<s>`, draw the next word at random in proportion to its probability, append it, and repeat from the word you drew, until the model draws `</s>`. Drawing at random, rather than always taking the likeliest word, is what lets the model produce varied names instead of the same one every time. The large language models this book builds toward write text the same way: one token at a time, each chosen from probabilities computed from the text so far.
+The same probability table can write text as well as complete it. To **generate from this model**, start at `<s>`, draw the next word at random in proportion to its probability, append it, and repeat from the word you drew, until the model draws `</s>`. Drawing at random, rather than always taking the likeliest word, is what lets the model produce varied names instead of the same one every time. The large language models this book builds toward write text the same way: one token at a time, each chosen from probabilities computed from the text so far.
 
 Six names, drawn from those probabilities by a seeded random generator, come out the same on every run, so the names in this book match what the code produces:
 
-Example `generate-names` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1), passing in Edition 2026.11.17:
+Example `generate-names` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1), passing in Edition 2026.11.18:
 
 ```python
 """Draws six product names from the bigram model, one word at a time, with a fixed seed so the same six come out on every
@@ -269,13 +334,13 @@ A language model is good when it gives high probability to the text that actuall
 
 Start from one pair. If the model gave the actual next word probability p, its **surprise** at that word is −log p: zero when it was certain (p = 1) and larger the less it expected the word. The **cross-entropy** of a text is the average surprise over every word in it, written with N as the number of predicted words:
 
-cross-entropy = −(1/N) Σ log P(next word | previous word)
+cross-entropy = −(1/N) Σ log P(next word | the words before it)
 
 **Perplexity** is the cross-entropy turned back into a count: perplexity = exp(cross-entropy) ([Jurafsky and Martin, chapter 3](https://web.stanford.edu/~jurafsky/slp3/3.pdf)). It reads as the number of equally likely words the model was choosing between, on average, at each step. A perplexity of 10 means the model was, on average, as uncertain as if it had to pick among 10 equally likely words. Lower is better, and a model that knew every next word would score 1. This book uses natural logarithms throughout, which changes cross-entropy's units but not perplexity.
 
 Score one training name, `sled coffee table`, pair by pair to see where its surprise sits, and then every training name at once:
 
-Example `perplexity-by-hand` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1), passing in Edition 2026.11.17:
+Example `perplexity-by-hand` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1), passing in Edition 2026.11.18:
 
 ```python
 """Scores the training name sled coffee table pair by pair, to show where its surprise sits, then scores every training name
@@ -322,7 +387,7 @@ That number flatters the model, because it's measured on the text the counts cam
 
 A model trained by counting knows only the pairs it has counted, and the validation names were kept apart from the training names for exactly this reason: they show what happens when the model meets text it never saw. The model scored 16.9 on the training names, in [score a model with perplexity](#score-with-perplexity). Before you run the next example, guess its perplexity on the 4,282 validation names.
 
-Example `perplexity-on-new-names` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1), passing in Edition 2026.11.17:
+Example `perplexity-on-new-names` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1), passing in Edition 2026.11.18:
 
 ```python
 """Scores the bigram model on the validation names, which it never learned from, then counts the pairs in them that never
@@ -376,7 +441,7 @@ where V is the size of the [vocabulary](#words-leave-gaps), every word the model
 
 Two numbers show the cost, the probability of `table` after `coffee` and perplexity, under each model:
 
-Example `add-one-smoothing` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1), passing in Edition 2026.11.17:
+Example `add-one-smoothing` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1), passing in Edition 2026.11.18:
 
 ```python
 """Compares the counted and add-one bigram models on one probability and on perplexity, to show what add-one smoothing

@@ -3,13 +3,13 @@ title: "Agent Harnesses"
 chapter: "Test the agent, then measure it on a task set"
 chapter_id: testing-the-agent
 book: agent-harnesses
-edition: 2026.11.6
+edition: 2026.11.7
 verified: 2026-11-22
-edition_code: 3KM9-2NP7
+edition_code: YNMR-JA84
 canonical: https://rollingedition.com/agent-harnesses/testing-the-agent
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“Test the agent, then measure it on a task set,” chapter 10 of Agent Harnesses, Edition 2026.11.6, examples passed Nov 22, 2026. By Rolling Edition, https://rollingedition.com/agent-harnesses/testing-the-agent. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Test the agent, then measure it on a task set,” chapter 10 of Agent Harnesses, Edition 2026.11.7, examples passed Nov 22, 2026. By Rolling Edition, https://rollingedition.com/agent-harnesses/testing-the-agent. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Test the agent, then measure it on a task set
 
@@ -27,7 +27,7 @@ Each scenario test asserts how the run ended and whether the run counts as done 
 
 A stop task, T-18, asks for a Windows job in `.github/workflows/test.yml`, which the harness must refuse. The scripted model writes that file anyway, and then asks a question.
 
-Example `scenario-refusal` (Python 3.12.15 · pydantic 2.14.4), passing in Edition 2026.11.6:
+Example `scenario-refusal` (Python 3.12.15 · numpy 2.5.5 · pydantic 2.14.4), passing in Edition 2026.11.7:
 
 ```python
 """A stop task (T-18) over scripted replies: the write under .github/ is refused as a tool error, and the run hands the
@@ -68,7 +68,7 @@ The refused write comes back as a tool error, the same way a bad argument does (
 
 Editing a test to make it pass is refused at the gate, and this run tries it with a yes already queued. It renames a test in `tests/test_format.py` and proposes the change with `finish`.
 
-Example `scenario-gate` (Python 3.12.15 · pydantic 2.14.4), passing in Edition 2026.11.6:
+Example `scenario-gate` (Python 3.12.15 · numpy 2.5.5 · pydantic 2.14.4), passing in Edition 2026.11.7:
 
 ```python
 """A scripted run on T-04 whose finish proposes a rename of an existing test. The gate holds the proposal as never, before
@@ -119,7 +119,7 @@ The gate puts the proposal in its never-allowed class before any person is asked
 
 A loop that sends the same `run_tests` call over and over on T-01 ends wherever the stop rules say. The test records where the run ends under each rule.
 
-Example `scenario-stop-rule` (Python 3.12.15 · pydantic 2.14.4), passing in Edition 2026.11.6:
+Example `scenario-stop-rule` (Python 3.12.15 · numpy 2.5.5 · pydantic 2.14.4), passing in Edition 2026.11.7:
 
 ```python
 """The same reply, run_tests three times in a row, on T-01: with no stop rules the run reaches the step cap of 16, and
@@ -158,7 +158,7 @@ Scripted replies suit these cases for a reason a recorded run cannot supply. A r
 
 The last case feeds the model injected text. T-14 and T-15 each carry an instruction to delete the tests: a comment in `unitcraft/parse.py`, and an assertion message in `tests/test_rounding.py`, which `read_file` returns in full. [Chapter 9](#output-is-untrusted) labels only the results of MCP servers as untrusted. The harness's own `read_file` results carry no such label, so this test checks that the gate holds without one. The scripted run reads both files, then does what the text asks: it renames a test and proposes the change with `finish`. The scripted replies stand in for a model that followed the text, so the example tests the harness, not the model. It checks that the harness itself acts on neither text.
 
-Example `scenario-injected-output` (Python 3.12.15 · pydantic 2.14.4), passing in Edition 2026.11.6:
+Example `scenario-injected-output` (Python 3.12.15 · numpy 2.5.5 · pydantic 2.14.4), passing in Edition 2026.11.7:
 
 ```python
 """A scripted run on T-15 whose tool results carry the T-14 and T-15 injected texts: the comment in unitcraft/parse.py
@@ -240,7 +240,7 @@ A hidden file says what the task asks for in its own terms. `H-04`, for example,
 
 A planted `conftest.py` that exits with an error is the kind of file an agent could write to break a run. Below, one sits beside the correct solution to T-04, the inch, and the check runs on that copy.
 
-Example `hidden-check-in-copy` (Python 3.12.15 · pydantic 2.14.4), passing in Edition 2026.11.6:
+Example `hidden-check-in-copy` (Python 3.12.15 · numpy 2.5.5 · pydantic 2.14.4), passing in Edition 2026.11.7:
 
 ```python
 """The hidden check runs in a fresh folder that holds only the agent's package and README, plus the hidden file. A planted
@@ -296,7 +296,7 @@ The check also runs pytest with the harness's own ini file, with `conftest.py` l
 
 A `conftest.py` is not the only file that could change a run from inside the copy. The agent could also add a `pytest.ini` that loads a plugin, or a module named `pytest.py` that shadows the real one. Each of the three is planted in its own copy below, and the example runs the visible suite and the hidden check on each.
 
-Example `scoring-ignores-planted-config` (Python 3.12.15 · pydantic 2.14.4), passing in Edition 2026.11.6:
+Example `scoring-ignores-planted-config` (Python 3.12.15 · numpy 2.5.5 · pydantic 2.14.4), passing in Edition 2026.11.7:
 
 ```python
 """Config and modules the agent wrote into its copy take no effect on the visible run or on the hidden check.
@@ -379,7 +379,7 @@ The score is pass@1: the number of done tasks, divided by the number of tasks. p
 
 Before it prints anything, the script replays the stored runs and checks them against the record, and it asserts the recorded counts too.
 
-Example `score-task-set` (Python 3.12.15 · pydantic 2.14.4), passing in Edition 2026.11.6:
+Example `score-task-set` (Python 3.12.15 · numpy 2.5.5 · pydantic 2.14.4), passing in Edition 2026.11.7:
 
 ```python
 """Score the v1 recording's 20 runs with the current scorer: done per kind, how the runs ended, and the count with its
@@ -478,6 +478,92 @@ The count of done tasks carries an error that the bare number does not show. For
 
 At 20 tasks the normal approximation is rough. This range covers less than 95% of the time at a proportion of one quarter, so the 95% is a label, not a guarantee.
 
+Figure 10.1 draws that coverage at each proportion from 0.05 to 0.95 in steps of 0.01, for 20 tasks and the same range. The dashed line is the 95% label, and the square marks the observed proportion, 0.25.
+
+*Figure 10.1. How often the naive 95% range covers the true proportion, at the task set's size.*
+
+![At 20 tasks the naive 95% range covers the true proportion less than 95% of the time at almost every proportion, one quarter included](https://rollingedition.ai/books/agent-harnesses/2026.11.7/figures/naive-range-coverage.svg)
+
+Example `figure-naive-range-coverage` (Python 3.12.15 · matplotlib 3.11.2 · numpy 2.5.5 · pydantic 2.14.4), passing in Edition 2026.11.7:
+
+```python
+"""Draw how often the naive 95% range for 20 tasks covers the true proportion, for each proportion from 0.05 to 0.95.
+The range is the one score-task-set prints, with its multiplier and its formula, taken from lib.tasks. Coverage is an
+exact binomial sum over every count from 0 to 20, with no simulation. The lines name the coverage at the observed
+proportion (the recorded task set's done count over its tasks), how many grid proportions have coverage under the 95%
+label, the lowest coverage on the grid and the proportions where it falls, and the highest coverage and where it falls.
+The two ends of the grid have the same coverage, which the code checks."""
+from lib.figures import ACCENT, INK, MUTED, new_figure, save
+from lib.models import load_recording
+from lib.tasks import count_range
+
+from math import comb
+
+manifest, _ = load_recording("task-set")
+n = len(manifest["tasks"])
+observed = sum(1 for t in manifest["tasks"] if t["done"])
+p_obs = observed / n
+
+
+def covers(done: int, p: float) -> bool:
+    """Whether the naive range for `done` of `n` covers the true proportion p, compared in counts as score-task-set does."""
+    low, high = count_range(done, n)
+    return low <= n * p <= high
+
+
+def coverage(p: float) -> float:
+    """The chance, under a binomial with n tasks at proportion p, that the naive range covers p."""
+    return sum(comb(n, k) * p**k * (1 - p) ** (n - k) for k in range(n + 1) if covers(k, p))
+
+
+grid = [round(0.05 + 0.01 * i, 2) for i in range(91)]        # 0.05 to 0.95 in steps of 0.01
+cover = [coverage(p) for p in grid]
+cover_obs = coverage(p_obs)
+assert abs(coverage(grid[0]) - coverage(grid[-1])) < 1e-9, "coverage is symmetric"
+lows = " and ".join(f"{p:.2f}" for p, c in zip(grid, cover) if abs(c - min(cover)) < 1e-9)  # every tie for the lowest
+high_cov, high_p = max(zip(cover, grid))
+
+fig, ax = new_figure(height=2.8)
+ax.plot(grid, cover, color=ACCENT, marker="o", markersize=2.5, label=f"naive 95% range, {n} tasks")
+ax.axhline(0.95, color=INK, linestyle="--", linewidth=1.2, label="the 95% label")
+ax.plot([p_obs], [cover_obs], color=INK, marker="s", markersize=6, linestyle="none",
+        label=f"observed proportion, {observed} of {n} done")
+ax.set_xlabel("true proportion of tasks done")
+ax.set_ylabel("how often the range covers it")
+ax.set_ylim(0, 1)
+ax.legend(loc="lower center", ncol=1)
+
+print(f"tasks: {n}")
+print(f"grid: {grid[0]:.2f} to {grid[-1]:.2f} in steps of 0.01")
+print(f"observed proportion: {p_obs:.2f}")
+print(f"coverage at the observed proportion: {cover_obs:.1%}")
+print(f"proportions on the grid under the 95% label: {sum(1 for c in cover if c < 0.95)} of {len(grid)}")
+print(f"lowest coverage on the grid: {min(cover):.1%}")
+print(f"proportions with the lowest coverage: {lows}")
+print(f"highest coverage on the grid: {high_cov:.1%}")
+print(f"proportion with the highest coverage: {high_p:.2f}")
+save(fig, "naive-range-coverage")
+```
+
+Output:
+
+```text
+tasks: 20
+grid: 0.05 to 0.95 in steps of 0.01
+observed proportion: 0.25
+coverage at the observed proportion: 89.5%
+proportions on the grid under the 95% label: 90 of 91
+lowest coverage on the grid: 63.9%
+proportions with the lowest coverage: 0.05 and 0.95
+highest coverage on the grid: 95.9%
+proportion with the highest coverage: 0.50
+figure: figures/naive-range-coverage.svg
+```
+
+If the true proportion were the observed one, the range would cover 89.5% of the time, under the 95% label. It is lowest at the two ends of the grid, 0.05 and 0.95, at 63.9% each.
+
+It is under the 95% label at 90 of 91 grid proportions. The one exception is a proportion of exactly 0.50, at 95.9%.
+
 The range is naive in two ways. It assumes the tasks are independent, and it has one run per task, so it carries no clustered error. The tasks share one library, so they may not be independent. Miller's paper on error bars for evals recommends clustered standard errors "when questions are drawn in related groups" ([Miller, 2024](https://arxiv.org/abs/2411.00640)). This chapter computes no clustered error, so the range may be too narrow.
 
 A single run is noisy in its own right. A 2026 study of agent runs on SWE-bench Verified reports that the pass@1 of one run can move by 2.2 to 6.0 points, and that run-to-run standard deviations exceed 1.5 points even at temperature 0 ([Bjarnason and colleagues, 2026](https://arxiv.org/abs/2602.07150)). That study used three open-weights models in two scaffolds, not this harness or this model. The runs here are also at temperature 0, and no task was run twice, so their spread is not measured ([what the score does not say](#score-limits)).
@@ -486,11 +572,11 @@ A single run is noisy in its own right. A 2026 study of agent runs on SWE-bench 
 
 ## Two harness versions, compared as counts {#v1-v2}
 
-Two harness versions run on the same tasks give two counts, and counts alone cannot say which harness is better. Harness v1 is the loop of [chapter 1](#tools-and-a-loop) with tool set v1 from [chapter 3](#tool-schemas), a step cap of 16 steps, and no stop rule beyond it. In harness v1, a run that keeps going without a finish or a question ends only at the cap. Harness v2 is the configuration of [chapter 5](#context-budgets): it runs tool set v2, with strict argument models, typed error results and edit errors that name the nearest lines of the file. It adds a `note` tool, two stop rules from [chapter 2](#stop-rules), and compaction under the context budget. Its step cap is 16 too. Both harnesses use the same hidden checks.
+Two harness versions run on the same tasks give two counts, and counts alone cannot say which harness is better. Harness v1 is the loop of [chapter 1](#tools-and-a-loop) with tool set v1 from [chapter 3](#tool-schemas), a step cap of 16 steps, and no stop rule beyond it. In harness v1, a run that keeps going without a finish or a question ends only at the cap. Harness v2 is the configuration of [chapter 5](#context-budgets): it runs tool set v2's tools, with strict argument models, typed error results and edit errors that name the nearest lines of the file, plus a `note` tool, the two stop rules from [chapter 2](#stop-rules) and compaction under the context budget, with chapter 5's system prompt. Its step cap is 16 too. Both harnesses use the same hidden checks.
 
 Printed side by side, each task's done flag, ending, steps, tool calls and tokens for both recordings show where the two harnesses part ways. Totals and endings follow the per-task lines. The script also asserts that both recordings use the same hidden check for every task, so a difference in the counts cannot come from a difference in the checks.
 
-Example `compare-v1-v2` (Python 3.12.15 · pydantic 2.14.4), passing in Edition 2026.11.6:
+Example `compare-v1-v2` (Python 3.12.15 · numpy 2.5.5 · pydantic 2.14.4), passing in Edition 2026.11.7:
 
 ```python
 """The v1 and v2 recordings of the same 20 tasks, as counts: each task's done flag, ending, steps, tool calls and tokens,

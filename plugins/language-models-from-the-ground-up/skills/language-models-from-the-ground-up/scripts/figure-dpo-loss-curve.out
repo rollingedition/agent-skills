@@ -1,0 +1,6 @@
+loss at a margin of 0: 0.693
+loss at a margin of -4: 4.018
+loss at a margin of 4: 0.018
+favours preferred more, margin: 0.40
+favours it less, margin: -0.40
+figure: figures/dpo-loss-curve.svg

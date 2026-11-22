@@ -14,6 +14,6 @@ show("history rows", len(hist))
 show("first history timestamp", hist["ds"].min().strftime("%Y-%m-%d %H:%M"))
 show("last history timestamp", hist["ds"].max().strftime("%Y-%m-%d %H:%M"))
 
-wrong = df[(df["ds"] >= cutoff - pd.Timedelta(hours=HISTORY_HOURS)) & (df["ds"] <= cutoff)]  # the off-by-one cut: <= keeps the cutoff hour
+wrong = df[(df["ds"] >= cutoff - pd.Timedelta(HISTORY_HOURS, unit="h")) & (df["ds"] <= cutoff)]  # the off-by-one cut: <= keeps the cutoff hour
 show("history rows with ds at or before the cutoff", len(wrong))
 show("target-day readings in that cut", int((wrong["ds"] == cutoff).sum()))

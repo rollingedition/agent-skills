@@ -3,13 +3,13 @@ title: "Business Intelligence with Agents"
 chapter: "A data agent end to end"
 chapter_id: bi-agent-end-to-end
 book: business-intelligence-with-agents
-edition: 2026.11.16
-verified: 2026-11-19
-edition_code: CSAB-T5TX
+edition: 2026.11.17
+verified: 2026-11-22
+edition_code: 6VBD-766G
 canonical: https://rollingedition.com/business-intelligence-with-agents/bi-agent-end-to-end
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“A data agent end to end,” chapter 1 of Business Intelligence with Agents, Edition 2026.11.16, examples passed Nov 19, 2026. By Rolling Edition, https://rollingedition.com/business-intelligence-with-agents/bi-agent-end-to-end. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“A data agent end to end,” chapter 1 of Business Intelligence with Agents, Edition 2026.11.17, examples passed Nov 22, 2026. By Rolling Edition, https://rollingedition.com/business-intelligence-with-agents/bi-agent-end-to-end. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # A data agent end to end
 
@@ -31,7 +31,7 @@ The shop's warehouse, which every example queries, is a DuckDB database with two
 
 The row counts are the quickest way to see them, so the example builds the warehouse and prints them.
 
-Example `load-the-warehouse` (Python 3.12.15 · duckdb 2.0.0), passing in Edition 2026.11.16:
+Example `load-the-warehouse` (Python 3.12.15 · duckdb 2.0.0), passing in Edition 2026.11.17:
 
 ```python
 """Build the shop's warehouse from its seed and list every table with its row count. The point about test orders rests on the `raw.orders` and `analytics.fct_orders` rows; the last two lines give the shop's test orders and its cancelled orders."""
@@ -101,7 +101,7 @@ On the examples' side, `lib/model.py` provides `RecordedModel("schema-only-sql")
 
 The question is one the finance team asks every month: "What was net revenue in each region in March 2026?" It is also `gq-002`, a golden question with a checked answer; the next section tests the answer against it. Before judging its number, read the SQL the model writes.
 
-Example `first-question-to-sql` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.16:
+Example `first-question-to-sql` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.17:
 
 ```python
 """Send the warehouse's schema and one question to the recorded model, and print the SQL it wrote. The prose reads that SQL for its table, its columns and its date filter, against the `analytics.fct_orders` line printed above it."""
@@ -160,11 +160,11 @@ The SQL the model wrote is what many analysts would write first. It picks the ma
 
 The model's query for March 2026 [looks right](#ask-for-sql), and it runs. A query that fails is caught when someone sees the error; one that runs and returns a plausible number is the failure that matters, because nothing marks it as wrong. The only way to know is to compare the result with an answer someone has checked.
 
-A golden question is a question with its checked answer: the golden SQL, written against the owner's definition, the golden result that SQL returns, and the kind of answer expected. The golden SQL is checked by running it, which chapter 3 covers. The book keeps its golden questions in `examples/data/golden/questions.toml`, and `lib/golden.py` loads them. The golden SQL for `gq-002` follows the shop's definition of net revenue, which the finance team owns: revenue in euros after discounts and before tax, from real orders that weren't cancelled, on the order's local business day.
+A golden question is a question with its checked answer: the kind of answer expected and, when the answer is a result, the golden SQL, written against the owner's definition, and the golden result that SQL returns. The golden SQL is checked by running it, which chapter 3 covers. The book keeps its golden questions in `examples/data/golden/questions.toml`, and `lib/golden.py` loads them. The golden SQL for `gq-002` follows the shop's definition of net revenue, which the finance team owns: revenue in euros after discounts and before tax, from real orders that weren't cancelled, on the order's local business day.
 
 Put the model's query beside the golden one, region by region, with each region's cancelled orders alongside to check the gap against.
 
-Example `run-the-model-sql` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.16:
+Example `run-the-model-sql` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.17:
 
 ```python
 """Run the SQL the model wrote for net revenue by region in March 2026, and check it against the golden result. The prose reads each region's model, golden and cancelled-orders lines, and the final match line."""
@@ -227,7 +227,7 @@ Notice what the check compares: the rows, not the SQL text, and here the rows do
 
 ## Answer from one defined metric {#answer-from-a-metric}
 
-Counting cancelled orders [broke the first number](#check-the-first-number), because the rule that excludes them isn't in the schema. The fix this book recommends is to stop asking the model for SQL over tables, and to give it defined metrics instead. A metric is a business measure written down once, by the people who own it: a name, a description a person can check, one aggregate over one mart, the rule for which rows count, and the dimensions it may be grouped and filtered by. The model's job shrinks to choosing a metric and its arguments. Code that you wrote and tested turns that choice into SQL.
+Counting cancelled orders [broke the first number](#check-the-first-number), because the rule that excludes them isn't in the schema. The fix this book recommends is to stop asking the model for SQL over tables, and to give it defined metrics instead. A metric is a business measure written down once, by the people who own it: a name, a description a person can check, how it is computed from the marts, the rule for which rows count, and the dimensions it may be grouped and filtered by. The model's job shrinks to choosing a metric and its arguments. Code that you wrote and tested turns that choice into SQL.
 
 This chapter has one metric, `net_revenue`, in `lib/metrics.py`. Its rule for which rows count is the finance team's: `status <> 'cancelled'` on `analytics.fct_orders`. Its dimensions are `region`, `channel`, `fiscal_year`, `fiscal_quarter`, `calendar_year` and `calendar_month`, each mapped to one SQL expression. A metric request names the metric, the dimensions to group by and one value per filtered dimension, and `compile_request()` turns it into SQL. Dimension names come only from that list, and filter values are passed as query parameters, never pasted into the SQL text.
 
@@ -235,7 +235,7 @@ The model reaches the metric through tools. A tool is a function the model may a
 
 The recording `metric-tool-runs` holds the same model's replies to the metric prompt, recorded the way `schema-only-sql` was. Here is `gq-002` again, through the metric.
 
-Example `one-metric-answer` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.16:
+Example `one-metric-answer` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.17:
 
 ```python
 """Answer the same question from one defined metric: the model picks the metric, the code writes and runs the SQL. The point rests on the request and the compiled SQL printed here, and on the assertion that the answer equals the golden result."""
@@ -316,7 +316,7 @@ The five golden questions cover the traps one at a time:
 
 Both approaches face all five, and the output has one row per question, showing where each one fails.
 
-Example `score-five-golden` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.16:
+Example `score-five-golden` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.17:
 
 ```python
 """Score both approaches on five golden questions: schema-only SQL, and the agent with one defined metric. The prose's counts are the totals printed on the last lines, one per outcome and approach."""
@@ -387,7 +387,7 @@ A score says how often the agent was right. A trace says why, for one run. The t
 
 The agent declined `gq-004` in the [five-question score](#score-five-questions), so this replay prints every step of that run.
 
-Example `print-one-trace` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.16:
+Example `print-one-trace` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.17:
 
 ```python
 """Print the trace of one recorded agent run: every model reply and tool result, then what the run returned. The `reason:` line printed last settles whether the decline's stated cause is true."""

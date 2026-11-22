@@ -3,13 +3,13 @@ title: "Open Table Formats"
 chapter: "Correct rows with deletes, updates and merges"
 chapter_id: corrections-and-merges
 book: open-table-formats
-edition: 2026.11.12
+edition: 2026.11.13
 verified: 2026-11-22
-edition_code: CYAZ-TM3D
+edition_code: FWS1-2ZKC
 canonical: https://rollingedition.com/open-table-formats/corrections-and-merges
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“Correct rows with deletes, updates and merges,” chapter 5 of Open Table Formats, Edition 2026.11.12, examples passed Nov 22, 2026. By Rolling Edition, https://rollingedition.com/open-table-formats/corrections-and-merges. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Correct rows with deletes, updates and merges,” chapter 5 of Open Table Formats, Edition 2026.11.13, examples passed Nov 22, 2026. By Rolling Edition, https://rollingedition.com/open-table-formats/corrections-and-merges. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Correct rows with deletes, updates and merges
 
@@ -21,7 +21,7 @@ So far the table only grows. Every write in [chapter 1](#append-each-hour) appen
 
 The first delivery of hour 02 reached the table in [chapter 1](#append-each-hour) with the counts the source sent at the time. A later delivery of the same hour carries corrected counts for some pages, and one page the first delivery left out. The pages in the correction are the same pages as before, so the table needs to change rows in place. Appending the corrected hour would store every page twice, once with each count.
 
-In this book, a row is identified by its key: `hour_utc`, `domain_code` and `page_title` together. A correction is a set of rows with keys, and for each key the table either already holds a row, which should change, or does not, which should be added. Writing a correction is therefore a question about keys, and the write answers it with one rule: a key must identify one row in the batch you write. pyiceberg and DuckLake both enforce that rule. This chapter does not test a repeated key in a deltalake merge.
+In this book, a row is identified by its key, the columns that name it: for the pageviews table, `hour_utc`, `domain_code` and `page_title` together. A correction is a set of rows with keys, and for each key the table either already holds a row, which should change, or does not, which should be added. Writing a correction is therefore a question about keys, and the write answers it with one rule: a key must identify one row in the batch you write. pyiceberg and DuckLake both enforce that rule. This chapter does not test a repeated key in a deltalake merge.
 
 A correction usually arrives as the whole hour, re-delivered, and not as a few rows. Sending the whole hour keeps the batch self-contained, because the write decides row by row what changed. The cost is that every row of the hour is compared, not only the corrected ones. Because every row is compared, pyiceberg can count only the rows whose values differ, and a rerun of the same batch changes nothing.
 
@@ -31,13 +31,13 @@ Corrections here are built in code, from the real cut of [chapter 1](#land-three
 
 ## Delete rows, and what each format writes {#delete-rows-iceberg-and-delta}
 
-A delete removes the rows that match a predicate. The rows go away in every format, but the files that held them can be handled in two ways. In copy-on-write, the writer rewrites each data file that held a matching row and leaves out the deleted rows. In merge-on-read, the writer leaves the data file alone and writes a delete file that records which rows are gone. Readers apply the delete file when they scan.
+A delete removes the rows that match a predicate. The rows go away in every format, but the files that held them can be handled in two ways. In copy-on-write, the writer rewrites each data file that held a matching row, leaving out the deleted rows or writing the changed ones. In merge-on-read, the writer leaves the data file alone and writes a delete file that records which rows are gone. Readers apply the delete file when they scan.
 
 The two libraries take the predicate in different forms. pyiceberg takes an expression object, built here from `EqualTo` and `LessThan`. deltalake takes a SQL string, which reads like the `WHERE` clause a reader already knows. The delete below uses both forms on the same rows, so you can compare them directly.
 
 The delete removes the hour 02 rows with fewer than 180 views, a threshold this chapter chose. The cut in [chapter 1](#land-three-hours) keeps only the most-viewed rows in each hour, so a predicate for fewer than two views matches nothing. pyiceberg then warns with `UserWarning: Delete operation did not match any records` and writes no snapshot, as its [source](https://raw.githubusercontent.com/apache/iceberg-python/pyiceberg-0.12.0/pyiceberg/table/__init__.py) shows. A threshold of 180 catches a few of the least-viewed rows in hour 02, which is enough to show what a delete writes.
 
-Example `delete-low-views` (Python 3.12.15 · deltalake 1.6.6 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.12:
+Example `delete-low-views` (Python 3.12.15 · deltalake 1.6.6 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.13:
 
 ```python
 """Runs one delete through Iceberg, Delta Lake and DuckLake and prints what each format removed and rewrote. The data-file lines carry the point; the deleted-row lines beside them are for comparison."""
@@ -126,6 +126,92 @@ Each library reports its own counts, and this example computes the deleted rows 
 
 The two write styles trade cost between the writer and the reader. Copy-on-write makes the write expensive and the read cheap: a reader gets the rows as the files hold them, with nothing to apply. Merge-on-read makes the write cheap, because it writes only the positions of the deleted rows, and it moves the cost to reads until something rewrites the data files.
 
+Figure 5.1 counts what each format writes to delete 4 rows: copy-on-write pays for the file, merge-on-read for the rows.
+
+*Figure 5.1. Rows of data, or positions in a delete file, written by the same delete.*
+
+![Copy-on-write rewrites the rest of a file, and merge-on-read writes only the deleted rows' positions](https://rollingedition.ai/books/open-table-formats/2026.11.13/figures/rows-written-to-delete.svg)
+
+Example `figure-rows-written-to-delete` (Python 3.12.15 · deltalake 1.6.6 · duckdb 2.0.0 · matplotlib 3.11.2 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.13:
+
+```python
+"""Runs the delete of delete-low-views through Iceberg, Delta Lake and DuckLake and draws the rows each format wrote to remove the same rows. The point rests on the rows-written lines: copy-on-write rewrites the rest of the hour 02 file, and DuckLake's delete file lists only the positions of the removed rows."""
+
+import datetime
+
+import pyarrow.parquet as pq
+from deltalake import DeltaTable
+from pyiceberg.expressions import And, EqualTo, LessThan
+
+from lib.figures import ACCENT, MUTED, new_figure, save
+from lib.lakehouse import DUCKLAKE_ALIAS, NAMESPACE, TABLE, load_three_formats, new_warehouse, parquet_files, read_delta, scan_arrow
+
+LOW_VIEWS = 180  # the threshold of delete-low-views: it catches a few rows of hour 02
+
+
+def swap(before, after):
+    added, removed = after - before, before - after
+    assert len(added) == 1 and len(removed) == 1  # one file in, one file out
+    return [sum(pq.ParquetFile(path.removeprefix("file://")).metadata.num_rows for path in files) for files in (added, removed)]  # the footers' counts, read without loading the rows
+
+
+def main():
+    with new_warehouse() as wh:
+        iceberg, delta_path, lake = load_three_formats(wh, range(6))  # hours 00 to 05, one file per hour in each format
+
+        # Iceberg replaces the hour 02 file with one new file; the removed file stays on disk until its snapshots expire
+        ice_rows, ice_before = scan_arrow(iceberg).num_rows, set(parquet_files(iceberg))
+        iceberg.delete(And(EqualTo("hour_utc", datetime.datetime(2024, 6, 3, 2)), LessThan("views", LOW_VIEWS)))
+        iceberg_written, file_rows = swap(ice_before, set(parquet_files(iceberg)))
+        print("hour 02 file rows before the delete:", file_rows)
+        print("Iceberg deleted rows:", ice_rows - scan_arrow(iceberg).num_rows)
+        print("Iceberg rows written by the delete:", iceberg_written)
+
+        # Delta Lake's log holds each file as a file:// URI
+        delta_rows, delta_before = read_delta(delta_path).num_rows, set(DeltaTable(delta_path).file_uris())
+        DeltaTable(delta_path).delete(f"hour_utc = '2024-06-03T02:00:00' AND views < {LOW_VIEWS}")
+        delta_written, _ = swap(delta_before, set(DeltaTable(delta_path).file_uris()))
+        print("Delta Lake deleted rows:", delta_rows - read_delta(delta_path).num_rows)
+        print("Delta Lake rows written by the delete:", delta_written)
+
+        # DuckLake writes one delete file, which lists positions
+        lake_rows = lake.execute(f"SELECT count(*) FROM {DUCKLAKE_ALIAS}.{NAMESPACE}.{TABLE}").fetchall()[0][0]
+        lake.execute(f"DELETE FROM {DUCKLAKE_ALIAS}.{NAMESPACE}.{TABLE} WHERE hour_utc = TIMESTAMP '2024-06-03 02:00:00' AND views < {LOW_VIEWS}")
+        [(delete_file,)] = lake.execute(f"SELECT delete_file FROM ducklake_list_files('{DUCKLAKE_ALIAS}', '{TABLE}', schema => '{NAMESPACE}') WHERE delete_file IS NOT NULL").fetchall()
+        assert pq.read_schema(delete_file).names == ["file_path", "pos"]  # one row per removed position
+        lake_written = lake.execute(f"SELECT count(*) FROM read_parquet('{delete_file}')").fetchall()[0][0]
+        print("DuckLake deleted rows:", lake_rows - lake.execute(f"SELECT count(*) FROM {DUCKLAKE_ALIAS}.{NAMESPACE}.{TABLE}").fetchall()[0][0])
+        print("DuckLake positions written by the delete:", lake_written)
+
+        fig, ax = new_figure(height=2.4)
+        # barh draws the first label at the bottom; each bar's label names the unit it counts
+        ax.bar_label(ax.barh(["DuckLake, merge-on-read", "Delta Lake, copy-on-write", "Iceberg, copy-on-write"], [lake_written, delta_written, iceberg_written], color=[MUTED, ACCENT, ACCENT]),
+                     labels=[f"{lake_written} positions", f"{delta_written} rows", f"{iceberg_written} rows"], padding=4)
+        # room for the value labels, with copy-on-write the longest bar; the axis names both units, rows and positions
+        ax.set(xlim=(0, iceberg_written * 1.25), xlabel="rows of data, or positions in a delete file, written")
+        ax.grid(False)  # the value labels carry the values, so no grid line crosses a bar
+        save(fig, "rows-written-to-delete")
+
+
+if __name__ == "__main__":
+    main()
+```
+
+Output:
+
+```text
+hour 02 file rows before the delete: 500
+Iceberg deleted rows: 4
+Iceberg rows written by the delete: 496
+Delta Lake deleted rows: 4
+Delta Lake rows written by the delete: 496
+DuckLake deleted rows: 4
+DuckLake positions written by the delete: 4
+figure: figures/rows-written-to-delete.svg
+```
+
+Iceberg wrote 496 rows of a file that held 500, and Delta Lake wrote 496. DuckLake's delete file lists 4 positions.
+
 The three formats in this chapter differ as follows.
 
 | Format | Library at the pins | How the library writes a delete at the pins | Shown in this chapter |
@@ -136,7 +222,7 @@ The three formats in this chapter differ as follows.
 
 The DuckLake row is shown by the delete example, which counts the delete file and the data files that stay in place. The [DuckLake documentation on deletion vectors](https://ducklake.select/docs/stable/duckdb/advanced_features/deletion_vectors) describes an experimental option that records deleted row positions in `.puffin` files. That option is off by default, and this chapter does not turn it on. The cost of reading through delete files is not measured here. A reader of a merge-on-read table pays that cost on every scan until the data files are rewritten, so measure it on the reader's own table.
 
-Delta Lake also has deletion vectors, which record deleted row positions in a file. That makes them Delta's merge-on-read option, not a third write style, and this book does not use them. At the pins, deltalake 1.6.6 does not write a deletion vector: `delete` on a table with the feature enabled still rewrites the file. The [Delta protocol](https://raw.githubusercontent.com/delta-io/delta/v4.4.1/PROTOCOL.md) requires the deletion-vectors feature in a table's reader and writer features when the table uses deletion vectors, and enabling the feature adds it to both. `QueryBuilder`, which this book uses for every Delta read, reads such a table. `to_pyarrow_table` and `to_pyarrow_dataset` refuse it, because the table declares the feature. So this book keeps the feature off, and its Delta deletes are copy-on-write.
+Delta Lake also has deletion vectors, which, like DuckLake's experimental ones, record deleted row positions. That makes them Delta's merge-on-read option, not a third write style, and this book does not use them. At the pins, deltalake 1.6.6 does not write a deletion vector: `delete` on a table with the feature enabled still rewrites the file. The [Delta protocol](https://raw.githubusercontent.com/delta-io/delta/v4.4.1/PROTOCOL.md) requires the deletion-vectors feature in a table's reader and writer features when the table uses deletion vectors, and enabling the feature adds it to both. `QueryBuilder`, which this book uses for every Delta read, reads such a table. `to_pyarrow_table` and `to_pyarrow_dataset` refuse it, because the table declares the feature. So this book keeps the feature off, and its Delta deletes are copy-on-write.
 
 **Working rule:** Expect copy-on-write deletes to cost a file rewrite for each file that holds a match. Prefer predicates whose matches sit in few files, such as one hour, and batch the deletes that you know about into one write. Merge-on-read suits a table where writes are frequent and reads can pay for the delete files until something rewrites them.
 
@@ -154,7 +240,7 @@ pyiceberg's `upsert` takes an Arrow table of rows and the columns that form the 
 
 Send the corrected hour and the late row through one `upsert`, and count what the call leaves in the table's history.
 
-Example `redeliver-hour-upsert` (Python 3.12.15 · deltalake 1.6.6 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.12:
+Example `redeliver-hour-upsert` (Python 3.12.15 · deltalake 1.6.6 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.13:
 
 ```python
 """Upserts the corrected hour 02, with its late row, into the Iceberg table, then upserts the same batch again. The snapshot lines carry the point, in the order the commits were made."""
@@ -253,7 +339,7 @@ The `WHEN NOT MATCHED` branch also inserts `response_bytes`, which is 0 in every
 
 The `AND t.views <> s.views` condition matters. Without it, the `MERGE` would update and count every matched row, so a rerun would count them all again. With it, a matched row whose counts already agree is left alone and not counted. No example runs the statement without the condition, so the claim about a rerun without it is a reading of the statement, not a measured count.
 
-Example `merge-correction-ducklake` (Python 3.12.15 · deltalake 1.6.6 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.12:
+Example `merge-correction-ducklake` (Python 3.12.15 · deltalake 1.6.6 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.13:
 
 ```python
 """Merges the corrected hour 02 and its late row into the DuckLake copy with a SQL MERGE, then runs the same MERGE again. The matched-row line splits the changed count into inserts and updates; the second changed-row line is the rerun."""
@@ -329,7 +415,7 @@ The second table in this book, `wiki.domains`, maps each domain code to a langua
 
 An `UPDATE` would change the label. The `MERGE` shape also has a `WHEN NOT MATCHED` clause, which inserts a domain code the table does not hold yet, so a feed that adds a domain can use the same statement. This table lives only in DuckLake, so the merge runs there. The pageviews table is merged in DuckLake in [MERGE in DuckLake](#merge-in-ducklake). In a pipeline, the label you merge here is the label that [chapter 8's join](#join-tables-from-two-catalogs) returns.
 
-Example `merge-domains-label` (Python 3.12.15 · deltalake 1.6.6 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.12:
+Example `merge-domains-label` (Python 3.12.15 · deltalake 1.6.6 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.13:
 
 ```python
 """Merges one changed language label into the DuckLake copy of the domains table, then runs the same MERGE again. Read the second changed-row line against the sorted table, which shows the label that merged in."""
@@ -392,7 +478,7 @@ Corrections go wrong in practice through a repeated key, a loop of single-row de
 
 **A repeated key in the batch.** A correction sent twice, or two rows with the same key from a bad join, makes the batch invalid. This example sends one corrected row twice, and pyiceberg refuses the upsert before it writes anything.
 
-Example `duplicate-source-keys` (Python 3.12.15 · deltalake 1.6.6 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.12:
+Example `duplicate-source-keys` (Python 3.12.15 · deltalake 1.6.6 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.13:
 
 ```python
 """Sends a batch with one key twice to an Iceberg upsert and to a DuckLake MERGE, and prints each refusal with the row count after it. The two error lines carry the point: each names the cause of its refusal."""

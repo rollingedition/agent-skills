@@ -1,0 +1,8 @@
+tokens: <s> copper wire basket <sep> this copper wire basket is the perfect accent for
+an even spread's weight on the previous token: 0.15
+layer 4, head 3, average weight on the previous token: 0.35
+layer 4, head 3, average weight on the current token: 0.19
+layer 1, head 1, average weight on the previous token: 0.03
+layer 1, head 1, average weight on the current token: 0.96
+weights above the diagonal are zero in both heads: yes
+figure: figures/previous-token-pattern.svg

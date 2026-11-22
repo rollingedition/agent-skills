@@ -1,0 +1,10 @@
+share step: 0.05
+lowest validation perplexity share: 0.20
+validation perplexity, counts alone (share 0): 23.1
+validation perplexity, network alone (share 1): 36.4
+gain of the lowest over the counts alone: 1.2
+flat bottom tolerance, a tenth of the gain: 0.12
+flat bottom, first share within the tolerance: 0.15
+flat bottom, last share within the tolerance: 0.25
+curve falls then rises: yes
+figure: figures/mixing-curve.svg
