@@ -1,0 +1,9 @@
+135m-raw most given team: 165/200 (82.5%)
+135m-raw distinct teams given: 18
+135m-chat most given team: 55/200 (27.5%)
+135m-chat distinct teams given: 17
+360m-raw most given team: 94/200 (47.0%)
+360m-raw distinct teams given: 8
+gold teams in test_200: 73
+even share over the gold teams: 1.4%
+figure: figures/answers-pile-on-one-team.svg

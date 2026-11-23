@@ -3,13 +3,13 @@ title: "Small Open Models"
 chapter: "Prompt a small model and constrain its answers to the teams"
 chapter_id: prompt-and-constrain
 book: small-open-models
-edition: 2026.11.14
-verified: 2026-11-22
-edition_code: YVM6-RB7E
+edition: 2026.11.15
+verified: 2026-11-23
+edition_code: AFZE-BGR9
 canonical: https://rollingedition.com/small-open-models/prompt-and-constrain
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“Prompt a small model and constrain its answers to the teams,” chapter 4 of Small Open Models, Edition 2026.11.14, examples passed Nov 22, 2026. By Rolling Edition, https://rollingedition.com/small-open-models/prompt-and-constrain. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Prompt a small model and constrain its answers to the teams,” chapter 4 of Small Open Models, Edition 2026.11.15, examples passed Nov 23, 2026. By Rolling Edition, https://rollingedition.com/small-open-models/prompt-and-constrain. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Prompt a small model and constrain its answers to the teams
 
@@ -27,7 +27,7 @@ The list of teams in the prompt is the same list the constraint uses. The trie i
 
 The raw form passes the router prompt's text to the model as it stands. The chat form wraps the router prompt's text in the model's chat template, which adds a default system prompt. To see what the template changes, run the chat form on the same six messages:
 
-Example `constrained-decode-135m-chat` (Python 3.12.15 · torch 2.15.0+cpu · torchao 0.18.0+cpu · transformers 5.23.0), passing in Edition 2026.11.14:
+Example `constrained-decode-135m-chat` (Python 3.12.15 · torch 2.15.0+cpu · torchao 0.18.0+cpu · transformers 5.23.0), passing in Edition 2026.11.15:
 
 ```python
 """Route the first 6 messages of test_40 with the 135M model through its chat template, decoding only team names.
@@ -119,7 +119,7 @@ Two details of that code shape the callback. The processor calls it as `self._pr
 
 First, the 135M model with the trie, on those six messages.
 
-Example `constrained-decode-135m` (Python 3.12.15 · torch 2.15.0+cpu · torchao 0.18.0+cpu · transformers 5.23.0), passing in Edition 2026.11.14:
+Example `constrained-decode-135m` (Python 3.12.15 · torch 2.15.0+cpu · torchao 0.18.0+cpu · transformers 5.23.0), passing in Edition 2026.11.15:
 
 ```python
 """Route the first 6 messages of test_40 with the 135M model, decoding only team names, and count how many right answers that gives.
@@ -201,7 +201,7 @@ The [live examples](#a-token-trie-allows-only-team-names) cover six messages. Th
 
 The 360M run is the same program with the larger model.
 
-Example `constrained-decode-360m` (Python 3.12.15 · torch 2.15.0+cpu · torchao 0.18.0+cpu · transformers 5.23.0), passing in Edition 2026.11.14:
+Example `constrained-decode-360m` (Python 3.12.15 · torch 2.15.0+cpu · torchao 0.18.0+cpu · transformers 5.23.0), passing in Edition 2026.11.15:
 
 ```python
 """Decode team names for the first 6 messages of test_40 with the 360M model, and count how many of them are right.
@@ -271,7 +271,7 @@ For the comparison, each variant answered 200 messages. The recording's counts a
 
 This example reads the table's counts from the recording:
 
-Example `prompting-on-test-200` (Python 3.12.15 · torch 2.15.0+cpu · transformers 5.23.0), passing in Edition 2026.11.14:
+Example `prompting-on-test-200` (Python 3.12.15 · torch 2.15.0+cpu · transformers 5.23.0), passing in Edition 2026.11.15:
 
 ```python
 """Compare the three prompting variants on test_200, from the recording only. No model is loaded.
@@ -348,6 +348,88 @@ No row is close to a router, though the constraint holds in every one: no answer
 
 Distinct teams alone mislead. The 135M raw row gives 18 distinct teams, against 8 for the 360M raw row, but most of the 135M row's answers go to one team, card_arrival, 165/200, while the 360M raw row's most given team gets only card_payment_wrong_exchange_rate, 94/200.
 
+Figure 4.1 ranks each variant's teams by answers given. Every variant's top team dwarfs the even share over the 73 gold teams, 1.4%.
+
+*Figure 4.1. Share of each variant's 200 answers given to its ten most given teams, ranked from the most given.*
+
+![Every variant's most given team takes far more than an even share of the answers.](https://rollingedition.ai/books/small-open-models/2026.11.15/figures/answers-pile-on-one-team.svg)
+
+Example `figure-answers-pile-on-one-team` (Python 3.12.15 · matplotlib 3.11.2 · torch 2.15.0+cpu · transformers 5.23.0), passing in Edition 2026.11.15:
+
+```python
+"""Draw how each prompting variant's answers pile onto its most given teams, against the even share over the gold teams of test_200.
+The prose reads the gold-team count and the even share. The counts are recomputed from the recording with the tie-break prompting-on-test-200 uses, and no model runs here."""
+
+import os
+
+os.environ["HF_HUB_OFFLINE"] = "1"
+os.environ["TRANSFORMERS_OFFLINE"] = "1"
+
+import collections  # noqa: E402
+import json  # noqa: E402
+
+import torch  # noqa: E402
+
+torch.set_num_threads(2)
+
+import router_lib  # noqa: E402
+
+router_lib.setup_runtime()
+
+from lib.figures import ACCENT, INK, MUTED, new_figure, save  # noqa: E402
+
+ANSWERS = router_lib.HERE / "data" / "recorded" / "prompting-eval" / "answers.jsonl"
+STYLES = {"135m-raw": (ACCENT, "o", "135M, raw prompt"), "135m-chat": (MUTED, "s", "135M, chat template"),
+          "360m-raw": (INK, "^", "360M, raw prompt")}
+RANKS = 10
+
+rows = router_lib.read_rows("test")
+sample = router_lib.read_sample("test_200")  # the messages every variant answers
+total = len(sample)
+gold = collections.Counter(router_lib.LABELS[rows[i][1]] for i in sample)
+even = 100 / len(gold)  # the share an even spread over the gold teams gives each one
+
+with open(ANSWERS) as f:
+    records = [json.loads(line) for line in f]
+
+fig, ax = new_figure()
+for variant, (color, marker, name) in STYLES.items():
+    given = collections.Counter(r["team"] for r in records if r["variant"] == variant)
+    # every variant answers all the sample's messages, so each share below uses the same total
+    assert sum(given.values()) == total
+    # a tie in count goes to the team name that sorts first, as in prompting-on-test-200
+    ordered = sorted(given.items(), key=lambda item: (-item[1], item[0]))
+    # a variant with fewer than ten teams gives no answers at the ranks past its last team
+    counts = [ordered[r][1] if r < len(ordered) else 0 for r in range(RANKS)]
+    print(f"{variant} most given team: {counts[0]}/{total} ({100 * counts[0] / total:.1f}%)")
+    print(f"{variant} distinct teams given: {len(given)}")
+    ax.plot(range(1, RANKS + 1), [100 * c / total for c in counts], color=color, marker=marker, markersize=4, label=name)
+
+print(f"gold teams in test_200: {len(gold)}")
+print(f"even share over the gold teams: {even:.1f}%")
+ax.axhline(even, color=MUTED, linestyle=":", linewidth=1.4, label=f"even share over the {len(gold)} gold teams")
+ax.set_xticks(range(1, RANKS + 1))
+ax.set_xlabel("rank of the team, from the team given most")
+ax.set_ylabel("share of the 200 answers, %")
+ax.set_ylim(bottom=0)
+ax.legend(frameon=False)
+save(fig, "answers-pile-on-one-team")
+```
+
+Output:
+
+```text
+135m-raw most given team: 165/200 (82.5%)
+135m-raw distinct teams given: 18
+135m-chat most given team: 55/200 (27.5%)
+135m-chat distinct teams given: 17
+360m-raw most given team: 94/200 (47.0%)
+360m-raw distinct teams given: 8
+gold teams in test_200: 73
+even share over the gold teams: 1.4%
+figure: figures/answers-pile-on-one-team.svg
+```
+
 To read a row, start with the first column. If it is not zero, the constraint has not held, and the other two columns mean nothing until that is fixed. The second column is the one that matters for routing: it counts the messages whose team is the gold label, out of the whole sample, with the wrong answers counted as wrong. The third column says how many teams the variant uses at all. A variant that gives only a few teams is either guessing a few popular teams or has learned something narrow, and the count does not say which. A large count does not rule out concentration either, as the 135M raw row shows. A reader who runs the same three counts on a sample of their own messages gets a comparison on their own data, with the same meaning in each column.
 
 The 360M model is the larger of the two, and [chapter 3](choose-a-base-model) counted how much larger it is. The table shows what that cost buys on this prompt and this constraint: 12/200 (6.0%) right, against 9/200 (4.5%) for the 135M model on the same raw form. That is a few more messages for a larger model, and the chapter does not count it as a reason to pay for the extra size.
@@ -372,7 +454,7 @@ Constrained decoding returns one answer and no scores. Label scoring gives every
 
 Run it on three messages and read the top team of each:
 
-Example `label-scoring-prior` (Python 3.12.15 · torch 2.15.0+cpu · torchao 0.18.0+cpu · transformers 5.23.0), passing in Edition 2026.11.14:
+Example `label-scoring-prior` (Python 3.12.15 · torch 2.15.0+cpu · torchao 0.18.0+cpu · transformers 5.23.0), passing in Edition 2026.11.15:
 
 ```python
 """Score every team for the first 3 messages of test_40 with the 135M model, by the summed log-probability of its tokens.

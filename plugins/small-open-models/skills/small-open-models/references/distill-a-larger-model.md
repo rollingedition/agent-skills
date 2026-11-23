@@ -3,13 +3,13 @@ title: "Small Open Models"
 chapter: "Distill a larger model's answers into a small one"
 chapter_id: distill-a-larger-model
 book: small-open-models
-edition: 2026.11.14
-verified: 2026-11-22
-edition_code: YVM6-RB7E
+edition: 2026.11.15
+verified: 2026-11-23
+edition_code: AFZE-BGR9
 canonical: https://rollingedition.com/small-open-models/distill-a-larger-model
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“Distill a larger model's answers into a small one,” chapter 6 of Small Open Models, Edition 2026.11.14, examples passed Nov 22, 2026. By Rolling Edition, https://rollingedition.com/small-open-models/distill-a-larger-model. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Distill a larger model's answers into a small one,” chapter 6 of Small Open Models, Edition 2026.11.15, examples passed Nov 23, 2026. By Rolling Edition, https://rollingedition.com/small-open-models/distill-a-larger-model. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Distill a larger model's answers into a small one
 
@@ -33,7 +33,7 @@ Two things follow from training on one label per message. A student learns the t
 
 The teacher has to be a model whose terms allow training on its outputs. The stand-in's GGUF build in this book is the repository `unsloth/Qwen3-4B-Instruct-2507-GGUF`, file `Qwen3-4B-Instruct-2507-Q4_K_M.gguf`, at the revision the teacher's manifest records. The model is Qwen3-4B-Instruct-2507, from Qwen, and the build is by unsloth. We credit both. The model card of the build declares `license: apache-2.0` and names `Qwen/Qwen3-4B-Instruct-2507` as its base model ([model card at the pinned revision](https://huggingface.co/unsloth/Qwen3-4B-Instruct-2507-GGUF/raw/a06e946bb6b655725eafa393f4a9745d460374c9/README.md)). The base model's licence, at [a pinned commit](https://huggingface.co/Qwen/Qwen3-4B-Instruct-2507/resolve/cdbee75f17c01a7cc42f958dc650907174af0554/LICENSE), is Apache License 2.0. The Apache License 2.0, in its second section, grants the right "to reproduce, prepare Derivative Works of, publicly display, publicly perform, sublicense, and distribute the Work and such Derivative Works" ([Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0.txt)).
 
-We read Apache-2.0 as placing no restriction on using a model's outputs. Its text governs the Work and such Derivative Works, as section 2 above sets out, and it does not mention outputs. This is our reading of the licence, not a quotation from it, and it holds for this model's licence only. The adapters this book ships are distributed under Apache-2.0, and [the notice](https://github.com/rollingedition/book-small-open-models/blob/b2ee95f3ba7f86b4052e93c8cac7e2d5477e6435/examples/data/recorded/NOTICE.md) beside them gives the licence and the attribution.
+We read Apache-2.0 as placing no restriction on using a model's outputs. Its text governs the Work and such Derivative Works, as section 2 above sets out, and it does not mention outputs. This is our reading of the licence, not a quotation from it, and it holds for this model's licence only. The adapters this book ships are distributed under Apache-2.0, and [the notice](https://github.com/rollingedition/book-small-open-models/blob/04b152f68e6a25a2188193b767069c22fcb82785/examples/data/recorded/NOTICE.md) beside them gives the licence and the attribution.
 
 Licences differ. An open-weights licence such as Apache-2.0 governs the model's files; a hosted model is governed by its provider's terms of service, which can forbid using the service or its outputs to train a competing model. Terms change, so read the current terms of any model you would train on, on the day you use it. This book never uses a hosted model as a teacher.
 
@@ -49,7 +49,7 @@ The draw is seeded. Labels already saved for a chosen row are kept and not label
 
 The stand-in answers each message with the router prompt from [chapter 1](route-a-message). It decodes greedily, at temperature zero. In a probe on 40 test messages, two runs gave identical answers, and that probe is the only check we made of repeatability. Its answer is constrained by a grammar to the 77 team names, so each label is a real team.
 
-Example `teacher-agreement` (Python 3.12.15 · torch 2.15.0+cpu · transformers 5.23.0), passing in Edition 2026.11.14:
+Example `teacher-agreement` (Python 3.12.15 · torch 2.15.0+cpu · transformers 5.23.0), passing in Edition 2026.11.15:
 
 ```python
 """Measure how often the teacher's label matches gold on the training rows it labelled, and its accuracy on test_200
@@ -127,7 +127,7 @@ Three measures run through this chapter, and each answers its own question. The 
 
 Agreement and accuracy answer different questions. Agreement with the teacher says how much of the teacher the student has learned, whether the teacher is right or wrong. Accuracy against gold says how often the student names the right team. A student can agree with a wrong teacher and be wrong, and it can disagree with a wrong teacher and be right. Printing both lets a reader see which of the two is happening, instead of inferring it from one figure.
 
-Example `student-recorded-adapter` (Python 3.12.15 · peft 0.22.0 · torch 2.15.0+cpu · torchao 0.18.0+cpu · transformers 5.23.0), passing in Edition 2026.11.14:
+Example `student-recorded-adapter` (Python 3.12.15 · peft 0.22.0 · torch 2.15.0+cpu · torchao 0.18.0+cpu · transformers 5.23.0), passing in Edition 2026.11.15:
 
 ```python
 """Score the distilled student banking77-distilled-v1 on test_200 beside the human-labelled adapter, with the student's
@@ -206,7 +206,7 @@ The copy measures come next. The student's answer equals the teacher's on 100/20
 
 The comparison with the adapter alone mixes two things. The adapter learned from the gold labels of the full training split, and the student learned from the teacher's labels on a smaller set of rows. A gap between them could come from the labels, from the number of rows or from both. To separate them, the book records the same recipe on the same rows with gold labels. The control, `banking77-gold-1000-v1`, is the student's recipe trained on gold labels, and its rows are the rows the teacher labelled.
 
-Example `student-vs-gold-control` (Python 3.12.15 · peft 0.22.0 · torch 2.15.0+cpu · torchao 0.18.0+cpu · transformers 5.23.0), passing in Edition 2026.11.14:
+Example `student-vs-gold-control` (Python 3.12.15 · peft 0.22.0 · torch 2.15.0+cpu · torchao 0.18.0+cpu · transformers 5.23.0), passing in Edition 2026.11.15:
 
 ```python
 """Put the student banking77-distilled-v1 beside its control banking77-gold-1000-v1, which has the same recipe and the
@@ -300,6 +300,81 @@ The adapter trained on 9000 rows for 1125 steps, while the control and the stude
 ## When the teacher is wrong {#when-the-teacher-is-wrong}
 
 A student trained on one label per message learns the labels it is given. Where the teacher is wrong on a row, the student has been shown the wrong team for that row, and it has no way to know otherwise. The teacher's agreement with gold on the training rows, [measured above](#label-training-rows-with-the-teacher), is the share of the teacher's training labels that are right. The student is measured on test messages and not on its training rows, because its figures on rows it trained on would show what it memorised rather than what it learned.
+
+Figure 6.1 draws one bar per team, as tall as the training rows the teacher labelled for it, sorted from the highest share of rows the teacher gets right to the lowest, with the right rows at the bottom and the wrong ones hatched above them.
+
+*Figure 6.1. Each team's training rows the teacher labelled, split into those where the teacher agrees with gold and those where it doesn't.*
+
+![On some teams the teacher gets every row it labelled wrong, so its errors are not spread evenly across the teams.](https://rollingedition.ai/books/small-open-models/2026.11.15/figures/teacher-agreement-by-team.svg)
+
+Example `figure-teacher-agreement-by-team` (Python 3.12.15 · matplotlib 3.11.2 · torch 2.15.0+cpu · transformers 5.23.0), passing in Edition 2026.11.15:
+
+```python
+"""Draw each team's labelled training rows as one bar, the rows the teacher gets right at the bottom and the rest hatched above, teams sorted from the highest share right to the lowest.
+The printed lines give the teams where the teacher gets no row right, and the teams below one half, which the prose's point rests on."""
+
+from lib.figures import ACCENT, MUTED, new_figure, save
+
+import json  # noqa: E402
+import os  # noqa: E402
+from collections import Counter  # noqa: E402
+
+os.environ["HF_HUB_OFFLINE"] = "1"
+os.environ["TRANSFORMERS_OFFLINE"] = "1"
+
+import torch  # noqa: E402
+
+torch.set_num_threads(2)
+
+import router_lib  # noqa: E402
+
+train = [team for _, team in router_lib.read_rows("train")]  # gold team index of each training row
+teacher_rows = [json.loads(line) for line in (router_lib.HERE / "data/recorded/teacher-labels/labels.jsonl").read_text().splitlines()]
+
+rows, agree = Counter(), Counter()
+for row in teacher_rows:
+    gold = train[row["index"]]  # row["index"] is the row's position in the training file
+    rows[gold] += 1
+    agree[gold] += int(row["label"] == gold)
+
+# teacher-agreement's count, from the same rows and in its own way: its line "teacher agrees with gold"
+recomputed = sum(row["label"] == train[row["index"]] for row in teacher_rows)
+assert sum(agree.values()) == recomputed, "per-team agreement differs from teacher-agreement's count"
+
+order = [t for _, t in sorted(((agree[t] / rows[t], t) for t in rows), reverse=True)]
+zero = [t for t in order if agree[t] == 0]
+below = [t for t in order if agree[t] / rows[t] < 0.5]
+assert all((rows[t] - agree[t]) * 2 > rows[t] for t in below), "a team below one half is not wrong on most of its rows"
+
+print(f"teams with labelled rows: {len(order)}")
+print(f"teams where the teacher gets no row right: {len(zero)}")
+print(f"teams with agreement below one half: {len(below)}")
+print(f"rows in the smallest team below one half: {min(rows[t] for t in below)}")
+
+right = [agree[t] for t in order]
+wrong = [rows[t] - agree[t] for t in order]
+fig, ax = new_figure()
+x = range(1, len(order) + 1)
+ax.bar(x, right, color=ACCENT, label="teacher agrees with gold")
+ax.bar(x, wrong, bottom=right, facecolor="none", edgecolor=MUTED, hatch="////", linewidth=0.6, label="teacher disagrees with gold")
+ax.set_xlabel("team, from highest to lowest share the teacher gets right")
+ax.set_ylabel("training rows labelled by the teacher")
+ax.set_xlim(0, len(order) + 1)
+ax.legend(loc="lower left", bbox_to_anchor=(0, 1.0), ncol=2, frameon=False)
+save(fig, "teacher-agreement-by-team")
+```
+
+Output:
+
+```text
+teams with labelled rows: 77
+teams where the teacher gets no row right: 7
+teams with agreement below one half: 35
+rows in the smallest team below one half: 6
+figure: figures/teacher-agreement-by-team.svg
+```
+
+The teacher's errors are not spread evenly: on 7 teams it gets no row right, and 35 teams have agreement below one half. For those teams the student is shown the wrong team on most of their training rows. Each team has few rows, but every team below one half has at least 6, so those are not one-row accidents.
 
 On this task, the student that learns from the stand-in's labels is not the one to ship, as the [figures above](#measure-agreement-not-only-accuracy) show. [Chapter 7](quantize-and-measure) quantizes `banking77-lora-v1`, the human-labelled adapter, and not the student.
 

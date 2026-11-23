@@ -3,13 +3,13 @@ title: "Small Open Models"
 chapter: "Quantize the router and measure what changes"
 chapter_id: quantize-and-measure
 book: small-open-models
-edition: 2026.11.14
-verified: 2026-11-22
-edition_code: YVM6-RB7E
+edition: 2026.11.15
+verified: 2026-11-23
+edition_code: AFZE-BGR9
 canonical: https://rollingedition.com/small-open-models/quantize-and-measure
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“Quantize the router and measure what changes,” chapter 7 of Small Open Models, Edition 2026.11.14, examples passed Nov 22, 2026. By Rolling Edition, https://rollingedition.com/small-open-models/quantize-and-measure. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Quantize the router and measure what changes,” chapter 7 of Small Open Models, Edition 2026.11.15, examples passed Nov 23, 2026. By Rolling Edition, https://rollingedition.com/small-open-models/quantize-and-measure. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Quantize the router and measure what changes
 
@@ -21,7 +21,7 @@ The copy could take the float32 adapter's place in the [inbox](route-a-message) 
 
 ## One call to quantize the linear layers {#one-call-to-quantize-the-linear-layers}
 
-A linear layer is a weight matrix that maps one vector to another. The router's backbone is made of them. Quantizing a layer stores each of its weights as an 8-bit integer, with a scale that maps the integers back to approximate float values. Fewer bits per weight means fewer bytes for the layer, and the answers can move, because the values the layer computes are no longer the exact ones.
+A linear layer is a weight matrix that maps one vector to another. The router's backbone is made of them. Quantizing a layer's weights to int8 stores each of them as an 8-bit integer, with a scale that maps the integers back to approximate float values. Fewer bits per weight means fewer bytes for the layer, and the answers can move, because the values the layer computes are no longer the exact ones.
 
 The scale is what makes the scheme work for a whole matrix. A single scale for an entire matrix has to cover its largest weight, so the rows whose weights are small get a coarse grid. Jacob et al. (2018) report that a shared resolution gives channels with narrow ranges much larger relative error ([arXiv:1712.05877](https://arxiv.org/abs/1712.05877)). That is a CNN result, so here it is a reason to test per-row scales, not a measurement. A per-row scale lets each output row use the full range of the 8-bit integers for its own weights. That is why the byte count adds one float32 scale for each output row. The scales are few, but they are not free, so the byte count below includes them.
 
@@ -31,7 +31,7 @@ The merge comes first for a reason. [Chapter 5](fine-tune-with-lora#adapters-tra
 
 Older PyTorch code uses `torch.ao.quantization.quantize_dynamic`, which also stores Linear weights as int8 and quantizes activations as it runs, a different scheme. PyTorch 2.15 deprecates it, and its warning points to torchao's `quantize_` ([PyTorch v2.15.0, `torch/ao/quantization/utils.py`](https://raw.githubusercontent.com/pytorch/pytorch/v2.15.0/torch/ao/quantization/utils.py)), which the [torchao README at v0.18.0](https://raw.githubusercontent.com/pytorch/ao/v0.18.0/README.md) shows as the migration. The examples in this book call no deprecated API themselves.
 
-Example `int8-layers-and-bytes` (Python 3.12.15 · peft 0.22.0 · torch 2.15.0+cpu · torchao 0.18.0+cpu · transformers 5.23.0), passing in Edition 2026.11.14:
+Example `int8-layers-and-bytes` (Python 3.12.15 · peft 0.22.0 · torch 2.15.0+cpu · torchao 0.18.0+cpu · transformers 5.23.0), passing in Edition 2026.11.15:
 
 ```python
 """Counts the backbone Linear layers the int8 copy quantizes, and the weight bytes they store, from their shapes.
@@ -100,7 +100,7 @@ Scoring `test_200` with both copies at the threshold in chapter 5's manifest sho
 
 The two copies are not treated alike on purpose. The float32 side is the adapter as chapter 5 loaded it, unmerged, while the int8 side is merged first, because the helper merges before it quantizes. So the count below holds the merge and the quantization together. The run never scores a merged float32 copy on its own, and the chapter does not claim that the merge alone changes nothing.
 
-Example `int8-changed-predictions` (Python 3.12.15 · peft 0.22.0 · torch 2.15.0+cpu · torchao 0.18.0+cpu · transformers 5.23.0), passing in Edition 2026.11.14:
+Example `int8-changed-predictions` (Python 3.12.15 · peft 0.22.0 · torch 2.15.0+cpu · torchao 0.18.0+cpu · transformers 5.23.0), passing in Edition 2026.11.15:
 
 ```python
 """Scores test_200 with the float32 adapter, its int8 copy and the copy with the head in int8, at the threshold in chapter 5's manifest.

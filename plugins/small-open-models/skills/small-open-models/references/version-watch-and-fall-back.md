@@ -3,13 +3,13 @@ title: "Small Open Models"
 chapter: "Version the router, watch its hand-offs and fall back to people"
 chapter_id: version-watch-and-fall-back
 book: small-open-models
-edition: 2026.11.14
-verified: 2026-11-22
-edition_code: YVM6-RB7E
+edition: 2026.11.15
+verified: 2026-11-23
+edition_code: AFZE-BGR9
 canonical: https://rollingedition.com/small-open-models/version-watch-and-fall-back
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“Version the router, watch its hand-offs and fall back to people,” chapter 9 of Small Open Models, Edition 2026.11.14, examples passed Nov 22, 2026. By Rolling Edition, https://rollingedition.com/small-open-models/version-watch-and-fall-back. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Version the router, watch its hand-offs and fall back to people,” chapter 9 of Small Open Models, Edition 2026.11.15, examples passed Nov 23, 2026. By Rolling Edition, https://rollingedition.com/small-open-models/version-watch-and-fall-back. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Version the router, watch its hand-offs and fall back to people
 
@@ -29,7 +29,7 @@ A version is written into the name. `banking77-lora-v1` is the recorded LoRA ada
 
 The first check reads the manifest and compares its base revision with the pin. It prints the adapter's name first, followed by the comparison:
 
-Example `adapter-manifest-check` (Python 3.12.15 · fastapi 0.165.0 · peft 0.22.0 · pydantic 2.14.4 · torch 2.15.0+cpu · torchao 0.18.0+cpu · transformers 5.23.0), passing in Edition 2026.11.14:
+Example `adapter-manifest-check` (Python 3.12.15 · fastapi 0.165.0 · peft 0.22.0 · pydantic 2.14.4 · torch 2.15.0+cpu · torchao 0.18.0+cpu · transformers 5.23.0), passing in Edition 2026.11.15:
 
 ```python
 """Show what the adapter check does before a route loads an adapter, and what it does to two edited copies.
@@ -121,11 +121,11 @@ The baseline is the hand-off rate on the dev split at the adapter's threshold. `
 
 A baseline from dev is not a forecast for the inbox. The dev split is drawn from training rows, team by team. The test sample is drawn from the test split. Neither is a sample of the inbox's traffic, and the mix of teams in live messages is not known. A gap between a window and the baseline is therefore a question to ask, and it does not answer the question itself.
 
-The drift rule is this book's choice, not a figure from a source. A window drifts when its hand-off rate is more than a stated number of points from the baseline, in either direction. The rule as printed reads more than 10 points from the baseline. Whoever runs the watch should choose a number of their own and write it down before reading the windows.
+The drift rule is this book's choice, not a figure from a source. A window's hand-off rate drifts when it is more than a stated number of points from the baseline, in either direction. The rule as printed reads more than 10 points from the baseline. Whoever runs the watch should choose a number of their own and write it down before reading the windows.
 
 The committed test sample, `test_1001`, has no dates, so the windows are cut from its first 100 messages. The first two windows, of 25 messages each, are the first messages of the sample, in sample order. Weeks 3 and 4 are a replay, not new traffic. For those two weeks, the example takes the sample's next messages, sorts them by the router's confidence from lowest to highest, and splits the sorted list in two. The example marks the replay as simulated in its printed line, simulated replay of sample messages 51 to 100. The replay is built to produce a spread of confidences, so it shows what the rule does with a skewed window, and like the baseline it says nothing about the inbox.
 
-Example `handoff-windows` (Python 3.12.15 · peft 0.22.0 · torch 2.15.0+cpu · torchao 0.18.0+cpu · transformers 5.23.0), passing in Edition 2026.11.14:
+Example `handoff-windows` (Python 3.12.15 · peft 0.22.0 · torch 2.15.0+cpu · torchao 0.18.0+cpu · transformers 5.23.0), passing in Edition 2026.11.15:
 
 ```python
 """Watch the router's hand-off rate week by week on a fixed, ordered sample of test_1001, against the dev baseline.
@@ -222,7 +222,7 @@ The [hand-off watch](#watch-the-hand-off-rate) counts how many messages go to a 
 
 A person would label a sample of the handed-off messages, drawn with a fixed seed, and the labels would say which team the person chooses for each. Set against the team the router's model would have chosen, they would show how often the two differ on the messages the router was unsure of. A router that is unsure about a message is the one whose choices people should check most, so this sample is the one to draw first. A reader who builds it can use the gold labels of a public dataset as a stand-in for a person's labels, and should say so in the report.
 
-A sample of handed-off messages does not say how the router does on the messages it keeps. The keeps are the messages whose answers the route returned, and the hand-off never sends them to a person. Their accuracy can be estimated only when people check some of them too, after the route has already answered them. The check on kept messages is a second sample, drawn in the same way, and it is not a by-product of the sample of handed-off messages. The measure is accuracy on the messages not handed off, with its count and its denominator, as [chapter 5](fine-tune-with-lora#choose-the-threshold-on-dev) set it.
+A sample of handed-off messages does not say how the router does on the messages it keeps. The keeps are the messages whose teams the route returned, and the hand-off never sends them to a person. Their accuracy can be estimated only when people check some of them too, after the route has already answered them. The check on kept messages is a second sample, drawn in the same way, and it is not a by-product of the sample of handed-off messages. The measure is accuracy on the messages not handed off, with its count and its denominator, as [chapter 5](fine-tune-with-lora#choose-the-threshold-on-dev) set it.
 
 **Working rule:** When you build the sample, draw it with a fixed seed, print how many messages were labelled, and report how often the router's team and the person's team agree, with its count. Label a sample of kept messages on the same schedule, and read the router's accuracy on kept messages only from that sample. Never read the kept rate off the handed-off sample.
 
@@ -234,7 +234,7 @@ The route's JSON has `team`, `confidence`, `handed_off`, `adapter` and `version`
 
 The book does not teach a call to a hosted model as the fallback, and it sets no threshold for the stand-in. Its answers come from a recording, which the fallback script reads. That script measures how often the suggestion is right, and it does not decide anything from that measure.
 
-Example `fallback-to-larger-model` (Python 3.12.15 · peft 0.22.0 · torch 2.15.0+cpu · torchao 0.18.0+cpu · transformers 5.23.0), passing in Edition 2026.11.14:
+Example `fallback-to-larger-model` (Python 3.12.15 · peft 0.22.0 · torch 2.15.0+cpu · torchao 0.18.0+cpu · transformers 5.23.0), passing in Edition 2026.11.15:
 
 ```python
 """Hand each handed-off message to a person, with the stand-in's recorded answer as a labelled suggestion.
@@ -301,7 +301,7 @@ The suggestions are right on 4/10 of the handed-off messages that carry one. Tha
 
 A drifting window is a signal to look, and it does not on its own start a retraining. The book sets three triggers, and this section states each one. The first is drift, the rule in this chapter's watch applied to consecutive windows. The book retrains when two consecutive windows drift, a number no source gives, and you may choose another, provided you state it in advance. The second trigger is a team added to the 77 the router returns. The router has no training rows for it, and people's labels would show it as a team outside the 77. The third is a rise in wrong teams on messages the router keeps, confirmed in the kept-message sample from the previous section. It is not the sample of handed-off messages, whose teams are never returned, so wrong teams there are expected and do no harm. The retrain script below exercises only the first. The recorded data holds no added team and no person's labels, so the second and third are rules without a test here.
 
-Example `retrain-trigger` (Python 3.12.15 · peft 0.22.0 · torch 2.15.0+cpu · torchao 0.18.0+cpu · transformers 5.23.0), passing in Edition 2026.11.14:
+Example `retrain-trigger` (Python 3.12.15 · peft 0.22.0 · torch 2.15.0+cpu · torchao 0.18.0+cpu · transformers 5.23.0), passing in Edition 2026.11.15:
 
 ```python
 """Decide whether to retrain, as a rule over the weekly drift flags from handoff-windows. The rule is the book's choice,
@@ -379,7 +379,7 @@ You notice the first kind of failure when the app is built. A refused folder rai
 ## The decisions this chapter made {#the-decisions-this-chapter-made}
 
 - A handed-off message always goes to a person. The stand-in's answer, when there is one, is a labelled suggestion, and the chapter counts how often it is right.
-- The version check pins the SHA-256 of each adapter's `manifest.json` in `examples/adapter-pins.json`, and `make_app` refuses to build on any mismatch or a moved base pin.
+- The version check pins the SHA-256 of each adapter's `manifest.json` in `examples/adapter-pins.json`, checks the output files and LoRA settings against the manifest, and `make_app` refuses to build on any mismatch or a moved base pin.
 - The drift rule is 10 points from the dev baseline, in either direction, on windows of 25 messages.
 - A retrain is due when two consecutive windows drift. The second and third triggers are stated rules, not tested here.
 

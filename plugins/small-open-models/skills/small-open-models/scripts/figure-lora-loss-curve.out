@@ -1,0 +1,11 @@
+steps in the recording: 1125
+window of the moving mean: 25 steps
+recording seed: 0
+recording batch size: 8
+steps in the short run: 30
+mean loss of the short run steps: 5.84
+mean loss of the last 100 steps: 0.51
+loss of a uniform guess over 77 teams: 4.34
+moving mean last at or above the guess, ending at step: 62
+moving mean below the guess from step on: 63
+figure: figures/lora-loss-curve.svg

@@ -3,13 +3,13 @@ title: "Small Open Models"
 chapter: "Choose a base model by counting what one message costs"
 chapter_id: choose-a-base-model
 book: small-open-models
-edition: 2026.11.14
-verified: 2026-11-22
-edition_code: YVM6-RB7E
+edition: 2026.11.15
+verified: 2026-11-23
+edition_code: AFZE-BGR9
 canonical: https://rollingedition.com/small-open-models/choose-a-base-model
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“Choose a base model by counting what one message costs,” chapter 3 of Small Open Models, Edition 2026.11.14, examples passed Nov 22, 2026. By Rolling Edition, https://rollingedition.com/small-open-models/choose-a-base-model. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Choose a base model by counting what one message costs,” chapter 3 of Small Open Models, Edition 2026.11.15, examples passed Nov 23, 2026. By Rolling Edition, https://rollingedition.com/small-open-models/choose-a-base-model. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Choose a base model by counting what one message costs
 
@@ -19,13 +19,13 @@ Every message in the bank's support inbox costs something to route: a model read
 
 ## Which candidates we keep {#the-candidates-and-what-we-keep}
 
-A base model is a model already pretrained on a large amount of text, which you adapt to one job. Every later chapter builds on this choice, through the prompt, the training, the distillation and the serving, so it is worth making on evidence. There are many open models, so the book narrows the field with two questions: can the model run on the hardware the bank has, and can the bank use its licence?
+A base model is the model an [adapter](fine-tune-with-lora#adapters-train-a-small-part-of-the-model) is trained on: a model already pretrained on a large amount of text, which you adapt to one job. Every later chapter builds on this choice, through the prompt, the training, the distillation and the serving, so it is worth making on evidence. There are many open models, so the book narrows the field with two questions: can the model run on the hardware the bank has, and can the bank use its licence?
 
 The licence comes first in practice. It decides what the bank may do with the model in its own system, and a model the bank may not run is not a candidate, whatever its size. The book records each model's licence beside its pin, so a reader can see the same record the book used.
 
 The first candidate is SmolLM2, a family of models published on Hugging Face. The [model card](https://huggingface.co/HuggingFaceTB/SmolLM2-135M-Instruct/tree/12fd25f77366fa6b3b4b768ec3050bf629380bac) for the 135M model, at the commit this book pins, gives the family's three sizes in one sentence: 135M, 360M and 1.7B parameters. The same card lists the licence as `license: apache-2.0`, which the book's pins record for both models it keeps. The card also gives the 135M model's training data as 2 trillion tokens. Those figures come from the card for the 135M model only.
 
-The book keeps two of the three sizes. The list below names them, and the table after it sets all three side by side, with the licence each pin records.
+The book keeps two of the three sizes, both in their instruction-tuned releases, the `-Instruct` models. The list below names them, and the table after it sets all three side by side, with the licence each pin records.
 
 - SmolLM2-135M-Instruct is the core model. The rest of the book trains and serves it.
 - SmolLM2-360M-Instruct is a comparison. The book loads it, counts its parameters and layers, and uses it beside the core model in this chapter and in [chapter 4](prompt-and-constrain). The book does not train it.
@@ -44,7 +44,7 @@ The book's reference point is a different model. In the case, a hosted model rou
 
 ## Load each model at its pinned revision {#load-each-model-at-its-pinned-revision}
 
-The [previous section](#the-candidates-and-what-we-keep) named two models. A name alone does not say which version of the model's files you load, because a model is stored in a repository of commits, and a branch such as `main` can move to a new commit. A revision pinned by a full commit hash names one snapshot of the files, and the pins file, `examples/models.toml`, records the SHA-256 of every file in that snapshot, which the runtime checks. The shared loader passes the commit to the transformers library, which the book pins at 5.23.0, and the loader looks up the commit for each model in that file.
+The [previous section](#the-candidates-and-what-we-keep) named two models. A name alone does not say which version of the model's files you load, because a model is stored in a repository of commits, and a branch such as `main` can move to a new commit. A revision pinned by a full commit hash names one snapshot of the files, and the pins file, `examples/models.toml`, records the SHA-256 of every file the model needs from that snapshot, which the runtime checks. The shared loader passes the commit to the transformers library, which the book pins at 5.23.0, and the loader looks up the commit for each model in that file.
 
 For each model, the file holds the repository, the commit, the licence and the SHA-256 of every file the model needs. Its header says the runtime fetches each model once, checks it file by file, and then reads it offline. The file is generated by `re-check models --pin`, and its header says not to edit it by hand. So a reader who changes a pin runs that command rather than typing a new commit into the file. A model without a pin has no commit to look up, so the shared loader does not load it.
 
@@ -54,7 +54,7 @@ The example also watches the pins from the output side. It prints each model's p
 
 One example loads both kept models from the files the runtime fetched and checked against the pins, with no network, and prints the book's first size counts.
 
-Example `load-both-models-offline` (Python 3.12.15 · torch 2.15.0+cpu · torchao 0.18.0+cpu · transformers 5.23.0), passing in Edition 2026.11.14:
+Example `load-both-models-offline` (Python 3.12.15 · torch 2.15.0+cpu · torchao 0.18.0+cpu · transformers 5.23.0), passing in Edition 2026.11.15:
 
 ```python
 """Load the 135M and 360M SmolLM2 models at their pins, offline, and print each one's parameter count and layer count. The chapter's size claims rest on both lines; the parameter line is rounded to whole millions."""
@@ -116,11 +116,11 @@ The [previous section](#load-each-model-at-its-pinned-revision) showed what the 
 
 The prompt opens with the sentence "Route this customer message from an online bank to one support team." It asks for the team name only, lists the teams, then gives the message and ends with the word "Team:". Everything in that text is the same from one message to the next except the message itself, so the cost of a message is the fixed text plus the message's own length.
 
-The tokenizer turns the prompt's text into tokens, the units a model reads. The count is in tokens rather than characters because a model reads tokens. Counting needs the tokenizer's rules but no weights, so the count is the first cost you can take before you choose a design. A classifier reads the message once and returns a score for each team. A generative model reads the prompt once and then writes its answer one token at a time, and each token it writes is one more pass through the network. The later chapters use both designs.
+The tokenizer turns the prompt's text into tokens, the units a model reads. The count is in tokens rather than characters because a model reads tokens. Counting needs the tokenizer's rules but no weights, so the count is the first cost you can take before you choose a design. A classifier reads the message once and returns a score for each team. A generative model reads the prompt once and then writes its answer one token at a time, and each token it writes, the end token included, is one pass through the network. The later chapters use both designs.
 
 One example counts the forward passes, each one call of the network, for a single test message under each design. It uses the 135M model with no adapter. The classifier's head is untrained here, so only the pass count matters.
 
-Example `count-forward-passes` (Python 3.12.15 · torch 2.15.0+cpu · torchao 0.18.0+cpu · transformers 5.23.0), passing in Edition 2026.11.14:
+Example `count-forward-passes` (Python 3.12.15 · torch 2.15.0+cpu · torchao 0.18.0+cpu · transformers 5.23.0), passing in Edition 2026.11.15:
 
 ```python
 """Count the forward passes one test_40 message costs a classifier and a generative model, with the 135M model and no adapter. The point rests on the generative line: the model makes one pass for each token it writes, plus one for the end token."""
@@ -192,7 +192,7 @@ A generative model's cost grows with its answer, and a classifier's does not. Fo
 
 A second example counts the router prompt's tokens for each of the 40 messages in the fixed test sample, using the 135M model's tokenizer. It runs no model.
 
-Example `count-prompt-tokens` (Python 3.12.15 · torch 2.15.0+cpu · transformers 5.23.0), passing in Edition 2026.11.14:
+Example `count-prompt-tokens` (Python 3.12.15 · torch 2.15.0+cpu · transformers 5.23.0), passing in Edition 2026.11.15:
 
 ```python
 """Count the router prompt's tokens for each message in test_40, with the 135M model's tokenizer. No model runs. The point rests on the mean line: a day's prompt cost is the mean, not the median, times the number of messages."""
@@ -248,7 +248,7 @@ prompt tokens total: 23493
 prompt tokens mean, rounded: 587
 ```
 
-The prompts differ only in their messages, because the team list is the same text in every prompt. So the spread runs from 580 tokens for the shortest prompt to 614 for the longest, with a median of 585 tokens. The median is the lower of the two middle values, so it is a whole number of tokens.
+The prompts differ only in their messages, because the team list is the same text in every prompt. So the spread runs from 580 tokens for the shortest prompt to 614 for the longest, with a median of 585 tokens. The median here is the lower of the two middle values, so it is a whole number of tokens.
 
 In production, the count moves when the team list moves. Adding a team adds its name to every prompt, so every message costs more from that day on. Rerun the count after each change to the list, and keep the list in the same order, so that the rest of the prompt does not change with it.
 

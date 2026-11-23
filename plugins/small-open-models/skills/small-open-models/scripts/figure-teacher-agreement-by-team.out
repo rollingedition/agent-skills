@@ -1,0 +1,5 @@
+teams with labelled rows: 77
+teams where the teacher gets no row right: 7
+teams with agreement below one half: 35
+rows in the smallest team below one half: 6
+figure: figures/teacher-agreement-by-team.svg

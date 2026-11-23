@@ -3,13 +3,13 @@ title: "Small Open Models"
 chapter: "When a small model is the wrong choice"
 chapter_id: when-a-small-model-is-the-wrong-choice
 book: small-open-models
-edition: 2026.11.14
-verified: 2026-11-22
-edition_code: YVM6-RB7E
+edition: 2026.11.15
+verified: 2026-11-23
+edition_code: AFZE-BGR9
 canonical: https://rollingedition.com/small-open-models/when-a-small-model-is-the-wrong-choice
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“When a small model is the wrong choice,” chapter 10 of Small Open Models, Edition 2026.11.14, examples passed Nov 22, 2026. By Rolling Edition, https://rollingedition.com/small-open-models/when-a-small-model-is-the-wrong-choice. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“When a small model is the wrong choice,” chapter 10 of Small Open Models, Edition 2026.11.15, examples passed Nov 23, 2026. By Rolling Edition, https://rollingedition.com/small-open-models/when-a-small-model-is-the-wrong-choice. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # When a small model is the wrong choice
 
@@ -21,7 +21,7 @@ A small router can beat a larger model on most of a set of messages and still be
 
 [Chapter 2](measure-the-routing-task#the-baseline-from-recorded-answers) set the stand-in's score as the baseline. This section puts the router beside it on the same messages: all 1001 messages of `test_1001`, the fixed sample that every chapter's samples come from ([chapter 2](measure-the-routing-task#dev-test-and-fixed-samples)). The router is the classifier `banking77-lora-v1`, run live.
 
-Example `router-on-test-1001` (Python 3.12.15 · peft 0.22.0 · torch 2.15.0+cpu · torchao 0.18.0+cpu · transformers 5.23.0), passing in Edition 2026.11.14:
+Example `router-on-test-1001` (Python 3.12.15 · peft 0.22.0 · torch 2.15.0+cpu · torchao 0.18.0+cpu · transformers 5.23.0), passing in Edition 2026.11.15:
 
 ```python
 """The router and the stand-in on all 1,001 messages of test_1001, the committed test order. The prose rests on the
@@ -70,7 +70,7 @@ On the whole set the router is ahead, right on 847/1001 (84.6%) against the stan
 
 The count that matters most for the inbox is the wrong answers the router sends to a caller: 76/1001 (7.6%). Those are messages it kept, because their confidence cleared the threshold. [Chapter 5](fine-tune-with-lora#choose-the-threshold-on-dev) chose that threshold on the dev split, and [chapter 9](version-watch-and-fall-back#fall-back-to-a-person) says where what the router hands off goes, which is a person.
 
-Example `where-the-router-still-loses` (Python 3.12.15 · peft 0.22.0 · torch 2.15.0+cpu · torchao 0.18.0+cpu · transformers 5.23.0), passing in Edition 2026.11.14:
+Example `where-the-router-still-loses` (Python 3.12.15 · peft 0.22.0 · torch 2.15.0+cpu · torchao 0.18.0+cpu · transformers 5.23.0), passing in Edition 2026.11.15:
 
 ```python
 """Where the router still loses: test_200 scored for the router and the stand-in. The prose rests on the count of
@@ -180,7 +180,7 @@ Throughput is the input that a recording has to supply, because it depends on th
 
 Only the one-per-call pair is like for like. The classifier in batches of 16 takes 16 messages in one forward pass, and the stand-in takes one message per call with its whole router prompt. So the batched ratio of 104.0 mixes model size with batching, and this chapter does not use it for the comparison. The comparison uses the one-per-call ratio of 60.8. Each copy got one timed pass over the 200 messages of `test_200`, after a warm-up of one message, with tokenization inside the timed span. The ratios come from unrounded rates, so they are not exactly the quotient of the printed rates.
 
-Example `cost-ratio-from-recording` (Python 3.12.15 · torch 2.15.0+cpu · transformers 5.23.0), passing in Edition 2026.11.14:
+Example `cost-ratio-from-recording` (Python 3.12.15 · torch 2.15.0+cpu · transformers 5.23.0), passing in Edition 2026.11.15:
 
 ```python
 """The throughput rates and ratios as recorded, and the machine they were measured on. The prose rests on the
@@ -231,7 +231,7 @@ On this machine, at this thread count, the int8 copy was no faster than float32.
 
 The bill needs a rate for the router, and the recording gives one: the classifier at one message per call, timed as the stand-in was. The route handles one message per request, so the bill uses that rate. A reader replaces it with one taken on their own machine.
 
-Example `monthly-bill-from-labelled-inputs` (Python 3.12.15 · torch 2.15.0+cpu · transformers 5.23.0), passing in Edition 2026.11.14:
+Example `monthly-bill-from-labelled-inputs` (Python 3.12.15 · torch 2.15.0+cpu · transformers 5.23.0), passing in Edition 2026.11.15:
 
 ```python
 """The monthly bill for a hosted model and for the router on one machine, from inputs the reader sets. The hosted bill,
@@ -348,7 +348,7 @@ break-even messages per month = machine bill per month ÷ hosted price per messa
 
 The formula does not subtract the machine's cost per message from the hosted price. The machine's cost per message at capacity is its fixed bill divided by its capacity, and that bill is already counted once in the numerator. Subtracting the same cost again would count the machine twice. The formula also holds only within capacity. Above it, one machine cannot carry the volume, and the count is made again for a second machine, with its own bill and its own capacity.
 
-Example `break-even-from-recorded-ratio` (Python 3.12.15 · torch 2.15.0+cpu · transformers 5.23.0), passing in Edition 2026.11.14:
+Example `break-even-from-recorded-ratio` (Python 3.12.15 · torch 2.15.0+cpu · transformers 5.23.0), passing in Edition 2026.11.15:
 
 ```python
 """The monthly volume at which one machine's bill equals the hosted bill for the router's prompts. The break-even line
@@ -407,6 +407,85 @@ break-even within machine capacity: yes
 With the example values, the machine's bill of 292.00 USD breaks even at 477906 messages a month. That count sits inside the machine's capacity of 24966000 messages a month (the check prints yes). That capacity uses the recorded one-per-call rate with the example utilisation.
 
 The break-even does not depend on the rate, only on the bill and the hosted price. The volume of 100000 messages a month sits well below it, so the hosted bill is the lower one.
+
+*Figure 10.1. The two monthly bills against messages a month, from zero to three times the break-even, at the example prices.*
+
+![The hosted bill rises in a straight line with volume, and the machine's flat dashed bill crosses it at the break-even.](https://rollingedition.ai/books/small-open-models/2026.11.15/figures/break-even-bills.svg)
+
+Example `figure-break-even-bills` (Python 3.12.15 · matplotlib 3.11.2 · torch 2.15.0+cpu · transformers 5.23.0), passing in Edition 2026.11.15:
+
+```python
+"""The two monthly bills against messages a month, from zero to three times the break-even: the hosted bill grows with volume and the machine's stays flat, so they cross at the break-even. The prose rests on the span-end lines and the capacity line; the break-even is asserted equal to break-even-from-recorded-ratio's line, and no model runs."""
+
+import math
+import os
+
+os.environ["HF_HUB_OFFLINE"] = "1"
+os.environ["TRANSFORMERS_OFFLINE"] = "1"
+
+import torch  # noqa: E402
+
+torch.set_num_threads(2)
+
+import router_lib  # noqa: E402
+
+router_lib.setup_runtime()
+inputs = router_lib.bill_inputs_recorded()
+messages = [router_lib.read_rows("test")[i][0] for i in router_lib.read_sample("test_200")]  # index 0 is the text
+
+# The same computation as break-even-from-recorded-ratio.
+input_tokens = router_lib.router_prompt_tokens(messages)
+# Prices are per million tokens, hence the division at the end.
+per_message = (input_tokens * inputs["price_per_million_input_tokens"]
+               + inputs["output_tokens_per_message"] * inputs["price_per_million_output_tokens"]) / 1_000_000
+machine_month = inputs["machine_cost_per_hour"] * inputs["hours_per_month"]
+capacity = inputs["router_messages_per_second"] * 3600 * inputs["hours_per_month"] * inputs["utilisation"]
+# Rounded up: the first whole message count at which the machine is no dearer.
+breakeven = math.ceil(machine_month / per_message)
+# break-even-from-recorded-ratio prints this count; update both if an input changes.
+assert breakeven == 477906, "not break-even-from-recorded-ratio"
+
+# The span runs from zero to three times the break-even.
+span_end = 3 * breakeven
+assert span_end <= capacity, "span past one machine's capacity"
+
+print(f"example machine bill per month (example cost per hour), USD: {machine_month:.2f}")
+print(f"example break-even messages per month (example prices and cost per hour): {breakeven}")
+print(f"example hosted bill at the break-even (example prices), USD: {breakeven * per_message:.2f}")
+print(f"span end, messages a month: {span_end}")
+print(f"example hosted bill at the span end (example prices), USD: {span_end * per_message:.2f}")
+print(f"span within machine capacity: {'yes' if span_end <= capacity else 'no'}")
+
+from lib.figures import ACCENT, INK, MUTED, new_figure, save  # noqa: E402
+
+fig, ax = new_figure()
+ax.plot([0, span_end / 1000], [0, span_end * per_message], color=ACCENT, label="hosted model bill (example prices), USD")  # a straight line through zero
+ax.plot([0, span_end / 1000], [machine_month, machine_month], color=INK, linestyle="--", label="machine bill (example cost per hour), USD")
+ax.plot([breakeven / 1000], [machine_month], "o", color=MUTED)
+ax.annotate(f"break-even: {breakeven:,} messages a month", (breakeven / 1000, machine_month),
+            xytext=(12, -36), textcoords="offset points", color=INK,
+            arrowprops=dict(arrowstyle="-", color=MUTED, linewidth=0.8))
+ax.set_xlabel("messages a month, thousands")
+ax.set_ylabel("monthly bill, USD")
+ax.set_xlim(0, span_end / 1000)
+ax.set_ylim(0, span_end * per_message * 1.1)
+ax.legend(loc="upper left")
+save(fig, "break-even-bills")
+```
+
+Output:
+
+```text
+example machine bill per month (example cost per hour), USD: 292.00
+example break-even messages per month (example prices and cost per hour): 477906
+example hosted bill at the break-even (example prices), USD: 292.00
+span end, messages a month: 1433718
+example hosted bill at the span end (example prices), USD: 876.00
+span within machine capacity: yes
+figure: figures/break-even-bills.svg
+```
+
+In Figure 10.1, the hosted bill is the solid line that starts at zero and rises with the volume, and the machine's bill is the dashed line that stays flat across the span, from zero to 1433718 messages a month. The two lines cross at the break-even, and past it the gap widens with every message: at the end of the span, at the example prices, the hosted bill is 876.00 USD against the machine's 292.00 USD. The whole span sits inside one machine's capacity, so the flat line holds across all of it.
 
 A cost point is not a decision, and the inbox still decides the rest. It answers the cost question only after the requirement in [keep the data inside the building](#keep-the-data-inside-the-building) is settled. If the messages must stay inside, the question is which small model meets the accuracy and hand-off counts, and the break-even says what that machine costs against a hosted model at each volume. If the requirement lets a hosted model in, and the volume is below the break-even, the hosted model is the lower-cost route at the example prices. Above the break-even, the machine is the lower-cost route, provided the volume is inside its capacity and the router's wrong answers reaching a caller are numbers the support staff can accept. Hand-offs go to a person whatever the bill says: on the first 200 messages, the router hands off 33/200 (16.5%) of them.
 

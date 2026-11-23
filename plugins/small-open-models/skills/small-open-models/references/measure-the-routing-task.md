@@ -3,13 +3,13 @@ title: "Small Open Models"
 chapter: "Measure the routing task before you choose a model"
 chapter_id: measure-the-routing-task
 book: small-open-models
-edition: 2026.11.14
-verified: 2026-11-22
-edition_code: YVM6-RB7E
+edition: 2026.11.15
+verified: 2026-11-23
+edition_code: AFZE-BGR9
 canonical: https://rollingedition.com/small-open-models/measure-the-routing-task
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“Measure the routing task before you choose a model,” chapter 2 of Small Open Models, Edition 2026.11.14, examples passed Nov 22, 2026. By Rolling Edition, https://rollingedition.com/small-open-models/measure-the-routing-task. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Measure the routing task before you choose a model,” chapter 2 of Small Open Models, Edition 2026.11.15, examples passed Nov 23, 2026. By Rolling Edition, https://rollingedition.com/small-open-models/measure-the-routing-task. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Measure the routing task before you choose a model
 
@@ -45,7 +45,7 @@ The counts come from the committed samples, and the book quotes only those. The 
 
 The first thing to see is how big each split is and how unevenly the teams are spread across them. Counting needs no model, so the reader can run it first. It reads the training file, the test file and the dev sample, and counts each split:
 
-Example `count-the-splits` (Python 3.12.15 · torch 2.15.0+cpu · transformers 5.23.0), passing in Edition 2026.11.14:
+Example `count-the-splits` (Python 3.12.15 · torch 2.15.0+cpu · transformers 5.23.0), passing in Edition 2026.11.15:
 
 ```python
 """Count each BANKING77 split and its messages per team, and check the committed samples; no model runs.
@@ -118,6 +118,79 @@ test_1001 per label max: 13
 
 The test file is even, with the same count for every team, and the training file is not: its teams run from 35 messages to 187. That spread is why the dev draw is made team by team rather than as one random tenth of the file. The test file's own fewest and most, 40 and 40, are equal.
 
+Figure 2.1 ranks the teams from the most training rows to the fewest, with the test file's count per team as the dashed line. The bars step down from left to right. 76 of the 77 teams have more training rows than the test file gives each team; the other is the smallest team. The median team has 127 training messages.
+
+*Figure 2.1. Training rows per team, ranked, against the test file's count per team.*
+
+![Training rows per team, ranked, stand above the test file's flat dashed count for every team but the smallest.](https://rollingedition.ai/books/small-open-models/2026.11.15/figures/train-rows-per-team.svg)
+
+Example `figure-train-rows-per-team` (Python 3.12.15 · matplotlib 3.11.2 · torch 2.15.0+cpu · transformers 5.23.0), passing in Edition 2026.11.15:
+
+```python
+"""Rank the training file's rows per team and draw them against the test file's count per team; no model runs.
+
+The prose's point rests on the median training count, and on how many teams have more training rows than the test file's count, which is the same for every team.
+"""
+
+import os
+
+os.environ["HF_HUB_OFFLINE"] = "1"
+os.environ["TRANSFORMERS_OFFLINE"] = "1"
+
+import torch  # noqa: E402
+
+torch.set_num_threads(2)
+
+import router_lib  # noqa: E402
+from collections import Counter  # noqa: E402
+from statistics import median  # noqa: E402
+
+router_lib.setup_runtime()
+
+from lib.figures import ACCENT, INK, new_figure, save  # noqa: E402
+
+train = router_lib.read_rows("train")
+test = router_lib.read_rows("test")
+train_per_label = Counter(label for _, label in train)
+test_per_label = Counter(label for _, label in test)
+train_counts = sorted((train_per_label[i] for i in range(len(router_lib.LABELS))), reverse=True)
+test_counts = [test_per_label[i] for i in range(len(router_lib.LABELS))]
+
+assert min(train_counts) == 35 and max(train_counts) == 187, "train counts differ from count-the-splits"  # its lines
+assert min(test_counts) == max(test_counts) == 40, "the test file is not even"
+
+print(f"labels: {len(router_lib.LABELS)}")
+print(f"train per label min: {min(train_counts)}")
+print(f"train per label max: {max(train_counts)}")
+print(f"train per label median: {median(train_counts)}")
+print(f"test per label: {test_counts[0]}")
+print(f"teams with more training rows than the test count: {sum(c > test_counts[0] for c in train_counts)}")
+print("test file even across teams: yes")
+
+fig, ax = new_figure()
+ax.bar(range(1, len(train_counts) + 1), train_counts, color=ACCENT, label="training file: rows per team, ranked")
+ax.axhline(test_counts[0], color=INK, linestyle="--", label="test file: rows per team, the same for every team")
+ax.set_xlabel("team, ranked from most to fewest training rows")
+ax.set_ylabel("messages per team")
+ax.set_xlim(0, len(train_counts) + 1)
+ax.set_ylim(0, max(train_counts) + 20)
+ax.legend(loc="upper right")
+save(fig, "train-rows-per-team")
+```
+
+Output:
+
+```text
+labels: 77
+train per label min: 35
+train per label max: 187
+train per label median: 127
+test per label: 40
+teams with more training rows than the test count: 76
+test file even across teams: yes
+figure: figures/train-rows-per-team.svg
+```
+
 The stratified sample is even as well, at 13 to 13 messages a team.
 
 The even test file is a property of the source, and the book relies on it. Equal counts per team mean that the test split does not reward a router for being good at the largest team. A router that does well on a sample with uneven counts can look better than it is, because most of its score comes from the teams with the most messages.
@@ -160,13 +233,13 @@ A measure means little until something has been scored against it. The baseline 
 
 The stand-in answered each of the messages in `test_1001` once. The answers are stored in a recording, `examples/data/recorded/standin-baseline/answers.jsonl`, and each answer names a team and gives its log-probability. The recording has a manifest beside it. The manifest names the script that made the recording, the model and its pinned revision, the hash of the prompt, the decoding settings and the seed, and the hash of the answers file. The code checks the answers file against that hash before it reads a line, so a changed file fails the run rather than changing a score.
 
-The recording is read, not run. Every example that uses the baseline reads the same answers, so the baseline cannot change from one run to the next, even if the runtime that made the recording is later updated. The reason for recording, rather than calling a model in each example, is the same reason the pins exist. A recording fixes the answers to one model at one revision, so a reader who runs the same example later sees the same numbers. The book never calls a hosted API, because a hosted model's answers are not fixed in the same way. The stand-in is an open model that anyone can run, and its recording is the only route to its answers that the book takes.
+The recording is read, not run. Every example that uses the baseline reads the same answers, so the baseline cannot change from one run to the next, even if the runtime that made the recording is later updated. The reason for recording, rather than calling a model in each example, is the same reason the pins exist. A recording fixes the answers to one model at one revision, one prompt and one sample, so a reader who runs the same example later sees the same numbers. The book never calls a hosted API, because a hosted model's answers are not fixed in the same way. The stand-in is an open model that anyone can run, and its recording is the only route to its answers that the book takes.
 
 The baseline is also not a ceiling. It is the score a candidate has to beat on the same messages, and it says nothing about the hand-off trade-off by itself. A candidate that beats it on accuracy may still hand off more messages than the support staff can read, so the baseline is always read beside the three measures and never as a single number.
 
 What does the placeholder threshold cost? Scored with the three measures on `test_1001`, the stand-in shows how many messages a threshold of 0.5 hands off, and how often it is right on the rest. Its confidence is the probability that llama-cpp-python returns for its constrained answer, which is exp of the recorded log-probability. That threshold is chapter 1's placeholder, so its hand-off rate is not the book's final one, and [chapter 5](fine-tune-with-lora#choose-the-threshold-on-dev) chooses the real threshold on dev. The example also applies a threshold above every confidence, which hands off every message.
 
-Example `baseline-measures` (Python 3.12.15 · torch 2.15.0+cpu · transformers 5.23.0), passing in Edition 2026.11.14:
+Example `baseline-measures` (Python 3.12.15 · torch 2.15.0+cpu · transformers 5.23.0), passing in Edition 2026.11.15:
 
 ```python
 """Score the stand-in's recorded answers on test_1001 with the three measures, at chapter 1's placeholder threshold and at one above every confidence; no model runs. The point rests on the accuracy and hand-off lines, and the answers' hash is checked first.
@@ -233,6 +306,92 @@ At the placeholder threshold, the stand-in gets 560/1001 (55.9%) right and hands
 
 At a threshold above every confidence, the hand-off rate is 1001/1001 (100.0%), so the accuracy on messages not handed off is not defined (0 messages not handed off).
 
+Figure 2.2 sweeps the threshold from 0 to 1 in steps of 0.01 and draws two curves against it, named in its legend: the share of messages handed off, dashed, and the accuracy on the messages not handed off, solid. The trade-off is what to see: at each printed threshold, a higher threshold hands off more messages, and the messages kept are more often right.
+
+Raised from the placeholder 0.5 to 0.9, the threshold hands off 143/1001 (14.3%), and the stand-in is right on 522/858 (60.8%) of the messages it keeps.
+
+*Figure 2.2. The hand-off threshold swept from 0 to 1, with the share handed off and the accuracy on the messages not handed off.*
+
+![A higher hand-off threshold hands off more messages, and at the printed thresholds the messages kept are more often right; the share handed off climbs steeply at the right edge.](https://rollingedition.ai/books/small-open-models/2026.11.15/figures/baseline-handoff-tradeoff.svg)
+
+Example `figure-baseline-handoff-tradeoff` (Python 3.12.15 · matplotlib 3.11.2 · torch 2.15.0+cpu · transformers 5.23.0), passing in Edition 2026.11.15:
+
+```python
+"""Sweep the hand-off threshold over the stand-in's recorded answers on test_1001 and draw both measures; no model runs.
+
+The printed lines at 0.5 equal baseline-measures' lines, which the assert checks. The lines at 0.9, 0.99 and 1.0 give more points on the curves, and the counts of confidences at 1.0 and in the last step explain the curves' right edge.
+"""
+
+import os
+
+os.environ.update(HF_HUB_OFFLINE="1", TRANSFORMERS_OFFLINE="1")
+
+import torch  # noqa: E402
+
+torch.set_num_threads(2)
+
+import json, math, router_lib  # noqa: E402
+
+router_lib.setup_runtime()
+
+from lib.figures import ACCENT, INK, MUTED, new_figure, save  # noqa: E402
+
+RECORDED = router_lib.HERE / "data" / "recorded" / "standin-baseline"
+answers = {row["index"]: row for row in map(json.loads, (RECORDED / "answers.jsonl").read_text().splitlines())}
+rows = router_lib.read_rows("test")
+sample = router_lib.read_sample("test_1001")
+golds = [rows[i][1] for i in sample]
+preds = [answers[i]["label"] for i in sample]
+confs = [math.exp(answers[i]["logprob"]) for i in sample]  # the probability the stand-in gave its answer
+at = lambda threshold: router_lib.metrics(preds, golds, confs, threshold)  # noqa: E731
+thresholds = [k / 100 for k in range(101)]
+sweep = [at(t) for t in thresholds]
+handed = [100 * m["handoff_rate"] for m in sweep]
+kept = [100 * m["accuracy_not_handed_off"] if m["accuracy_not_handed_off"] is not None else math.nan for m in sweep]
+
+assert (at(0.5)["handed_off"], at(0.5)["correct_not_handed_off"], at(0.5)["not_handed_off"]) == (30, 554, 971), "not baseline-measures"
+for t in (0.5, 0.9, 0.99, 1.0):
+    m = at(t)
+    print(f"handed off at {t}: {m['handed_off']}/{len(sample)} ({m['handoff_rate']:.1%})")
+    print(f"accuracy on messages not handed off at {t}: {m['correct_not_handed_off']}/{m['not_handed_off']} ({m['accuracy_not_handed_off']:.1%})")
+print("matches baseline-measures at 0.5: yes")
+exactly_one = sum(c == 1.0 for c in confs)
+last_step = at(1.0)["handed_off"] - at(0.99)["handed_off"]
+assert at(1.0)["handed_off"] + exactly_one == len(sample), "a confidence of 1.0 is handed off at 1.0"  # strictly below: 1.0 is kept
+print(f"messages with confidence at least 0.99 and below 1.0: {last_step}")
+print(f"messages with confidence exactly 1.0: {exactly_one}")
+
+fig, ax = new_figure()
+ax.plot(thresholds, handed, color=INK, linestyle="--", label="handed off, share of all messages")
+ax.plot(thresholds, kept, color=ACCENT, label="accuracy on messages not handed off")
+ax.axvline(0.5, color=MUTED, linestyle=":", label="placeholder threshold 0.5")
+ax.set_xlabel("hand-off threshold: a confidence below it goes to a person")
+ax.set_ylabel("percent")
+ax.set_xlim(0, 1)
+ax.set_ylim(0, 100)
+ax.legend(loc="upper right")
+save(fig, "baseline-handoff-tradeoff")
+```
+
+Output:
+
+```text
+handed off at 0.5: 30/1001 (3.0%)
+accuracy on messages not handed off at 0.5: 554/971 (57.1%)
+handed off at 0.9: 143/1001 (14.3%)
+accuracy on messages not handed off at 0.9: 522/858 (60.8%)
+handed off at 0.99: 263/1001 (26.3%)
+accuracy on messages not handed off at 0.99: 481/738 (65.2%)
+handed off at 1.0: 515/1001 (51.4%)
+accuracy on messages not handed off at 1.0: 351/486 (72.2%)
+matches baseline-measures at 0.5: yes
+messages with confidence at least 0.99 and below 1.0: 252
+messages with confidence exactly 1.0: 486
+figure: figures/baseline-handoff-tradeoff.svg
+```
+
+The curve turns steep at the right edge because of the last step, from 0.99 to 1.0. Those 252 messages are handed off at 1.0, since a message is handed off only when its confidence is strictly below the threshold. The 486 messages whose confidence is exactly 1.0 are kept even at 1.0, so at 1.0 the stand-in hands off 515/1001 (51.4%), and only a threshold above 1.0 hands them off too.
+
 A reader's own hosted model is a different baseline. It will score differently on the same messages, and the book does not claim that the stand-in's numbers are the inbox's numbers. The reader's baseline is their model's recorded answers on `test_1001`, scored with the three measures in this chapter. The comparison that matters is between the reader's candidate and that baseline, on the same messages, with the same counts.
 
 The [next section](#where-the-labels-collide) counts the stand-in's wrong answers and shows which teams they fall between. The wrong-answer count is the baseline's first number.
@@ -245,7 +404,7 @@ The [baseline's counts](#the-baseline-from-recorded-answers) say how often the s
 
 Counting the wrong answers needs the recording itself, so the next example reads it, checks it against the manifest, checks that it holds exactly the messages of `test_1001`, and then counts the wrong answers and the three gold-to-answer pairs that occur most often. Ties break on each team's position in the categories file, so the same pairs print in the same order on every run.
 
-Example `confusions-in-the-baseline` (Python 3.12.15 · torch 2.15.0+cpu · transformers 5.23.0), passing in Edition 2026.11.14:
+Example `confusions-in-the-baseline` (Python 3.12.15 · torch 2.15.0+cpu · transformers 5.23.0), passing in Edition 2026.11.15:
 
 ```python
 """Count the stand-in's wrong answers, its three most frequent gold-to-answer pairs and the teams it never answers, on test_1001; no model runs. The point rests on the "pair" and "never answered" lines.
@@ -338,7 +497,7 @@ never answered 4 most often as: get_physical_card
 never answered 4 most often count: 10
 ```
 
-The stand-in is wrong on 44.1% (441 of 1001). With no threshold applied, the error is one minus accuracy, so that wrong rate and the accuracy in [the baseline section](#the-baseline-from-recorded-answers) add up to 100%.
+The stand-in is wrong on 44.1% (441 of 1001). Whatever the threshold, the error is one minus accuracy, so that wrong rate and the accuracy in [the baseline section](#the-baseline-from-recorded-answers) add up to 100%.
 
 Each of the three most frequent pairs takes all or nearly all of its gold team's sample messages. The first pair takes 13/13, the second 13/13, and the third 12/13, so the first two take every message of their gold team and the third all but one. The team names suggest a reason for each pair: the first concerns a refund, the second a transfer, and the third a card's arrival and its delivery estimate. That is a reading of the names. The chapter does not read the messages, and no example prints them, so the pairs are a reason to look, not a finding about what the messages say.
 

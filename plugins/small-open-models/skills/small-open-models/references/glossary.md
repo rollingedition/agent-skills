@@ -1,13 +1,13 @@
 ---
 title: "Glossary"
 book: "Small Open Models"
-edition: "2026.11.14"
+edition: "2026.11.15"
 canonical: "https://rollingedition.com/small-open-models/glossary"
 ---
 
 # Glossary of *Small Open Models*
 
-The 100 terms this book defines, as Edition 2026.11.14 has them, each in the book's own sentence. When a task this skill covers uses one, it means what it says here: read its section before you rely on it, and cite the section. Where a definition depends on a package, it says the version this edition pins and runs its examples on. On the web: https://rollingedition.com/small-open-models/glossary
+The 100 terms this book defines, as Edition 2026.11.15 has them, each in the book's own sentence. When a task this skill covers uses one, it means what it says here: read its section before you rely on it, and cite the section. Where a definition depends on a package, it says the version this edition pins and runs its examples on. On the web: https://rollingedition.com/small-open-models/glossary
 
 ## accuracy
 
@@ -27,7 +27,7 @@ Accuracy on messages not handed off is the correct messages among those the rout
 
 ## adapter
 
-the trained LoRA matrices are the adapter
+In this book, the trained LoRA matrices are the adapter.
 
 - Also: LoRA adapter
 - Part of: LoRA
@@ -96,10 +96,10 @@ The working router uses banking77-lora-v1: the adapter from the full recorded ru
 
 ## base model
 
-A base model is a model already pretrained on a large amount of text, which you adapt to one job.
+A base model is the model an adapter is trained on: a model already pretrained on a large amount of text, which you adapt to one job.
 
 - Defined in: [Which candidates we keep](choose-a-base-model.md#the-candidates-and-what-we-keep)
-- Address: https://rollingedition.com/concepts/large-language-models/base-model
+- Address: https://rollingedition.com/concepts/fine-tuning/base-model
 
 ## baseline
 
@@ -139,7 +139,7 @@ The chat form wraps the router prompt's text in the model's chat template, which
 
 ## classification head
 
-A classification head works differently from the stand-in: it keeps the language model's layers and adds one output layer with 77 outputs, one for each team.
+A classification head works differently from the stand-in: it keeps the language model's layers but its output layer, and in its place adds one output layer with 77 outputs, one for each team.
 
 - Also: score head, classifier head
 - Contrasts with: stand-in
@@ -203,7 +203,7 @@ Distillation trains a small model to reproduce a large one.
 
 ## drift
 
-A window drifts when its hand-off rate is more than a stated number of points from the baseline, in either direction.
+A window's hand-off rate drifts when it is more than a stated number of points from the baseline, in either direction.
 
 - Computed from: hand-off rate
 - Computed from: dev baseline
@@ -221,7 +221,7 @@ The end-of-answer token is the model's <|im_end|>, which is also its pad token (
 
 ## error
 
-With no threshold applied, the error is one minus accuracy
+Whatever the threshold, the error is one minus accuracy
 
 - Computed from: accuracy
 - Defined in: [Where the labels collide](measure-the-routing-task.md#where-the-labels-collide)
@@ -255,7 +255,7 @@ Full fine-tuning changes every weight in the base model.
 
 ## generative model
 
-A generative model reads the prompt once and then writes its answer one token at a time, and each token it writes is one more pass through the network.
+A generative model reads the prompt once and then writes its answer one token at a time, and each token it writes, the end token included, is one pass through the network.
 
 - Contrasts with: classifier
 - Defined in: [Measure what one message costs](choose-a-base-model.md#measure-what-one-message-costs)
@@ -367,7 +367,7 @@ The set_num_threads setting covers the threads used inside one operation, the in
 
 ## kept message
 
-The keeps are the messages whose answers the route returned
+The keeps are the messages whose teams the route returned
 
 - Contrasts with: hand-off
 - Defined in: [Sample handed-off messages for people](version-watch-and-fall-back.md#sample-handed-off-messages-for-people)
@@ -415,7 +415,7 @@ a log-probability is the logarithm of the probability the model gives a token
 
 ## LoRA
 
-The paper that introduced LoRA, Hu et al. (2021), says it freezes the pre-trained weights and injects trainable low-rank matrices into the layers of the Transformer, and the trained LoRA matrices are the adapter.
+The paper that introduced LoRA, Hu et al. (2021), says it freezes the pre-trained weights and injects trainable low-rank matrices into the layers of the Transformer. In this book, the trained LoRA matrices are the adapter.
 
 - Also: low-rank adaptation
 - Contrasts with: full fine-tuning
@@ -472,7 +472,7 @@ The machine's cost per message at capacity is its fixed bill divided by its capa
 
 ## median
 
-The median is the lower of the two middle values, so it is a whole number of tokens.
+The median here is the lower of the two middle values, so it is a whole number of tokens.
 
 - Defined in: [Measure what one message costs](choose-a-base-model.md#measure-what-one-message-costs)
 - Address: https://rollingedition.com/concepts/model-evaluation/median
@@ -523,7 +523,7 @@ A revision pinned by a full commit hash names one snapshot of the files
 
 ## pins file
 
-the pins file, examples/models.toml, records the SHA-256 of every file in that snapshot, which the runtime checks
+the pins file, examples/models.toml, records the SHA-256 of every file the model needs from that snapshot, which the runtime checks
 
 - Also: models.toml
 - Defined in: [Load each model at its pinned revision](choose-a-base-model.md#load-each-model-at-its-pinned-revision)
@@ -563,7 +563,7 @@ If the top team is the same for every message, the score is the model's prior an
 
 ## quantization
 
-Quantizing a layer stores each of its weights as an 8-bit integer, with a scale that maps the integers back to approximate float values.
+Quantizing a layer's weights to int8 stores each of them as an 8-bit integer, with a scale that maps the integers back to approximate float values.
 
 - Also: quantizing
 - Comes before: int8 copy
@@ -589,7 +589,7 @@ The raw form passes the router prompt's text to the model as it stands.
 
 ## recording
 
-A recording fixes the answers to one model at one revision, so a reader who runs the same example later sees the same numbers.
+A recording fixes the answers to one model at one revision, one prompt and one sample, so a reader who runs the same example later sees the same numbers.
 
 - The same as: https://rollingedition.com/concepts/artificial-intelligence/recording
 - The same as: https://rollingedition.com/concepts/llm-evaluation/recording
@@ -608,7 +608,7 @@ The manifest names the script that made the recording, the model and its pinned 
 
 ## rough router
 
-A router is rough when its threshold is a placeholder and its model is a stand-in
+A router is rough when its threshold is a placeholder or its model is a stand-in
 
 - A kind of: router
 - Defined in: [Build a router for the bank's inbox that hands off when unsure](route-a-message.md)
@@ -740,7 +740,7 @@ the teacher's recording, teacher-labels/manifest.json, which names the teacher's
 
 ## team
 
-A team is a label the router can return, such as card_arrival, and it is never a group of people.
+A team is a label the router can return, such as card_arrival, and it names where a message is sent, not the people who read it.
 
 - Also: intent
 - Defined in: [Build a router for the bank's inbox that hands off when unsure](route-a-message.md)
@@ -848,7 +848,7 @@ utilisation, which is the share of the month it is busy
 
 ## version check
 
-The version check pins the SHA-256 of each adapter's manifest.json in examples/adapter-pins.json, and make_app refuses to build on any mismatch or a moved base pin.
+The version check pins the SHA-256 of each adapter's manifest.json in examples/adapter-pins.json, checks the output files and LoRA settings against the manifest, and make_app refuses to build on any mismatch or a moved base pin.
 
 - Defined in: [The decisions this chapter made](version-watch-and-fall-back.md#the-decisions-this-chapter-made)
 - Address: https://rollingedition.com/concepts/artificial-intelligence/version-check

@@ -1,0 +1,12 @@
+handed off at 0.5: 30/1001 (3.0%)
+accuracy on messages not handed off at 0.5: 554/971 (57.1%)
+handed off at 0.9: 143/1001 (14.3%)
+accuracy on messages not handed off at 0.9: 522/858 (60.8%)
+handed off at 0.99: 263/1001 (26.3%)
+accuracy on messages not handed off at 0.99: 481/738 (65.2%)
+handed off at 1.0: 515/1001 (51.4%)
+accuracy on messages not handed off at 1.0: 351/486 (72.2%)
+matches baseline-measures at 0.5: yes
+messages with confidence at least 0.99 and below 1.0: 252
+messages with confidence exactly 1.0: 486
+figure: figures/baseline-handoff-tradeoff.svg

@@ -1,0 +1,8 @@
+labels: 77
+train per label min: 35
+train per label max: 187
+train per label median: 127
+test per label: 40
+teams with more training rows than the test count: 76
+test file even across teams: yes
+figure: figures/train-rows-per-team.svg

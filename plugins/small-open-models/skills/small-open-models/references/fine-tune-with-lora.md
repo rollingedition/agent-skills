@@ -3,13 +3,13 @@ title: "Small Open Models"
 chapter: "Fine-tune a classification head with LoRA"
 chapter_id: fine-tune-with-lora
 book: small-open-models
-edition: 2026.11.14
-verified: 2026-11-22
-edition_code: YVM6-RB7E
+edition: 2026.11.15
+verified: 2026-11-23
+edition_code: AFZE-BGR9
 canonical: https://rollingedition.com/small-open-models/fine-tune-with-lora
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“Fine-tune a classification head with LoRA,” chapter 5 of Small Open Models, Edition 2026.11.14, examples passed Nov 22, 2026. By Rolling Edition, https://rollingedition.com/small-open-models/fine-tune-with-lora. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Fine-tune a classification head with LoRA,” chapter 5 of Small Open Models, Edition 2026.11.15, examples passed Nov 23, 2026. By Rolling Edition, https://rollingedition.com/small-open-models/fine-tune-with-lora. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Fine-tune a classification head with LoRA
 
@@ -21,7 +21,7 @@ This chapter does not compare the adapter with the 360M, and it does not distill
 
 ## A head that scores the teams {#a-head-that-scores-the-teams}
 
-The stand-in writes its answer as text, and a grammar limits that text to the 77 team names while it decodes ([chapter 4](prompt-and-constrain#a-token-trie-allows-only-team-names)). A classification head works differently from the stand-in: it keeps the language model's layers and adds one output layer with 77 outputs, one for each team. For each message, the model produces 77 scores. Softmax turns the scores into 77 probabilities that sum to one. The router returns the team with the highest probability, and the confidence is that probability.
+The stand-in writes its answer as text, and a grammar limits that text to the 77 team names while it decodes ([chapter 4](prompt-and-constrain#a-token-trie-allows-only-team-names)). A classification head works differently from the stand-in: it keeps the language model's layers but its output layer, and in its place adds one output layer with 77 outputs, one for each team. For each message, the model produces 77 scores. Softmax turns the scores into 77 probabilities that sum to one. The router returns the team with the highest probability, and the confidence is that probability.
 
 The answer is an index into the 77 teams, so it is always one of them. [Chapter 4](prompt-and-constrain) reaches the same guarantee for a prompted model by constraining its text. This head never writes text, so it has nothing to constrain.
 
@@ -35,7 +35,7 @@ When two teams tie, `router_lib`'s `classify` function takes the lower label ind
 
 ## Adapters train a small part of the model {#adapters-train-a-small-part-of-the-model}
 
-Full fine-tuning changes every weight in the base model. LoRA takes a different route. The paper that introduced LoRA, [Hu et al. (2021)](https://arxiv.org/abs/2106.09685), says it freezes the pre-trained weights and injects trainable low-rank matrices into the layers of the Transformer, and the trained LoRA matrices are the adapter. The base model stays as it was, and the adapter is the part this book stores, loads and versions.
+Full fine-tuning changes every weight in the base model. LoRA takes a different route. The paper that introduced LoRA, [Hu et al. (2021)](https://arxiv.org/abs/2106.09685), says it freezes the pre-trained weights and injects trainable low-rank matrices into the layers of the Transformer. In this book, the trained LoRA matrices are the adapter. The base model stays as it was, and the adapter is the part this book stores, loads and versions.
 
 The rank, `r`, is the inner size of each added matrix, and it is kept small. Peft scales the added update by `lora_alpha` divided by `r` ([peft 0.22.0, `src/peft/tuners/lora/layer.py`](https://raw.githubusercontent.com/huggingface/peft/v0.21.2/src/peft/tuners/lora/layer.py), line 281: `self.scaling[adapter_name] = lora_alpha / r`), so `lora_alpha` sets how strongly the update counts. This book uses a rank of 8, with `lora_alpha` set to 16. The added matrices go in the projection layers named `q_proj` and `v_proj` in each attention block. The abstract does not name those layers, so this choice is the book's, not something the paper prescribes. We recommend it as a starting point, and the recorded adapter below is the test of that recommendation on this task. Other targets are a choice to measure, not a fact about the method.
 
@@ -49,7 +49,7 @@ The adapter's manifest records the base model's revision, so a reader can check 
 
 Before the book uses a recording, it shows what a short run does with the same recipe. The run below takes 30 steps, at batch size 8 and seed 0, on the training rows outside dev, and then scores `test_200`, the first 200 entries of the [fixed sample](measure-the-routing-task#dev-test-and-fixed-samples) that chapter 2 drew. It is a failure, and the book shows it as one. The short run checks that the pipeline works from start to finish, and that is its only job here.
 
-Example `lora-thirty-steps` (Python 3.12.15 · peft 0.22.0 · torch 2.15.0+cpu · torchao 0.18.0+cpu · transformers 5.23.0), passing in Edition 2026.11.14:
+Example `lora-thirty-steps` (Python 3.12.15 · peft 0.22.0 · torch 2.15.0+cpu · torchao 0.18.0+cpu · transformers 5.23.0), passing in Edition 2026.11.15:
 
 ```python
 """Train for 30 steps on the recorded recipe, then score test_200 at the placeholder threshold of 0.5.
@@ -137,9 +137,88 @@ The rule matters most when a result looks good. A training run that reads the te
 
 The working router uses `banking77-lora-v1`: the adapter from the full recorded run, version 1, written by `recordings/lora_full.py`. That script trained the adapter once, on the recipe in [the section on training rows](#train-on-the-training-rows-never-on-the-test-rows), and wrote its files and a manifest. The manifest holds the base model's revision, the data commit, the threshold, the recipe's hash and the hashes of the output files. Offline, the adapter loads and scores `test_200` at the threshold from its manifest, and nothing is trained.
 
+The recording ends far below the uniform guess over 77 teams that [thirty steps are not enough](#thirty-steps-are-not-enough) compares the short run against: over its last hundred steps the mean loss is 0.51, against 4.34. Figure 5.1 draws the loss at every step of the recording, with its moving mean and the uniform guess. The thin line is the loss at each step, and the heavy line is the moving mean.
+
+The shaded span on the left covers the short run's steps, and their mean loss is 5.84, above the guess. The moving mean last sits at or above the guess at step 62, and from step 63 to the last step it stays below the guess.
+
+*Figure 5.1. The loss at each step of the recorded run, its moving mean, and the uniform guess.*
+
+![The recording's loss falls from above the uniform guess to well below it, and the short run covers only its first steps.](https://rollingedition.ai/books/small-open-models/2026.11.15/figures/lora-loss-curve.svg)
+
+Example `figure-lora-loss-curve` (Python 3.12.15 · matplotlib 3.11.2 · numpy 2.5.5), passing in Edition 2026.11.15:
+
+```python
+"""Draw the loss at each of the recording's steps, with its moving mean, against the uniform guess over 77 teams.
+The printed means of the short run's steps and of the last 100 steps, and the step from which the moving mean stays below the guess,
+are the points the prose rests on."""
+
+import json
+import math
+from pathlib import Path
+
+import numpy as np
+
+from lib.figures import ACCENT, INK, MUTED, new_figure, save
+
+RECORDED = Path(__file__).resolve().parent / "data" / "recorded" / "lora-full"
+WINDOW = 25  # steps in the moving mean; each point averages its step and the 24 before it
+SHORT = 30  # steps the short run trained: the shaded span
+manifest = json.loads((RECORDED / "manifest.json").read_text())
+rows = [json.loads(line) for line in (RECORDED / "steps.jsonl").read_text().splitlines()]
+steps = np.array([r["step"] for r in rows])
+loss = np.array([r["loss"] for r in rows])
+mean = np.convolve(loss, np.ones(WINDOW) / WINDOW, mode="valid")  # mean[k] covers steps k+1 to k+WINDOW
+uniform = math.log(77)
+ends = steps[WINDOW - 1:]  # the step each moving-mean point ends at, as plotted below
+last_above = int(np.nonzero(mean >= uniform)[0][-1])  # the last window at or above the guess
+assert (mean[last_above + 1:] < uniform).all()
+
+print(f"steps in the recording: {len(loss)}")
+print(f"window of the moving mean: {WINDOW} steps")
+print(f"recording seed: {manifest['settings']['seed']}")
+print(f"recording batch size: {manifest['settings']['batch_size']}")
+print(f"steps in the short run: {SHORT}")
+print(f"mean loss of the short run steps: {loss[:SHORT].mean():.2f}")
+print(f"mean loss of the last 100 steps: {loss[-100:].mean():.2f}")
+print(f"loss of a uniform guess over 77 teams: {uniform:.2f}")
+print(f"moving mean last at or above the guess, ending at step: {ends[last_above]}")
+print(f"moving mean below the guess from step on: {ends[last_above + 1]}")  # the next window, which ends one step later
+
+fig, ax = new_figure(height=3.2)
+ax.plot(steps, loss, color=MUTED, linewidth=0.5, label="loss at each step")
+ax.plot(steps[WINDOW - 1:], mean, color=ACCENT, linewidth=1.8, label=f"mean of the last {WINDOW} steps")  # the first mean ends at step WINDOW
+ax.axhline(uniform, color=INK, linestyle="--", linewidth=1.1, label="uniform guess over 77 teams, ln 77")
+ax.axvspan(1, SHORT, color=MUTED, alpha=0.3, linewidth=0)
+ax.axvline(SHORT, color=MUTED, linewidth=0.8)
+ax.text(34, 8.5, f"the short run's {SHORT} steps", ha="left", color=INK)
+ax.set_xlabel("training step")
+ax.set_ylabel("loss, in nats")
+ax.set_ylim(0, 9)
+ax.legend(frameon=False, loc="upper right")
+save(fig, "lora-loss-curve")
+```
+
+Output:
+
+```text
+steps in the recording: 1125
+window of the moving mean: 25 steps
+recording seed: 0
+recording batch size: 8
+steps in the short run: 30
+mean loss of the short run steps: 5.84
+mean loss of the last 100 steps: 0.51
+loss of a uniform guess over 77 teams: 4.34
+moving mean last at or above the guess, ending at step: 62
+moving mean below the guess from step on: 63
+figure: figures/lora-loss-curve.svg
+```
+
+The recording used seed 0 and batch size 8, the same as the short run's 0 and 8.
+
 Take the adapter as it was recorded. A different recipe becomes a new run, named `v2`; the book does not edit the adapter by hand. Keeping the recording fixed is what lets a reader check the numbers in this chapter against the files they downloaded.
 
-Example `lora-recorded-adapter` (Python 3.12.15 · peft 0.22.0 · torch 2.15.0+cpu · torchao 0.18.0+cpu · transformers 5.23.0), passing in Edition 2026.11.14:
+Example `lora-recorded-adapter` (Python 3.12.15 · peft 0.22.0 · torch 2.15.0+cpu · torchao 0.18.0+cpu · transformers 5.23.0), passing in Edition 2026.11.15:
 
 ```python
 """Load the recorded adapter banking77-lora-v1 and score test_200 at the threshold in its manifest; no training runs here.
@@ -203,7 +282,7 @@ The threshold is not chosen on this sample. It came from the manifest, which [th
 
 The recorded adapter is the router's model, and the stand-in is the baseline. The two were measured with different thresholds, so their hand-off counts are not the same kind of result. Compare them on the same messages, with each threshold named beside its count. The comparison below does that for `test_200`, reading the stand-in's recorded answers for the same messages.
 
-Example `compare-with-standin` (Python 3.12.15 · peft 0.22.0 · torch 2.15.0+cpu · torchao 0.18.0+cpu · transformers 5.23.0), passing in Edition 2026.11.14:
+Example `compare-with-standin` (Python 3.12.15 · peft 0.22.0 · torch 2.15.0+cpu · torchao 0.18.0+cpu · transformers 5.23.0), passing in Edition 2026.11.15:
 
 ```python
 """Set the stand-in's recorded answers beside the recorded adapter's live predictions on the same 200 test messages.
@@ -283,7 +362,7 @@ The comparison is one sample of 200 messages. [Chapter 1](route-a-message#score-
 
 The threshold is the cut that sends a message to a person. Chapter 2 set its measures, and chapter 1 left it as a placeholder. The book's rule chooses it on the dev split only: the lowest confidence threshold, on a grid of 0.01, at which accuracy on messages not handed off is at least the target of 0.90. The rule is written in the manifest with its value, so a reader can see the rule as well as the number it produced. The test sample plays no part, [as chapter 2 requires](measure-the-routing-task#dev-test-and-fixed-samples).
 
-Example `choose-threshold-on-dev` (Python 3.12.15 · peft 0.22.0 · torch 2.15.0+cpu · torchao 0.18.0+cpu · transformers 5.23.0), passing in Edition 2026.11.14:
+Example `choose-threshold-on-dev` (Python 3.12.15 · peft 0.22.0 · torch 2.15.0+cpu · torchao 0.18.0+cpu · transformers 5.23.0), passing in Edition 2026.11.15:
 
 ```python
 """Find the hand-off threshold on dev by the manifest's rule, then check it against the manifest's value.
@@ -353,7 +432,7 @@ The adapter stays the same in production, but the messages it sees do not. Suppo
 
 The confidence is not a probability that the team is right. [Guo et al. (2017)](https://arxiv.org/abs/1706.04599) report that their networks are "poorly calibrated", meaning their confidence does not match how often they are right. This book checks its own adapter on dev. The dev messages fall into five confidence bands, and each band gets a count, an accuracy and a mean confidence, the two quantities Guo et al. compare when they measure calibration. Grouping dev by confidence shows whether a 0.9 means nine in ten.
 
-Example `calibration-bands-on-dev` (Python 3.12.15 · peft 0.22.0 · torch 2.15.0+cpu · torchao 0.18.0+cpu · transformers 5.23.0), passing in Edition 2026.11.14:
+Example `calibration-bands-on-dev` (Python 3.12.15 · peft 0.22.0 · torch 2.15.0+cpu · torchao 0.18.0+cpu · transformers 5.23.0), passing in Edition 2026.11.15:
 
 ```python
 """Group the dev messages into five bands by the adapter's confidence, and print each band's count, accuracy and mean confidence.

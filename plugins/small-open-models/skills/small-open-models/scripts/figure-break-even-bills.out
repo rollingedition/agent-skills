@@ -1,0 +1,7 @@
+example machine bill per month (example cost per hour), USD: 292.00
+example break-even messages per month (example prices and cost per hour): 477906
+example hosted bill at the break-even (example prices), USD: 292.00
+span end, messages a month: 1433718
+example hosted bill at the span end (example prices), USD: 876.00
+span within machine capacity: yes
+figure: figures/break-even-bills.svg

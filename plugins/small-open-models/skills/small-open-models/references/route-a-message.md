@@ -3,13 +3,13 @@ title: "Small Open Models"
 chapter: "Build a router for the bank's inbox that hands off when unsure"
 chapter_id: route-a-message
 book: small-open-models
-edition: 2026.11.14
-verified: 2026-11-22
-edition_code: YVM6-RB7E
+edition: 2026.11.15
+verified: 2026-11-23
+edition_code: AFZE-BGR9
 canonical: https://rollingedition.com/small-open-models/route-a-message
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“Build a router for the bank's inbox that hands off when unsure,” chapter 1 of Small Open Models, Edition 2026.11.14, examples passed Nov 22, 2026. By Rolling Edition, https://rollingedition.com/small-open-models/route-a-message. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Build a router for the bank's inbox that hands off when unsure,” chapter 1 of Small Open Models, Edition 2026.11.15, examples passed Nov 23, 2026. By Rolling Edition, https://rollingedition.com/small-open-models/route-a-message. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Build a router for the bank's inbox that hands off when unsure
 
@@ -17,11 +17,11 @@ By the end of this chapter, you can build a router that returns a team, a confid
 
 Customer messages to a bank land in one support queue, which this book calls the inbox. A router sends each message in the inbox to one of 77 teams. A router that picks a team for every message will sometimes pick the wrong one. A wrong team costs the customer time, and it costs support staff a step to pass the message on. This chapter builds a router that says when it is unsure.
 
-A team is a label the router can return, such as `card_arrival`, and it is never a group of people. The people who read messages are the bank's support staff, and a message the router cannot send on goes to one of them.
+A team is a label the router can return, such as `card_arrival`, and it names where a message is sent, not the people who read it. The people who read messages are the bank's support staff, and a message the router cannot send on goes to one of them.
 
 The messages and their teams come from BANKING77, a public dataset of customer messages to a bank, published under [CC BY 4.0](https://raw.githubusercontent.com/PolyAI-LDN/task-specific-datasets/57ec275d8078af65b7731c2a98be812d844a6d6b/LICENSE). BANKING77 calls each label an intent. This book calls it a team from here on, and the labels are written as they appear in the dataset.
 
-The router is the whole system: a model, a prompt, a threshold and the code that sends a message on. This chapter builds a rough router. A router is rough when its threshold is a placeholder and its model is a stand-in, and this one is a working router because it returns an answer for every message and can be scored on every output.
+The router is the whole system: a model, a prompt, a threshold and the code that sends a message on. This chapter builds a rough router. A router is rough when its threshold is a placeholder or its model is a stand-in, and this one is a working router because it returns an answer for every message and can be scored on every output.
 You need Python and one call to a hosted model's API, which you may already have written. This chapter does not ask you to know how a transformer works inside. Where an internal matters, it gets one sentence.
 
 Two shared pieces come first. The first is a recording of a stand-in model's answers to the test messages, which [the section on asking a model](#ask-a-model-for-one-team) introduces. Most examples read those answers offline, and one runs a small model live, in [the section that shows its failure](#show-what-a-small-model-does-first). The second is `router_lib`, a shared module in the book's `examples` folder. It holds the team labels, the router prompt, the hand-off rule and the measures. Every example imports it, so a function means the same thing in every chapter.
@@ -60,7 +60,7 @@ The stand-in answered every message of `test_1001`, a fixed sample of 1,001 test
 
 A reader who has a model of their own can record its answers the same way. You write one function, `call_model`. It takes one message and returns the team and the log-probability of the answer, which is the sum of the answer's token log-probabilities, as the stand-in's recording stores it. The function `record_answers` calls it for every message in the sample, writes one line per message in the stand-in's format, and raises an error if the function returns a name that is not one of the teams. Everything else is the same for every model, so two recordings on the same sample can be compared line by line.
 
-Example `record-your-own-answers` (Python 3.12.15 · torch 2.15.0+cpu · transformers 5.23.0), passing in Edition 2026.11.14:
+Example `record-your-own-answers` (Python 3.12.15 · torch 2.15.0+cpu · transformers 5.23.0), passing in Edition 2026.11.15:
 
 ```python
 """Write a model's team answers in the stand-in's JSONL shape, then check record_answers against the stand-in's recording.
@@ -145,7 +145,7 @@ Chapter 5 chooses the threshold on the dev split, by a rule stated there. It rec
 
 The hand-off rate is the share of messages that go to a person, and it moves with the threshold. Raise the threshold and more messages go to people; lower it and more go straight to a team. The trade-off is the reason the choice is a measured one. Chapter 5 shows the trade-off on the dev split, at more than one setting, before it picks one.
 
-Example `route-one-message` (Python 3.12.15 · torch 2.15.0+cpu · transformers 5.23.0), passing in Edition 2026.11.14:
+Example `route-one-message` (Python 3.12.15 · torch 2.15.0+cpu · transformers 5.23.0), passing in Edition 2026.11.15:
 
 ```python
 """Route the first message of test_40 from the stand-in's recorded answer, at the placeholder threshold.
@@ -213,7 +213,7 @@ The router is measured by three numbers, and each one has its count beside it.
 
 Each measure answers a different question. Accuracy asks how often the router is right overall. The hand-off rate asks how much of the work goes to people. The accuracy on kept messages asks whether the messages the router keeps can go straight to a team. Accuracy alone does not separate the two kinds of error. A wrong team that was handed off counts against accuracy, and so does a wrong team that reached a team unchecked. Only the third measure isolates the second kind, and that is the kind support staff feel directly.
 
-Example `route-recorded-answers` (Python 3.12.15 · torch 2.15.0+cpu · transformers 5.23.0), passing in Edition 2026.11.14:
+Example `route-recorded-answers` (Python 3.12.15 · torch 2.15.0+cpu · transformers 5.23.0), passing in Edition 2026.11.15:
 
 ```python
 """Score the stand-in's recorded answers on test_40, with a placeholder hand-off threshold.
@@ -294,7 +294,7 @@ The obvious shortcut is to drop [the stand-in](#ask-a-model-for-one-team) and as
 
 The test asks the model the same question the router would ask. The model gets the router prompt for the first 20 messages of the sample, with no constraint on its answer and a cap of a few tokens. Make a guess first: how many of those answers will be team names, with nothing holding the model to the list? Then count them.
 
-Example `unconstrained-first-try` (Python 3.12.15 · torch 2.15.0+cpu · torchao 0.18.0+cpu · transformers 5.23.0), passing in Edition 2026.11.14:
+Example `unconstrained-first-try` (Python 3.12.15 · torch 2.15.0+cpu · torchao 0.18.0+cpu · transformers 5.23.0), passing in Edition 2026.11.15:
 
 ```python
 """Ask the 135M model for a team with the raw router prompt and no constraint, on the first 20 messages of test_40.
