@@ -1,0 +1,11 @@
+user_id before the processor: 0
+user_id after the processor: 0
+user_name before the processor: 2
+user_name after the processor: 0
+email before the processor: 0
+email after the processor: 0
+user ID on the root span, after the processor: user-fd52e7ae5e26
+candidate IDs tried: 10,000
+unkeyed SHA-256 matches for the stored hash: 1
+keyed HMAC matches, with a key the attacker does not hold: 0
+keyed HMAC matches, with the demonstration key in the code: 1

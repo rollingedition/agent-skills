@@ -1,0 +1,6 @@
+spans received by the book's receiver: 3
+spans received by MLflow: 3
+the same span IDs in both: yes (asserted)
+the book's attributes equal in both, on every span: yes (asserted)
+attributes MLflow adds, by name: mlflow.chat.tokenUsage, mlflow.llm.model, mlflow.llm.provider, mlflow.spanType, mlflow.traceRequestId
+mlflow.* attributes in the book's rows: none (asserted)

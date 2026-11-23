@@ -1,0 +1,22 @@
+price table: book-2026-11-02
+utterances, the baseline day's messages joined by id: 200
+en-US, tokens, total: 1,508
+en-US, tokens per utterance: 7.5
+en-US, input cost per 1,000 utterances, book-2026-11-02: $0.000754
+de-DE, tokens, total: 2,194
+de-DE, tokens per utterance: 11.0
+de-DE, input cost per 1,000 utterances, book-2026-11-02: $0.001097
+ja-JP, tokens, total: 1,979
+ja-JP, tokens per utterance: 9.9
+ja-JP, input cost per 1,000 utterances, book-2026-11-02: $0.000990
+hi-IN, tokens, total: 6,864
+hi-IN, tokens per utterance: 34.3
+hi-IN, input cost per 1,000 utterances, book-2026-11-02: $0.003432
+ar-SA, tokens, total: 2,015
+ar-SA, tokens per utterance: 10.1
+ar-SA, input cost per 1,000 utterances, book-2026-11-02: $0.001008
+zh-CN, tokens, total: 1,314
+zh-CN, tokens per utterance: 6.6
+zh-CN, input cost per 1,000 utterances, book-2026-11-02: $0.000657
+hi-IN tokens per utterance, as a multiple of en-US: 4.6
+hi-IN utterances not in NFC, of 200: 8

@@ -1,0 +1,11 @@
+message: 7055
+route: calendar
+message time: 24,305.8 ms
+on the path, 1: ambrewick.route, time: 1,666.5 ms
+on the path, 2: ambrewick.answer, time: 14,993.5 ms
+on the path, 3: execute_tool add_event, time: 0.0 ms
+on the path, 4: ambrewick.answer, time: 7,645.8 ms
+share of the message time on the path: 100.0%
+gaps between calls, recorded, all messages of the day: 651.4 ms
+constructed overlap, span IDs on the path: a, c
+constructed overlap, share of the root's time on the path: 70.0%

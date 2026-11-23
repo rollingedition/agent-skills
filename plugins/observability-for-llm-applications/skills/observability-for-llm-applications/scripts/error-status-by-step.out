@@ -1,0 +1,9 @@
+real ERROR spans, baseline day 1 (4B): 0
+ERROR spans, incident day (injected): 75
+MCP send tools/call find_contact, error.type none, injected: 4
+chat qwen3-4b-instruct-2507, error.type RateLimitError, injected: 47
+contacts.lookup, error.type none, injected: 3
+execute_tool find_contact, error.type MCPError, injected: 4
+execute_tool find_contact, error.type tool_error, injected: 3
+invoke_agent ambrewick-assistant, error.type ModelUnavailable, injected: 11
+tools/call find_contact, error.type tool_error, injected: 3

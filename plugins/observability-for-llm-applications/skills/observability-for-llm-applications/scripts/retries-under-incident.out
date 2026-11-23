@@ -1,0 +1,10 @@
+inc-contacts-timeout (injected), window start (UTC): 13:00
+inc-contacts-timeout (injected), window end (UTC): 13:12
+inc-contacts-timeout (injected), attempts that time out: 4
+inc-contacts-timeout (injected), MCP error code: -32001
+inc-contacts-timeout (injected), read timeout: 2,000.0 ms
+inc-contacts-timeout (injected), retries: 2
+inc-contacts-timeout (injected), retry wait: 500.0 ms
+inc-contacts-timeout (injected), retry starts after the first attempt: 2,500.0 ms
+inc-mcp-error (injected), retries: 0
+inc-rate-limit (injected), messages that got a reply after a refused attempt: 1

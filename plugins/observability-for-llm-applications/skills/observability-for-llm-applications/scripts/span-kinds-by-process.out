@@ -1,0 +1,8 @@
+GenAI conventions version: 0.1.0
+model call kind, behind an endpoint: CLIENT
+model call kind, in process: INTERNAL
+server the endpoint span names: localhost:8000
+findings on the in-process span: 0
+findings on the endpoint span marked INTERNAL: 1
+retrieval span kind: INTERNAL
+agent span kind: INTERNAL

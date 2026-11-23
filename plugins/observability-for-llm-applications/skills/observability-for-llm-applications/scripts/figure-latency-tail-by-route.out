@@ -1,0 +1,25 @@
+all routes, messages (n): 200
+all routes, median: 8,099.3 ms
+all routes, p95: 18,351.2 ms, interval: 16,452.7 ms to 20,909.8 ms
+alarms, messages (n): 16
+alarms, median: 12,159.5 ms
+alarms, p95: 22,425.7 ms, interval: 15,757.0 ms to 22,425.7 ms
+calendar, messages (n): 27
+calendar, median: 12,519.8 ms
+calendar, p95: 20,909.8 ms, interval: 14,623.8 ms to 24,305.8 ms
+devices, messages (n): 17
+devices, median: 12,510.2 ms
+devices, p95: 17,417.9 ms, interval: 14,532.9 ms to 17,417.9 ms
+fallback, messages (n): 89
+fallback, median: 1,392.0 ms
+fallback, p95: 1,726.6 ms, interval: 1,636.7 ms to 3,108.1 ms
+lists, messages (n): 13
+lists, median: 13,786.6 ms
+lists, p95: 17,183.7 ms, interval: 14,842.4 ms to 17,183.7 ms
+media, messages (n): 31
+media, median: 12,708.9 ms
+media, p95: 16,452.7 ms, interval: 14,786.5 ms to 18,351.2 ms
+messages, messages (n): 7
+messages, median: 19,793.3 ms
+messages, p95: 24,253.7 ms, interval: 21,244.6 ms to 24,253.7 ms
+figure: figures/latency-tail-by-route.svg

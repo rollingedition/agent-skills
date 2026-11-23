@@ -1,0 +1,8 @@
+GenAI conventions version: 0.1.0
+spans checked: 4
+finding: message: no known span type for this row
+finding: route: no known span type for this row
+finding: retrieve: no known span type for this row
+finding: answer: no known span type for this row
+findings, no known span type: 4
+findings, all: 4

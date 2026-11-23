@@ -1,0 +1,17 @@
+user_id spans before redaction: 200
+user_id spans after redaction: 0
+user_name spans before redaction: 2
+user_name spans after redaction: 0
+email spans before redaction: 0
+email spans after redaction: 0
+person slot spans before redaction: 38
+person slot spans after redaction: 38
+place_name slot spans before redaction: 33
+place_name slot spans after redaction: 33
+relation slot spans before redaction: 25
+relation slot spans after redaction: 25
+email_address slot spans before redaction: 0
+email_address slot spans after redaction: 0
+personal_info slot spans before redaction: 0
+personal_info slot spans after redaction: 0
+figure: figures/personal-items-before-after.svg

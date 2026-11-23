@@ -1,0 +1,8 @@
+injected incident, ID: inc-contacts-timeout
+attempts of find_contact: 2
+attempt 1, status and error.type: ERROR MCPError
+attempt 1, error code: -32001
+attempt 1, exception event: MCPError
+attempt 1, time: 2.0 s
+attempt 2 starts after attempt 1: 2.5 s
+tool step, time: 4.5 s

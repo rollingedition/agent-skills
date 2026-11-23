@@ -1,0 +1,17 @@
+packages importable in this environment: 1
+installed version: 1.3b0
+opentelemetry-instrumentation-genai-openai, evidence: installed source
+opentelemetry-instrumentation-genai-openai, project: OpenTelemetry
+opentelemetry-instrumentation-genai-openai, naming: GenAI conventions, latest experimental, unconditionally
+opentelemetry-instrumentation-genai-openai, content switch: OTEL_INSTRUMENTATION_GENAI_CAPTURE_MESSAGE_CONTENT
+opentelemetry-instrumentation-genai-openai, content switch default: NO_CONTENT
+opentelemetry-instrumentation-openai-v2, evidence: wheel reading
+opentelemetry-instrumentation-openai-v2, project: OpenTelemetry
+opentelemetry-instrumentation-openai-v2, naming: GenAI conventions v1.30.0 unless the experimental opt-in is set
+opentelemetry-instrumentation-openai-v2, content switch: OTEL_INSTRUMENTATION_GENAI_CAPTURE_MESSAGE_CONTENT
+opentelemetry-instrumentation-openai-v2, content switch default: false
+opentelemetry-instrumentation-openai, evidence: wheel reading
+opentelemetry-instrumentation-openai, project: Traceloop
+opentelemetry-instrumentation-openai, naming: its own names, from opentelemetry-semantic-conventions-ai 0.5.1
+opentelemetry-instrumentation-openai, content switch: TRACELOOP_TRACE_CONTENT
+opentelemetry-instrumentation-openai, content switch default: true

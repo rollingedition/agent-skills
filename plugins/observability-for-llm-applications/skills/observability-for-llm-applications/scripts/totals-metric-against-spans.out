@@ -1,0 +1,11 @@
+messages: 200
+inference spans, one per model call: 321
+agent spans, invoke_agent, one per message: 200
+input tokens, summed over the inference spans: 104,811
+input tokens, summed over every span: 209,622
+input tokens, token counter total: 104,811
+input tokens, per-operation histogram sum: 104,811
+per-operation histogram, count of operations: 321
+output tokens, token counter total: 4,996
+GenAI conventions version: 0.1.0
+package token histogram, gen_ai.client.token.usage, v0.1.0 names: gen_ai.client.inference.operation.input_tokens, gen_ai.client.inference.operation.output_tokens

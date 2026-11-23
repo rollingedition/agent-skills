@@ -1,0 +1,3 @@
+tools/call find_contact spans in the contacts server: 3
+of them with a parent: 0
+contacts.lookup under it, in its trace: yes

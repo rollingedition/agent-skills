@@ -7,6 +7,7 @@
     "./plugins/evaluating-llm-applications/skills",
     "./plugins/language-models-from-the-ground-up/skills",
     "./plugins/model-context-protocol-in-practice/skills",
+    "./plugins/observability-for-llm-applications/skills",
     "./plugins/open-table-formats/skills",
     "./plugins/primer-on-search-relevance/skills",
     "./plugins/securing-llm-applications-and-agents/skills",

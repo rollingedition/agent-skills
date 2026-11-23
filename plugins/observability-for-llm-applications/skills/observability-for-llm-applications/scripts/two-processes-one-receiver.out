@@ -1,0 +1,11 @@
+messages replayed: 17
+messages that called find_contact: 3
+assistant traces with a message root: 17
+assistant traces without one (the startup, with its discovery call): 1
+traces with spans from both processes: 4
+spans from the assistant, in the find_contact messages: 22
+spans from the contacts server, in the find_contact messages: 7
+spans from the assistant, all messages: 70
+spans from the contacts server, all messages: 8
+contacts server spans under an assistant span: 5
+stored assistant rows equal the exporter's rows: yes (asserted)

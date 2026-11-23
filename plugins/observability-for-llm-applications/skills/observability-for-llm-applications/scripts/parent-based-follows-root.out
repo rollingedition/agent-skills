@@ -1,0 +1,7 @@
+probes, one assistant root each: 40
+roots sampled at ratio 0.5, of 40: 19
+share of roots sampled at ratio 0.5: 47.5%
+contacts server spans under sampled roots: 39
+contacts server spans under unsampled roots: 0
+unsampled roots with any server span, of the unsampled: 0
+sampled roots with any server span, of the sampled: 19

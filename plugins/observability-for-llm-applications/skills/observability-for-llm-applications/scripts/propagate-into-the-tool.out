@@ -1,0 +1,3 @@
+find_contact, hand-written traceparent: server span joins the app's trace: yes
+find_contact, hand-written traceparent kept: no
+no_such_tool, reply is an error result: yes

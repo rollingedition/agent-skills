@@ -1,0 +1,11 @@
+GenAI conventions version: 0.1.0
+messages: 20
+spans checked: 74
+spans, ambrewick.fallback: 6
+spans, chat: 37
+spans, execute_tool: 3
+spans, invoke_agent: 20
+spans, retrieval: 8
+findings on registry spans: 0
+fallback replies: 6
+findings on the book's fallback span: 6

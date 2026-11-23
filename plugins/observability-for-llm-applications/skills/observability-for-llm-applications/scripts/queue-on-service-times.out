@@ -1,0 +1,15 @@
+mean recorded message time: 8,019.0 ms
+load 0.5, utilisation, computed: 0.50
+load 0.5, wait before service, computed, p95 (n = 50,000): 27,983.0 ms
+load 0.5, number in system, time average, computed: 0.91
+load 0.5, arrival rate times time in system, computed: 0.91
+load 0.8, utilisation, computed: 0.80
+load 0.8, wait before service, computed, p95 (n = 50,000): 82,817.5 ms
+load 0.8, number in system, time average, computed: 3.31
+load 0.8, arrival rate times time in system, computed: 3.31
+load 0.9, utilisation, computed: 0.90
+load 0.9, wait before service, computed, p95 (n = 50,000): 179,463.5 ms
+load 0.9, number in system, time average, computed: 7.26
+load 0.9, arrival rate times time in system, computed: 7.26
+exponential service, load 0.8, mean time in system, simulated (n = 200,000): 40,422.0 ms
+exponential service, load 0.8, mean time in system, formula: 40,094.8 ms

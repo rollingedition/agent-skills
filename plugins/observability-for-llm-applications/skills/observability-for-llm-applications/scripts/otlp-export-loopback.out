@@ -1,0 +1,6 @@
+bound to loopback: yes (asserted)
+requests for the message's three spans: 3
+spans per request: one in each, for every request (asserted)
+content types of the requests: application/x-protobuf
+stored rows equal the exporter's rows: yes (asserted)
+a request is in the receiver when span.end() returns: yes (asserted)

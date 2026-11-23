@@ -1,0 +1,26 @@
+messages on the day: 200
+spans, capture off: 675
+spans from the package, capture on: 321
+user_id items, capture off and on: 200
+user_id spans holding it: 200
+user_name items, capture off and on: 2
+user_name spans holding it: 2
+email items, capture off and on: 0
+email spans holding it: 0
+person slot items, capture off and on: 55
+person slot spans holding it: 38
+place_name slot items, capture off and on: 44
+place_name slot spans holding it: 33
+relation slot items, capture off and on: 26
+relation slot spans holding it: 25
+email_address slot items, capture off and on: 0
+email_address slot spans holding it: 0
+personal_info slot items, capture off and on: 0
+personal_info slot spans holding it: 0
+contacts server spans the receiver stored: 22
+contacts.lookup spans in error: 3
+stack traces on the contacts server's spans: 3
+stack traces on the assistant's spans: 4
+incident traces holding a stack trace: 5
+file paths named in the server's stack traces: 9
+innermost frame, first server trace: File "<folder>/contacts_server.py", line 164, in find_contact

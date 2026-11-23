@@ -1,0 +1,15 @@
+spans in the incident day's messages: 276
+spans in messages with an error: 116
+span budget: 120
+spans the tail rule keeps with no budget, incident day: 127
+spans kept under the budget, of all spans: 116
+share of spans kept under the budget: 42.0%
+messages kept for error, under the budget: 17
+messages kept for slow, under the budget: 0
+messages kept for expensive, under the budget: 0
+slow messages with no error, dropped for the budget: 1
+time of the slowest message dropped for the budget: 22,622.1 ms
+messages over the expensive threshold with no error or slow time, incident day: 0
+messages over the expensive threshold with no error or slow time, baseline day 1: 0
+bytes per message without content, baseline day 1: 2,831
+bytes kept under the budget, of the incident day's bytes: 42.6%

@@ -1,0 +1,9 @@
+baseline day 1, route requests, finish reason stop: 200
+baseline day 1, route requests, finish reason length: 0
+baseline day 1, answer requests, finish reason stop: 121
+baseline day 1, answer requests, finish reason length: 0
+baseline day 1, chat spans replayed with finish reason stop: 321
+model swap (0.6B, release r2), route requests, finish reason length: 0
+model swap (0.6B, release r2), answer requests, finish reason length: 1
+model swap, answer cap in tokens: 160
+model swap, cut answer, completion tokens: 160

@@ -1,0 +1,24 @@
+r3 against r0, messages (paired): 60
+r3 against r0, message time, mean: 2,222.5 ms, limit 737.3 ms (95% interval 1,099.6 ms to 3,462.8 ms)
+r3 against r0, message time, mean, flagged: yes
+r3 against r0, input tokens per message, mean: 115, limit 49 (95% interval 60 to 179)
+r3 against r0, input tokens per message, mean, flagged: yes
+r3 against r0, cost per message, mean, per 1,000 messages: $0.012542, limit $0.003453 (95% interval $0.006844 to $0.018909)
+r3 against r0, cost per message, mean, flagged: yes
+r3 against r0, error rate: +0.0%, limit +2.0% (95% interval +0.0% to +0.0%)
+r3 against r0, error rate, flagged: no
+r3 against r0, route accuracy: +0.0%, limit -5.0% (95% interval +0.0% to +0.0%)
+r3 against r0, route accuracy, flagged: no
+r3 against r0, gate verdict: fail
+r4 against r0, messages (paired): 60
+r4 against r0, message time, mean: 2,881.5 ms, limit 737.3 ms (95% interval 2,209.1 ms to 3,677.3 ms)
+r4 against r0, message time, mean, flagged: yes
+r4 against r0, input tokens per message, mean: 0, limit 49 (95% interval 0 to 0)
+r4 against r0, input tokens per message, mean, flagged: no
+r4 against r0, cost per message, mean, per 1,000 messages: $0.023233, limit $0.003453 (95% interval $0.018860 to $0.028303)
+r4 against r0, cost per message, mean, flagged: yes
+r4 against r0, error rate: +0.0%, limit +2.0% (95% interval +0.0% to +0.0%)
+r4 against r0, error rate, flagged: no
+r4 against r0, route accuracy: +0.0%, limit -5.0% (95% interval +0.0% to +0.0%)
+r4 against r0, route accuracy, flagged: no
+r4 against r0, gate verdict: fail

@@ -1,0 +1,27 @@
+inc-contacts-timeout, window: 13:00:00 to 13:12:00 UTC
+inc-contacts-timeout, first tick after the window: 13:15:00
+inc-contacts-timeout, messages in the hour to that tick: 13
+inc-contacts-timeout, messages with no reply in that hour: 0
+inc-contacts-timeout, error burn, 1 hour: 0.0
+inc-contacts-timeout, error burn, 1 hour, highest from the window to 5 minutes after it: 0.0
+inc-contacts-timeout, error burn, 5 minutes, highest from the window to 5 minutes after it: 0.0
+inc-contacts-timeout, messages over 20 s in that hour: 3
+inc-contacts-timeout, latency burn, 1 hour, highest from the window to 5 minutes after it: 4.6
+inc-rate-limit, window: 15:30:00 to 15:31:30 UTC
+inc-rate-limit, first tick after the window: 15:35:00
+inc-rate-limit, messages in the hour to that tick: 15
+inc-rate-limit, messages with no reply in that hour: 11
+inc-rate-limit, error burn, 1 hour: 73.3
+inc-rate-limit, error burn, 1 hour, highest from the window to 5 minutes after it: 73.3
+inc-rate-limit, error burn, 5 minutes, highest from the window to 5 minutes after it: 91.7
+inc-rate-limit, messages over 20 s in that hour: 1
+inc-rate-limit, latency burn, 1 hour, highest from the window to 5 minutes after it: 1.3
+inc-mcp-error, window: 17:00:00 to 17:10:00 UTC
+inc-mcp-error, first tick after the window: 17:10:00
+inc-mcp-error, messages in the hour to that tick: 16
+inc-mcp-error, messages with no reply in that hour: 0
+inc-mcp-error, error burn, 1 hour: 0.0
+inc-mcp-error, error burn, 1 hour, highest from the window to 5 minutes after it: 0.0
+inc-mcp-error, error burn, 5 minutes, highest from the window to 5 minutes after it: 0.0
+inc-mcp-error, messages over 20 s in that hour: 3
+inc-mcp-error, latency burn, 1 hour, highest from the window to 5 minutes after it: 4.6

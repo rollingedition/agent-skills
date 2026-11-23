@@ -1,0 +1,10 @@
+latency threshold, the 20 s objective: 20,000.0 ms
+cost threshold, baseline day 1's 99th percentile per message: $0.000115
+messages on the incident day: 60
+detached roots, traces of their own with no message, incident day: 4
+messages with an error, of all messages: 17
+share of messages with an error: 28.3%
+messages with an error kept by a 10% head sample, of 17: 2
+share of messages with an error kept by a 10% head sample: 11.8%
+messages with an error kept by the tail rule, of 17: 17
+share of messages with an error kept by the tail rule: 100.0%

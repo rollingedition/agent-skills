@@ -1,0 +1,6 @@
+the package reads: OTEL_INSTRUMENTATION_GENAI_CAPTURE_MESSAGE_CONTENT | the spec's name for the switch: OTEL_INSTRUMENTATION_GENAI_CAPTURE_CONTENT
+values the package parses: NO_CONTENT, SPAN_ONLY, EVENT_ONLY, SPAN_AND_EVENT
+mode, package variable unset: NO_CONTENT
+mode, value that is not a mode: NO_CONTENT
+content attributes on the span, spec variable set: 0
+content attributes on the span, package variable set: 2

@@ -1,0 +1,20 @@
+user_id items before redaction: 200
+user_id items after redaction: 0
+user_name items before redaction: 2
+user_name items after redaction: 0
+email items before redaction: 0
+email items after redaction: 0
+person slot, items before redaction: 55
+person slot, residue after redaction: 55
+place_name slot, items before redaction: 44
+place_name slot, residue after redaction: 44
+relation slot, items before redaction: 26
+relation slot, residue after redaction: 26
+email_address slot, items before redaction: 0
+email_address slot, residue after redaction: 0
+personal_info slot, items before redaction: 0
+personal_info slot, residue after redaction: 0
+stack traces on the assistant's spans, before redaction: 4
+stack traces on the contacts server's spans, before redaction: 3
+stack traces on the assistant's spans, after redaction at the receiver: 0
+stack traces on the contacts server's spans, after redaction at the receiver: 0

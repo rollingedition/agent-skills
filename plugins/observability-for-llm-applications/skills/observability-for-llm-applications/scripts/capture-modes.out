@@ -1,0 +1,10 @@
+content attributes on the span, NO_CONTENT: 0
+log records, NO_CONTENT: 0
+content attributes on the span, SPAN_ONLY: 2
+log records, SPAN_ONLY: 0
+content attributes on the span, EVENT_ONLY: 0
+log records, EVENT_ONLY: 1
+event name on the log record, EVENT_ONLY: gen_ai.client.inference.operation.details
+content attributes on the span, SPAN_AND_EVENT: 2
+log records, SPAN_AND_EVENT: 1
+event name on the log record, SPAN_AND_EVENT: gen_ai.client.inference.operation.details

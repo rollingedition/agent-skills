@@ -1,0 +1,31 @@
+route alarms, messages (n): 6
+route alarms, routed right: 6
+route alarms, wrong, to another tool route: 0
+route alarms, wrong, to the fallback reply: 0
+route calendar, messages (n): 42
+route calendar, routed right: 26
+route calendar, wrong, to another tool route: 12
+route calendar, wrong, to the fallback reply: 4
+route devices, messages (n): 17
+route devices, routed right: 16
+route devices, wrong, to another tool route: 0
+route devices, wrong, to the fallback reply: 1
+route fallback, messages (n): 82
+route fallback, routed right: 71
+route fallback, wrong, to another tool route: 11
+route fallback, wrong, to the fallback reply: 0
+route lists, messages (n): 7
+route lists, routed right: 7
+route lists, wrong, to another tool route: 0
+route lists, wrong, to the fallback reply: 0
+route media, messages (n): 29
+route media, routed right: 26
+route media, wrong, to another tool route: 0
+route media, wrong, to the fallback reply: 3
+route messages, messages (n): 17
+route messages, routed right: 7
+route messages, wrong, to another tool route: 0
+route messages, wrong, to the fallback reply: 10
+truncated replies, baseline day 1: 0
+malformed tool calls, baseline day 1: 0
+figure: figures/failure-modes-by-route.svg

@@ -1,0 +1,9 @@
+r1, p95 message time, difference: -345.3 ms (interval -495.9 ms to 2,301.0 ms)
+r1, input tokens per message, difference: 90 (interval 70 to 115)
+r2, p95 message time, difference: -14,109.1 ms (interval -16,749.8 ms to -12,105.6 ms)
+r2, input tokens per message, difference: -200 (interval -258 to -148)
+r3, p95 message time, difference: 7,618.8 ms (interval 1,914.5 ms to 12,517.7 ms)
+r3, input tokens per message, difference: 115 (interval 60 to 179)
+r4, p95 message time, difference: 2,128.9 ms (interval 1,839.2 ms to 16,968.2 ms)
+r4, input tokens per message, difference: 0 (interval 0 to 0)
+figure: figures/paired-differences.svg

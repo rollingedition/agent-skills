@@ -1,0 +1,13 @@
+messages on baseline day 1, of all messages: 200
+messages kept at ratio 0.01, of 200: 5
+share of messages kept at ratio 0.01: 2.5%
+trace IDs where the replayed and the live decision differ at ratio 0.01, of 200: 0
+messages kept at ratio 0.1, of 200: 21
+share of messages kept at ratio 0.1: 10.5%
+trace IDs where the replayed and the live decision differ at ratio 0.1, of 200: 0
+messages kept at ratio 0.5, of 200: 96
+share of messages kept at ratio 0.5: 48.0%
+trace IDs where the replayed and the live decision differ at ratio 0.5, of 200: 0
+messages kept at ratio 1.0, of 200: 200
+share of messages kept at ratio 1.0: 100.0%
+trace IDs where the replayed and the live decision differ at ratio 1.0, of 200: 0

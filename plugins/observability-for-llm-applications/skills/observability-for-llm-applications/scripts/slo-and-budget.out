@@ -1,0 +1,13 @@
+error objective, share of messages with a reply: 99.0%
+error budget, share of messages that may fail: 1.0%
+latency objective, share of messages within 20 s: 95.0%
+latency budget, share of messages that may run over 20 s: 5.0%
+messages, baseline day 1: 200
+messages with no reply: 0 of 200
+messages within 20 s: 194 of 200 share 97.0%
+messages over 20 s: 6 of 200
+error budget spent over the day, burn: 0.0
+latency budget spent over the day, burn: 0.6
+p95 of message times, nearest rank, n: 200 messages
+p95 of message times: 18,351.2 ms
+share of the 30-day budget a 1-hour page at burn 14.4 spends: 2.0%

@@ -1,0 +1,22 @@
+series, gen_ai.client.inference.duration: 1
+unit, gen_ai.client.inference.duration: s
+series, gen_ai.client.inference.operation.input_tokens: 1
+unit, gen_ai.client.inference.operation.input_tokens: {token}
+series, gen_ai.client.inference.operation.output_tokens: 1
+unit, gen_ai.client.inference.operation.output_tokens: {token}
+series, gen_ai.client.inference.usage.cache_read.input_tokens: 1
+unit, gen_ai.client.inference.usage.cache_read.input_tokens: {token}
+series, gen_ai.client.inference.usage.input_tokens: 1
+unit, gen_ai.client.inference.usage.input_tokens: {token}
+series, gen_ai.client.inference.usage.output_tokens: 1
+unit, gen_ai.client.inference.usage.output_tokens: {token}
+series, gen_ai.execute_tool.duration: 1
+unit, gen_ai.execute_tool.duration: s
+series, gen_ai.invoke_agent.duration: 1
+unit, gen_ai.invoke_agent.duration: s
+messages, invoke_agent operations: 200
+model calls, chat operations: 321
+tool attempts, execute_tool operations: 10
+input tokens, counter total: 104,811
+input tokens, summed over chat spans: 104,811
+message durations, histogram count: 200

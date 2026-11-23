@@ -1,0 +1,34 @@
+interval method: bootstrap over messages, 2,000 resamples, seed 20261207, 95%
+alarms, messages with an answer call: 16
+alarms, time to first chunk, median: 5,985.6 ms
+alarms, time to first chunk, 95% interval: 1,514.8 ms to 6,456.4 ms
+alarms, total time of the answer call, median: 9,744.4 ms
+alarms, time to first chunk, share of the call's time: 49.6%
+calendar, messages with an answer call: 27
+calendar, time to first chunk, median: 6,818.8 ms
+calendar, time to first chunk, 95% interval: 1,120.5 ms to 7,322.9 ms
+calendar, total time of the answer call, median: 10,676.0 ms
+calendar, time to first chunk, share of the call's time: 48.8%
+devices, messages with an answer call: 17
+devices, time to first chunk, median: 6,090.0 ms
+devices, time to first chunk, 95% interval: 4,377.7 ms to 6,616.4 ms
+devices, total time of the answer call, median: 11,326.7 ms
+devices, time to first chunk, share of the call's time: 47.7%
+lists, messages with an answer call: 13
+lists, time to first chunk, median: 8,563.7 ms
+lists, time to first chunk, 95% interval: 8,397.1 ms to 8,866.0 ms
+lists, total time of the answer call, median: 12,256.8 ms
+lists, time to first chunk, share of the call's time: 69.5%
+media, messages with an answer call: 31
+media, time to first chunk, median: 5,911.4 ms
+media, time to first chunk, 95% interval: 5,663.0 ms to 6,128.4 ms
+media, total time of the answer call, median: 11,073.2 ms
+media, time to first chunk, share of the call's time: 49.8%
+messages, messages with an answer call: 7
+messages, time to first chunk, median: 9,289.0 ms
+messages, time to first chunk, 95% interval: 485.7 ms to 12,842.8 ms
+messages, total time of the answer call, median: 13,865.7 ms
+messages, time to first chunk, share of the call's time: 59.4%
+route calls, time to first chunk, median, all messages: 530.2 ms
+route calls, n: 200
+messages with no answer call: 89

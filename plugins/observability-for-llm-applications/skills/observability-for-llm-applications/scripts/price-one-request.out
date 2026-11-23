@@ -1,0 +1,8 @@
+request, input tokens, total: 212
+request, cached input tokens, derived: 201
+request, output tokens: 27
+book's table, cached input at its own rate, book-2026-11-02: $0.000016
+book's table, the same request with no cached input, book-2026-11-02: $0.000032
+book's table, output rate to input rate: 4.0
+book's table, cached input rate to input rate: 0.2
+genai-prices listing, huggingface_nscale, the same request: $0.000003

@@ -1,0 +1,6 @@
+gaps, one-hour burn at ticks under the minimum: 253
+peak error burn, 1 hour: 84.6 15:55
+peak error burn, 5 minutes: 91.7 15:35
+peak latency burn, 1 hour: 5.0 13:25
+page threshold: 14.4
+figure: figures/burn-rate-incident-day.svg

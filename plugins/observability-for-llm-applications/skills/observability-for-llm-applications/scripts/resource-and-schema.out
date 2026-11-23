@@ -1,0 +1,8 @@
+chapter 1's resource schema URL: https://opentelemetry.io/schemas/1.44.0
+renamed spans' resource schema URL: https://opentelemetry.io/schemas/1.45.0
+renamed spans' scope schema URL: https://opentelemetry.io/schemas/1.45.0
+instrumentation scope name: ambrewick.assistant
+highest schema in the SDK's constants: https://opentelemetry.io/schemas/1.44.0
+service.name: ambrewick-assistant
+service.version: 1.0.0
+service.instance.id: dev-day-replay

@@ -1,0 +1,10 @@
+traces found for the experiment: 1
+spans in the trace: 3
+span IDs, decoded from base64, equal the exporter's IDs: yes (asserted)
+chat span, MLflow span type: CHAT_MODEL
+chat span, model MLflow recorded: qwen3-4b-instruct-2507
+trace token usage, input: 331
+trace token usage, output: 38
+trace token usage, cache read: 192
+trace token usage, total = input + output: yes (asserted)
+cost MLflow stored for this model, on the chat span and in the trace: none (asserted)

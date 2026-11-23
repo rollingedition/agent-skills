@@ -1,0 +1,4 @@
+route chosen: messages
+spans in the message's trace, assistant: 8
+spans in the message's trace, contacts server: 3
+contacts server span under the SDK's client span, in the same trace: yes

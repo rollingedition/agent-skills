@@ -1,0 +1,6 @@
+spans in the message's trace, assistant: 8
+spans in the message's trace, contacts server: 3
+parent links across the boundary: 2
+tools/call find_contact in the contacts server, parent in the assistant: MCP send tools/call find_contact
+tools/list in the contacts server, parent in the assistant: MCP send tools/list
+figure: figures/cross-process-tree.svg

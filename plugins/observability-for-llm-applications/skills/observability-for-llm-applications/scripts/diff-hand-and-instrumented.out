@@ -1,0 +1,10 @@
+registry version: 0.1.0
+package version: 1.3b0
+names the package emits, in the table: 25
+names the same in v0.1.0: 20
+wrong instrument for inference, gen_ai.client.operation.duration: gen_ai.client.inference.duration
+renamed, gen_ai.client.operation.time_per_output_chunk: gen_ai.client.inference.time_per_output_chunk
+renamed, gen_ai.client.operation.time_to_first_chunk: gen_ai.client.inference.time_to_first_chunk
+split into two, gen_ai.client.token.usage: gen_ai.client.inference.operation.input_tokens and gen_ai.client.inference.operation.output_tokens
+replaced by the two token histograms, gen_ai.token.type: none
+names that differ from v0.1.0: 5

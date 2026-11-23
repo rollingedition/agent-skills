@@ -1,0 +1,16 @@
+baseline day 1 (4B), messages: 200
+bootstrap resamples of messages, baseline day 1: 2,000
+wrong routes, baseline day 1, 95% interval: 15.0% to 26.5%
+alarms, wrong routes of 6 messages: 0
+calendar, wrong routes of 42 messages: 16
+devices, wrong routes of 17 messages: 1
+fallback, wrong routes of 82 messages: 11
+lists, wrong routes of 7 messages: 0
+media, wrong routes of 29 messages: 3
+messages, wrong routes of 17 messages: 10
+fallback replies to a scenario that is not fallback, baseline day 1: 18
+wrong routes, model swap (0.6B, release r2): 83 of 200 messages
+fallback replies to a scenario that is not fallback, model swap: 68
+dev day, messages: 20
+wrong routes, dev day (20 messages): 5
+fallback replies to a scenario that is not fallback, dev day: 3

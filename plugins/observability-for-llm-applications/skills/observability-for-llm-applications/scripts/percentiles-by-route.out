@@ -1,0 +1,45 @@
+interval method: bootstrap over messages, 2,000 resamples, seed 20261207, 95%
+p99 of the values 1 to 200 (n = 200), nearest rank: 198
+fewest values before the p95 is not the largest, nearest rank: 20
+all routes, messages (n): 200
+all routes, median: 8,099.3 ms
+all routes, p95: 18,351.2 ms
+all routes, p95, 95% interval: 16,452.7 ms to 20,909.8 ms
+all routes, p99: 22,425.7 ms
+alarms, messages (n): 16
+alarms, median: 12,159.5 ms
+alarms, p95: 22,425.7 ms
+alarms, p95, 95% interval: 15,757.0 ms to 22,425.7 ms
+alarms, p99: 22,425.7 ms
+calendar, messages (n): 27
+calendar, median: 12,519.8 ms
+calendar, p95: 20,909.8 ms
+calendar, p95, 95% interval: 14,623.8 ms to 24,305.8 ms
+calendar, p99: 24,305.8 ms
+devices, messages (n): 17
+devices, median: 12,510.2 ms
+devices, p95: 17,417.9 ms
+devices, p95, 95% interval: 14,532.9 ms to 17,417.9 ms
+devices, p99: 17,417.9 ms
+fallback, messages (n): 89
+fallback, median: 1,392.0 ms
+fallback, p95: 1,726.6 ms
+fallback, p95, 95% interval: 1,636.7 ms to 3,108.1 ms
+fallback, p99: 3,191.4 ms
+lists, messages (n): 13
+lists, median: 13,786.6 ms
+lists, p95: 17,183.7 ms
+lists, p95, 95% interval: 14,842.4 ms to 17,183.7 ms
+lists, p99: 17,183.7 ms
+media, messages (n): 31
+media, median: 12,708.9 ms
+media, p95: 16,452.7 ms
+media, p95, 95% interval: 14,786.5 ms to 18,351.2 ms
+media, p99: 18,351.2 ms
+messages, messages (n): 7
+messages, median: 19,793.3 ms
+messages, p95: 24,253.7 ms
+messages, p95, 95% interval: 21,244.6 ms to 24,253.7 ms
+messages, p99: 24,253.7 ms
+routes under 20 messages, count: 4
+routes under 20 messages, p95 is their largest message: alarms, devices, lists, messages

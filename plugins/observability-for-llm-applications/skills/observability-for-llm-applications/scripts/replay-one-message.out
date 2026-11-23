@@ -1,0 +1,13 @@
+message text: brew coffee at noon
+route chosen: devices
+reply source: model
+steps: route, retrieve, answer
+route call, time: 3,336.3 ms
+route call, input tokens: 142
+route call, cached input tokens: 6
+route call, output tokens: 6
+answer call, time: 8,184.4 ms
+answer call, input tokens: 331
+answer call, cached input tokens: 192
+answer call, output tokens: 38
+message, time in model calls: 11,520.7 ms

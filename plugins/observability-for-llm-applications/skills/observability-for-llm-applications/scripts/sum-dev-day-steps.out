@@ -1,0 +1,20 @@
+messages in the dev day: 20
+messages whose steps overlap in time: 0 of 20
+messages answered by the fallback reply: 6 of 20
+slowest message: 3271
+slowest message time: 36,230.7 ms
+slowest message route: alarms
+route calls: 20
+route, recorded time: 35,500.6 ms
+route, share of model time: 16.7%
+route, share of tokens (input plus output): 21.2%
+answer calls: 17
+answer, recorded time: 176,519.9 ms
+answer, share of model time: 83.3%
+answer, share of tokens (input plus output): 78.8%
+tool calls: 3
+retrieve calls: 8
+route to answer gap, message 809: 7.3 ms
+input tokens, total: 13,417
+cached input tokens, total: 8,299
+output tokens, total: 775

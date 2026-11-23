@@ -1,0 +1,7 @@
+retrieve on a plain thread, joins the tool span: no
+retrieve on a thread with carry(), joins the tool span: yes
+retrieve in an asyncio task, joins the tool span: yes
+retrieve through run_in_executor, joins the tool span: no
+detached roots without the helper: 2
+detached roots with the helper: 0
+detached root's trace differs from the tool span's: yes

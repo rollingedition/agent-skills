@@ -1,0 +1,15 @@
+messages kept at ratio 0.1, of 200: 21
+full count of tokens, all messages: 109,807
+token counter total for the day, input plus output: 109,807
+estimated tokens, ratio 0.1: 98,090
+estimate as a share of the full count, tokens: 89.3%
+interval as shares of the full count, tokens, low end: 38.7%
+interval as shares of the full count, tokens, high end: 140.0%
+full cost of the day, Qwen3-4B-Instruct-2507 at the book's rates: $0.007563
+estimated cost, ratio 0.1: $0.005524
+estimate as a share of the full cost: 73.0%
+interval as shares of the full cost, low end: 29.6%
+interval as shares of the full cost, high end: 116.5%
+samples of the same day, drawn independently: 2,000
+intervals that hold the full count, of 2,000 samples at ratio 0.1, tokens: 1,843
+intervals that hold the full count, of 2,000 samples at ratio 0.1, cost: 1,854

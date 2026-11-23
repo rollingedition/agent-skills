@@ -1,0 +1,11 @@
+stored spans from ambrewick-assistant: 70, in 18 traces
+stored spans from contacts-server: 8, in 4 traces
+contacts server spans named contacts.lookup: 3
+contacts server spans named server/discover: 1
+contacts server spans named tools/call find_contact: 3
+contacts server spans named tools/list: 1
+contacts server spans under an assistant span, named server/discover: 1
+contacts server spans under an assistant span, named tools/call find_contact: 3
+contacts server spans under an assistant span, named tools/list: 1
+traces holding both processes' spans: 4
+orphans in the stored rows: 0

@@ -1,0 +1,13 @@
+baseline day 1, model calls: 321
+baseline day 1, input tokens, total: 104,811
+baseline day 1, cached input tokens, derived, total: 61,460
+baseline day 1, cached share of input: 58.6%
+same 60 messages, model calls: 93
+r0, input tokens: 29,107
+r0, tokens evaluated: 11,682
+r0, cached input tokens, derived: 17,425
+r4, input tokens: 29,107
+r4, tokens evaluated: 29,107
+r4, cached input tokens, derived: 0
+tokens evaluated, r4 minus r0: 17,425
+cost difference, r4 minus r0, same 60 messages, book-2026-11-02: $0.001394

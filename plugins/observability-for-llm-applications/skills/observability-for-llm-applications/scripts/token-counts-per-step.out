@@ -1,0 +1,38 @@
+messages: 200
+requests (model calls): 321
+input tokens, total: 104,811
+cached input tokens, derived, total: 61,460
+output tokens, total: 4,996
+cached share of input tokens: 58.6%
+input tokens per request: 326.5
+output tokens per request: 15.6
+input tokens per message: 524.1
+route requests: 200
+route requests, input tokens per request: 145.5
+answer requests: 121
+answer requests, input tokens per request: 625.6
+most model calls in one message: 3
+resolved messages: 111
+input tokens per resolved message: 827.7
+output tokens per resolved message: 40.2
+route alarms, messages: 16
+route alarms, input tokens per message: 883.6
+route alarms, output tokens per message: 43.4
+route calendar, messages: 27
+route calendar, input tokens per message: 903.5
+route calendar, output tokens per message: 38.8
+route devices, messages: 17
+route devices, input tokens per message: 627.9
+route devices, output tokens per message: 44.5
+route fallback, messages: 89
+route fallback, input tokens per message: 145.4
+route fallback, output tokens per message: 6.0
+route lists, messages: 13
+route lists, input tokens per message: 936.5
+route lists, output tokens per message: 29.0
+route media, messages: 31
+route media, input tokens per message: 663.9
+route media, output tokens per message: 41.6
+route messages, messages: 7
+route messages, input tokens per message: 1415.4
+route messages, output tokens per message: 42.1

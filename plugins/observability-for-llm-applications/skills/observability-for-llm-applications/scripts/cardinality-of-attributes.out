@@ -1,0 +1,6 @@
+messages: 200
+distinct users: 121
+distinct routes: 7
+series, registry attributes: 1
+series, registry attributes and route: 7
+series, registry attributes and user ID: 121

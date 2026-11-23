@@ -1,0 +1,5 @@
+allowed baggage keys: ambrewick.prompt.version, ambrewick.release
+baggage keys carried on a call: ambrewick.prompt.version, ambrewick.release
+baggage entry sent in _meta: ambrewick.prompt.version=p1,ambrewick.release=1.0.0
+user identifier refused: yes
+user identifier under an allowed key refused: yes

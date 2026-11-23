@@ -1,0 +1,15 @@
+page threshold, burn over 1 hour and over 5 minutes: 14.4
+minimum messages in the hour: 10
+ticks where the error page fires: 1 of 288
+first tick the error page fires: 15:35
+messages in that hour, with no reply: 11 of 15
+error burn at that tick, 1 hour and 5 minutes: 73.3 91.7
+first tick the error page is clear again: 15:40
+ticks where the latency page fires: 0
+highest latency burn over an hour, with the minimum met: 5.0
+inc-contacts-timeout, ticks in or just after the window: 3
+inc-contacts-timeout, ticks where the error page fires: 0
+inc-rate-limit, ticks in or just after the window: 1
+inc-rate-limit, ticks where the error page fires: 1
+inc-mcp-error, ticks in or just after the window: 3
+inc-mcp-error, ticks where the error page fires: 0

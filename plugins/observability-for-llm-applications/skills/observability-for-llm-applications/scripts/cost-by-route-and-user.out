@@ -1,0 +1,26 @@
+messages: 200
+cost, all messages, book-2026-11-02: $0.007563
+route requests, cost, book-2026-11-02: $0.001379
+route requests, share of cost: 18.2%
+answer requests, cost, book-2026-11-02: $0.006184
+answer requests, share of cost: 81.8%
+route alarms, messages: 16
+route alarms, cost per 1,000 messages, book-2026-11-02: $0.063688
+route calendar, messages: 27
+route calendar, cost per 1,000 messages, book-2026-11-02: $0.057486
+route devices, messages: 17
+route devices, cost per 1,000 messages, book-2026-11-02: $0.056201
+route fallback, messages: 89
+route fallback, cost per 1,000 messages, book-2026-11-02: $0.006630
+route lists, messages: 13
+route lists, cost per 1,000 messages, book-2026-11-02: $0.074429
+route media, messages: 31
+route media, cost per 1,000 messages, book-2026-11-02: $0.057041
+route messages, messages: 7
+route messages, cost per 1,000 messages, book-2026-11-02: $0.101463
+resolved messages: 111
+cost of a resolved message, its own calls, book-2026-11-02: $0.000063
+users with a message: 121
+cost per user, mean over users with a message, book-2026-11-02: $0.000063
+costliest user, messages: 3
+costliest user, share of cost: 3.0%

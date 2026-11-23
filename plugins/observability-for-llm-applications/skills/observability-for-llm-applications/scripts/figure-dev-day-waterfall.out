@@ -1,0 +1,6 @@
+figure: figures/dev-day-waterfall.svg
+message, time from arrival to reply: 11,520.7 ms
+route span, time: 3,336.3 ms
+retrieve span, time: 0.0 ms
+answer span, time: 8,184.4 ms
+answer span starts, after arrival: 3,336.3 ms

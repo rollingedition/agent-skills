@@ -1,0 +1,14 @@
+figure: figures/dev-day-step-shares.svg
+messages in the dev day: 20
+route calls: 20
+route, recorded time: 35,500.6 ms
+route, share of model time: 16.7%
+route, tokens, input plus output: 3,003
+route, share of tokens: 21.2%
+answer calls: 17
+answer, recorded time: 176,519.9 ms
+answer, share of model time: 83.3%
+answer, tokens, input plus output: 11,189
+answer, share of tokens: 78.8%
+model time, total: 212,020.5 ms
+tokens, input plus output, total: 14,192

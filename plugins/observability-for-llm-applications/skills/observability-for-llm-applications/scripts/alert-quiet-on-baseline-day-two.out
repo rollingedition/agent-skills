@@ -1,0 +1,9 @@
+messages, baseline day 2: 80
+messages with no reply: 0
+messages over 20 s: 4
+ticks where the hour holds the minimum: 21 of 288
+highest error burn over an hour: 0.0
+highest error burn over 5 minutes: 0.0
+highest latency burn over an hour, with the minimum met: 4.0
+ticks where the error page fires: 0
+ticks where the latency page fires: 0

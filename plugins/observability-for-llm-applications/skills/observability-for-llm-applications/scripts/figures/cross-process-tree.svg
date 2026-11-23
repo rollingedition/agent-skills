@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg xmlns:xlink="http://www.w3.org/1999/xlink" width="460.8pt" height="259.2pt" viewBox="0 0 460.8 259.2" xmlns="http://www.w3.org/2000/svg" version="1.1">
+ <metadata>
+  <rdf:RDF xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+   <cc:Work>
+    <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
+    <dc:format>image/svg+xml</dc:format>
+   </cc:Work>
+  </rdf:RDF>
+ </metadata>
+ <defs>
+  <style type="text/css">*{stroke-linejoin: round; stroke-linecap: butt}</style>
+ </defs>
+ <g id="figure_1">
+  <g id="patch_1">
+   <path d="M 0 259.2 
+L 460.8 259.2 
+L 460.8 0 
+L 0 0 
+L 0 259.2 
+z
+" style="fill: none"/>
+  </g>
+  <g id="axes_1">
+   <g id="line2d_1">
+    <path d="M 23.364398 14.509309 
+L 23.364398 37.527447 
+L 91.244923 37.527447 
+" clip-path="url(#p0b7b07c2e5)" style="fill: none; stroke: #61574a; stroke-width: 1.2; stroke-linecap: square"/>
+   </g>
+   <g id="line2d_2">
+    <path d="M 23.364398 14.509309 
+L 23.364398 60.545585 
+L 91.244923 60.545585 
+" clip-path="url(#p0b7b07c2e5)" style="fill: none; stroke: #61574a; stroke-width: 1.2; stroke-linecap: square"/>
+   </g>
+   <g id="line2d_3">
+    <path d="M 23.364398 14.509309 
+L 23.364398 83.563724 
+L 91.244923 83.563724 
+" clip-path="url(#p0b7b07c2e5)" style="fill: none; stroke: #61574a; stroke-width: 1.2; stroke-linecap: square"/>
+   </g>
+   <g id="line2d_4">
+    <path d="M 23.364398 14.509309 
+L 23.364398 106.581862 
+L 91.244923 106.581862 
+" clip-path="url(#p0b7b07c2e5)" style="fill: none; stroke: #61574a; stroke-width: 1.2; stroke-linecap: square"/>
+   </g>
+   <g id="line2d_5">
+    <path d="M 91.244923 106.581862 
+L 91.244923 129.6 
+L 159.125448 129.6 
+" clip-path="url(#p0b7b07c2e5)" style="fill: none; stroke: #61574a; stroke-width: 1.2; stroke-linecap: square"/>
+   </g>
+   <g id="line2d_6">
+    <path d="M 159.125448 129.6 
+L 159.125448 152.618138 
+L 227.005974 152.618138 
+" clip-path="url(#p0b7b07c2e5)" style="fill: none; stroke-dasharray: 4.44,1.92; stroke-dashoffset: 0; stroke: #9a4a06; stroke-width: 1.2"/>
+   </g>
+   <g id="line2d_7">
+    <path d="M 227.005974 152.618138 
+L 227.005974 175.636276 
+L 294.886499 175.636276 
+" clip-path="url(#p0b7b07c2e5)" style="fill: none; stroke: #61574a; stroke-width: 1.2; stroke-linecap: square"/>
+   </g>
+   <g id="line2d_8">
+    <path d="M 91.244923 106.581862 
+L 91.244923 198.654415 
+L 159.125448 198.654415 
+" clip-path="url(#p0b7b07c2e5)" style="fill: none; stroke: #61574a; stroke-width: 1.2; stroke-linecap: square"/>
+   </g>
+   <g id="line2d_9">
+    <path d="M 159.125448 198.654415 
+L 159.125448 221.672553 
+L 227.005974 221.672553 
+" clip-path="url(#p0b7b07c2e5)" style="fill: none; stroke-dasharray: 4.44,1.92; stroke-dashoffset: 0; stroke: #9a4a06; stroke-width: 1.2"/>
+   </g>
+   <g id="line2d_10">
+    <path d="M 23.364398 14.509309 
+L 23.364398 244.690691 
+L 91.244923 244.690691 
+" clip-path="url(#p0b7b07c2e5)" style="fill: none; stroke: #61574a; stroke-width: 1.2; stroke-linecap: square"/>
+   </g>
+   <g id="PathCollection_1">
+    <defs>
+     <path id="m14cc9b2678" d="M 0 2.738613 
+C 0.726289 2.738613 1.422928 2.450055 1.936492 1.936492 
+C 2.450055 1.422928 2.738613 0.726289 2.738613 0 
+C 2.738613 -0.726289 2.450055 -1.422928 1.936492 -1.936492 
+C 1.422928 -2.450055 0.726289 -2.738613 0 -2.738613 
+C -0.726289 -2.738613 -1.422928 -2.450055 -1.936492 -1.936492 
+C -2.450055 -1.422928 -2.738613 -0.726289 -2.738613 0 
+C -2.738613 0.726289 -2.450055 1.422928 -1.936492 1.936492 
+C -1.422928 2.450055 -0.726289 2.738613 0 2.738613 
+z
+" style="stroke: #1b1712"/>
+    </defs>
+    <g clip-path="url(#p0b7b07c2e5)">
+     <use xlink:href="#m14cc9b2678" x="23.364398" y="14.509309" style="fill: #1b1712; stroke: #1b1712"/>
+    </g>
+   </g>
+   <g id="text_1">
+    <text style="font-size: 8px; font-family: 'IBM Plex Sans', 'DejaVu Sans', sans-serif; text-anchor: start; fill: #1b1712" x="32.867671" y="16.587747" transform="rotate(-0 32.867671 16.587747)">invoke_agent ambrewick-assistant (assistant)</text>
+   </g>
+   <g id="PathCollection_2">
+    <g clip-path="url(#p0b7b07c2e5)">
+     <use xlink:href="#m14cc9b2678" x="91.244923" y="37.527447" style="fill: #1b1712; stroke: #1b1712"/>
+    </g>
+   </g>
+   <g id="text_2">
+    <text style="font-size: 8px; font-family: 'IBM Plex Sans', 'DejaVu Sans', sans-serif; text-anchor: start; fill: #1b1712" x="100.748197" y="39.605885" transform="rotate(-0 100.748197 39.605885)">chat qwen3-4b-instruct-2507 (assistant)</text>
+   </g>
+   <g id="PathCollection_3">
+    <g clip-path="url(#p0b7b07c2e5)">
+     <use xlink:href="#m14cc9b2678" x="91.244923" y="60.545585" style="fill: #1b1712; stroke: #1b1712"/>
+    </g>
+   </g>
+   <g id="text_3">
+    <text style="font-size: 8px; font-family: 'IBM Plex Sans', 'DejaVu Sans', sans-serif; text-anchor: start; fill: #1b1712" x="100.748197" y="62.624023" transform="rotate(-0 100.748197 62.624023)">retrieval (assistant)</text>
+   </g>
+   <g id="PathCollection_4">
+    <g clip-path="url(#p0b7b07c2e5)">
+     <use xlink:href="#m14cc9b2678" x="91.244923" y="83.563724" style="fill: #1b1712; stroke: #1b1712"/>
+    </g>
+   </g>
+   <g id="text_4">
+    <text style="font-size: 8px; font-family: 'IBM Plex Sans', 'DejaVu Sans', sans-serif; text-anchor: start; fill: #1b1712" x="100.748197" y="85.642161" transform="rotate(-0 100.748197 85.642161)">chat qwen3-4b-instruct-2507 (assistant)</text>
+   </g>
+   <g id="PathCollection_5">
+    <g clip-path="url(#p0b7b07c2e5)">
+     <use xlink:href="#m14cc9b2678" x="91.244923" y="106.581862" style="fill: #1b1712; stroke: #1b1712"/>
+    </g>
+   </g>
+   <g id="text_5">
+    <text style="font-size: 8px; font-family: 'IBM Plex Sans', 'DejaVu Sans', sans-serif; text-anchor: start; fill: #1b1712" x="100.748197" y="108.660299" transform="rotate(-0 100.748197 108.660299)">execute_tool find_contact (assistant)</text>
+   </g>
+   <g id="PathCollection_6">
+    <g clip-path="url(#p0b7b07c2e5)">
+     <use xlink:href="#m14cc9b2678" x="159.125448" y="129.6" style="fill: #1b1712; stroke: #1b1712"/>
+    </g>
+   </g>
+   <g id="text_6">
+    <text style="font-size: 8px; font-family: 'IBM Plex Sans', 'DejaVu Sans', sans-serif; text-anchor: start; fill: #1b1712" x="168.628722" y="131.678438" transform="rotate(-0 168.628722 131.678438)">MCP send tools/call find_contact (assistant)</text>
+   </g>
+   <g id="PathCollection_7">
+    <defs>
+     <path id="ma71f05a727" d="M -2.738613 2.738613 
+L 2.738613 2.738613 
+L 2.738613 -2.738613 
+L -2.738613 -2.738613 
+z
+" style="stroke: #9a4a06"/>
+    </defs>
+    <g clip-path="url(#p0b7b07c2e5)">
+     <use xlink:href="#ma71f05a727" x="227.005974" y="152.618138" style="fill: #9a4a06; stroke: #9a4a06"/>
+    </g>
+   </g>
+   <g id="text_7">
+    <text style="font-size: 8px; font-family: 'IBM Plex Sans', 'DejaVu Sans', sans-serif; text-anchor: start; fill: #1b1712" x="236.509247" y="154.696576" transform="rotate(-0 236.509247 154.696576)">tools/call find_contact (contacts server)</text>
+   </g>
+   <g id="PathCollection_8">
+    <g clip-path="url(#p0b7b07c2e5)">
+     <use xlink:href="#ma71f05a727" x="294.886499" y="175.636276" style="fill: #9a4a06; stroke: #9a4a06"/>
+    </g>
+   </g>
+   <g id="text_8">
+    <text style="font-size: 8px; font-family: 'IBM Plex Sans', 'DejaVu Sans', sans-serif; text-anchor: start; fill: #1b1712" x="304.389773" y="177.714714" transform="rotate(-0 304.389773 177.714714)">contacts.lookup (contacts server)</text>
+   </g>
+   <g id="PathCollection_9">
+    <g clip-path="url(#p0b7b07c2e5)">
+     <use xlink:href="#m14cc9b2678" x="159.125448" y="198.654415" style="fill: #1b1712; stroke: #1b1712"/>
+    </g>
+   </g>
+   <g id="text_9">
+    <text style="font-size: 8px; font-family: 'IBM Plex Sans', 'DejaVu Sans', sans-serif; text-anchor: start; fill: #1b1712" x="168.628722" y="200.732852" transform="rotate(-0 168.628722 200.732852)">MCP send tools/list (assistant)</text>
+   </g>
+   <g id="PathCollection_10">
+    <g clip-path="url(#p0b7b07c2e5)">
+     <use xlink:href="#ma71f05a727" x="227.005974" y="221.672553" style="fill: #9a4a06; stroke: #9a4a06"/>
+    </g>
+   </g>
+   <g id="text_10">
+    <text style="font-size: 8px; font-family: 'IBM Plex Sans', 'DejaVu Sans', sans-serif; text-anchor: start; fill: #1b1712" x="236.509247" y="223.75099" transform="rotate(-0 236.509247 223.75099)">tools/list (contacts server)</text>
+   </g>
+   <g id="PathCollection_11">
+    <g clip-path="url(#p0b7b07c2e5)">
+     <use xlink:href="#m14cc9b2678" x="91.244923" y="244.690691" style="fill: #1b1712; stroke: #1b1712"/>
+    </g>
+   </g>
+   <g id="text_11">
+    <text style="font-size: 8px; font-family: 'IBM Plex Sans', 'DejaVu Sans', sans-serif; text-anchor: start; fill: #1b1712" x="100.748197" y="246.769128" transform="rotate(-0 100.748197 246.769128)">chat qwen3-4b-instruct-2507 (assistant)</text>
+   </g>
+  </g>
+ </g>
+ <defs>
+  <clipPath id="p0b7b07c2e5">
+   <rect x="3.00024" y="3.00024" width="454.79952" height="253.19952"/>
+  </clipPath>
+ </defs>
+</svg>

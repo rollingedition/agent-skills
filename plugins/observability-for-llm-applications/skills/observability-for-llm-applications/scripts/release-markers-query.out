@@ -1,0 +1,15 @@
+service.version 1.0.0, gen_ai.prompt.version p1, ambrewick.answer: 33 inference spans
+service.version 1.0.0, gen_ai.prompt.version p1, ambrewick.route: 60 inference spans
+service.version 1.1.0, gen_ai.prompt.version p2, ambrewick.answer: 33 inference spans
+service.version 1.1.0, gen_ai.prompt.version p2, ambrewick.route: 60 inference spans
+service.version 1.2.0, gen_ai.prompt.version p1, ambrewick.answer: 16 inference spans
+service.version 1.2.0, gen_ai.prompt.version p1, ambrewick.route: 60 inference spans
+service.version 1.3.0, gen_ai.prompt.version p1, ambrewick.answer: 33 inference spans
+service.version 1.3.0, gen_ai.prompt.version p1, ambrewick.route: 60 inference spans
+service.version 1.4.0, gen_ai.prompt.version p1, ambrewick.answer: 33 inference spans
+service.version 1.4.0, gen_ai.prompt.version p1, ambrewick.route: 60 inference spans
+service.version 1.0.0, messages (traces): 60
+service.version 1.1.0, messages (traces): 60
+service.version 1.2.0, messages (traces): 60
+service.version 1.3.0, messages (traces): 60
+service.version 1.4.0, messages (traces): 60

@@ -1,0 +1,10 @@
+wrong routes, baseline day 1 (real): 41
+wrong routes, incident day (real): 13
+fallback replies to a scenario that is not fallback, baseline day 1 (real): 18
+truncated replies, baseline day 1 (real): 0
+ERROR tool-attempt and server spans, baseline day 1 (real): 0
+execute_tool find_contact, error.type MCPError, incident day (injected): 4
+execute_tool find_contact, error.type tool_error, incident day (injected): 3
+tools/call find_contact, error.type tool_error, incident day (injected): 3
+error-result attempts paired with their server span, incident day (injected): 3
+model requests refused, incident day (injected): 47

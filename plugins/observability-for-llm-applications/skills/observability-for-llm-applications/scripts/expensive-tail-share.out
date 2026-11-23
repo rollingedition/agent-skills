@@ -1,0 +1,8 @@
+messages: 200
+messages in the most expensive 1%: 2
+cost of the day, book-2026-11-02: $0.007563
+cost of the most expensive 1%, book-2026-11-02: $0.000234
+share of the day's cost, most expensive 1%: 3.1%
+most expensive message, route: messages
+most expensive message, cost, book-2026-11-02: $0.000118
+most expensive 1%, messages resolved by the model: 2

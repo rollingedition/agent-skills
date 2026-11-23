@@ -1,0 +1,9 @@
+baseline day 1 (4B), answer replies: 121
+baseline day 1 (4B), replies with a tool call: 10
+baseline day 1 (4B), malformed tool calls: 0
+baseline day 1 (4B), malformed tool calls in the replay: 0
+model swap (0.6B, release r2), answer replies: 57
+model swap (0.6B, release r2), replies with a tool call: 1
+model swap (0.6B, release r2), malformed tool calls: 0
+constructed reply, unclosed block, rejected by the parser: yes
+constructed reply, body is not JSON, rejected by the parser: yes

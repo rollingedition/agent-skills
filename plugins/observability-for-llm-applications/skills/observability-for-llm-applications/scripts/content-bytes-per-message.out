@@ -1,0 +1,10 @@
+bytes per message, capture off: 2,831
+bytes content adds per message, capture on: 2,716
+bytes per message, capture on: 5,547
+content share of the bytes, capture on: 49.0%
+longest content value, no limit: 2,907 characters
+value length limit: 1,000 characters
+longest content value, cut at the limit: 1,000 characters
+content values on the day: 642
+content values cut by the limit: 87
+cut values that no longer parse as JSON: 87

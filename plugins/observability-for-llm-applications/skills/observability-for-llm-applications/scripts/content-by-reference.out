@@ -1,0 +1,19 @@
+spans exported, capture unset and sampled in: 20
+spans with a content reference, capture unset and sampled in: 20
+spans with inline content, capture unset and sampled in: 0
+uploaded inputs, capture unset and sampled in: 20
+uploaded outputs, capture unset and sampled in: 20
+spans exported, capture on and sampled in: 20
+spans with a content reference, capture on and sampled in: 20
+spans with inline content, capture on and sampled in: 20
+uploaded inputs, capture on and sampled in: 20
+uploaded outputs, capture on and sampled in: 20
+spans exported, capture unset and sampled out: 0
+spans with a content reference, capture unset and sampled out: 0
+spans with inline content, capture unset and sampled out: 0
+uploaded inputs, capture unset and sampled out: 20
+uploaded outputs, capture unset and sampled out: 20
+reference form on the span, after redaction: file://<folder>/<id>_inputs.json
+absolute paths left in the redacted references: 0
+calls sent through the hook: 20
+calls whose user text is in an uploaded input file, capture unset: 20

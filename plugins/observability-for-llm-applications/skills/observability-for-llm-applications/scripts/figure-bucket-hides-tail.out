@@ -1,0 +1,18 @@
+messages (n): 200
+bucket above 0.0 ms up to 10.0 ms: 0 messages, 0.0%
+bucket above 10.0 ms up to 20.0 ms: 0 messages, 0.0%
+bucket above 20.0 ms up to 40.0 ms: 0 messages, 0.0%
+bucket above 40.0 ms up to 80.0 ms: 0 messages, 0.0%
+bucket above 80.0 ms up to 160.0 ms: 0 messages, 0.0%
+bucket above 160.0 ms up to 320.0 ms: 0 messages, 0.0%
+bucket above 320.0 ms up to 640.0 ms: 0 messages, 0.0%
+bucket above 640.0 ms up to 1,280.0 ms: 21 messages, 10.5%
+bucket above 1,280.0 ms up to 2,560.0 ms: 65 messages, 32.5%
+bucket above 2,560.0 ms up to 5,120.0 ms: 3 messages, 1.5%
+bucket above 5,120.0 ms up to 10,240.0 ms: 16 messages, 8.0%
+bucket above 10,240.0 ms up to 20,480.0 ms: 89 messages, 44.5%
+bucket above 20,480.0 ms up to 40,960.0 ms: 6 messages, 3.0%
+bucket above 40,960.0 ms up to 81,920.0 ms: 0 messages, 0.0%
+bucket above 81,920.0 ms: 0 messages, 0.0%
+p95, nearest rank of the raw values: 18,351.2 ms
+figure: figures/bucket-hides-tail.svg

@@ -1,0 +1,24 @@
+{
+  "name": "observability-for-llm-applications",
+  "displayName": "Observability for LLM Applications",
+  "version": "2026.11.1",
+  "description": "How to find where an LLM application's time, tokens and money went, and which step failed: GenAI conventions, traces across processes, a backend, cost, latency, failures, alerts, regressions, sampling and privacy, worked on a personal assistant's back end over MASSIVE's English utterances, with its own tools, retrieval and an MCP server.",
+  "author": {
+    "name": "Rolling Edition",
+    "url": "https://rollingedition.com/"
+  },
+  "homepage": "https://rollingedition.com/observability-for-llm-applications",
+  "repository": "https://github.com/rollingedition/agent-skills",
+  "license": "CC-BY-NC-4.0 AND MIT",
+  "keywords": [
+    "llm-observability",
+    "model-monitoring",
+    "large-language-models",
+    "ai-agents"
+  ],
+  "icon": "./icon.png",
+  "documentationUrl": "https://rollingedition.com/assistants#agent-skills",
+  "supportUrl": "https://rollingedition.com/assistants#trouble",
+  "privacyPolicyUrl": "https://rollingedition.com/policies/privacy#mcp",
+  "termsOfServiceUrl": "https://rollingedition.com/policies/terms"
+}

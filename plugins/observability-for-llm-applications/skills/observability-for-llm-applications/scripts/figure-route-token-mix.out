@@ -1,0 +1,29 @@
+route alarms, messages: 16
+route alarms, input tokens per message: 883.6
+route alarms, cached input tokens per message: 525.3
+route alarms, output tokens per message: 43.4
+route calendar, messages: 27
+route calendar, input tokens per message: 903.5
+route calendar, cached input tokens per message: 604.9
+route calendar, output tokens per message: 38.8
+route devices, messages: 17
+route devices, input tokens per message: 627.9
+route devices, cached input tokens per message: 305.1
+route devices, output tokens per message: 44.5
+route fallback, messages: 89
+route fallback, input tokens per message: 145.4
+route fallback, cached input tokens per message: 128.9
+route fallback, output tokens per message: 6.0
+route lists, messages: 13
+route lists, input tokens per message: 936.5
+route lists, cached input tokens per message: 385.3
+route lists, output tokens per message: 29.0
+route media, messages: 31
+route media, input tokens per message: 663.9
+route media, cached input tokens per message: 325.1
+route media, output tokens per message: 41.6
+route messages, messages: 7
+route messages, input tokens per message: 1415.4
+route messages, cached input tokens per message: 711.7
+route messages, output tokens per message: 42.1
+figure: figures/route-token-mix.svg

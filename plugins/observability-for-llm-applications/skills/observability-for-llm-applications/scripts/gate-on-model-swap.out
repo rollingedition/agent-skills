@@ -1,0 +1,23 @@
+r2 against r0, message time, mean: -6,750.9 ms, limit 801.9 ms (95% interval -7,599.5 ms to -5,921.4 ms)
+r2 against r0, message time, mean, flagged: no
+r2 against r0, input tokens per message, mean: -200, limit 52 (95% interval -258 to -148)
+r2 against r0, input tokens per message, mean, flagged: no
+r2 against r0, cost per message, mean, per 1,000 messages: -$0.033156, limit $0.003781 (95% interval -$0.037326 to -$0.029012)
+r2 against r0, cost per message, mean, flagged: no
+r2 against r0, error rate: +0.0%, limit +2.0% (95% interval +0.0% to +0.0%)
+r2 against r0, error rate, flagged: no
+r2 against r0, route accuracy: -21.0%, limit -5.0% (95% interval -28.0% to -14.5%)
+r2 against r0, route accuracy, flagged: yes
+r2 against r0, gate verdict: fail
+messages (paired): 200
+messages answered by r0 and not by r2: 59
+messages answered by r2 and not by r0: 4
+r2 against r0, route call input tokens per call, mean difference: 4
+r2 against r0, route call output tokens per call, mean difference: 4
+r2 against r0, input tokens per message, route calls' share: 4
+r2 against r0, input tokens per message, answer calls' share: -204
+r2 against r0, message time, answer calls' share: -5,706.8 ms
+r2 against r0, cost per 1,000 messages, answer calls' share: -$0.027870
+r2, model replies: 257
+r2, model replies with an empty <think> block: 256
+r2, model replies with text in their <think> block: 1

@@ -49,6 +49,13 @@
       "homepage": "https://rollingedition.com/model-context-protocol-in-practice"
     },
     {
+      "name": "observability-for-llm-applications",
+      "source": "./plugins/observability-for-llm-applications",
+      "description": "How to find where an LLM application's time, tokens and money went, and which step failed: GenAI conventions, traces across processes, a backend, cost, latency, failures, alerts, regressions, sampling and privacy, worked on a personal assistant's back end over MASSIVE's English utterances, with its own tools, retrieval and an MCP server.",
+      "category": "learning",
+      "homepage": "https://rollingedition.com/observability-for-llm-applications"
+    },
+    {
       "name": "open-table-formats",
       "source": "./plugins/open-table-formats",
       "description": "How Iceberg, Delta Lake and DuckLake store a table, change it, clean it up, register it in a catalog and move it to another format, on one hourly pageviews table, with examples that run offline on a laptop.",

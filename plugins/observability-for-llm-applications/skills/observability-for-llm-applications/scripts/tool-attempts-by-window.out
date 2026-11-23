@@ -1,0 +1,6 @@
+inc-contacts-timeout, tool attempts in the hour to that tick: 5
+inc-contacts-timeout, tool attempts with error.type in that hour: 4
+inc-rate-limit, tool attempts in the hour to that tick: 2
+inc-rate-limit, tool attempts with error.type in that hour: 0
+inc-mcp-error, tool attempts in the hour to that tick: 3
+inc-mcp-error, tool attempts with error.type in that hour: 3

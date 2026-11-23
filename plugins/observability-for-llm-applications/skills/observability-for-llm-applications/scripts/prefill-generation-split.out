@@ -1,0 +1,10 @@
+route calls: 200
+route, prefill share of prefill plus generation: 32.8%
+route, prefill share of time to first chunk: 72.7%
+route, prompt tokens evaluated per second of prefill, computed: 47.6
+route, tokens written per second of generation, computed: 7.3
+answer calls: 121
+answer, prefill share of prefill plus generation: 54.1%
+answer, prefill share of time to first chunk: 91.2%
+answer, prompt tokens evaluated per second of prefill, computed: 62.3
+answer, tokens written per second of generation, computed: 7.0

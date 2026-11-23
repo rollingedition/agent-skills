@@ -1,0 +1,18 @@
+GenAI conventions version: 0.1.0
+inference span name: chat qwen3-4b-instruct-2507
+retrieval span name: retrieval
+tool span name: execute_tool remove_item
+agent span name: invoke_agent ambrewick-assistant
+inference provider name: openai
+inference prompt name: ambrewick.route
+inference prompt version: p1
+operation names, gen_ai.client.inference: chat, generate_content, realtime_inference, text_completion
+operation names, gen_ai.execute_tool: execute_tool
+operation names, gen_ai.invoke_agent.internal: invoke_agent
+operation names, gen_ai.retrieval: retrieval
+required attributes, gen_ai.client.inference: 2
+required attributes, gen_ai.execute_tool: 2
+required attributes, gen_ai.invoke_agent.internal: 1
+required attributes, gen_ai.retrieval: 1
+required attributes, mcp.client: 1
+required attributes, mcp.server: 1

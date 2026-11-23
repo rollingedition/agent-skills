@@ -1,0 +1,17 @@
+r0, prefill summed over the answer calls: 172,043.5 ms
+r0, prompt tokens summed over the answer calls: 20,420
+r0, prompt tokens evaluated summed over the answer calls: 10,855
+r0, cached prompt tokens summed over the answer calls: 9,565
+r0, prompt tokens evaluated summed over the route calls: 827
+r3, prefill summed over the answer calls: 289,244.2 ms
+r3, prompt tokens summed over the answer calls: 27,326
+r3, prompt tokens evaluated summed over the answer calls: 17,813
+r3, cached prompt tokens summed over the answer calls: 9,513
+r3, prompt tokens evaluated summed over the route calls: 1,209
+prefill, r3 over r0, computed: 1.68
+paired answer calls, r3 with more prompt tokens than r0: 15 of 33
+route instruction, cached tokens in most route calls: 133
+r0, route calls that re-read most of the instruction: 1
+r3, route calls that re-read most of the instruction: 4
+prefill against prompt tokens, correlation, computed: 0.29
+prefill against tokens evaluated, correlation, computed: 0.99
