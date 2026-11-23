@@ -1,0 +1,5 @@
+spread of per-query changes: 0.062
+smallest change 30 queries detect: 0.032
+queries needed for a change of 0.01: 300
+smallest change for the larger query set: 0.010
+figure: figures/power-curve.svg

@@ -1,0 +1,7 @@
+mean ndcg@10: 0.725
+median ndcg@10: 0.687
+lowest ndcg@10: 0.212
+highest ndcg@10: 1.000
+queries with ndcg@10 of 1: 4
+queries below the mean: 16
+figure: figures/bm25-test-query-scores.svg

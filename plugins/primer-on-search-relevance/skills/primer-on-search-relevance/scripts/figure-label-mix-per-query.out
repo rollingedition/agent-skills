@@ -1,0 +1,4 @@
+queries drawn: 80
+queries where partial is the largest share: 60
+queries with an irrelevant share above 0.2: 22
+figure: figures/label-mix-per-query.svg

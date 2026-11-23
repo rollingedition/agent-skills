@@ -1,0 +1,6 @@
+candidates for laundry basket with wheels: 125
+bm25 range: 2.059 to 8.229
+similarity range: 0.336 to 0.597
+after min-max, bm25 range: 0.000 to 1.000
+after min-max, similarity range: 0.000 to 1.000
+figure: figures/score-scales.svg

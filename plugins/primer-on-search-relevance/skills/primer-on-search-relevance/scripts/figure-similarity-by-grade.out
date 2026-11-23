@@ -1,0 +1,10 @@
+pairs, exact: 1315
+median similarity, exact: 0.519
+pairs, partial: 2901
+median similarity, partial: 0.457
+pairs, irrelevant: 584
+median similarity, irrelevant: 0.391
+share of exact pairs below 0.5: 0.389
+share of partial pairs above 0.5: 0.234
+share of irrelevant pairs above 0.5: 0.058
+figure: figures/similarity-by-grade.svg

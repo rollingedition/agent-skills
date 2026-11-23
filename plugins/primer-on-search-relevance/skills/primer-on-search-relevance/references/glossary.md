@@ -1,13 +1,13 @@
 ---
 title: "Glossary"
 book: "A Primer on Search Relevance"
-edition: "2026.11.12"
+edition: "2026.11.13"
 canonical: "https://rollingedition.com/primer-on-search-relevance/glossary"
 ---
 
 # Glossary of *A Primer on Search Relevance*
 
-The 184 terms this book defines, as Edition 2026.11.12 has them, each in the book's own sentence. When a task this skill covers uses one, it means what it says here: read its section before you rely on it, and cite the section. Where a definition depends on a package, it says the version this edition pins and runs its examples on. On the web: https://rollingedition.com/primer-on-search-relevance/glossary
+The 184 terms this book defines, as Edition 2026.11.13 has them, each in the book's own sentence. When a task this skill covers uses one, it means what it says here: read its section before you rely on it, and cite the section. Where a definition depends on a package, it says the version this edition pins and runs its examples on. On the web: https://rollingedition.com/primer-on-search-relevance/glossary
 
 ## A/A test
 
@@ -277,14 +277,12 @@ Ragas's context precision is the rank-aware one of its context measures, the mea
 
 context recall is the share of a reference answer's claims that the context supports
 
-- Also: context recall@k
-- Formula: `context recall@k = (exact products in the top k) / (exact products judged for the query)`
 - Defined in: [Measure the context, then the answer](retrieval-for-llm-applications.md#measure-the-context)
 - Address: https://rollingedition.com/concepts/search-and-recommendation/context-recall
 
 ## context window
 
-A model's context window is the most tokens it can read, a fixed number of the word pieces in its own vocabulary.
+A model's context window is the most tokens it can hold at once, its prompt and its answer together, a fixed number of the word pieces in its own vocabulary.
 
 - Defined in: [Put retrieved products in the prompt](retrieval-for-llm-applications.md#put-retrieved-products-in-the-prompt)
 - Address: https://rollingedition.com/concepts/search-and-recommendation/context-window
@@ -307,7 +305,7 @@ Conversational query rewriting turns a context-dependent question into a self-co
 
 ## convex combination
 
-A sum whose weights add up to 1 is a convex combination, or weighted sum.
+A sum whose weights are non-negative and add up to 1 is a convex combination, or weighted sum.
 
 - Also: weighted sum, CC
 - Contrasts with: reciprocal rank fusion
@@ -543,7 +541,7 @@ A graded label, such as WANDS's exact, partial or irrelevant, says how relevant.
 
 ## gradient-boosted trees
 
-gradient-boosted trees, which add small decision trees one at a time, each fitted to the gradients of the trees before it
+gradient-boosted trees, which add small decision trees one at a time, each fitted to the gradients of the loss at the scores the trees before it give
 
 - Comes before: LambdaMART
 - Defined in: [Learn a ranking from pairs of products](ranking.md#learn-from-pairs)
@@ -723,7 +721,7 @@ Learning to rank trains a model on judged queries to order candidates by their f
 
 ## length normalization
 
-With length normalization, a long text, which has more chances to contain any term, gets its term frequencies discounted.
+With length normalization, a text longer than average, which has more chances to contain any term, gets its term frequencies discounted, and a shorter one gets them raised.
 
 - Part of: BM25
 - Defined in: [Rebuild BM25 by hand to match bm25s](lexical-retrieval.md#bm25-from-scratch)
@@ -762,7 +760,7 @@ Listwise, an LLM orders a whole list in one answer
 
 ## listwise model
 
-A listwise model scores a whole ranking.
+A listwise model learns from a loss on a query's whole ranking.
 
 - A kind of: learning to rank
 - Defined in: [Learn a ranking from pairs of products](ranking.md#learn-from-pairs)
@@ -965,7 +963,7 @@ Pointwise, an LLM judges each product alone and returns a label or a score.
 
 ## pointwise model
 
-A pointwise model predicts each product's grade on its own, as a regression.
+A pointwise model predicts each product's grade on its own, as a regression or a classification.
 
 - A kind of: learning to rank
 - Defined in: [Learn a ranking from pairs of products](ranking.md#learn-from-pairs)
@@ -981,7 +979,7 @@ Nobody judges every product for every query, so test collections judge a pool in
 
 ## position bias
 
-position bias: people click higher-ranked results more, partly because they trust the ranking.
+position bias: people click higher-ranked results more, whatever their relevance, partly because they look at them first and partly because they trust the ranking.
 
 - Defined in: [Treat clicks as biased evidence](what-relevance-means.md#clicks-are-not-judgments)
 - Address: https://rollingedition.com/concepts/search-and-recommendation/position-bias
