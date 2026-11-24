@@ -12,7 +12,7 @@ This repository is generated from the books, so changes made here are overwritte
 | --- | --- | --- | --- |
 | [Agent Harnesses](https://rollingedition.com/agent-harnesses) | `agent-harnesses` | 2026.11.7 | 68 of 68 examples pass |
 | [Business Intelligence with Agents](https://rollingedition.com/business-intelligence-with-agents) | `business-intelligence-with-agents` | 2026.11.17 | 85 of 85 examples pass |
-| [Data Governance as Code](https://rollingedition.com/data-governance-as-code) | `data-governance-as-code` | 2026.11.34 | 112 of 112 examples pass |
+| [Data Governance as Code](https://rollingedition.com/data-governance-as-code) | `data-governance-as-code` | 2026.11.35 | 112 of 112 examples pass |
 | [Evaluating LLM Applications](https://rollingedition.com/evaluating-llm-applications) | `evaluating-llm-applications` | 2026.11.6 | 58 of 58 examples pass |
 | [Language Models from the Ground Up](https://rollingedition.com/language-models-from-the-ground-up) | `language-models-from-the-ground-up` | 2026.11.18 | 100 of 100 examples pass |
 | [Model Context Protocol in Practice](https://rollingedition.com/model-context-protocol-in-practice) | `model-context-protocol-in-practice` | 2026.11.18 | 71 of 71 examples pass |
@@ -21,7 +21,7 @@ This repository is generated from the books, so changes made here are overwritte
 | [A Primer on Search Relevance](https://rollingedition.com/primer-on-search-relevance) | `primer-on-search-relevance` | 2026.11.13 | 141 of 141 examples pass |
 | [Securing LLM Applications and Agents](https://rollingedition.com/securing-llm-applications-and-agents) | `securing-llm-applications-and-agents` | 2026.11.2 | 60 of 60 examples pass |
 | [Small Open Models](https://rollingedition.com/small-open-models) | `small-open-models` | 2026.11.15 | 42 of 42 examples pass |
-| [Time Series Forecasting](https://rollingedition.com/time-series-forecasting) | `time-series-forecasting` | 2026.11.17 | 56 of 56 examples pass |
+| [Time Series Forecasting](https://rollingedition.com/time-series-forecasting) | `time-series-forecasting` | 2026.11.18 | 56 of 56 examples pass |
 
 ## Install
 
