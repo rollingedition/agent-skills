@@ -3,13 +3,13 @@ title: "Observability for LLM Applications"
 chapter: "Let the client library instrument the calls"
 chapter_id: client-library-instrumentation
 book: observability-for-llm-applications
-edition: 2026.11.1
+edition: 2026.11.2
 verified: 2026-11-23
-edition_code: B95K-8RWR
+edition_code: W9DX-M10H
 canonical: https://rollingedition.com/observability-for-llm-applications/client-library-instrumentation
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“Let the client library instrument the calls,” chapter 3 of Observability for LLM Applications, Edition 2026.11.1, examples passed Nov 23, 2026. By Rolling Edition, https://rollingedition.com/observability-for-llm-applications/client-library-instrumentation. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Let the client library instrument the calls,” chapter 3 of Observability for LLM Applications, Edition 2026.11.2, examples passed Nov 23, 2026. By Rolling Edition, https://rollingedition.com/observability-for-llm-applications/client-library-instrumentation. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Let the client library instrument the calls
 
@@ -21,7 +21,7 @@ Ambrewick's assistant calls its model through the `openai` client library, and t
 
 There are two ways to get a span for a model call. Manual instrumentation is spans your code makes; automatic instrumentation collects telemetry with no change to the application's source code. Chapter 1 used the first kind. This section uses an instrumentation library. An instrumentation library is a package that makes the telemetry for another library's calls: one call in the start-up code installs it, and the zero-code agent, `opentelemetry-instrument`, loads the same package with no change to the calls.
 
-Example `instrumented-chat-call` (Python 3.13.16 · httpx 0.28.1 · mcp 2.3.0 · numpy 2.5.5 · openai 3.56.0 · opentelemetry-api 1.45.2 · opentelemetry-exporter-http-transport 0.66b2 · opentelemetry-exporter-otlp-common 0.66b2 · opentelemetry-exporter-otlp-proto-common 1.45.2 · opentelemetry-exporter-otlp-proto-http 1.45.2 · opentelemetry-instrumentation 0.66b2 · opentelemetry-instrumentation-genai-openai 1.3b0 · opentelemetry-proto 1.45.2 · opentelemetry-sdk 1.45.2 · opentelemetry-semantic-conventions 0.66b2 · opentelemetry-util-genai 1.3b0 · pydantic 2.14.4), passing in Edition 2026.11.1:
+Example `instrumented-chat-call` (Python 3.13.16 · httpx 0.28.1 · mcp 2.3.0 · numpy 2.5.5 · openai 3.57.0 · opentelemetry-api 1.45.2 · opentelemetry-exporter-http-transport 0.66b2 · opentelemetry-exporter-otlp-common 0.66b2 · opentelemetry-exporter-otlp-proto-common 1.45.2 · opentelemetry-exporter-otlp-proto-http 1.45.2 · opentelemetry-instrumentation 0.66b2 · opentelemetry-instrumentation-genai-openai 1.3b0 · opentelemetry-proto 1.45.2 · opentelemetry-sdk 1.45.2 · opentelemetry-semantic-conventions 0.66b2 · opentelemetry-util-genai 1.3b0 · pydantic 2.14.4), passing in Edition 2026.11.2:
 
 ```python
 """One chat call through the openai client, instrumented by the official package and answered from the recording. The
@@ -124,7 +124,7 @@ The chapter prints each instrument's name, unit and point count, and no value, f
 
 Chapter 2 checks the book's own spans against the registry, and this section measures the package the same way. The names are observed from the package's output, and the mapping to v0.1.0 is the book's judgement, written once in the generator, `examples/data/genai/build_names_map.py`, and checked against the registry. The output came from the recorded call, from a streamed reply that the generator builds for the names a stream adds, and from a call with content events on, which gives the name of the event. One entry comes from the package's source rather than from a run: `gen_ai.usage.cache_read.input_tokens`. The package writes it only when a reply carries cached prompt tokens, and the recorded replies carry none.
 
-Example `diff-hand-and-instrumented` (Python 3.13.16 · numpy 2.5.5), passing in Edition 2026.11.1:
+Example `diff-hand-and-instrumented` (Python 3.13.16 · numpy 2.5.5), passing in Edition 2026.11.2:
 
 ```python
 """The names the official package emits, set against the GenAI conventions v0.1.0 names this book uses. The table is
@@ -194,7 +194,7 @@ Because chapter 2 checked the book's own spans against the registry, every gap i
 
 Three packages called `openai` instrument the client, and they differ on names and on content. Their names, as PyPI spells them, are `opentelemetry-instrumentation-genai-openai`, `opentelemetry-instrumentation-openai-v2` and `opentelemetry-instrumentation-openai`. The first two are OpenTelemetry's. The third is Traceloop's. Only the first is installed here, at the version the pins hold. The other two are neither installed nor pinned, so this section reads their published wheels, at the versions and dates the table gives, and does not run them. Their versions are written as text for that reason: the pins file does not hold them, and no example prints them.
 
-Example `three-openai-packages` (Python 3.13.16 · numpy 2.5.5 · opentelemetry-api 1.45.2 · opentelemetry-exporter-http-transport 0.66b2 · opentelemetry-exporter-otlp-common 0.66b2 · opentelemetry-exporter-otlp-proto-common 1.45.2 · opentelemetry-exporter-otlp-proto-http 1.45.2 · opentelemetry-instrumentation 0.66b2 · opentelemetry-instrumentation-genai-openai 1.3b0 · opentelemetry-proto 1.45.2 · opentelemetry-sdk 1.45.2 · opentelemetry-semantic-conventions 0.66b2 · opentelemetry-util-genai 1.3b0), passing in Edition 2026.11.1:
+Example `three-openai-packages` (Python 3.13.16 · numpy 2.5.5 · opentelemetry-api 1.45.2 · opentelemetry-exporter-http-transport 0.66b2 · opentelemetry-exporter-otlp-common 0.66b2 · opentelemetry-exporter-otlp-proto-common 1.45.2 · opentelemetry-exporter-otlp-proto-http 1.45.2 · opentelemetry-instrumentation 0.66b2 · opentelemetry-instrumentation-genai-openai 1.3b0 · opentelemetry-proto 1.45.2 · opentelemetry-sdk 1.45.2 · opentelemetry-semantic-conventions 0.66b2 · opentelemetry-util-genai 1.3b0), passing in Edition 2026.11.2:
 
 ```python
 """Three packages called openai instrument the client, and they disagree on names and on content. Two are OpenTelemetry's
@@ -280,7 +280,7 @@ Content capture is the instrumentation's switch for recording prompts and replie
 
 The GenAI conventions v0.1.0 spans page says the switch MUST be named `OTEL_INSTRUMENTATION_GENAI_CAPTURE_CONTENT`, and the first package departs from that MUST. It reads a different variable, `OTEL_INSTRUMENTATION_GENAI_CAPTURE_MESSAGE_CONTENT`, and reads the spec's name nowhere. The next run shows what that does. It sets the spec's name to `SPAN_ONLY` and makes one call. Then it does the same with the package's own name, as a control, and counts the content attributes each call's span holds.
 
-Example `capture-switch-names` (Python 3.13.16 · httpx 0.28.1 · mcp 2.3.0 · numpy 2.5.5 · openai 3.56.0 · opentelemetry-api 1.45.2 · opentelemetry-exporter-http-transport 0.66b2 · opentelemetry-exporter-otlp-common 0.66b2 · opentelemetry-exporter-otlp-proto-common 1.45.2 · opentelemetry-exporter-otlp-proto-http 1.45.2 · opentelemetry-instrumentation 0.66b2 · opentelemetry-instrumentation-genai-openai 1.3b0 · opentelemetry-proto 1.45.2 · opentelemetry-sdk 1.45.2 · opentelemetry-semantic-conventions 0.66b2 · opentelemetry-util-genai 1.3b0 · pydantic 2.14.4), passing in Edition 2026.11.1:
+Example `capture-switch-names` (Python 3.13.16 · httpx 0.28.1 · mcp 2.3.0 · numpy 2.5.5 · openai 3.57.0 · opentelemetry-api 1.45.2 · opentelemetry-exporter-http-transport 0.66b2 · opentelemetry-exporter-otlp-common 0.66b2 · opentelemetry-exporter-otlp-proto-common 1.45.2 · opentelemetry-exporter-otlp-proto-http 1.45.2 · opentelemetry-instrumentation 0.66b2 · opentelemetry-instrumentation-genai-openai 1.3b0 · opentelemetry-proto 1.45.2 · opentelemetry-sdk 1.45.2 · opentelemetry-semantic-conventions 0.66b2 · opentelemetry-util-genai 1.3b0 · pydantic 2.14.4), passing in Edition 2026.11.2:
 
 ```python
 """The content switch: whether the official package's span holds the prompt and the reply. The package reads one variable,
@@ -367,7 +367,7 @@ Two more naming schemes describe the same facts as the GenAI conventions: OpenIn
 
 OpenInference's module, at its pinned version `0.1.46`, names the model, the provider, the token counts, the span kind and the messages in its own constants. The script reads those constants and sets each one beside the GenAI name for the same fact.
 
-Example `openinference-mapping` (Python 3.13.16 · numpy 2.5.5 · openinference-semantic-conventions 0.1.46), passing in Edition 2026.11.1:
+Example `openinference-mapping` (Python 3.13.16 · numpy 2.5.5 · openinference-semantic-conventions 0.1.46), passing in Edition 2026.11.2:
 
 ```python
 """OpenInference, a naming scheme the book does not emit, at its pinned version. Its module names the facts a model call

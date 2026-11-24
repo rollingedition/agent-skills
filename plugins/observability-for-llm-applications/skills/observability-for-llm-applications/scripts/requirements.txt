@@ -102,7 +102,7 @@ docker==7.2.0
     # via
     #   -r requirements.in
     #   mlflow
-duckdb==2.0.0
+duckdb==2.0.1
     # via -r requirements.in
 fastapi==0.165.0
     # via
@@ -297,7 +297,7 @@ numpy==2.5.5
     #   scikit-learn
     #   scipy
     #   skops
-openai==3.56.0
+openai==3.57.0
     # via -r requirements.in
 openinference-semantic-conventions==0.1.46
     # via -r requirements.in

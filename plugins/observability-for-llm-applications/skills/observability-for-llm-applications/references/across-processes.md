@@ -3,13 +3,13 @@ title: "Observability for LLM Applications"
 chapter: "Follow a request across processes"
 chapter_id: across-processes
 book: observability-for-llm-applications
-edition: 2026.11.1
+edition: 2026.11.2
 verified: 2026-11-23
-edition_code: B95K-8RWR
+edition_code: W9DX-M10H
 canonical: https://rollingedition.com/observability-for-llm-applications/across-processes
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“Follow a request across processes,” chapter 4 of Observability for LLM Applications, Edition 2026.11.1, examples passed Nov 23, 2026. By Rolling Edition, https://rollingedition.com/observability-for-llm-applications/across-processes. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Follow a request across processes,” chapter 4 of Observability for LLM Applications, Edition 2026.11.2, examples passed Nov 23, 2026. By Rolling Edition, https://rollingedition.com/observability-for-llm-applications/across-processes. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Follow a request across processes
 
@@ -27,7 +27,7 @@ This chapter calls the contacts server's life a run, not a session. The [2026-07
 
 The recording shows the failure this section is about. Baseline day 1 was recorded with a client that had no tracer provider, so the client sent no context. The example reads that recording.
 
-Example `server-span-without-context` (Python 3.13.16 · bm25s 0.3.16 · mcp 2.3.0 · numpy 2.5.5 · opentelemetry-api 1.45.2 · opentelemetry-exporter-http-transport 0.66b2 · opentelemetry-exporter-otlp-common 0.66b2 · opentelemetry-exporter-otlp-proto-common 1.45.2 · opentelemetry-exporter-otlp-proto-http 1.45.2 · opentelemetry-instrumentation 0.66b2 · opentelemetry-instrumentation-genai-openai 1.3b0 · opentelemetry-proto 1.45.2 · opentelemetry-sdk 1.45.2 · opentelemetry-semantic-conventions 0.66b2 · opentelemetry-util-genai 1.3b0 · pydantic 2.14.4), passing in Edition 2026.11.1:
+Example `server-span-without-context` (Python 3.13.16 · bm25s 0.3.16 · mcp 2.3.0 · numpy 2.5.5 · opentelemetry-api 1.45.2 · opentelemetry-exporter-http-transport 0.66b2 · opentelemetry-exporter-otlp-common 0.66b2 · opentelemetry-exporter-otlp-proto-common 1.45.2 · opentelemetry-exporter-otlp-proto-http 1.45.2 · opentelemetry-instrumentation 0.66b2 · opentelemetry-instrumentation-genai-openai 1.3b0 · opentelemetry-proto 1.45.2 · opentelemetry-sdk 1.45.2 · opentelemetry-semantic-conventions 0.66b2 · opentelemetry-util-genai 1.3b0 · pydantic 2.14.4), passing in Edition 2026.11.2:
 
 ```python
 """Read baseline day 1's recorded contacts-server spans for message 16297. The recorder's client sent no context, so the
@@ -67,7 +67,7 @@ Context propagation carries the context, the span's identity and any [baggage](#
 
 The first thing to try is to write the header yourself, and see what the server does with it. Below, one call carries a header that names a trace this assistant never made, and a second call asks for a tool the server does not have.
 
-Example `propagate-into-the-tool` (Python 3.13.16 · mcp 2.3.0 · numpy 2.5.5 · opentelemetry-api 1.45.2 · opentelemetry-exporter-http-transport 0.66b2 · opentelemetry-exporter-otlp-common 0.66b2 · opentelemetry-exporter-otlp-proto-common 1.45.2 · opentelemetry-exporter-otlp-proto-http 1.45.2 · opentelemetry-instrumentation 0.66b2 · opentelemetry-instrumentation-genai-openai 1.3b0 · opentelemetry-proto 1.45.2 · opentelemetry-sdk 1.45.2 · opentelemetry-semantic-conventions 0.66b2 · opentelemetry-util-genai 1.3b0 · pydantic 2.14.4), passing in Edition 2026.11.1:
+Example `propagate-into-the-tool` (Python 3.13.16 · mcp 2.3.0 · numpy 2.5.5 · opentelemetry-api 1.45.2 · opentelemetry-exporter-http-transport 0.66b2 · opentelemetry-exporter-otlp-common 0.66b2 · opentelemetry-exporter-otlp-proto-common 1.45.2 · opentelemetry-exporter-otlp-proto-http 1.45.2 · opentelemetry-instrumentation 0.66b2 · opentelemetry-instrumentation-genai-openai 1.3b0 · opentelemetry-proto 1.45.2 · opentelemetry-sdk 1.45.2 · opentelemetry-semantic-conventions 0.66b2 · opentelemetry-util-genai 1.3b0 · pydantic 2.14.4), passing in Edition 2026.11.2:
 
 ```python
 """Write a traceparent into one call to the contacts server, then ask for a tool the server does not have. The prose's claim
@@ -138,7 +138,7 @@ The specification's 2026-07-28 revision reserves three `_meta` keys for trace co
 
 With the header written by the MCP SDK, as [The MCP SDK writes traceparent into _meta](#traceparent-in-meta) showed, the server's span lands under the right parent. Replaying message 16297 with the live server shows the parent links from the assistant's tool span down to the server's own lookup.
 
-Example `server-span-joins` (Python 3.13.16 · bm25s 0.3.16 · mcp 2.3.0 · numpy 2.5.5 · opentelemetry-api 1.45.2 · opentelemetry-exporter-http-transport 0.66b2 · opentelemetry-exporter-otlp-common 0.66b2 · opentelemetry-exporter-otlp-proto-common 1.45.2 · opentelemetry-exporter-otlp-proto-http 1.45.2 · opentelemetry-instrumentation 0.66b2 · opentelemetry-instrumentation-genai-openai 1.3b0 · opentelemetry-proto 1.45.2 · opentelemetry-sdk 1.45.2 · opentelemetry-semantic-conventions 0.66b2 · opentelemetry-util-genai 1.3b0 · pydantic 2.14.4), passing in Edition 2026.11.1:
+Example `server-span-joins` (Python 3.13.16 · bm25s 0.3.16 · mcp 2.3.0 · numpy 2.5.5 · opentelemetry-api 1.45.2 · opentelemetry-exporter-http-transport 0.66b2 · opentelemetry-exporter-otlp-common 0.66b2 · opentelemetry-exporter-otlp-proto-common 1.45.2 · opentelemetry-exporter-otlp-proto-http 1.45.2 · opentelemetry-instrumentation 0.66b2 · opentelemetry-instrumentation-genai-openai 1.3b0 · opentelemetry-proto 1.45.2 · opentelemetry-sdk 1.45.2 · opentelemetry-semantic-conventions 0.66b2 · opentelemetry-util-genai 1.3b0 · pydantic 2.14.4), passing in Edition 2026.11.2:
 
 ```python
 """Replay baseline day 1's message 16297 with the real contacts server over stdio, and check that the server's span joins
@@ -205,7 +205,7 @@ The client span is the one the assistant does not write. Its name, `MCP send too
 
 The figure draws the same trace as a tree. Dots are the assistant's spans and squares are the server's, and a dashed line marks each parent link that crosses from one process to the other. The layout puts each span by its depth, not its time, because the server's clock is its own, and no time in this chapter comes from a server span: the figure and the output carry structure and parent links only.
 
-Example `figure-cross-process-tree` (Python 3.13.16 · bm25s 0.3.16 · matplotlib 3.11.2 · mcp 2.3.0 · numpy 2.5.5 · opentelemetry-api 1.45.2 · opentelemetry-exporter-http-transport 0.66b2 · opentelemetry-exporter-otlp-common 0.66b2 · opentelemetry-exporter-otlp-proto-common 1.45.2 · opentelemetry-exporter-otlp-proto-http 1.45.2 · opentelemetry-instrumentation 0.66b2 · opentelemetry-instrumentation-genai-openai 1.3b0 · opentelemetry-proto 1.45.2 · opentelemetry-sdk 1.45.2 · opentelemetry-semantic-conventions 0.66b2 · opentelemetry-util-genai 1.3b0 · pydantic 2.14.4), passing in Edition 2026.11.1:
+Example `figure-cross-process-tree` (Python 3.13.16 · bm25s 0.3.16 · matplotlib 3.11.2 · mcp 2.3.0 · numpy 2.5.5 · opentelemetry-api 1.45.2 · opentelemetry-exporter-http-transport 0.66b2 · opentelemetry-exporter-otlp-common 0.66b2 · opentelemetry-exporter-otlp-proto-common 1.45.2 · opentelemetry-exporter-otlp-proto-http 1.45.2 · opentelemetry-instrumentation 0.66b2 · opentelemetry-instrumentation-genai-openai 1.3b0 · opentelemetry-proto 1.45.2 · opentelemetry-sdk 1.45.2 · opentelemetry-semantic-conventions 0.66b2 · opentelemetry-util-genai 1.3b0 · pydantic 2.14.4), passing in Edition 2026.11.2:
 
 ```python
 """Draw baseline day 1's message 16297 as one trace across the assistant and the contacts server, replayed with the live
@@ -270,7 +270,7 @@ figure: figures/cross-process-tree.svg
 
 *Figure 4.1. The spans of message 16297 as one trace, by depth; dashed links cross between the two processes.*
 
-![One trace drawn as an indented tree: the assistant's spans, as dots, lead down to `execute_tool find_contact`, whose two SDK client spans each have one contacts-server span, as a square, joined by a dashed link; the server's `contacts.lookup` sits under its `tools/call` span](https://rollingedition.ai/books/observability-for-llm-applications/2026.11.1/figures/cross-process-tree.svg)
+![One trace drawn as an indented tree: the assistant's spans, as dots, lead down to `execute_tool find_contact`, whose two SDK client spans each have one contacts-server span, as a square, joined by a dashed link; the server's `contacts.lookup` sits under its `tools/call` span](https://rollingedition.ai/books/observability-for-llm-applications/2026.11.2/figures/cross-process-tree.svg)
 
 Figure 4.1 has two dashed links, and the printed count agrees: 2. One is the server's `tools/call find_contact`, whose parent is the client span for the lookup. The other is the server's `tools/list`, whose parent is the client span for the request the SDK sends for the server's tool list. The MCP SDK lists a server's tools after the first successful reply from a tool it has not listed yet, so that it can check the reply against the tool's output schema (`src/mcp/client/session.py`, `call_tool` and `validate_tool_result`, at mcp 2.3.0). This message's lookup succeeded, which is why it has that second link.
 
@@ -284,7 +284,7 @@ A span that starts a trace of its own this way is a detached root: a span whose 
 
 The example makes one span on each of four workers, all started inside one tool span, and shows which of them find its context.
 
-Example `orphan-span-demo` (Python 3.13.16 · numpy 2.5.5 · opentelemetry-api 1.45.2 · opentelemetry-exporter-http-transport 0.66b2 · opentelemetry-exporter-otlp-common 0.66b2 · opentelemetry-exporter-otlp-proto-common 1.45.2 · opentelemetry-exporter-otlp-proto-http 1.45.2 · opentelemetry-instrumentation 0.66b2 · opentelemetry-instrumentation-genai-openai 1.3b0 · opentelemetry-proto 1.45.2 · opentelemetry-sdk 1.45.2 · opentelemetry-semantic-conventions 0.66b2 · opentelemetry-util-genai 1.3b0), passing in Edition 2026.11.1:
+Example `orphan-span-demo` (Python 3.13.16 · numpy 2.5.5 · opentelemetry-api 1.45.2 · opentelemetry-exporter-http-transport 0.66b2 · opentelemetry-exporter-otlp-common 0.66b2 · opentelemetry-exporter-otlp-proto-common 1.45.2 · opentelemetry-exporter-otlp-proto-http 1.45.2 · opentelemetry-instrumentation 0.66b2 · opentelemetry-instrumentation-genai-openai 1.3b0 · opentelemetry-proto 1.45.2 · opentelemetry-sdk 1.45.2 · opentelemetry-semantic-conventions 0.66b2 · opentelemetry-util-genai 1.3b0), passing in Edition 2026.11.2:
 
 ```python
 """Make one span on each of four workers started inside one tool span, and show which ones find its context: a plain pool
@@ -366,7 +366,7 @@ A trace ID and a parent ID say where a span belongs, and a server often needs on
 
 Baggage is a set of key-value pairs that travels with the context into every later process when every process along the way propagates it. The specification warns that baggage may carry sensitive information, advises that no proprietary or confidential information goes in it, and says that its keys and values can be passed on to other systems. Those warnings decide what we put there. Only the release and the prompt version go in, under the keys `ambrewick.release` and `ambrewick.prompt.version`. A release has the form `MAJOR.MINOR.PATCH` in digits, and a prompt version is `p` followed by digits. Running the example below shows the allowed list, the keys a call carries, and the refusals.
 
-Example `baggage-keys` (Python 3.13.16 · numpy 2.5.5 · opentelemetry-api 1.45.2 · opentelemetry-exporter-http-transport 0.66b2 · opentelemetry-exporter-otlp-common 0.66b2 · opentelemetry-exporter-otlp-proto-common 1.45.2 · opentelemetry-exporter-otlp-proto-http 1.45.2 · opentelemetry-instrumentation 0.66b2 · opentelemetry-instrumentation-genai-openai 1.3b0 · opentelemetry-proto 1.45.2 · opentelemetry-sdk 1.45.2 · opentelemetry-semantic-conventions 0.66b2 · opentelemetry-util-genai 1.3b0), passing in Edition 2026.11.1:
+Example `baggage-keys` (Python 3.13.16 · numpy 2.5.5 · opentelemetry-api 1.45.2 · opentelemetry-exporter-http-transport 0.66b2 · opentelemetry-exporter-otlp-common 0.66b2 · opentelemetry-exporter-otlp-proto-common 1.45.2 · opentelemetry-exporter-otlp-proto-http 1.45.2 · opentelemetry-instrumentation 0.66b2 · opentelemetry-instrumentation-genai-openai 1.3b0 · opentelemetry-proto 1.45.2 · opentelemetry-sdk 1.45.2 · opentelemetry-semantic-conventions 0.66b2 · opentelemetry-util-genai 1.3b0), passing in Edition 2026.11.2:
 
 ```python
 """Put the release and the prompt version in baggage, and carry them as an MCP call would: the global propagator writes the
@@ -427,7 +427,7 @@ The specification assigns no code to errors that are purely local to an implemen
 
 This section uses an injected incident, `inc-contacts-timeout`, which makes the contacts server answer too slowly for a window of the incident day. The injection is labelled as one in the spans it touches, and the example's first printed line names it.
 
-Example `contacts-timeout-live` (Python 3.13.16 · bm25s 0.3.16 · mcp 2.3.0 · numpy 2.5.5 · opentelemetry-api 1.45.2 · opentelemetry-exporter-http-transport 0.66b2 · opentelemetry-exporter-otlp-common 0.66b2 · opentelemetry-exporter-otlp-proto-common 1.45.2 · opentelemetry-exporter-otlp-proto-http 1.45.2 · opentelemetry-instrumentation 0.66b2 · opentelemetry-instrumentation-genai-openai 1.3b0 · opentelemetry-proto 1.45.2 · opentelemetry-sdk 1.45.2 · opentelemetry-semantic-conventions 0.66b2 · opentelemetry-util-genai 1.3b0 · pydantic 2.14.4), passing in Edition 2026.11.1:
+Example `contacts-timeout-live` (Python 3.13.16 · bm25s 0.3.16 · mcp 2.3.0 · numpy 2.5.5 · opentelemetry-api 1.45.2 · opentelemetry-exporter-http-transport 0.66b2 · opentelemetry-exporter-otlp-common 0.66b2 · opentelemetry-exporter-otlp-proto-common 1.45.2 · opentelemetry-exporter-otlp-proto-http 1.45.2 · opentelemetry-instrumentation 0.66b2 · opentelemetry-instrumentation-genai-openai 1.3b0 · opentelemetry-proto 1.45.2 · opentelemetry-sdk 1.45.2 · opentelemetry-semantic-conventions 0.66b2 · opentelemetry-util-genai 1.3b0 · pydantic 2.14.4), passing in Edition 2026.11.2:
 
 ```python
 """Replay incident-day message 16297 with the live contacts server, inside the injected timeout window. Each attempt of

@@ -1,6 +1,6 @@
 ---
 name: data-governance-as-code
-description: "Data governance as code for warehouses built on Iceberg, Parquet and SQL: a metadata file tested against the catalog, personal data found and measured, column lineage from pipeline events, access policies in tested Rego enforced on every query, retention, consent and erasure, audit logs, consent-checked AI training data, and governance checks as a CI gate. Use when cataloging owners and classifications, finding personal data, tracing lineage, writing or enforcing access policies, deleting personal data, auditing access, building training corpora, or gating pull requests on governance."
+description: "Data governance as code for warehouses built on Iceberg, Parquet and SQL: a metadata file tested against the catalog, personal data found and measured, column lineage from pipeline events, access policies in tested Rego enforced on every query, retention, consent and erasure, audit logs, consent-checked AI training data, and governance checks as a CI gate. Use when cataloging owners and classifications, finding personal data, tracing lineage, writing or enforcing access policies, deleting personal data, auditing access, building training corpora, or gating pull requests on governance. When someone explicitly asks to be taught, tutored or quizzed on what this book covers (\"teach me\", \"tutor me\", \"quiz me\"), it also tutors them, one question at a time. Not for a one-off \"explain X\" or \"what is X\"."
 license: CC-BY-NC-4.0 AND MIT
 compatibility: "Python 3.12.15 and the pinned packages in scripts/requirements.txt; the scripts run offline."
 metadata:
@@ -199,6 +199,12 @@ cd scripts && uv run --no-project python catalog-the-learners.py
 **Pitfalls:**
 - A broken file can hide every other finding. Turn the crash into one finding that names the file, and run the other checks anyway.
 - A team whose pull request fails may remove the check or add a waiver. Make the platform team the code owner of the check settings, the waivers and CODEOWNERS.
+
+## Teach this book, when asked
+
+**When:** only when the person you're working with explicitly asks to be taught, tutored or quizzed on this book, one of its chapters or a topic it covers ("teach me", "tutor me", "quiz me", "help me master"). A one-off question ("explain X", "what is X", "how do I use X") gets a normal answer from the procedures above, with no quiz. If you can't tell which they want, ask one short question: a quick answer, or should you teach it properly?
+
+When they do, read `references/tutor.md` first and follow it: how to teach the book a question at a time, then every chapter's sections with their examples and terms.
 
 ## Reading in another language
 

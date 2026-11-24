@@ -3,13 +3,13 @@ title: "Evaluating LLM Applications"
 chapter: "Put the evaluation in CI, and compare variants on traffic"
 chapter_id: keep-the-evaluation-running
 book: evaluating-llm-applications
-edition: 2026.11.6
+edition: 2026.11.7
 verified: 2026-11-22
-edition_code: P6V8-WKJT
+edition_code: WCKB-Y7EK
 canonical: https://rollingedition.com/evaluating-llm-applications/keep-the-evaluation-running
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“Put the evaluation in CI, and compare variants on traffic,” chapter 11 of Evaluating LLM Applications, Edition 2026.11.6, examples passed Nov 22, 2026. By Rolling Edition, https://rollingedition.com/evaluating-llm-applications/keep-the-evaluation-running. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Put the evaluation in CI, and compare variants on traffic,” chapter 11 of Evaluating LLM Applications, Edition 2026.11.7, examples passed Nov 22, 2026. By Rolling Edition, https://rollingedition.com/evaluating-llm-applications/keep-the-evaluation-running. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Put the evaluation in CI, and compare variants on traffic
 
@@ -29,7 +29,7 @@ The threshold is five points. The example's comment says it is a choice for this
 
 The first run is a large drop, as this judge measures it. The second model, Qwen3-0.6B, is smaller than the 4B baseline, and it answered the same dev items. The judge is Qwen3-4B-Instruct-2507, the baseline's own model, so the gap can't separate a weaker assistant from self-preference. [Self-preference](when-the-judge-stops-being-reliable#self-preference) explains why this book cannot test that. Read the decision last, since it follows from the interval.
 
-Example `gate-real-drop` (Python 3.12.15 · numpy 2.5.5 · pydantic 2.14.3 · typing-extensions 4.16.0), passing in Edition 2026.11.6:
+Example `gate-real-drop` (Python 3.12.15 · numpy 2.5.5 · pydantic 2.14.3 · typing-extensions 4.16.0), passing in Edition 2026.11.7:
 
 ```python
 """Runs the gate on second-model against the baseline over the eighty dev items: both pass rates with their counts, the paired
@@ -117,7 +117,7 @@ An item [flips](#variance-within-one-item) when its sampled replies get differen
 
 Each flagged item comes with its PASS count out of five, in id order, and the rule it is held to is printed beside the list.
 
-Example `flaky-items` (Python 3.12.15 · numpy 2.5.5 · pydantic 2.14.3 · typing-extensions 4.16.0), passing in Edition 2026.11.6:
+Example `flaky-items` (Python 3.12.15 · numpy 2.5.5 · pydantic 2.14.3 · typing-extensions 4.16.0), passing in Edition 2026.11.7:
 
 ```python
 """The dev items flagged as flaky: the judge's verdict differs across their five variance samples. Each flagged item prints its
@@ -176,7 +176,7 @@ The evaluation is code, and its code can be wrong in ways that look like a resul
 
 Those tests run in one process, and the outcomes are counted module by module. The example then prints pytest's exit code, from 9.2.0. The [exit-code reference](https://raw.githubusercontent.com/pytest-dev/pytest/9.2.0/doc/en/reference/exit-codes.rst) lists 0 as every test collected and passed, and 5 as no tests collected. So a run that tests nothing shows up as 5, not as a silent pass.
 
-Example `own-tests-run` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pydantic 2.14.3 · pytest 9.2.0 · typing-extensions 4.16.0), passing in Edition 2026.11.6:
+Example `own-tests-run` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pydantic 2.14.3 · pytest 9.2.0 · typing-extensions 4.16.0), passing in Edition 2026.11.7:
 
 ```python
 """Runs the book's own tests, lib/tests, in this process and prints how many passed and failed in each module, then pytest's
@@ -281,7 +281,7 @@ Offline, the test set and the replayed answers can say which variant is better o
 
 The feedback table in this section is not traffic. Its rows are generated. Each dev item's vote is drawn from a stated model with a fixed seed. An answer is right with probability 0.85. A user who sees a wrong answer gives a thumbs-down with probability 0.5 and a thumbs-up with 0.05. A user who sees a right answer gives a thumbs-down with 0.03 and a thumbs-up with 0.15. Most items get no vote at all. Whether each answer was right is drawn and then dropped, as it would be in a real log, so the table holds only the votes. It is a teaching device, and its figures are what the stated model produces. They say nothing about this assistant.
 
-Example `feedback-table` (Python 3.12.15 · numpy 2.5.5 · pydantic 2.14.3 · typing-extensions 4.16.0), passing in Edition 2026.11.6:
+Example `feedback-table` (Python 3.12.15 · numpy 2.5.5 · pydantic 2.14.3 · typing-extensions 4.16.0), passing in Edition 2026.11.7:
 
 ```python
 """A generated table of thumbs-up and thumbs-down rows over the eighty dev items, with what such a table can show and what it

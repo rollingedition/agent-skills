@@ -11,13 +11,13 @@ This repository is generated from the books, so changes made here are overwritte
 | Book | Skill | Edition | Examples |
 | --- | --- | --- | --- |
 | [Agent Harnesses](https://rollingedition.com/agent-harnesses) | `agent-harnesses` | 2026.11.7 | 68 of 68 examples pass |
-| [Business Intelligence with Agents](https://rollingedition.com/business-intelligence-with-agents) | `business-intelligence-with-agents` | 2026.11.18 | 85 of 85 examples pass |
+| [Business Intelligence with Agents](https://rollingedition.com/business-intelligence-with-agents) | `business-intelligence-with-agents` | 2026.11.19 | 86 of 86 examples pass |
 | [Data Governance as Code](https://rollingedition.com/data-governance-as-code) | `data-governance-as-code` | 2026.11.36 | 112 of 112 examples pass |
-| [Evaluating LLM Applications](https://rollingedition.com/evaluating-llm-applications) | `evaluating-llm-applications` | 2026.11.6 | 58 of 58 examples pass |
-| [Language Models from the Ground Up](https://rollingedition.com/language-models-from-the-ground-up) | `language-models-from-the-ground-up` | 2026.11.18 | 100 of 100 examples pass |
+| [Evaluating LLM Applications](https://rollingedition.com/evaluating-llm-applications) | `evaluating-llm-applications` | 2026.11.7 | 58 of 58 examples pass |
+| [Language Models from the Ground Up](https://rollingedition.com/language-models-from-the-ground-up) | `language-models-from-the-ground-up` | 2026.11.19 | 100 of 100 examples pass |
 | [Model Context Protocol in Practice](https://rollingedition.com/model-context-protocol-in-practice) | `model-context-protocol-in-practice` | 2026.11.18 | 71 of 71 examples pass |
-| [Observability for LLM Applications](https://rollingedition.com/observability-for-llm-applications) | `observability-for-llm-applications` | 2026.11.1 | 80 of 80 examples pass |
-| [Open Table Formats](https://rollingedition.com/open-table-formats) | `open-table-formats` | 2026.11.15 | 45 of 45 examples pass |
+| [Observability for LLM Applications](https://rollingedition.com/observability-for-llm-applications) | `observability-for-llm-applications` | 2026.11.2 | 80 of 80 examples pass |
+| [Open Table Formats](https://rollingedition.com/open-table-formats) | `open-table-formats` | 2026.11.16 | 45 of 45 examples pass |
 | [A Primer on Search Relevance](https://rollingedition.com/primer-on-search-relevance) | `primer-on-search-relevance` | 2026.11.13 | 141 of 141 examples pass |
 | [Securing LLM Applications and Agents](https://rollingedition.com/securing-llm-applications-and-agents) | `securing-llm-applications-and-agents` | 2026.11.2 | 60 of 60 examples pass |
 | [Small Open Models](https://rollingedition.com/small-open-models) | `small-open-models` | 2026.11.15 | 42 of 42 examples pass |
@@ -53,7 +53,7 @@ Each book's page on [rollingedition.ai](https://rollingedition.ai/) also has its
 
 ## Licence
 
-[CC BY-NC 4.0](LICENSE), as the books' text is, with our added permission: [Reuse our books](https://rollingedition.com/policies/reuse). Each book's scripts are its code examples, under MIT. Each skill's `LICENSE.md` gives the credit to use, and the scripts' notice.
+[CC BY-NC 4.0](LICENSE), as the books' text is, with our added permission: [Reuse our books](https://rollingedition.com/policies/reuse). Each book's scripts are its code examples, under MIT. The tutoring procedure is adapted from Jane Street's socratic-tutor skill, under MIT. Each skill's `LICENSE.md` gives the credit to use, the scripts' notice and Jane Street's.
 
 ## Trademarks
 

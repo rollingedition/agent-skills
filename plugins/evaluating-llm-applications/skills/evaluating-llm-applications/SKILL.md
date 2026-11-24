@@ -1,29 +1,29 @@
 ---
 name: evaluating-llm-applications
-description: "Use when evaluating an LLM application, in Python, with examples built on a documentation assistant: measuring a baseline with an interval, coding reply failures, test sets and public benchmarks, code checks, LLM judges with rubrics, calibrating a judge and correcting its pass rate, judge position and length bias, paired comparisons and sample size, grounding and version-correctness, over-refusal and missed refusals, and CI gates. Use it to decide whether a change made an assistant better, and how sure you can be."
+description: "Use when evaluating an LLM application, in Python, with examples built on a documentation assistant: measuring a baseline with an interval, coding reply failures, test sets and public benchmarks, code checks, LLM judges with rubrics, calibrating a judge and correcting its pass rate, judge position and length bias, paired comparisons and sample size, grounding and version-correctness, over-refusal and missed refusals, and CI gates. Use it to decide whether a change made an assistant better, and how sure you can be. When someone explicitly asks to be taught, tutored or quizzed on what this book covers (\"teach me\", \"tutor me\", \"quiz me\"), it also tutors them, one question at a time. Not for a one-off \"explain X\" or \"what is X\"."
 license: CC-BY-NC-4.0 AND MIT
 compatibility: "Python 3.12.15 and the pinned packages in scripts/requirements.txt; the scripts run offline."
 metadata:
   publisher: "Rolling Edition"
   book: "Evaluating LLM Applications"
-  edition: "2026.11.6"
+  edition: "2026.11.7"
   verified: "2026-11-22"
   examples: "58 of 58 examples pass"
-  edition-code: "P6V8-WKJT"
+  edition-code: "WCKB-Y7EK"
   source: "https://rollingedition.com/evaluating-llm-applications"
 ---
 
 # Evaluating LLM Applications
 
-This agent skill is *Evaluating LLM Applications*, Edition 2026.11.6, from Rolling Edition. Examples passed Nov 22, 2026: 58 of 58 examples pass. It's built from that edition, never written separately: the procedures below come from the book's sections, `references/` holds each chapter, and `references/glossary.md` the terms the book defines, and `scripts/` holds the examples as the edition ran them.
+This agent skill is *Evaluating LLM Applications*, Edition 2026.11.7, from Rolling Edition. Examples passed Nov 22, 2026: 58 of 58 examples pass. It's built from that edition, never written separately: the procedures below come from the book's sections, `references/` holds each chapter, and `references/glossary.md` the terms the book defines, and `scripts/` holds the examples as the edition ran them.
 
 ## How to use this skill
 
 - **Pick the procedure that fits the task,** and follow its steps in order. Each step links the section it comes from: read that section in `references/` before you act on it, and adapt it to the project in front of you.
 - **Check against the book.** Each example in `scripts/` has its expected output beside it (`.out`), at the versions in `scripts/requirements.txt`. If the project uses other versions, say so before relying on a step.
 - **Use the book's terms as it defines them.** `references/glossary.md` has each term this book defines, in the book's own sentence, with the section that defines it and the version it's true for: where the task uses one, it means that, and cite its section.
-- **Is this copy current?** Call `check_code` with `P6V8-WKJT` on the Rolling Edition MCP server (https://rollingedition.ai/mcp), or compare the edition with the book's page: https://rollingedition.com/evaluating-llm-applications
-- **Credit the book** when you quote it or reuse its code: Evaluating LLM Applications, Edition 2026.11.6, examples passed Nov 22, 2026. By Rolling Edition, https://rollingedition.com/evaluating-llm-applications. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people.
+- **Is this copy current?** Call `check_code` with `WCKB-Y7EK` on the Rolling Edition MCP server (https://rollingedition.ai/mcp), or compare the edition with the book's page: https://rollingedition.com/evaluating-llm-applications
+- **Credit the book** when you quote it or reuse its code: Evaluating LLM Applications, Edition 2026.11.7, examples passed Nov 22, 2026. By Rolling Edition, https://rollingedition.com/evaluating-llm-applications. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people.
 
 To run an example as the book does, with [uv](https://docs.astral.sh/uv/):
 
@@ -213,6 +213,12 @@ cd scripts && uv run --no-project python list-the-docs.py
 
 **Pitfalls:** the gate fails only when the upper bound of the difference lies below minus the threshold; a point estimate below it is not a fail. With m metrics, take each interval at 1 − 0.05/m ([A gate that respects the interval](references/keep-the-evaluation-running.md#a-gate-that-respects-the-interval)). A pass with a wide interval is weak. Do not use a judge on its own model to compare two models ([Self-preference](references/when-the-judge-stops-being-reliable.md#self-preference)). An unreadable sample is not a fail: flag or set aside the item ([Flag flaky items, never edit them](references/keep-the-evaluation-running.md#flaky-cases)). A vote table is not a set of labels ([Variants on traffic](references/keep-the-evaluation-running.md#variants-on-traffic)).
 
+## Teach this book, when asked
+
+**When:** only when the person you're working with explicitly asks to be taught, tutored or quizzed on this book, one of its chapters or a topic it covers ("teach me", "tutor me", "quiz me", "help me master"). A one-off question ("explain X", "what is X", "how do I use X") gets a normal answer from the procedures above, with no quiz. If you can't tell which they want, ask one short question: a quick answer, or should you teach it properly?
+
+When they do, read `references/tutor.md` first and follow it: how to teach the book a question at a time, then every chapter's sections with their examples and terms.
+
 ## Reading in another language
 
-When the person you're working with wants to read part of this book in another language, and the Rolling Edition MCP server is connected, first call its `get_section` with `language`: where Rolling Edition has its own translation of the book in that language (`get_contents` lists them), present each section as it comes, with the facts of its `translation`, and translate only the sections it lists as `untranslated`. Otherwise, translate it for them from the chapter in `references/`. Translate the prose faithfully and in full: don't summarize, skip or add anything. Leave these exactly as they are: code, commands, output, file names, identifiers, inline code, package names and versions, numbers and URLs. Where practitioners who read the language usually keep a technical term in English, keep it, and give a short gloss in parentheses the first time, where that helps. Keep the headings and the structure: lists, tables, and the examples in their places. Begin by saying that it's your translation of *Evaluating LLM Applications*, Edition 2026.11.6, from Rolling Edition, licensed CC BY-NC 4.0, with the chapter's link, `canonical` in its front matter, and keep each section's link, https://rollingedition.com/evaluating-llm-applications/s/ followed by the ID in its heading's `{#…}`. For a long chapter, translate a section at a time and offer to go on after each. The Rolling Edition MCP server's `read_in_my_language` prompt asks for the same.
+When the person you're working with wants to read part of this book in another language, and the Rolling Edition MCP server is connected, first call its `get_section` with `language`: where Rolling Edition has its own translation of the book in that language (`get_contents` lists them), present each section as it comes, with the facts of its `translation`, and translate only the sections it lists as `untranslated`. Otherwise, translate it for them from the chapter in `references/`. Translate the prose faithfully and in full: don't summarize, skip or add anything. Leave these exactly as they are: code, commands, output, file names, identifiers, inline code, package names and versions, numbers and URLs. Where practitioners who read the language usually keep a technical term in English, keep it, and give a short gloss in parentheses the first time, where that helps. Keep the headings and the structure: lists, tables, and the examples in their places. Begin by saying that it's your translation of *Evaluating LLM Applications*, Edition 2026.11.7, from Rolling Edition, licensed CC BY-NC 4.0, with the chapter's link, `canonical` in its front matter, and keep each section's link, https://rollingedition.com/evaluating-llm-applications/s/ followed by the ID in its heading's `{#…}`. For a long chapter, translate a section at a time and offer to go on after each. The Rolling Edition MCP server's `read_in_my_language` prompt asks for the same.

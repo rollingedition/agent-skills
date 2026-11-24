@@ -3,13 +3,13 @@ title: "Open Table Formats"
 chapter: "Choose a format from what your tools support"
 chapter_id: choosing-a-format
 book: open-table-formats
-edition: 2026.11.15
-verified: 2026-11-22
-edition_code: TJRD-25XE
+edition: 2026.11.16
+verified: 2026-11-24
+edition_code: XR7P-ZXAG
 canonical: https://rollingedition.com/open-table-formats/choosing-a-format
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“Choose a format from what your tools support,” chapter 10 of Open Table Formats, Edition 2026.11.15, examples passed Nov 22, 2026. By Rolling Edition, https://rollingedition.com/open-table-formats/choosing-a-format. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Choose a format from what your tools support,” chapter 10 of Open Table Formats, Edition 2026.11.16, examples passed Nov 24, 2026. By Rolling Edition, https://rollingedition.com/open-table-formats/choosing-a-format. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Choose a format from what your tools support
 
@@ -41,7 +41,7 @@ Read each printed line as a claim that holds at one version of one tool. A line 
 
 These tables state what the pinned tools did in this book's runs. Each column is one tool: pyiceberg for Iceberg, deltalake for Delta Lake, and the DuckLake extension in DuckDB for DuckLake. The pins are pyiceberg 0.12.0, deltalake 1.6.6 and DuckDB 2.0.0. DuckDB 2.0.0 is a long-term support release, dated Oct 21, 2026 ([DuckDB release calendar](https://duckdb.org/release_calendar)). DuckLake 1.0 was released on Apr 13, 2026 ([DuckLake release calendar](https://ducklake.select/release_calendar.html)). The catalog at these pins reports version 1.1, and that is the version readers must open. The extension is a separate version: DuckDB reports its build as 417a9117f5, and the extension ships with DuckDB 2.0.0, so its version follows DuckDB's. The last column names the example or source behind each cell. Not shown here means a gap in this book, not a missing feature.
 
-Example `ducklake-catalog-version` (Python 3.12.15 · deltalake 1.6.6 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.15:
+Example `ducklake-catalog-version` (Python 3.12.15 · deltalake 1.6.6 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.16:
 
 ```python
 """Attach a DuckLake catalog and print its catalog version, which readers must open, and the build of the DuckLake extension that DuckDB loaded. The point rests on the first printed line."""
@@ -79,7 +79,7 @@ ducklake extension version: 417a9117f5
 | --- | --- | --- | --- | --- |
 | Write rows as commits | Yes | Yes | Yes | [Land three hours](#land-three-hours) |
 | Read an earlier commit by number | Yes, by snapshot | Yes, by version | Yes, by snapshot | [Iceberg](#snapshots-in-pyiceberg), [Delta and DuckLake](#versions-in-ducklake-and-delta) |
-| Create format version 3 | No, raises an error | — | — | [Example](https://github.com/rollingedition/book-open-table-formats/blob/ec8dca95dfc38d86f34898e63edea9b15d1ae10b/examples/iceberg-format-versions.py) |
+| Create format version 3 | No, raises an error | — | — | [Example](https://github.com/rollingedition/book-open-table-formats/blob/72ea8e730acf6ce6c2c2fabd0a388682cbad4d5a/examples/iceberg-format-versions.py) |
 | Rename a column | Yes, by field ID | No, a silent no-op | Not shown here | [Iceberg](#rename-column-without-rewrite), [deltalake](#rename-in-delta-lake) |
 | Column mapping at create | — | Yes | — | [deltalake](#rename-in-delta-lake) |
 
@@ -88,13 +88,13 @@ ducklake extension version: 417a9117f5
 | Changes and cleanup | pyiceberg | deltalake | DuckLake | Shown in |
 | --- | --- | --- | --- | --- |
 | Delete rows | Rewrites files | Rewrites files | Writes delete files | [Chapter 5](#delete-rows-iceberg-and-delta) |
-| Delete files written | None | None | Yes, unless inlined | [Format versions](https://github.com/rollingedition/book-open-table-formats/blob/ec8dca95dfc38d86f34898e63edea9b15d1ae10b/examples/iceberg-format-versions.py), [feature check](https://github.com/rollingedition/book-open-table-formats/blob/ec8dca95dfc38d86f34898e63edea9b15d1ae10b/examples/feature-check.py), [DuckLake](https://github.com/rollingedition/book-open-table-formats/blob/ec8dca95dfc38d86f34898e63edea9b15d1ae10b/examples/ducklake-delete-files.py), [inlined](https://github.com/rollingedition/book-open-table-formats/blob/ec8dca95dfc38d86f34898e63edea9b15d1ae10b/examples/ducklake-inlined-delete.py) |
+| Delete files written | None | None | Yes, unless inlined | [Format versions](https://github.com/rollingedition/book-open-table-formats/blob/72ea8e730acf6ce6c2c2fabd0a388682cbad4d5a/examples/iceberg-format-versions.py), [feature check](https://github.com/rollingedition/book-open-table-formats/blob/72ea8e730acf6ce6c2c2fabd0a388682cbad4d5a/examples/feature-check.py), [DuckLake](https://github.com/rollingedition/book-open-table-formats/blob/72ea8e730acf6ce6c2c2fabd0a388682cbad4d5a/examples/ducklake-delete-files.py), [inlined](https://github.com/rollingedition/book-open-table-formats/blob/72ea8e730acf6ce6c2c2fabd0a388682cbad4d5a/examples/ducklake-inlined-delete.py) |
 | Upsert or merge | Upsert, several snapshots | Not shown here | `MERGE INTO` | [Upserts](#upserts-in-pyiceberg), [MERGE](#merge-in-ducklake) |
 | Change partitioning | Old files keep the old spec | Overwrite with schema mode | Change with `ALTER TABLE` | [Chapter 4](#daily-to-hourly-partitions), [other formats](#partitioning-in-other-formats) |
 | Compact small files | No method; overwrite the table | `optimize.compact()` | Merge adjacent files | [Iceberg](#compact-iceberg-by-rewriting), [deltalake](#compact-in-delta-lake), [DuckLake](#compact-in-ducklake) |
 | Expire snapshots | By ID or `older_than`; deletes no files | Log retention; vacuum deletes files | Expire, then clean up | [Iceberg](#expire-snapshots-in-iceberg), [deltalake](#vacuum-in-delta-lake), [DuckLake](#expire-and-clean-up-in-ducklake) |
 
-Example `ducklake-delete-files` (Python 3.12.15 · deltalake 1.6.6 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.15:
+Example `ducklake-delete-files` (Python 3.12.15 · deltalake 1.6.6 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.16:
 
 ```python
 """Load six hours into a DuckLake table with data inlining off, then count the delete files that a small and a large delete write. The point rests on the delete-file line after the small delete."""
@@ -145,7 +145,7 @@ rows left after the large delete: 195
 delete files after the large delete: 6
 ```
 
-Example `ducklake-inlined-delete` (Python 3.12.15 · deltalake 1.6.6 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.15:
+Example `ducklake-inlined-delete` (Python 3.12.15 · deltalake 1.6.6 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.16:
 
 ```python
 """Repeat `ducklake-delete-files` with DuckLake's default inlining, to show that the small delete writes no delete file. The point rests on the delete-file line after the small delete."""
@@ -212,7 +212,7 @@ DuckDB's own `delta` extension is a separate path from deltalake. It can write D
 
 The version 3 section of the Iceberg specification makes binary deletion vectors the row-level delete format. It says that "writers are not allowed to add new position delete files to v3 tables" ([Iceberg spec](https://iceberg.apache.org/spec/)). The same section adds row lineage for new rows, default column values, the variant type and nanosecond timestamps.
 
-Example `iceberg-format-versions` (Python 3.12.15 · deltalake 1.6.6 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.15:
+Example `iceberg-format-versions` (Python 3.12.15 · deltalake 1.6.6 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.16:
 
 ```python
 """Create a format version 2 Iceberg table, delete rows from it, then ask pyiceberg for format version 3. The point rests on the last printed line, which shows the refusal."""
@@ -280,7 +280,7 @@ pyiceberg deletes by rewriting the data files it touches at these pins, although
 
 The Delta Lake protocol, at the release tag its link names, says a table with deletion vectors needs reader version 3 and writer version 7, with the `deletionVectors` feature in both feature lists. It also says a reader must implement every feature in the reader list before it reads the table ([Delta protocol](https://raw.githubusercontent.com/delta-io/delta/v4.4.1/PROTOCOL.md)). A reader feature in a Delta table's protocol is a requirement that every reader implement it, so a reader without it cannot read the table correctly.
 
-Example `feature-check` (Python 3.12.15 · deltalake 1.6.6 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.15:
+Example `feature-check` (Python 3.12.15 · deltalake 1.6.6 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.16:
 
 ```python
 """Turn on deletion vectors in a Delta Lake table, delete the rows below 180 views, and print the protocol the table declares. The point rests on the reader features line, which lists what a reader must implement."""
@@ -402,7 +402,7 @@ Most format failures in a shared lakehouse come from a tool the writer did not t
 
 **Judging a table by its write.** A write that succeeds shows that the writer can produce the files. It does not show that another tool can read them. The deletion vector check in this chapter writes, deletes and then counts the reader's features for exactly this reason.
 
-**Counting rows for a DuckLake delete.** Under DuckLake's default inlining, a small delete of a few rows writes no delete file, and the same delete with inlining off writes one. A check that counts rows says the delete worked either way. Count delete files too, as the [DuckLake delete example](https://github.com/rollingedition/book-open-table-formats/blob/ec8dca95dfc38d86f34898e63edea9b15d1ae10b/examples/ducklake-delete-files.py) does.
+**Counting rows for a DuckLake delete.** Under DuckLake's default inlining, a small delete of a few rows writes no delete file, and the same delete with inlining off writes one. A check that counts rows says the delete worked either way. Count delete files too, as the [DuckLake delete example](https://github.com/rollingedition/book-open-table-formats/blob/72ea8e730acf6ce6c2c2fabd0a388682cbad4d5a/examples/ducklake-delete-files.py) does.
 
 **A catalog version that moves with DuckDB.** The DuckLake catalog at these pins reports version 1.1, and the extension that opens it reports the build 417a9117f5. The DuckLake documentation names the DuckDB release that version 1.1 requires ([DuckLake docs](https://ducklake.select/docs/stable/)). An older DuckDB may not open that catalog, so an upgrade can break a reader that did not change.
 

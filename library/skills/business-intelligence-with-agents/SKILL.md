@@ -1,29 +1,29 @@
 ---
 name: business-intelligence-with-agents
-description: "Use when building, checking or hardening an agent that answers business questions from a data warehouse: text-to-SQL that gets numbers wrong, golden questions and evaluation, layered schema context, a semantic layer with governed metrics (MetricFlow), metrics-first routing, guarded read-only SQL (sqlglot, DuckDB), declining unanswerable or stale questions with provenance, row filters, masking and small-group suppression by role, judging answers and gating changes in CI, and serving metrics as MCP tools."
-license: CC-BY-NC-4.0
+description: "Use when building, checking or hardening an agent that answers business questions from a data warehouse: text-to-SQL that gets numbers wrong, golden questions and evaluation, layered schema context, a semantic layer with governed metrics (MetricFlow), metrics-first routing, guarded read-only SQL (sqlglot, DuckDB), declining unanswerable or stale questions with provenance, row filters, masking and small-group suppression by role, judging answers and gating changes in CI, and serving metrics as MCP tools. When someone explicitly asks to be taught, tutored or quizzed on what this book covers (\"teach me\", \"tutor me\", \"quiz me\"), it also tutors them, one question at a time. Not for a one-off \"explain X\" or \"what is X\"."
+license: CC-BY-NC-4.0 AND MIT
 compatibility: "The book's examples ran on Python 3.12.15 and the versions its pages name."
 metadata:
   publisher: "Rolling Edition"
   book: "Business Intelligence with Agents"
-  edition: "2026.11.18"
+  edition: "2026.11.19"
   verified: "2026-11-22"
-  examples: "85 of 85 examples pass"
-  edition-code: "2DBD-TEG5"
+  examples: "86 of 86 examples pass"
+  edition-code: "6B1C-RVE3"
   source: "https://rollingedition.com/business-intelligence-with-agents"
 ---
 
 # Business Intelligence with Agents
 
-This agent skill is *Business Intelligence with Agents*, Edition 2026.11.18, from Rolling Edition. Examples passed Nov 22, 2026: 85 of 85 examples pass. It's built from that edition, never written separately: the procedures below come from the book's sections, and each step links to its section on rollingedition.com, whose page has the section's text and its examples, with their code and output.
+This agent skill is *Business Intelligence with Agents*, Edition 2026.11.19, from Rolling Edition. Examples passed Nov 22, 2026: 86 of 86 examples pass. It's built from that edition, never written separately: the procedures below come from the book's sections, and each step links to its section on rollingedition.com, whose page has the section's text and its examples, with their code and output.
 
 ## How to use this skill
 
 - **Pick the procedure that fits the task,** and follow its steps in order. Each step links the section it comes from: read that section before you act on it, with the Rolling Edition MCP server's `get_section` (book `business-intelligence-with-agents` and the section's ID, the link's last part) or on its page, and adapt it to the project in front of you.
 - **Check against the book.** An example's section shows its code, the versions it ran on and its output. If the project uses other versions, say so before relying on a step.
 - **Use the book's terms as it defines them.** The book's Glossary has each term it defines, in the book's own sentence, with its section: https://rollingedition.com/business-intelligence-with-agents/glossary. The Rolling Edition MCP server's `define` gives one with its section, its edition and the version it's true for: where the task uses one, it means that.
-- **Is this copy current?** Call `check_code` with `2DBD-TEG5` on the Rolling Edition MCP server (https://rollingedition.ai/mcp), or compare the edition with the book's page: https://rollingedition.com/business-intelligence-with-agents
-- **Credit the book** when you quote it or reuse its code: Business Intelligence with Agents, Edition 2026.11.18, examples passed Nov 22, 2026. By Rolling Edition, https://rollingedition.com/business-intelligence-with-agents. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people.
+- **Is this copy current?** Call `check_code` with `6B1C-RVE3` on the Rolling Edition MCP server (https://rollingedition.ai/mcp), or compare the edition with the book's page: https://rollingedition.com/business-intelligence-with-agents
+- **Credit the book** when you quote it or reuse its code: Business Intelligence with Agents, Edition 2026.11.19, examples passed Nov 22, 2026. By Rolling Edition, https://rollingedition.com/business-intelligence-with-agents. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people.
 
 The full skill, with the chapters beside it and every example as a script to run at the book's pinned versions, is the `business-intelligence-with-agents` plugin and the zip on the book's page at rollingedition.ai.
 
@@ -215,6 +215,73 @@ The full skill, with the chapters beside it and every example as a script to run
 - An unknown role claim must fail closed, not fall back to a default ([What goes wrong in production](https://rollingedition.com/business-intelligence-with-agents/s/serving-in-production)).
 - A server that binds one role but queries with another's connection is one bug away from a leak ([What goes wrong in production](https://rollingedition.com/business-intelligence-with-agents/s/serving-in-production)).
 
+## Teach this book, when asked
+
+**When:** only when the person you're working with explicitly asks to be taught, tutored or quizzed on this book, one of its chapters or a topic it covers ("teach me", "tutor me", "quiz me", "help me master"). A one-off question ("explain X", "what is X", "how do I use X") gets a normal answer from the procedures above, with no quiz. If you can't tell which they want, ask one short question: a quick answer, or should you teach it properly?
+
+**The topics** are the book's chapters, in order:
+
+1. [A data agent end to end](https://rollingedition.com/business-intelligence-with-agents/bi-agent-end-to-end)
+2. [Where raw text-to-SQL gets the number wrong](https://rollingedition.com/business-intelligence-with-agents/wrong-numbers)
+3. [Build golden questions from your own work](https://rollingedition.com/business-intelligence-with-agents/golden-questions)
+4. [Give the agent layered context](https://rollingedition.com/business-intelligence-with-agents/layered-context)
+5. [Define metrics once in a semantic layer](https://rollingedition.com/business-intelligence-with-agents/semantic-layer)
+6. [Route questions to governed metrics first](https://rollingedition.com/business-intelligence-with-agents/metrics-first)
+7. [Let the agent write SQL inside guards](https://rollingedition.com/business-intelligence-with-agents/guarded-sql)
+8. [Say when the answer can't be given](https://rollingedition.com/business-intelligence-with-agents/say-when-it-cannot)
+9. [Keep the agent inside who may see what](https://rollingedition.com/business-intelligence-with-agents/who-may-see-what)
+10. [Judge answers and catch regressions](https://rollingedition.com/business-intelligence-with-agents/catch-regressions)
+11. [Serve the semantic layer over MCP](https://rollingedition.com/business-intelligence-with-agents/serve-over-mcp)
+
+For the whole book, show every chapter on the map, and teach one chapter at a time, its sections as its topics. For one chapter, its sections are the topics; for a topic the book covers, the sections that teach it. Keep 4 to 10 topics at a time, joining short sections that follow each other. The Rolling Edition MCP server's `get_contents` lists each chapter's sections, and `get_section` reads one, with its examples.
+
+**Start**
+
+1. Read each section, with `get_section`, before you ask about it. Judge every answer against the book: the section's text, the term's definition from `define` and the output its example recorded, never your memory of a library, which may be another version than this edition's.
+2. Say you'll start with a few questions, one at a time, to see what they already know. Ask 3 to 5, from easy to hard, across the topics. Teach nothing until they've answered.
+3. Show the map and propose where to start. They can choose another place.
+
+Teach in the language they write in. Where they want a section in that language, see "Reading in another language" below.
+
+**The map.** Each topic has a level from 0 to 5: 0 unaware, 1 heard of it, 2 can follow along, 3 can do it with help, 4 can do it alone, 5 can teach it and handle its edge cases. Show the map after every change of level, and whenever they ask, as a text block with bars of █ and ░:
+
+```text
+A data agent end to end    overall: █████░░░░░ 53%
+-------------------------------------------------------------
+Meet the shop and its warehouse       ████████░░  4/5  alone
+Ask a question, get SQL from a model  ██████░░░░  3/5  <- now
+Run the SQL and check the number      ██░░░░░░░░  1/5
+-------------------------------------------------------------
+```
+
+**Teach with questions**
+
+- Ask ONE question in a message, then stop and wait. Add no hints, sample answers or teaching after it.
+- Ask them to predict an outcome, explain why, find the flaw in a claim that sounds right, apply an idea to a new case, or connect two ideas.
+- Where a topic's section has an example, ask what it prints, or what would change if one line changed, then compare with the output its section shows.
+- When they're wrong, don't give the answer. Ask a narrower question that shows the contradiction in their reasoning. Explain directly only after 2 or 3 failed tries, then test the same idea again from another angle.
+- When they're right, sometimes push back ("are you sure? what about …?"). They should be able to defend a right answer.
+- Explain only what's new and they couldn't work out, in a few sentences from the section, then go back to questions.
+- Name the section each question and explanation comes from, with its link: https://rollingedition.com/business-intelligence-with-agents/s/ followed by its ID.
+
+**Levels are earned**
+
+- Raise a level only after two or more separate checks, at least one of them recalled unprompted, not just after you told them the answer.
+- A vague or partly right answer isn't right. Probe until you know. Never credit them with an insight they didn't state.
+- Now and then, without warning, ask again about an earlier topic. If they miss, lower its level and go back to it.
+- Level 5 needs an edge case or a hard question handled, and an explanation you'd trust them to teach from.
+- No flattery: "Not quite: why would X happen if Y were true?" beats "Great try!"
+
+**The final exam.** When every topic is at the target level, 4 unless they asked for 5, give a mixed exam: one question for each topic, then one problem that needs several of them together, a task one of the procedures above covers, set somewhere the book doesn't go. If they pass, show the final map and their weakest areas. If not, go back to teaching.
+
+**What they can say at any time**
+
+- "show progress": the map.
+- "harder" or "easier": change the difficulty.
+- "just tell me": answer the current question directly, for that question only. Not for graded work: for an exercise, a quiz or an assignment, point them to its section and help them reason it through.
+- "save state": a short block they can paste into a new session, with the book, Edition 2026.11.19 and its code `6B1C-RVE3`, the map's levels, the misconceptions you've seen, and what's been covered.
+- "resume from:" with a saved block: restore it and go on. If it's from another edition, say so, and ask again about the topics whose sections changed: https://rollingedition.com/business-intelligence-with-agents/changes lists them.
+
 ## Reading in another language
 
-When the person you're working with wants to read part of this book in another language, and the Rolling Edition MCP server is connected, first call its `get_section` with `language`: where Rolling Edition has its own translation of the book in that language (`get_contents` lists them), present each section as it comes, with the facts of its `translation`, and translate only the sections it lists as `untranslated`. Otherwise, translate it for them from its sections, read with the Rolling Edition MCP server's `get_section`. Translate the prose faithfully and in full: don't summarize, skip or add anything. Leave these exactly as they are: code, commands, output, file names, identifiers, inline code, package names and versions, numbers and URLs. Where practitioners who read the language usually keep a technical term in English, keep it, and give a short gloss in parentheses the first time, where that helps. Keep the headings and the structure: lists, tables, and the examples in their places. Begin by saying that it's your translation of *Business Intelligence with Agents*, Edition 2026.11.18, from Rolling Edition, licensed CC BY-NC 4.0, with the chapter's link, and keep each section's link from its citation block. For a long chapter, translate a section at a time and offer to go on after each. The Rolling Edition MCP server's `read_in_my_language` prompt asks for the same.
+When the person you're working with wants to read part of this book in another language, and the Rolling Edition MCP server is connected, first call its `get_section` with `language`: where Rolling Edition has its own translation of the book in that language (`get_contents` lists them), present each section as it comes, with the facts of its `translation`, and translate only the sections it lists as `untranslated`. Otherwise, translate it for them from its sections, read with the Rolling Edition MCP server's `get_section`. Translate the prose faithfully and in full: don't summarize, skip or add anything. Leave these exactly as they are: code, commands, output, file names, identifiers, inline code, package names and versions, numbers and URLs. Where practitioners who read the language usually keep a technical term in English, keep it, and give a short gloss in parentheses the first time, where that helps. Keep the headings and the structure: lists, tables, and the examples in their places. Begin by saying that it's your translation of *Business Intelligence with Agents*, Edition 2026.11.19, from Rolling Edition, licensed CC BY-NC 4.0, with the chapter's link, and keep each section's link from its citation block. For a long chapter, translate a section at a time and offer to go on after each. The Rolling Edition MCP server's `read_in_my_language` prompt asks for the same.

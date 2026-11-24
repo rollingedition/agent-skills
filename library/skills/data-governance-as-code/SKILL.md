@@ -1,7 +1,7 @@
 ---
 name: data-governance-as-code
-description: "Data governance as code for warehouses built on Iceberg, Parquet and SQL: a metadata file tested against the catalog, personal data found and measured, column lineage from pipeline events, access policies in tested Rego enforced on every query, retention, consent and erasure, audit logs, consent-checked AI training data, and governance checks as a CI gate. Use when cataloging owners and classifications, finding personal data, tracing lineage, writing or enforcing access policies, deleting personal data, auditing access, building training corpora, or gating pull requests on governance."
-license: CC-BY-NC-4.0
+description: "Data governance as code for warehouses built on Iceberg, Parquet and SQL: a metadata file tested against the catalog, personal data found and measured, column lineage from pipeline events, access policies in tested Rego enforced on every query, retention, consent and erasure, audit logs, consent-checked AI training data, and governance checks as a CI gate. Use when cataloging owners and classifications, finding personal data, tracing lineage, writing or enforcing access policies, deleting personal data, auditing access, building training corpora, or gating pull requests on governance. When someone explicitly asks to be taught, tutored or quizzed on what this book covers (\"teach me\", \"tutor me\", \"quiz me\"), it also tutors them, one question at a time. Not for a one-off \"explain X\" or \"what is X\"."
+license: CC-BY-NC-4.0 AND MIT
 compatibility: "The book's examples ran on Python 3.12.15 and the versions its pages name."
 metadata:
   publisher: "Rolling Edition"
@@ -193,6 +193,74 @@ The full skill, with the chapters beside it and every example as a script to run
 **Pitfalls:**
 - A broken file can hide every other finding. Turn the crash into one finding that names the file, and run the other checks anyway.
 - A team whose pull request fails may remove the check or add a waiver. Make the platform team the code owner of the check settings, the waivers and CODEOWNERS.
+
+## Teach this book, when asked
+
+**When:** only when the person you're working with explicitly asks to be taught, tutored or quizzed on this book, one of its chapters or a topic it covers ("teach me", "tutor me", "quiz me", "help me master"). A one-off question ("explain X", "what is X", "how do I use X") gets a normal answer from the procedures above, with no quiz. If you can't tell which they want, ask one short question: a quick answer, or should you teach it properly?
+
+**The topics** are the book's chapters, in order:
+
+1. [Governance end to end](https://rollingedition.com/data-governance-as-code/governance-end-to-end)
+2. [A catalog you can test](https://rollingedition.com/data-governance-as-code/a-catalog-you-can-test)
+3. [Finding personal data](https://rollingedition.com/data-governance-as-code/finding-personal-data)
+4. [Lineage from pipelines](https://rollingedition.com/data-governance-as-code/lineage-from-pipelines)
+5. [Access policies as code](https://rollingedition.com/data-governance-as-code/access-policies-as-code)
+6. [Enforcing policies on queries](https://rollingedition.com/data-governance-as-code/enforcing-policies-on-queries)
+7. [Retention, consent and erasure](https://rollingedition.com/data-governance-as-code/retention-consent-erasure)
+8. [Audit and evidence](https://rollingedition.com/data-governance-as-code/audit-and-evidence)
+9. [Governing data for AI](https://rollingedition.com/data-governance-as-code/governing-data-for-ai)
+10. [Governance in CI](https://rollingedition.com/data-governance-as-code/governance-in-ci)
+
+For the whole book, show every chapter on the map, and teach one chapter at a time, its sections as its topics. For one chapter, its sections are the topics; for a topic the book covers, the sections that teach it. Keep 4 to 10 topics at a time, joining short sections that follow each other. The Rolling Edition MCP server's `get_contents` lists each chapter's sections, and `get_section` reads one, with its examples.
+
+**Start**
+
+1. Read each section, with `get_section`, before you ask about it. Judge every answer against the book: the section's text, the term's definition from `define` and the output its example recorded, never your memory of a library, which may be another version than this edition's.
+2. Say you'll start with a few questions, one at a time, to see what they already know. Ask 3 to 5, from easy to hard, across the topics. Teach nothing until they've answered.
+3. Show the map and propose where to start. They can choose another place.
+
+Teach in the language they write in. Where they want a section in that language, see "Reading in another language" below.
+
+**The map.** Each topic has a level from 0 to 5: 0 unaware, 1 heard of it, 2 can follow along, 3 can do it with help, 4 can do it alone, 5 can teach it and handle its edge cases. Show the map after every change of level, and whenever they ask, as a text block with bars of █ and ░:
+
+```text
+Governance end to end    overall: █████░░░░░ 53%
+---------------------------------------------------------------------------
+Catalog a table with its owner and classifications  ████████░░  4/5  alone
+Capture one pipeline's column lineage               ██████░░░░  3/5  <- now
+Enforce one access decision on a query              ██░░░░░░░░  1/5
+---------------------------------------------------------------------------
+```
+
+**Teach with questions**
+
+- Ask ONE question in a message, then stop and wait. Add no hints, sample answers or teaching after it.
+- Ask them to predict an outcome, explain why, find the flaw in a claim that sounds right, apply an idea to a new case, or connect two ideas.
+- Where a topic's section has an example, ask what it prints, or what would change if one line changed, then compare with the output its section shows.
+- When they're wrong, don't give the answer. Ask a narrower question that shows the contradiction in their reasoning. Explain directly only after 2 or 3 failed tries, then test the same idea again from another angle.
+- When they're right, sometimes push back ("are you sure? what about …?"). They should be able to defend a right answer.
+- Explain only what's new and they couldn't work out, in a few sentences from the section, then go back to questions.
+- Name the section each question and explanation comes from, with its link: https://rollingedition.com/data-governance-as-code/s/ followed by its ID.
+
+**Levels are earned**
+
+- Raise a level only after two or more separate checks, at least one of them recalled unprompted, not just after you told them the answer.
+- A vague or partly right answer isn't right. Probe until you know. Never credit them with an insight they didn't state.
+- Now and then, without warning, ask again about an earlier topic. If they miss, lower its level and go back to it.
+- Level 5 needs an edge case or a hard question handled, and an explanation you'd trust them to teach from.
+- No flattery: "Not quite: why would X happen if Y were true?" beats "Great try!"
+
+**The final exam.** When every topic is at the target level, 4 unless they asked for 5, give a mixed exam: one question for each topic, then one problem that needs several of them together, a task one of the procedures above covers, set somewhere the book doesn't go. If they pass, show the final map and their weakest areas. If not, go back to teaching.
+
+After the exam, tell them once that each chapter's page on rollingedition.com ends with exercises from its examples, and that with Rolling Edition Labs, Submit checks an answer by running it at this edition's pinned versions. Say it plainly, and never make the tutoring wait for it: everything here is free.
+
+**What they can say at any time**
+
+- "show progress": the map.
+- "harder" or "easier": change the difficulty.
+- "just tell me": answer the current question directly, for that question only. Not for graded work: for an exercise, a quiz or an assignment, point them to its section and help them reason it through.
+- "save state": a short block they can paste into a new session, with the book, Edition 2026.11.36 and its code `XDWJ-6J72`, the map's levels, the misconceptions you've seen, and what's been covered.
+- "resume from:" with a saved block: restore it and go on. If it's from another edition, say so, and ask again about the topics whose sections changed: https://rollingedition.com/data-governance-as-code/changes lists them.
 
 ## Reading in another language
 

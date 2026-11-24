@@ -3,13 +3,13 @@ title: "Evaluating LLM Applications"
 chapter: "Decline when the docs don't say, and measure both kinds of error"
 chapter_id: declining-when-the-docs-dont-say
 book: evaluating-llm-applications
-edition: 2026.11.6
+edition: 2026.11.7
 verified: 2026-11-22
-edition_code: P6V8-WKJT
+edition_code: WCKB-Y7EK
 canonical: https://rollingedition.com/evaluating-llm-applications/declining-when-the-docs-dont-say
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“Decline when the docs don't say, and measure both kinds of error,” chapter 10 of Evaluating LLM Applications, Edition 2026.11.6, examples passed Nov 22, 2026. By Rolling Edition, https://rollingedition.com/evaluating-llm-applications/declining-when-the-docs-dont-say. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Decline when the docs don't say, and measure both kinds of error,” chapter 10 of Evaluating LLM Applications, Edition 2026.11.7, examples passed Nov 22, 2026. By Rolling Edition, https://rollingedition.com/evaluating-llm-applications/declining-when-the-docs-dont-say. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Decline when the docs don't say, and measure both kinds of error
 
@@ -39,7 +39,7 @@ Three variants change one thing each. `prompt-b` runs prompt P2, which quotes th
 
 Counting both errors for each recording takes one example, decline-rates. It reads all four recordings on the dev split and on the held-out split, prints each rate with its counts, and names the items behind each error. Its output shows which answerable items each recording declined and which unanswerable items it answered.
 
-Example `decline-rates` (Python 3.12.15 · numpy 2.5.5 · pydantic 2.14.3 · typing-extensions 4.16.0), passing in Edition 2026.11.6:
+Example `decline-rates` (Python 3.12.15 · numpy 2.5.5 · pydantic 2.14.3 · typing-extensions 4.16.0), passing in Edition 2026.11.7:
 
 ```python
 """Counts the two decline errors for each recording, on dev and on held-out: answerable items declined (false refusals)
@@ -170,7 +170,7 @@ The grid runs from 0.00 to 10.00 in steps of a quarter, above every dev score. F
 
 The sweep runs in tune-guard-dev, which prints both rates at every step of the grid and then the rule's pick. It opens with the check that matters most: the recorded sections of each item must match what the index returns, or the scores would describe a retrieval that never made the replies.
 
-Example `tune-guard-dev` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pydantic 2.14.3 · typing-extensions 4.16.0), passing in Edition 2026.11.6:
+Example `tune-guard-dev` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pydantic 2.14.3 · typing-extensions 4.16.0), passing in Edition 2026.11.7:
 
 ```python
 """Sweeps the decline guard's threshold over dev replies of the unfiltered recording, printing both rates at each
@@ -325,9 +325,9 @@ No line of the sweep lowers both rates below the no-guard line. Each threshold t
 
 *Figure 10.1. The two rates and their sum at each threshold, on dev.*
 
-![Raising the threshold trades false answers for false refusals](https://rollingedition.ai/books/evaluating-llm-applications/2026.11.6/figures/guard-threshold.svg)
+![Raising the threshold trades false answers for false refusals](https://rollingedition.ai/books/evaluating-llm-applications/2026.11.7/figures/guard-threshold.svg)
 
-Example `figure-guard-threshold` (Python 3.12.15 · bm25s 0.3.16 · matplotlib 3.11.2 · numpy 2.5.5 · pydantic 2.14.3 · typing-extensions 4.16.0), passing in Edition 2026.11.6:
+Example `figure-guard-threshold` (Python 3.12.15 · bm25s 0.3.16 · matplotlib 3.11.2 · numpy 2.5.5 · pydantic 2.14.3 · typing-extensions 4.16.0), passing in Edition 2026.11.7:
 
 ```python
 """Draws the dev false refusal rate and false answer rate against the guard's threshold, with their sum dashed and the
@@ -413,7 +413,7 @@ The threshold also belongs to the assistant that produced the replies. The score
 
 The held-out split was run once, with the threshold frozen at 0.00. The run is guard-held-out, and it first asserts that the dev rule (described in [the guard](#a-guard)) still picks that value. A change to the dev data or to the rule therefore stops the run before any held-out number prints.
 
-Example `guard-held-out` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pydantic 2.14.3 · typing-extensions 4.16.0), passing in Edition 2026.11.6:
+Example `guard-held-out` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pydantic 2.14.3 · typing-extensions 4.16.0), passing in Edition 2026.11.7:
 
 ```python
 """Applies the decline guard, with its threshold frozen from dev, to the held-out items of the unfiltered recording, and

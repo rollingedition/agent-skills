@@ -1,6 +1,6 @@
 ---
 name: agent-harnesses
-description: "Use when building, hardening or testing an agent that runs a model with real tools on someone's project. Covers the tool loop and its stop rules, tool schemas and refusals, model adapters and replayed recordings, context budgets and compaction, approval gates bound to the exact diff, sandboxing and secrets, subagents and handoffs, MCP tools, scenario tests and honest scores, traces and token counts, and whether an agent is the right design at all."
+description: "Use when building, hardening or testing an agent that runs a model with real tools on someone's project. Covers the tool loop and its stop rules, tool schemas and refusals, model adapters and replayed recordings, context budgets and compaction, approval gates bound to the exact diff, sandboxing and secrets, subagents and handoffs, MCP tools, scenario tests and honest scores, traces and token counts, and whether an agent is the right design at all. When someone explicitly asks to be taught, tutored or quizzed on what this book covers (\"teach me\", \"tutor me\", \"quiz me\"), it also tutors them, one question at a time. Not for a one-off \"explain X\" or \"what is X\"."
 license: CC-BY-NC-4.0 AND MIT
 compatibility: "Python 3.12.15 and the pinned packages in scripts/requirements.txt; the scripts run offline."
 metadata:
@@ -230,6 +230,12 @@ Other teams write these servers, and the harness runs each as a subprocess with 
 **Pitfalls:**
 - A failure count without kinds does not say which part to fix. One passing run does not predict the next ([Agent failures](references/when-an-agent-is-the-wrong-design.md#failures)).
 - A refusal comes before a person's yes, because a yes cannot lift a forbidden change ([Chapter decisions](references/when-an-agent-is-the-wrong-design.md#design-decisions)).
+
+## Teach this book, when asked
+
+**When:** only when the person you're working with explicitly asks to be taught, tutored or quizzed on this book, one of its chapters or a topic it covers ("teach me", "tutor me", "quiz me", "help me master"). A one-off question ("explain X", "what is X", "how do I use X") gets a normal answer from the procedures above, with no quiz. If you can't tell which they want, ask one short question: a quick answer, or should you teach it properly?
+
+When they do, read `references/tutor.md` first and follow it: how to teach the book a question at a time, then every chapter's sections with their examples and terms.
 
 ## Reading in another language
 

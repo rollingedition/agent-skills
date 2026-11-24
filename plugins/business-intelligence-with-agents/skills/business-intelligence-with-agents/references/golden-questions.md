@@ -3,13 +3,13 @@ title: "Business Intelligence with Agents"
 chapter: "Build golden questions from your own work"
 chapter_id: golden-questions
 book: business-intelligence-with-agents
-edition: 2026.11.18
+edition: 2026.11.19
 verified: 2026-11-22
-edition_code: 2DBD-TEG5
+edition_code: 6B1C-RVE3
 canonical: https://rollingedition.com/business-intelligence-with-agents/golden-questions
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“Build golden questions from your own work,” chapter 3 of Business Intelligence with Agents, Edition 2026.11.18, examples passed Nov 22, 2026. By Rolling Edition, https://rollingedition.com/business-intelligence-with-agents/golden-questions. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Build golden questions from your own work,” chapter 3 of Business Intelligence with Agents, Edition 2026.11.19, examples passed Nov 22, 2026. By Rolling Edition, https://rollingedition.com/business-intelligence-with-agents/golden-questions. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Build golden questions from your own work
 
@@ -29,7 +29,7 @@ The first reason shows on data the book can ship, so this chapter takes a small 
 
 We run [the schema-only approach from chapter 1](#ask-for-sql) on both sets with one model, Qwen3-4B-Instruct-2507, replayed from a recording. The model sees a table's schema and a question, writes SQL, which runs. On DABstep, the model then reads the query's result and gives a final answer in the format the task asks for. The recording `dabstep-runs` holds those replies.
 
-Example `public-vs-own-score` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.4 · sqlglot 30.31.0), passing in Edition 2026.11.18:
+Example `public-vs-own-score` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.4 · sqlglot 30.31.0), passing in Edition 2026.11.19:
 
 ```python
 """Score schema-only SQL on three public DABstep tasks and on the shop's dev questions, with the same model.
@@ -94,7 +94,7 @@ Each golden question holds the same fields. The `question` is the asker's text. 
 
 The shop's set lives in `examples/data/golden/questions.toml`, and `load_golden()` in `lib/golden.py` reads it into `GoldenQuestion` objects. The file's header states the two definitions most questions depend on. Net revenue is the finance team's: euros after discounts and before tax, from real orders that weren't cancelled, on the order's local business day. An order count includes cancelled orders and leaves out test orders. One question in full shows what its fields hold.
 
-Example `load-golden-questions` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.4 · sqlglot 30.31.0), passing in Edition 2026.11.18:
+Example `load-golden-questions` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.4 · sqlglot 30.31.0), passing in Edition 2026.11.19:
 
 ```python
 """Load the shop's golden questions, show what one holds and how the set divides, and compute one gold's other reading.
@@ -164,7 +164,7 @@ With [the golden questions written](#write-golden-questions), the next decision 
 
 In the shop, `gq-001` asks for net revenue in fiscal year 2026. Its golden SQL sums `net_revenue_eur` over `fct_orders`, joined to `dim_date` for the fiscal year. Its check query, which [the section on checking the gold](#check-the-gold) uses, sums `net_amount_eur` over `fct_order_lines` with a date range instead. Two queries show where text and results part ways, each compared with the golden SQL: the check query, and the golden SQL with its filter on cancelled orders removed. For each, it asks whether the text is equal, whether it is equal after sqlglot normalizes both, and whether the results match under `results_match()`.
 
-Example `results-match-rules` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.4 · sqlglot 30.31.0), passing in Edition 2026.11.18:
+Example `results-match-rules` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.4 · sqlglot 30.31.0), passing in Edition 2026.11.19:
 
 ```python
 """Two queries written differently for the same golden question: compare their text, then compare their results.
@@ -222,7 +222,7 @@ A [comparison of results](#compare-results-not-sql) still needs rules for the wa
 
 `results_match()`, the comparison every score in this book uses, makes these choices. Rows may come in any order, unless the golden question sets `order_matters`. Column names are ignored, and columns may come in any order: it tries each way of lining up the answer's columns with the golden ones. Extra columns are allowed, such as a month next to a total for that month, but the number of rows must be equal. Numbers must agree with the gold within 0.05% relative by default, plus an absolute slack of half a unit in the last place the gold rounds to. For money, rounded to the cent, that's half a cent, the default. Changing `gq-002`'s golden result, net revenue in each region in March 2026, the ways real answers differ, and comparing each with the original shows which differences the comparison forgives.
 
-Example `tolerant-comparison` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.4 · sqlglot 30.31.0), passing in Edition 2026.11.18:
+Example `tolerant-comparison` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.4 · sqlglot 30.31.0), passing in Edition 2026.11.19:
 
 ```python
 """Change the golden result for net revenue by region in March 2026 in the ways real answers differ, and compare.
@@ -301,7 +301,7 @@ The tolerance needs care in both directions. Ratios such as a conversion rate ar
 
 The shop's set gets those checks, with each check query written independently of its golden SQL: from order lines instead of orders, from a date range instead of the fiscal calendar, or by counting another way. Then look at one question in two readings: which country is top for refunds in fiscal 2026, by the number of refunds and by refund rate.
 
-Example `gold-runs-and-agrees` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.4 · sqlglot 30.31.0), passing in Edition 2026.11.18:
+Example `gold-runs-and-agrees` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.4 · sqlglot 30.31.0), passing in Edition 2026.11.19:
 
 ```python
 """Check the gold before trusting it: every golden SQL runs and returns rows, and each check query agrees with it.
@@ -362,9 +362,75 @@ The golden SQL runs for 34 of 34 answerable questions, and 0 of them come back e
 
 The two readings of the refund question disagree, the same trap as DABstep's task 49: by refunds the top country is US, and by refund rate it is NL. The golden question `gq-028` says "highest refund rate" in its text, and its note defines the rate as refunded euros over gross revenue of the same orders. Without both, an agent that answered the other reading would be scored wrong for answering a question nobody wrote down.
 
+These checks can't catch a gold that sums or counts rows its own joins repeat, [chapter 2's fan-out](#joins-that-fan-out). Such a gold runs and returns a number, and a check query catches it only if it happens to avoid the join. A 2026 preprint, which releases its code, audits the gold of public benchmarks for this error mechanically ([Mahran, "Mind the Trap", arXiv:2611.29009](https://arxiv.org/abs/2611.29009)), and the same audit runs on the shop's set. It parses each answerable golden SQL with sqlglot. For each SUM, COUNT or AVG, it runs a probe with the gold's own FROM, joins and WHERE, and compares, in each GROUP BY group, the count of rows with the count of distinct keys of the measure's table, the primary entity of its [semantic model](#entities-measures-dimensions). To show that the audit can fail a gold, it also audits chapter 2's recorded model SQL for `gq-007` as a planted bad gold.
+
+Example `gold-fan-out-audit` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.4 · sqlglot 30.31.0), passing in Edition 2026.11.19:
+
+```python
+"""Audit every answerable golden SQL for fan-out: a SUM, COUNT or AVG over rows that the gold's own joins repeat.
+The prose rests on the golds audited and flagged, and on the planted bad gold, chapter 2's model SQL for gq-007, being flagged."""
+from lib.golden import load_golden
+from lib.model import RecordedModel
+from lib.prompts import schema_only_messages
+from lib.semantic import load
+from lib.tools import extract_sql
+from lib.warehouse import connect, describe_schema
+import sqlglot
+from sqlglot import exp
+
+con = connect()
+keys = load().keys_by_table(con)  # e.g. analytics.fct_orders -> order_id, the primary entity of the orders model
+
+def fan_out(sql):
+    """The tables whose key repeats within a group, under the query's own FROM, joins and WHERE."""
+    flagged = set()
+    for select in sqlglot.parse_one(sql, read="duckdb").find_all(exp.Select):  # the outer query and every subquery
+        tables = {t.alias_or_name: f"{t.db}.{t.name}" for t in select.find_all(exp.Table) if t.parent_select is select}
+        for agg in select.find_all(exp.Sum, exp.Count, exp.Avg):
+            if agg.parent_select is not select or agg.find(exp.Distinct):  # a distinct count can't be inflated
+                continue
+            column = agg.find(exp.Column)  # COUNT(*) has none: it counts the rows of the first table in FROM
+            alias = column.table if column else select.args["from_"].this.alias_or_name
+            if tables.get(alias) not in keys:  # a CTE, a derived table or a table no semantic model owns is skipped
+                continue
+            # The key's columns, qualified with the gold's alias for the measure's table.
+            key = keys[tables[alias]].transform(lambda n: exp.column(n.name, table=alias) if isinstance(n, exp.Column) else n)
+            # The gold's grouping columns stay first, so its GROUP BY 1 or GROUP BY ALL still groups the probe.
+            grouping = [e for e in select.expressions if not e.find(exp.AggFunc)]
+            probe = select.copy().select(*grouping, "count(*)", exp.Count(this=exp.Distinct(expressions=[key])), append=False)
+            probe = probe.where(exp.Not(this=exp.Is(this=key.copy(), expression=exp.Null())))  # a LEFT JOIN's unmatched rows repeat nothing
+            probe.set("order", None), probe.set("limit", None), probe.set("having", None)
+            if any(row[-2] > row[-1] for row in con.execute(probe.sql("duckdb")).fetchall()):  # rows, then distinct keys, per group
+                flagged.add(tables[alias])
+    return sorted(flagged)
+
+golds = [q for q in load_golden() if q.kind == "answer"]
+flags = {q.question_id: fan_out(q.golden_sql) for q in golds}
+print(f"golds audited: {len(golds)}")
+print(f"golds flagged: {sum(bool(tables) for tables in flags.values())}")
+print(f"flagged: {', '.join(f'{qid} ({", ".join(tables)})' for qid, tables in flags.items() if tables) or 'none'}")
+
+# The planted bad gold: chapter 2's recorded model SQL for gq-007, which sums each order's revenue over its joined lines.
+question = next(q for q in golds if q.question_id == "gq-007")
+planted = fan_out(extract_sql(RecordedModel("schema-only-sql").complete(schema_only_messages(describe_schema(con), question.question))))
+assert planted, "the planted gold must be flagged"
+print(f"planted gq-007 flagged on: {', '.join(planted)}")
+```
+
+Output:
+
+```text
+golds audited: 34
+golds flagged: 0
+flagged: none
+planted gq-007 flagged on: analytics.fct_orders
+```
+
+The audit flags 0 of the 34 golds, and it flags the planted gold on `analytics.fct_orders`, whose revenue the join repeats for each matching line. A flag is a question for a person, not a verdict, because some questions mean to count repeated rows, and only the question's owner can say which reading the gold should follow.
+
 The checks above find gold that is broken. Reading the agent's wrong answers finds gold that is unclear. `gq-031` first asked about the average number of "items" in an order, and [the schema-only baseline from chapter 1](#ask-for-sql) got it wrong: its SQL averaged `line_count`, the number of order lines, where the gold sums units. "Items" allows both readings. The defect was in the question, not the agent, so the question now asks for units, counting quantities, not order lines. Recorded replies are keyed by the exact question text, so the reworded question needed a new recording. Replaying both wordings below shows the effect.
 
-Example `reworded-golden-question` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.4 · sqlglot 30.31.0), passing in Edition 2026.11.18:
+Example `reworded-golden-question` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.4 · sqlglot 30.31.0), passing in Edition 2026.11.19:
 
 ```python
 """Read a wrong answer: gq-031 once asked about "items", which allows units or order lines. It now asks for units.
@@ -413,7 +479,7 @@ A [checked gold](#check-the-gold) makes each question trustworthy, and the set a
 
 Coverage also means the warehouse's traps and the shop's roles. Every trap built into the shop's warehouse, from test orders to the legacy mart, should appear in both splits, so a change that breaks one trap shows up in either score. Counting kinds, roles and traps per split shows where the set is thin.
 
-Example `golden-coverage` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.4 · sqlglot 30.31.0), passing in Edition 2026.11.18:
+Example `golden-coverage` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.4 · sqlglot 30.31.0), passing in Edition 2026.11.19:
 
 ```python
 """Count what the golden set covers in each split: kinds, roles and the warehouse's traps.
@@ -483,7 +549,7 @@ A [set that covers the right things](#cover-declines-and-roles) can still mislea
 
 The shop's set has 24 `dev` questions, which every chapter may tune on, and 24 `test` questions, which a chapter scores only for the number it reports. Scoring [the schema-only baseline from chapter 1](#ask-for-sql) on both splits gives the bar every later chapter must beat.
 
-Example `baseline-on-both-splits` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.4 · sqlglot 30.31.0), passing in Edition 2026.11.18:
+Example `baseline-on-both-splits` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.4 · sqlglot 30.31.0), passing in Edition 2026.11.19:
 
 ```python
 """The baseline every later chapter must beat: schema-only SQL scored on the dev split and on the held-out test split.

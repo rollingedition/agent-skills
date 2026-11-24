@@ -1,29 +1,29 @@
 ---
 name: language-models-from-the-ground-up
-description: "Use when building, training, evaluating or choosing a language model, or debugging one: next-word prediction and autocomplete, perplexity on held-out text, BPE tokenizers, n-gram baselines with Kneser-Ney smoothing, word embeddings (PPMI, SVD, skip-gram), a small neural model, attention and causal masks, transformer blocks (RMSNorm, RoPE, gated feed-forward), training with AdamW and a learning-rate schedule, decoding (greedy, beam search, temperature, top-k, top-p, repetition penalty), reading an open model's parameters, memory and attention heads, tuning a model (masked instruction loss, preference loss, LoRA) and checking its answers for made-up details, chat templates and long contexts. Small models in NumPy and PyTorch that run on a CPU."
-license: CC-BY-NC-4.0
+description: "Use when building, training, evaluating or choosing a language model, or debugging one: next-word prediction and autocomplete, perplexity on held-out text, BPE tokenizers, n-gram baselines with Kneser-Ney smoothing, word embeddings (PPMI, SVD, skip-gram), a small neural model, attention and causal masks, transformer blocks (RMSNorm, RoPE, gated feed-forward), training with AdamW and a learning-rate schedule, decoding (greedy, beam search, temperature, top-k, top-p, repetition penalty), reading an open model's parameters, memory and attention heads, tuning a model (masked instruction loss, preference loss, LoRA) and checking its answers for made-up details, chat templates and long contexts. Small models in NumPy and PyTorch that run on a CPU. When someone explicitly asks to be taught, tutored or quizzed on what this book covers (\"teach me\", \"tutor me\", \"quiz me\"), it also tutors them, one question at a time. Not for a one-off \"explain X\" or \"what is X\"."
+license: CC-BY-NC-4.0 AND MIT
 compatibility: "The book's examples ran on Python 3.12.15 and the versions its pages name."
 metadata:
   publisher: "Rolling Edition"
   book: "Language Models from the Ground Up"
-  edition: "2026.11.18"
+  edition: "2026.11.19"
   verified: "2026-11-22"
   examples: "100 of 100 examples pass"
-  edition-code: "5E4E-0JVJ"
+  edition-code: "BAJ1-S6EV"
   source: "https://rollingedition.com/language-models-from-the-ground-up"
 ---
 
 # Language Models from the Ground Up
 
-This agent skill is *Language Models from the Ground Up*, Edition 2026.11.18, from Rolling Edition. Examples passed Nov 22, 2026: 100 of 100 examples pass. It's built from that edition, never written separately: the procedures below come from the book's sections, and each step links to its section on rollingedition.com, whose page has the section's text and its examples, with their code and output.
+This agent skill is *Language Models from the Ground Up*, Edition 2026.11.19, from Rolling Edition. Examples passed Nov 22, 2026: 100 of 100 examples pass. It's built from that edition, never written separately: the procedures below come from the book's sections, and each step links to its section on rollingedition.com, whose page has the section's text and its examples, with their code and output.
 
 ## How to use this skill
 
 - **Pick the procedure that fits the task,** and follow its steps in order. Each step links the section it comes from: read that section before you act on it, with the Rolling Edition MCP server's `get_section` (book `language-models-from-the-ground-up` and the section's ID, the link's last part) or on its page, and adapt it to the project in front of you.
 - **Check against the book.** An example's section shows its code, the versions it ran on and its output. If the project uses other versions, say so before relying on a step.
 - **Use the book's terms as it defines them.** The book's Glossary has each term it defines, in the book's own sentence, with its section: https://rollingedition.com/language-models-from-the-ground-up/glossary. The Rolling Edition MCP server's `define` gives one with its section, its edition and the version it's true for: where the task uses one, it means that.
-- **Is this copy current?** Call `check_code` with `5E4E-0JVJ` on the Rolling Edition MCP server (https://rollingedition.ai/mcp), or compare the edition with the book's page: https://rollingedition.com/language-models-from-the-ground-up
-- **Credit the book** when you quote it or reuse its code: Language Models from the Ground Up, Edition 2026.11.18, examples passed Nov 22, 2026. By Rolling Edition, https://rollingedition.com/language-models-from-the-ground-up. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people.
+- **Is this copy current?** Call `check_code` with `BAJ1-S6EV` on the Rolling Edition MCP server (https://rollingedition.ai/mcp), or compare the edition with the book's page: https://rollingedition.com/language-models-from-the-ground-up
+- **Credit the book** when you quote it or reuse its code: Language Models from the Ground Up, Edition 2026.11.19, examples passed Nov 22, 2026. By Rolling Edition, https://rollingedition.com/language-models-from-the-ground-up. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people.
 
 The full skill, with the chapters beside it and every example as a script to run at the book's pinned versions, is the `language-models-from-the-ground-up` plugin and the zip on the book's page at rollingedition.ai.
 
@@ -213,6 +213,75 @@ The full skill, with the chapters beside it and every example as a script to run
 
 **Pitfalls:** [What goes wrong in production](https://rollingedition.com/language-models-from-the-ground-up/s/instruction-models-in-production): it answers when it should say it doesn't know; fluency hides gaps; its behaviour depends on its revision and template.
 
+## Teach this book, when asked
+
+**When:** only when the person you're working with explicitly asks to be taught, tutored or quizzed on this book, one of its chapters or a topic it covers ("teach me", "tutor me", "quiz me", "help me master"). A one-off question ("explain X", "what is X", "how do I use X") gets a normal answer from the procedures above, with no quiz. If you can't tell which they want, ask one short question: a quick answer, or should you teach it properly?
+
+**The topics** are the book's chapters, in order:
+
+1. [Predicting the next word](https://rollingedition.com/language-models-from-the-ground-up/predicting-the-next-word)
+2. [Tokens](https://rollingedition.com/language-models-from-the-ground-up/tokens)
+3. [Counting further back](https://rollingedition.com/language-models-from-the-ground-up/counting-further-back)
+4. [Words as vectors](https://rollingedition.com/language-models-from-the-ground-up/words-as-vectors)
+5. [A neural language model](https://rollingedition.com/language-models-from-the-ground-up/a-neural-language-model)
+6. [Attention](https://rollingedition.com/language-models-from-the-ground-up/attention)
+7. [The transformer block](https://rollingedition.com/language-models-from-the-ground-up/the-transformer-block)
+8. [Training a small model](https://rollingedition.com/language-models-from-the-ground-up/training-a-small-model)
+9. [Choosing the next token](https://rollingedition.com/language-models-from-the-ground-up/choosing-the-next-token)
+10. [Inside an open model](https://rollingedition.com/language-models-from-the-ground-up/inside-an-open-model)
+11. [From predicting to following instructions](https://rollingedition.com/language-models-from-the-ground-up/from-predicting-to-following)
+
+For the whole book, show every chapter on the map, and teach one chapter at a time, its sections as its topics. For one chapter, its sections are the topics; for a topic the book covers, the sections that teach it. Keep 4 to 10 topics at a time, joining short sections that follow each other. The Rolling Edition MCP server's `get_contents` lists each chapter's sections, and `get_section` reads one, with its examples.
+
+**Start**
+
+1. Read each section, with `get_section`, before you ask about it. Judge every answer against the book: the section's text, the term's definition from `define` and the output its example recorded, never your memory of a library, which may be another version than this edition's.
+2. Say you'll start with a few questions, one at a time, to see what they already know. Ask 3 to 5, from easy to hard, across the topics. Teach nothing until they've answered.
+3. Show the map and propose where to start. They can choose another place.
+
+Teach in the language they write in. Where they want a section in that language, see "Reading in another language" below.
+
+**The map.** Each topic has a level from 0 to 5: 0 unaware, 1 heard of it, 2 can follow along, 3 can do it with help, 4 can do it alone, 5 can teach it and handle its edge cases. Show the map after every change of level, and whenever they ask, as a text block with bars of █ and ░:
+
+```text
+Predicting the next word    overall: █████░░░░░ 53%
+-------------------------------------------------------
+Load the store's text           ████████░░  4/5  alone
+Count which word follows which  ██████░░░░  3/5  <- now
+Turn counts into probabilities  ██░░░░░░░░  1/5
+-------------------------------------------------------
+```
+
+**Teach with questions**
+
+- Ask ONE question in a message, then stop and wait. Add no hints, sample answers or teaching after it.
+- Ask them to predict an outcome, explain why, find the flaw in a claim that sounds right, apply an idea to a new case, or connect two ideas.
+- Where a topic's section has an example, ask what it prints, or what would change if one line changed, then compare with the output its section shows.
+- When they're wrong, don't give the answer. Ask a narrower question that shows the contradiction in their reasoning. Explain directly only after 2 or 3 failed tries, then test the same idea again from another angle.
+- When they're right, sometimes push back ("are you sure? what about …?"). They should be able to defend a right answer.
+- Explain only what's new and they couldn't work out, in a few sentences from the section, then go back to questions.
+- Name the section each question and explanation comes from, with its link: https://rollingedition.com/language-models-from-the-ground-up/s/ followed by its ID.
+
+**Levels are earned**
+
+- Raise a level only after two or more separate checks, at least one of them recalled unprompted, not just after you told them the answer.
+- A vague or partly right answer isn't right. Probe until you know. Never credit them with an insight they didn't state.
+- Now and then, without warning, ask again about an earlier topic. If they miss, lower its level and go back to it.
+- Level 5 needs an edge case or a hard question handled, and an explanation you'd trust them to teach from.
+- No flattery: "Not quite: why would X happen if Y were true?" beats "Great try!"
+
+**The final exam.** When every topic is at the target level, 4 unless they asked for 5, give a mixed exam: one question for each topic, then one problem that needs several of them together, a task one of the procedures above covers, set somewhere the book doesn't go. If they pass, show the final map and their weakest areas. If not, go back to teaching.
+
+After the exam, tell them once that each chapter's page on rollingedition.com ends with exercises from its examples, and that with Rolling Edition Labs, Submit checks an answer by running it at this edition's pinned versions. Say it plainly, and never make the tutoring wait for it: everything here is free.
+
+**What they can say at any time**
+
+- "show progress": the map.
+- "harder" or "easier": change the difficulty.
+- "just tell me": answer the current question directly, for that question only. Not for graded work: for an exercise, a quiz or an assignment, point them to its section and help them reason it through.
+- "save state": a short block they can paste into a new session, with the book, Edition 2026.11.19 and its code `BAJ1-S6EV`, the map's levels, the misconceptions you've seen, and what's been covered.
+- "resume from:" with a saved block: restore it and go on. If it's from another edition, say so, and ask again about the topics whose sections changed: https://rollingedition.com/language-models-from-the-ground-up/changes lists them.
+
 ## Reading in another language
 
-When the person you're working with wants to read part of this book in another language, and the Rolling Edition MCP server is connected, first call its `get_section` with `language`: where Rolling Edition has its own translation of the book in that language (`get_contents` lists them), present each section as it comes, with the facts of its `translation`, and translate only the sections it lists as `untranslated`. Otherwise, translate it for them from its sections, read with the Rolling Edition MCP server's `get_section`. Translate the prose faithfully and in full: don't summarize, skip or add anything. Leave these exactly as they are: code, commands, output, file names, identifiers, inline code, package names and versions, numbers and URLs. Where practitioners who read the language usually keep a technical term in English, keep it, and give a short gloss in parentheses the first time, where that helps. Keep the headings and the structure: lists, tables, and the examples in their places. Begin by saying that it's your translation of *Language Models from the Ground Up*, Edition 2026.11.18, from Rolling Edition, licensed CC BY-NC 4.0, with the chapter's link, and keep each section's link from its citation block. For a long chapter, translate a section at a time and offer to go on after each. The Rolling Edition MCP server's `read_in_my_language` prompt asks for the same.
+When the person you're working with wants to read part of this book in another language, and the Rolling Edition MCP server is connected, first call its `get_section` with `language`: where Rolling Edition has its own translation of the book in that language (`get_contents` lists them), present each section as it comes, with the facts of its `translation`, and translate only the sections it lists as `untranslated`. Otherwise, translate it for them from its sections, read with the Rolling Edition MCP server's `get_section`. Translate the prose faithfully and in full: don't summarize, skip or add anything. Leave these exactly as they are: code, commands, output, file names, identifiers, inline code, package names and versions, numbers and URLs. Where practitioners who read the language usually keep a technical term in English, keep it, and give a short gloss in parentheses the first time, where that helps. Keep the headings and the structure: lists, tables, and the examples in their places. Begin by saying that it's your translation of *Language Models from the Ground Up*, Edition 2026.11.19, from Rolling Edition, licensed CC BY-NC 4.0, with the chapter's link, and keep each section's link from its citation block. For a long chapter, translate a section at a time and offer to go on after each. The Rolling Edition MCP server's `read_in_my_language` prompt asks for the same.

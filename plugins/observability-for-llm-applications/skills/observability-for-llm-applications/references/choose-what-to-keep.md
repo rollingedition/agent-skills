@@ -3,13 +3,13 @@ title: "Observability for LLM Applications"
 chapter: "Choose which traces to keep"
 chapter_id: choose-what-to-keep
 book: observability-for-llm-applications
-edition: 2026.11.1
+edition: 2026.11.2
 verified: 2026-11-23
-edition_code: B95K-8RWR
+edition_code: W9DX-M10H
 canonical: https://rollingedition.com/observability-for-llm-applications/choose-what-to-keep
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“Choose which traces to keep,” chapter 11 of Observability for LLM Applications, Edition 2026.11.1, examples passed Nov 23, 2026. By Rolling Edition, https://rollingedition.com/observability-for-llm-applications/choose-what-to-keep. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Choose which traces to keep,” chapter 11 of Observability for LLM Applications, Edition 2026.11.2, examples passed Nov 23, 2026. By Rolling Edition, https://rollingedition.com/observability-for-llm-applications/choose-what-to-keep. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Choose which traces to keep
 
@@ -27,7 +27,7 @@ The SDK's ratio sampler compares the trace ID with the ratio. It reads the low 6
 
 The replay runs every message first and makes the head decision afterward. The decision is applied to the completed traces, and it is the same decision the assistant's own sampler would make at the source, because the trace ID alone settles it. The example's last lines check that claim: at each ratio it uses, a provider with the same sampler starts a root span for every trace ID of the day, and the example asserts that the two decisions agree.
 
-Example `head-sample-ratio` (Python 3.13.16 · bm25s 0.3.16 · mcp 2.3.0 · numpy 2.5.5 · opentelemetry-api 1.45.2 · opentelemetry-exporter-http-transport 0.66b2 · opentelemetry-exporter-otlp-common 0.66b2 · opentelemetry-exporter-otlp-proto-common 1.45.2 · opentelemetry-exporter-otlp-proto-http 1.45.2 · opentelemetry-instrumentation 0.66b2 · opentelemetry-instrumentation-genai-openai 1.3b0 · opentelemetry-proto 1.45.2 · opentelemetry-sdk 1.45.2 · opentelemetry-semantic-conventions 0.66b2 · opentelemetry-util-genai 1.3b0 · pydantic 2.14.4), passing in Edition 2026.11.1:
+Example `head-sample-ratio` (Python 3.13.16 · bm25s 0.3.16 · mcp 2.3.0 · numpy 2.5.5 · opentelemetry-api 1.45.2 · opentelemetry-exporter-http-transport 0.66b2 · opentelemetry-exporter-otlp-common 0.66b2 · opentelemetry-exporter-otlp-proto-common 1.45.2 · opentelemetry-exporter-otlp-proto-http 1.45.2 · opentelemetry-instrumentation 0.66b2 · opentelemetry-instrumentation-genai-openai 1.3b0 · opentelemetry-proto 1.45.2 · opentelemetry-sdk 1.45.2 · opentelemetry-semantic-conventions 0.66b2 · opentelemetry-util-genai 1.3b0 · pydantic 2.14.4), passing in Edition 2026.11.2:
 
 ```python
 """Head sampling on baseline day 1: the share of messages each ratio keeps, and the rule that a larger ratio keeps every
@@ -96,7 +96,7 @@ A trace crosses a process boundary, and the contacts server is the second proces
 
 The contacts server sets no sampler of its own. Its tracer provider takes the SDK's default, with `OTEL_TRACES_SAMPLER` unset, which follows a remote parent's sampled flag: when the flag is set the server samples the span, and when it is not set the server drops it. The probe below turns the assistant's sampler on at the source, at a ratio of 0.5, and counts what the server records under each root.
 
-Example `parent-based-follows-root` (Python 3.13.16 · mcp 2.3.0 · numpy 2.5.5 · opentelemetry-api 1.45.2 · opentelemetry-exporter-http-transport 0.66b2 · opentelemetry-exporter-otlp-common 0.66b2 · opentelemetry-exporter-otlp-proto-common 1.45.2 · opentelemetry-exporter-otlp-proto-http 1.45.2 · opentelemetry-instrumentation 0.66b2 · opentelemetry-instrumentation-genai-openai 1.3b0 · opentelemetry-proto 1.45.2 · opentelemetry-sdk 1.45.2 · opentelemetry-semantic-conventions 0.66b2 · opentelemetry-util-genai 1.3b0 · pydantic 2.14.4), passing in Edition 2026.11.1:
+Example `parent-based-follows-root` (Python 3.13.16 · mcp 2.3.0 · numpy 2.5.5 · opentelemetry-api 1.45.2 · opentelemetry-exporter-http-transport 0.66b2 · opentelemetry-exporter-otlp-common 0.66b2 · opentelemetry-exporter-otlp-proto-common 1.45.2 · opentelemetry-exporter-otlp-proto-http 1.45.2 · opentelemetry-instrumentation 0.66b2 · opentelemetry-instrumentation-genai-openai 1.3b0 · opentelemetry-proto 1.45.2 · opentelemetry-sdk 1.45.2 · opentelemetry-semantic-conventions 0.66b2 · opentelemetry-util-genai 1.3b0 · pydantic 2.14.4), passing in Edition 2026.11.2:
 
 ```python
 """A parent-based sampler at the assistant decides each message's trace once, at its root, and the contacts server follows
@@ -170,7 +170,7 @@ The rule reads each whole trace, so the errors it keeps are the ones it found, n
 
 Before the first run, make a prediction. The incident day has messages with an error, and a 10% head sample decides for each of them before anything runs. Predict how many of those messages the head sample keeps: all of them, about a tenth of them, or none. Write the number down, then run the example.
 
-Example `tail-rule-keeps-errors` (Python 3.13.16 · bm25s 0.3.16 · mcp 2.3.0 · numpy 2.5.5 · opentelemetry-api 1.45.2 · opentelemetry-exporter-http-transport 0.66b2 · opentelemetry-exporter-otlp-common 0.66b2 · opentelemetry-exporter-otlp-proto-common 1.45.2 · opentelemetry-exporter-otlp-proto-http 1.45.2 · opentelemetry-instrumentation 0.66b2 · opentelemetry-instrumentation-genai-openai 1.3b0 · opentelemetry-proto 1.45.2 · opentelemetry-sdk 1.45.2 · opentelemetry-semantic-conventions 0.66b2 · opentelemetry-util-genai 1.3b0 · pydantic 2.14.4), passing in Edition 2026.11.1:
+Example `tail-rule-keeps-errors` (Python 3.13.16 · bm25s 0.3.16 · mcp 2.3.0 · numpy 2.5.5 · opentelemetry-api 1.45.2 · opentelemetry-exporter-http-transport 0.66b2 · opentelemetry-exporter-otlp-common 0.66b2 · opentelemetry-exporter-otlp-proto-common 1.45.2 · opentelemetry-exporter-otlp-proto-http 1.45.2 · opentelemetry-instrumentation 0.66b2 · opentelemetry-instrumentation-genai-openai 1.3b0 · opentelemetry-proto 1.45.2 · opentelemetry-sdk 1.45.2 · opentelemetry-semantic-conventions 0.66b2 · opentelemetry-util-genai 1.3b0 · pydantic 2.14.4), passing in Edition 2026.11.2:
 
 ```python
 """The incident day's failed messages, kept by a 10 percent head sample and by the tail rule. A message failed when a span
@@ -235,7 +235,7 @@ The tail rule loses none. It keeps all 17 of them.
 
 A rule that keeps every error can still cost too much, so the book's rule also takes a budget of spans for the day. Spans are what the backend stores, and a trace with many model calls holds many of them. Next, the rule is given a budget that the incident day cannot fit whole: 120 spans against a day of 276.
 
-Example `tail-rule-span-budget` (Python 3.13.16 · bm25s 0.3.16 · mcp 2.3.0 · numpy 2.5.5 · opentelemetry-api 1.45.2 · opentelemetry-exporter-http-transport 0.66b2 · opentelemetry-exporter-otlp-common 0.66b2 · opentelemetry-exporter-otlp-proto-common 1.45.2 · opentelemetry-exporter-otlp-proto-http 1.45.2 · opentelemetry-instrumentation 0.66b2 · opentelemetry-instrumentation-genai-openai 1.3b0 · opentelemetry-proto 1.45.2 · opentelemetry-sdk 1.45.2 · opentelemetry-semantic-conventions 0.66b2 · opentelemetry-util-genai 1.3b0 · pydantic 2.14.4), passing in Edition 2026.11.1:
+Example `tail-rule-span-budget` (Python 3.13.16 · bm25s 0.3.16 · mcp 2.3.0 · numpy 2.5.5 · opentelemetry-api 1.45.2 · opentelemetry-exporter-http-transport 0.66b2 · opentelemetry-exporter-otlp-common 0.66b2 · opentelemetry-exporter-otlp-proto-common 1.45.2 · opentelemetry-exporter-otlp-proto-http 1.45.2 · opentelemetry-instrumentation 0.66b2 · opentelemetry-instrumentation-genai-openai 1.3b0 · opentelemetry-proto 1.45.2 · opentelemetry-sdk 1.45.2 · opentelemetry-semantic-conventions 0.66b2 · opentelemetry-util-genai 1.3b0 · pydantic 2.14.4), passing in Edition 2026.11.2:
 
 ```python
 """The tail rule under a span budget on the incident day: errors first, then the slowest messages, then the costliest, each
@@ -323,7 +323,7 @@ Scaling a head sample's total by the inverse of its ratio estimates the whole, b
 
 Scaling one 10% sample of baseline day 1 by ten gives an estimate that can be set against the day's full count and against the token counter.
 
-Example `estimate-totals-error` (Python 3.13.16 · bm25s 0.3.16 · mcp 2.3.0 · numpy 2.5.5 · opentelemetry-api 1.45.2 · opentelemetry-exporter-http-transport 0.66b2 · opentelemetry-exporter-otlp-common 0.66b2 · opentelemetry-exporter-otlp-proto-common 1.45.2 · opentelemetry-exporter-otlp-proto-http 1.45.2 · opentelemetry-instrumentation 0.66b2 · opentelemetry-instrumentation-genai-openai 1.3b0 · opentelemetry-proto 1.45.2 · opentelemetry-sdk 1.45.2 · opentelemetry-semantic-conventions 0.66b2 · opentelemetry-util-genai 1.3b0 · pydantic 2.14.4), passing in Edition 2026.11.1:
+Example `estimate-totals-error` (Python 3.13.16 · bm25s 0.3.16 · mcp 2.3.0 · numpy 2.5.5 · opentelemetry-api 1.45.2 · opentelemetry-exporter-http-transport 0.66b2 · opentelemetry-exporter-otlp-common 0.66b2 · opentelemetry-exporter-otlp-proto-common 1.45.2 · opentelemetry-exporter-otlp-proto-http 1.45.2 · opentelemetry-instrumentation 0.66b2 · opentelemetry-instrumentation-genai-openai 1.3b0 · opentelemetry-proto 1.45.2 · opentelemetry-sdk 1.45.2 · opentelemetry-semantic-conventions 0.66b2 · opentelemetry-util-genai 1.3b0 · pydantic 2.14.4), passing in Edition 2026.11.2:
 
 ```python
 """Estimate baseline day 1's total tokens and cost from a 10 percent head sample, scaled by one over the ratio, with the 95
@@ -406,7 +406,7 @@ Its interval runs from 29.6% to 116.5% of the full cost, and 1,854 of the same s
 
 Varying the ratio shows how the error depends on how much is kept.
 
-Example `figure-sampling-error-by-ratio` (Python 3.13.16 · bm25s 0.3.16 · matplotlib 3.11.2 · mcp 2.3.0 · numpy 2.5.5 · opentelemetry-api 1.45.2 · opentelemetry-exporter-http-transport 0.66b2 · opentelemetry-exporter-otlp-common 0.66b2 · opentelemetry-exporter-otlp-proto-common 1.45.2 · opentelemetry-exporter-otlp-proto-http 1.45.2 · opentelemetry-instrumentation 0.66b2 · opentelemetry-instrumentation-genai-openai 1.3b0 · opentelemetry-proto 1.45.2 · opentelemetry-sdk 1.45.2 · opentelemetry-semantic-conventions 0.66b2 · opentelemetry-util-genai 1.3b0 · pydantic 2.14.4), passing in Edition 2026.11.1:
+Example `figure-sampling-error-by-ratio` (Python 3.13.16 · bm25s 0.3.16 · matplotlib 3.11.2 · mcp 2.3.0 · numpy 2.5.5 · opentelemetry-api 1.45.2 · opentelemetry-exporter-http-transport 0.66b2 · opentelemetry-exporter-otlp-common 0.66b2 · opentelemetry-exporter-otlp-proto-common 1.45.2 · opentelemetry-exporter-otlp-proto-http 1.45.2 · opentelemetry-instrumentation 0.66b2 · opentelemetry-instrumentation-genai-openai 1.3b0 · opentelemetry-proto 1.45.2 · opentelemetry-sdk 1.45.2 · opentelemetry-semantic-conventions 0.66b2 · opentelemetry-util-genai 1.3b0 · pydantic 2.14.4), passing in Edition 2026.11.2:
 
 ```python
 """Draw the error of a head sample's estimate of baseline day 1's total tokens against the sampling ratio, with the 95 percent
@@ -481,7 +481,7 @@ Ratio 0.5 keeps 96 messages, and the estimate is 97.5% of the full count, with a
 
 *Figure 11.1. The token estimate from a head sample, as a share of the full count, at eight sampling ratios, with its 95% interval.*
 
-![A line of the estimated token total, as a share of the full count, against the sampling ratio on a log scale, with a shaded 95% interval; the band narrows overall as the ratio rises and closes at ratio 1.0](https://rollingedition.ai/books/observability-for-llm-applications/2026.11.1/figures/sampling-error-by-ratio.svg)
+![A line of the estimated token total, as a share of the full count, against the sampling ratio on a log scale, with a shaded 95% interval; the band narrows overall as the ratio rises and closes at ratio 1.0](https://rollingedition.ai/books/observability-for-llm-applications/2026.11.2/figures/sampling-error-by-ratio.svg)
 
 The interval measures the sampling's chance on this one day. Whether another day would give the same total is a different question, and this interval does not answer it.
 

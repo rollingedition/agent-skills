@@ -1,6 +1,6 @@
 ---
 name: model-context-protocol-in-practice
-description: "Use when designing, building, securing, testing or running Model Context Protocol (MCP) servers and clients with the Python SDK, or when moving a 2025-era MCP server to the pinned revision. Covers wrapping an existing HTTP API as tools, resources and prompts; choosing which primitive each capability uses; asking the user mid-call; serving over Streamable HTTP; long-running tasks; OAuth authorization; security controls; building a host that works through a ticket queue; testing and tracing; and migration."
+description: "Use when designing, building, securing, testing or running Model Context Protocol (MCP) servers and clients with the Python SDK, or when moving a 2025-era MCP server to the pinned revision. Covers wrapping an existing HTTP API as tools, resources and prompts; choosing which primitive each capability uses; asking the user mid-call; serving over Streamable HTTP; long-running tasks; OAuth authorization; security controls; building a host that works through a ticket queue; testing and tracing; and migration. When someone explicitly asks to be taught, tutored or quizzed on what this book covers (\"teach me\", \"tutor me\", \"quiz me\"), it also tutors them, one question at a time. Not for a one-off \"explain X\" or \"what is X\"."
 license: CC-BY-NC-4.0 AND MIT
 compatibility: "Python 3.12.15 and the pinned packages in scripts/requirements.txt; the scripts run offline."
 metadata:
@@ -227,6 +227,12 @@ cd scripts && uv run --no-project python start-the-shop-api.py
 - A 2025 session lands on another replica and gets 404 "Session not found".
 - A proxy that strips unknown headers drops `MCP-Protocol-Version`, and the server picks the wrong era.
 - The earliest removal date is not a deadline: the first revision released on or after it may remove the feature. Move before it, and plan by what your logs show.
+
+## Teach this book, when asked
+
+**When:** only when the person you're working with explicitly asks to be taught, tutored or quizzed on this book, one of its chapters or a topic it covers ("teach me", "tutor me", "quiz me", "help me master"). A one-off question ("explain X", "what is X", "how do I use X") gets a normal answer from the procedures above, with no quiz. If you can't tell which they want, ask one short question: a quick answer, or should you teach it properly?
+
+When they do, read `references/tutor.md` first and follow it: how to teach the book a question at a time, then every chapter's sections with their examples and terms.
 
 ## Reading in another language
 

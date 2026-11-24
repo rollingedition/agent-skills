@@ -3,13 +3,13 @@ title: "Observability for LLM Applications"
 chapter: "Keep private data out of telemetry"
 chapter_id: keep-private-data-out
 book: observability-for-llm-applications
-edition: 2026.11.1
+edition: 2026.11.2
 verified: 2026-11-23
-edition_code: B95K-8RWR
+edition_code: W9DX-M10H
 canonical: https://rollingedition.com/observability-for-llm-applications/keep-private-data-out
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“Keep private data out of telemetry,” chapter 12 of Observability for LLM Applications, Edition 2026.11.1, examples passed Nov 23, 2026. By Rolling Edition, https://rollingedition.com/observability-for-llm-applications/keep-private-data-out. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Keep private data out of telemetry,” chapter 12 of Observability for LLM Applications, Edition 2026.11.2, examples passed Nov 23, 2026. By Rolling Edition, https://rollingedition.com/observability-for-llm-applications/keep-private-data-out. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Keep private data out of telemetry
 
@@ -25,7 +25,7 @@ The [content capture](#the-capture-switch) switch from chapter 3 is the primary 
 
 One model call under each of the four modes shows what each mode writes, to the span and to the logs.
 
-Example `capture-modes` (Python 3.13.16 · bm25s 0.3.16 · httpx 0.28.1 · mcp 2.3.0 · numpy 2.5.5 · openai 3.56.0 · opentelemetry-api 1.45.2 · opentelemetry-exporter-http-transport 0.66b2 · opentelemetry-exporter-otlp-common 0.66b2 · opentelemetry-exporter-otlp-proto-common 1.45.2 · opentelemetry-exporter-otlp-proto-http 1.45.2 · opentelemetry-instrumentation 0.66b2 · opentelemetry-instrumentation-genai-openai 1.3b0 · opentelemetry-proto 1.45.2 · opentelemetry-sdk 1.45.2 · opentelemetry-semantic-conventions 0.66b2 · opentelemetry-util-genai 1.3b0 · pydantic 2.14.4), passing in Edition 2026.11.1:
+Example `capture-modes` (Python 3.13.16 · bm25s 0.3.16 · httpx 0.28.1 · mcp 2.3.0 · numpy 2.5.5 · openai 3.57.0 · opentelemetry-api 1.45.2 · opentelemetry-exporter-http-transport 0.66b2 · opentelemetry-exporter-otlp-common 0.66b2 · opentelemetry-exporter-otlp-proto-common 1.45.2 · opentelemetry-exporter-otlp-proto-http 1.45.2 · opentelemetry-instrumentation 0.66b2 · opentelemetry-instrumentation-genai-openai 1.3b0 · opentelemetry-proto 1.45.2 · opentelemetry-sdk 1.45.2 · opentelemetry-semantic-conventions 0.66b2 · opentelemetry-util-genai 1.3b0 · pydantic 2.14.4), passing in Edition 2026.11.2:
 
 ```python
 """The four content modes of the official package, each set before the package is instrumented and run on the same
@@ -111,7 +111,7 @@ A personal-looking value is a person, place or relation name in a request's text
 
 Running the day twice, with capture off and then on, shows what each run's spans hold.
 
-Example `leak-with-capture-on` (Python 3.13.16 · bm25s 0.3.16 · httpx 0.28.1 · mcp 2.3.0 · numpy 2.5.5 · openai 3.56.0 · opentelemetry-api 1.45.2 · opentelemetry-exporter-http-transport 0.66b2 · opentelemetry-exporter-otlp-common 0.66b2 · opentelemetry-exporter-otlp-proto-common 1.45.2 · opentelemetry-exporter-otlp-proto-http 1.45.2 · opentelemetry-instrumentation 0.66b2 · opentelemetry-instrumentation-genai-openai 1.3b0 · opentelemetry-proto 1.45.2 · opentelemetry-sdk 1.45.2 · opentelemetry-semantic-conventions 0.66b2 · opentelemetry-util-genai 1.3b0 · pydantic 2.14.4), passing in Edition 2026.11.1:
+Example `leak-with-capture-on` (Python 3.13.16 · bm25s 0.3.16 · httpx 0.28.1 · mcp 2.3.0 · numpy 2.5.5 · openai 3.57.0 · opentelemetry-api 1.45.2 · opentelemetry-exporter-http-transport 0.66b2 · opentelemetry-exporter-otlp-common 0.66b2 · opentelemetry-exporter-otlp-proto-common 1.45.2 · opentelemetry-exporter-otlp-proto-http 1.45.2 · opentelemetry-instrumentation 0.66b2 · opentelemetry-instrumentation-genai-openai 1.3b0 · opentelemetry-proto 1.45.2 · opentelemetry-sdk 1.45.2 · opentelemetry-semantic-conventions 0.66b2 · opentelemetry-util-genai 1.3b0 · pydantic 2.14.4), passing in Edition 2026.11.2:
 
 ```python
 """What the day's telemetry holds before any redaction, with content capture off and on, and the stack traces that leave the
@@ -198,7 +198,7 @@ With capture off, each of the 200 messages leaves a user ID on its root span, an
 
 Capture also adds bytes to every message's trace, and [chapter 11](#retention) asked for that number before any period was set. Measuring the bytes on the same export path puts a number on the cost.
 
-Example `content-bytes-per-message` (Python 3.13.16 · bm25s 0.3.16 · httpx 0.28.1 · mcp 2.3.0 · numpy 2.5.5 · openai 3.56.0 · opentelemetry-api 1.45.2 · opentelemetry-exporter-http-transport 0.66b2 · opentelemetry-exporter-otlp-common 0.66b2 · opentelemetry-exporter-otlp-proto-common 1.45.2 · opentelemetry-exporter-otlp-proto-http 1.45.2 · opentelemetry-instrumentation 0.66b2 · opentelemetry-instrumentation-genai-openai 1.3b0 · opentelemetry-proto 1.45.2 · opentelemetry-sdk 1.45.2 · opentelemetry-semantic-conventions 0.66b2 · opentelemetry-util-genai 1.3b0 · pydantic 2.14.4), passing in Edition 2026.11.1:
+Example `content-bytes-per-message` (Python 3.13.16 · bm25s 0.3.16 · httpx 0.28.1 · mcp 2.3.0 · numpy 2.5.5 · openai 3.57.0 · opentelemetry-api 1.45.2 · opentelemetry-exporter-http-transport 0.66b2 · opentelemetry-exporter-otlp-common 0.66b2 · opentelemetry-exporter-otlp-proto-common 1.45.2 · opentelemetry-exporter-otlp-proto-http 1.45.2 · opentelemetry-instrumentation 0.66b2 · opentelemetry-instrumentation-genai-openai 1.3b0 · opentelemetry-proto 1.45.2 · opentelemetry-sdk 1.45.2 · opentelemetry-semantic-conventions 0.66b2 · opentelemetry-util-genai 1.3b0 · pydantic 2.14.4), passing in Edition 2026.11.2:
 
 ```python
 """What content capture adds to a message's bytes on baseline day 1, and what the SDK does to a long content value. A
@@ -288,7 +288,7 @@ What the processor removes is specific. The synthetic users' names and addresses
 
 The next example runs the processor over the day's spans and counts what it leaves, then runs the receiver's redaction over the incident day's stored rows.
 
-Example `scan-after-redaction` (Python 3.13.16 · bm25s 0.3.16 · httpx 0.28.1 · mcp 2.3.0 · numpy 2.5.5 · openai 3.56.0 · opentelemetry-api 1.45.2 · opentelemetry-exporter-http-transport 0.66b2 · opentelemetry-exporter-otlp-common 0.66b2 · opentelemetry-exporter-otlp-proto-common 1.45.2 · opentelemetry-exporter-otlp-proto-http 1.45.2 · opentelemetry-instrumentation 0.66b2 · opentelemetry-instrumentation-genai-openai 1.3b0 · opentelemetry-proto 1.45.2 · opentelemetry-sdk 1.45.2 · opentelemetry-semantic-conventions 0.66b2 · opentelemetry-util-genai 1.3b0 · pydantic 2.14.4), passing in Edition 2026.11.1:
+Example `scan-after-redaction` (Python 3.13.16 · bm25s 0.3.16 · httpx 0.28.1 · mcp 2.3.0 · numpy 2.5.5 · openai 3.57.0 · opentelemetry-api 1.45.2 · opentelemetry-exporter-http-transport 0.66b2 · opentelemetry-exporter-otlp-common 0.66b2 · opentelemetry-exporter-otlp-proto-common 1.45.2 · opentelemetry-exporter-otlp-proto-http 1.45.2 · opentelemetry-instrumentation 0.66b2 · opentelemetry-instrumentation-genai-openai 1.3b0 · opentelemetry-proto 1.45.2 · opentelemetry-sdk 1.45.2 · opentelemetry-semantic-conventions 0.66b2 · opentelemetry-util-genai 1.3b0 · pydantic 2.14.4), passing in Edition 2026.11.2:
 
 ```python
 """The scanner's count after redaction, with the redacting processor on every set of spans. On baseline day 1 the synthetic
@@ -374,7 +374,7 @@ The key matters because the user IDs are sequential, so anyone can write out eve
 
 Trying every candidate ID against one stored hash shows what the key is for.
 
-Example `redact-and-hash` (Python 3.13.16 · bm25s 0.3.16 · httpx 0.28.1 · mcp 2.3.0 · numpy 2.5.5 · openai 3.56.0 · opentelemetry-api 1.45.2 · opentelemetry-exporter-http-transport 0.66b2 · opentelemetry-exporter-otlp-common 0.66b2 · opentelemetry-exporter-otlp-proto-common 1.45.2 · opentelemetry-exporter-otlp-proto-http 1.45.2 · opentelemetry-instrumentation 0.66b2 · opentelemetry-instrumentation-genai-openai 1.3b0 · opentelemetry-proto 1.45.2 · opentelemetry-sdk 1.45.2 · opentelemetry-semantic-conventions 0.66b2 · opentelemetry-util-genai 1.3b0 · pydantic 2.14.4), passing in Edition 2026.11.1:
+Example `redact-and-hash` (Python 3.13.16 · bm25s 0.3.16 · httpx 0.28.1 · mcp 2.3.0 · numpy 2.5.5 · openai 3.57.0 · opentelemetry-api 1.45.2 · opentelemetry-exporter-http-transport 0.66b2 · opentelemetry-exporter-otlp-common 0.66b2 · opentelemetry-exporter-otlp-proto-common 1.45.2 · opentelemetry-exporter-otlp-proto-http 1.45.2 · opentelemetry-instrumentation 0.66b2 · opentelemetry-instrumentation-genai-openai 1.3b0 · opentelemetry-proto 1.45.2 · opentelemetry-sdk 1.45.2 · opentelemetry-semantic-conventions 0.66b2 · opentelemetry-util-genai 1.3b0 · pydantic 2.14.4), passing in Edition 2026.11.2:
 
 ```python
 """The redacting processor, and the keyed pseudonym that replaces a user ID. Redaction is defence in depth: it removes
@@ -461,7 +461,7 @@ The package has an upload hook, which the variable `OTEL_INSTRUMENTATION_GENAI_C
 
 Sending the same twenty calls through the hook three ways sorts out where the content goes.
 
-Example `content-by-reference` (Python 3.13.16 · bm25s 0.3.16 · httpx 0.28.1 · mcp 2.3.0 · numpy 2.5.5 · openai 3.56.0 · opentelemetry-api 1.45.2 · opentelemetry-exporter-http-transport 0.66b2 · opentelemetry-exporter-otlp-common 0.66b2 · opentelemetry-exporter-otlp-proto-common 1.45.2 · opentelemetry-exporter-otlp-proto-http 1.45.2 · opentelemetry-instrumentation 0.66b2 · opentelemetry-instrumentation-genai-openai 1.3b0 · opentelemetry-proto 1.45.2 · opentelemetry-sdk 1.45.2 · opentelemetry-semantic-conventions 0.66b2 · opentelemetry-util-genai 1.3b0 · pydantic 2.14.4), passing in Edition 2026.11.1:
+Example `content-by-reference` (Python 3.13.16 · bm25s 0.3.16 · httpx 0.28.1 · mcp 2.3.0 · numpy 2.5.5 · openai 3.57.0 · opentelemetry-api 1.45.2 · opentelemetry-exporter-http-transport 0.66b2 · opentelemetry-exporter-otlp-common 0.66b2 · opentelemetry-exporter-otlp-proto-common 1.45.2 · opentelemetry-exporter-otlp-proto-http 1.45.2 · opentelemetry-instrumentation 0.66b2 · opentelemetry-instrumentation-genai-openai 1.3b0 · opentelemetry-proto 1.45.2 · opentelemetry-sdk 1.45.2 · opentelemetry-semantic-conventions 0.66b2 · opentelemetry-util-genai 1.3b0 · pydantic 2.14.4), passing in Edition 2026.11.2:
 
 ```python
 """The upload hook, which writes each call's messages to a store and puts a reference on the span. The same twenty calls
@@ -554,7 +554,7 @@ Two slot labels need a further word. The English annotations in the slice the bo
 
 The next example draws the spans that hold each kind, before and after redaction, in two panels.
 
-Example `figure-personal-items-before-after` (Python 3.13.16 · bm25s 0.3.16 · httpx 0.28.1 · matplotlib 3.11.2 · mcp 2.3.0 · numpy 2.5.5 · openai 3.56.0 · opentelemetry-api 1.45.2 · opentelemetry-exporter-http-transport 0.66b2 · opentelemetry-exporter-otlp-common 0.66b2 · opentelemetry-exporter-otlp-proto-common 1.45.2 · opentelemetry-exporter-otlp-proto-http 1.45.2 · opentelemetry-instrumentation 0.66b2 · opentelemetry-instrumentation-genai-openai 1.3b0 · opentelemetry-proto 1.45.2 · opentelemetry-sdk 1.45.2 · opentelemetry-semantic-conventions 0.66b2 · opentelemetry-util-genai 1.3b0 · pydantic 2.14.4), passing in Edition 2026.11.1:
+Example `figure-personal-items-before-after` (Python 3.13.16 · bm25s 0.3.16 · httpx 0.28.1 · matplotlib 3.11.2 · mcp 2.3.0 · numpy 2.5.5 · openai 3.57.0 · opentelemetry-api 1.45.2 · opentelemetry-exporter-http-transport 0.66b2 · opentelemetry-exporter-otlp-common 0.66b2 · opentelemetry-exporter-otlp-proto-common 1.45.2 · opentelemetry-exporter-otlp-proto-http 1.45.2 · opentelemetry-instrumentation 0.66b2 · opentelemetry-instrumentation-genai-openai 1.3b0 · opentelemetry-proto 1.45.2 · opentelemetry-sdk 1.45.2 · opentelemetry-semantic-conventions 0.66b2 · opentelemetry-util-genai 1.3b0 · pydantic 2.14.4), passing in Edition 2026.11.2:
 
 ```python
 """How many spans of baseline day 1 hold each kind of personal item, before and after redaction, in two panels: the
@@ -633,7 +633,7 @@ Figure 12.1 draws the spans on baseline day 1 that hold each kind of item, befor
 
 *Figure 12.1. Spans holding each kind of personal item, before and after redaction, in two panels.*
 
-![The synthetic users' items fall to nothing after redaction, and the dataset's personal-looking values keep their bars before and after.](https://rollingedition.ai/books/observability-for-llm-applications/2026.11.1/figures/personal-items-before-after.svg)
+![The synthetic users' items fall to nothing after redaction, and the dataset's personal-looking values keep their bars before and after.](https://rollingedition.ai/books/observability-for-llm-applications/2026.11.2/figures/personal-items-before-after.svg)
 
 The 55 person values that redaction leaves measure how much of the request text the redactor cannot reach. That is a count of the redactor's reach, not of anyone's records, and a reader should not take it as one.
 

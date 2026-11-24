@@ -1,6 +1,6 @@
 ---
 name: securing-llm-applications-and-agents
-description: "Use when threat-modelling an LLM assistant or agent that has tools and reads text other people wrote, or when measuring whether a defence against prompt injection, data exfiltration or tool misuse works. Covers the threat model; an attack set scored in code, split into dev and held-out; paired comparisons with intervals; prompt defences, detectors and their false alarms; least privilege, egress rules and isolation in the harness; secrets and retrieval by role; checking third-party tools and model files; adaptive red-teaming; and regression gates."
+description: "Use when threat-modelling an LLM assistant or agent that has tools and reads text other people wrote, or when measuring whether a defence against prompt injection, data exfiltration or tool misuse works. Covers the threat model; an attack set scored in code, split into dev and held-out; paired comparisons with intervals; prompt defences, detectors and their false alarms; least privilege, egress rules and isolation in the harness; secrets and retrieval by role; checking third-party tools and model files; adaptive red-teaming; and regression gates. When someone explicitly asks to be taught, tutored or quizzed on what this book covers (\"teach me\", \"tutor me\", \"quiz me\"), it also tutors them, one question at a time. Not for a one-off \"explain X\" or \"what is X\"."
 license: CC-BY-NC-4.0 AND MIT
 compatibility: "Python 3.13.16 and the pinned packages in scripts/requirements.txt; the scripts run offline."
 metadata:
@@ -198,6 +198,12 @@ cd scripts && uv run --no-project python attack-rough-baseline.py
 
 **Pitfalls:**
 - A gate on dev catches drift on the cases it was measured on. It does not show the defence works on new cases.
+
+## Teach this book, when asked
+
+**When:** only when the person you're working with explicitly asks to be taught, tutored or quizzed on this book, one of its chapters or a topic it covers ("teach me", "tutor me", "quiz me", "help me master"). A one-off question ("explain X", "what is X", "how do I use X") gets a normal answer from the procedures above, with no quiz. If you can't tell which they want, ask one short question: a quick answer, or should you teach it properly?
+
+When they do, read `references/tutor.md` first and follow it: how to teach the book a question at a time, then every chapter's sections with their examples and terms.
 
 ## Reading in another language
 

@@ -1,29 +1,29 @@
 ---
 name: observability-for-llm-applications
-description: "Use when an LLM application's traces, token counts and cost, latency, failures, alerts, release comparisons, sampling or private data have to be worked out from OpenTelemetry GenAI spans. Covers naming spans to the GenAI conventions, tracing a request across an MCP server into one OTLP backend, deriving cached input tokens and pricing a call, finding the slow step and the failed step, setting a burn-rate alert, gating a release on paired traces, choosing a trace sampling policy, and keeping personal data out of telemetry."
+description: "Use when an LLM application's traces, token counts and cost, latency, failures, alerts, release comparisons, sampling or private data have to be worked out from OpenTelemetry GenAI spans. Covers naming spans to the GenAI conventions, tracing a request across an MCP server into one OTLP backend, deriving cached input tokens and pricing a call, finding the slow step and the failed step, setting a burn-rate alert, gating a release on paired traces, choosing a trace sampling policy, and keeping personal data out of telemetry. When someone explicitly asks to be taught, tutored or quizzed on what this book covers (\"teach me\", \"tutor me\", \"quiz me\"), it also tutors them, one question at a time. Not for a one-off \"explain X\" or \"what is X\"."
 license: CC-BY-NC-4.0 AND MIT
 compatibility: "Python 3.13.16 and the pinned packages in scripts/requirements.txt; the scripts run offline."
 metadata:
   publisher: "Rolling Edition"
   book: "Observability for LLM Applications"
-  edition: "2026.11.1"
+  edition: "2026.11.2"
   verified: "2026-11-23"
   examples: "80 of 80 examples pass"
-  edition-code: "B95K-8RWR"
+  edition-code: "W9DX-M10H"
   source: "https://rollingedition.com/observability-for-llm-applications"
 ---
 
 # Observability for LLM Applications
 
-This agent skill is *Observability for LLM Applications*, Edition 2026.11.1, from Rolling Edition. Examples passed Nov 23, 2026: 80 of 80 examples pass. It's built from that edition, never written separately: the procedures below come from the book's sections, `references/` holds each chapter, and `references/glossary.md` the terms the book defines, and `scripts/` holds the examples as the edition ran them.
+This agent skill is *Observability for LLM Applications*, Edition 2026.11.2, from Rolling Edition. Examples passed Nov 23, 2026: 80 of 80 examples pass. It's built from that edition, never written separately: the procedures below come from the book's sections, `references/` holds each chapter, and `references/glossary.md` the terms the book defines, and `scripts/` holds the examples as the edition ran them.
 
 ## How to use this skill
 
 - **Pick the procedure that fits the task,** and follow its steps in order. Each step links the section it comes from: read that section in `references/` before you act on it, and adapt it to the project in front of you.
 - **Check against the book.** Each example in `scripts/` has its expected output beside it (`.out`), at the versions in `scripts/requirements.txt`. If the project uses other versions, say so before relying on a step.
 - **Use the book's terms as it defines them.** `references/glossary.md` has each term this book defines, in the book's own sentence, with the section that defines it and the version it's true for: where the task uses one, it means that, and cite its section.
-- **Is this copy current?** Call `check_code` with `B95K-8RWR` on the Rolling Edition MCP server (https://rollingedition.ai/mcp), or compare the edition with the book's page: https://rollingedition.com/observability-for-llm-applications
-- **Credit the book** when you quote it or reuse its code: Observability for LLM Applications, Edition 2026.11.1, examples passed Nov 23, 2026. By Rolling Edition, https://rollingedition.com/observability-for-llm-applications. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people.
+- **Is this copy current?** Call `check_code` with `W9DX-M10H` on the Rolling Edition MCP server (https://rollingedition.ai/mcp), or compare the edition with the book's page: https://rollingedition.com/observability-for-llm-applications
+- **Credit the book** when you quote it or reuse its code: Observability for LLM Applications, Edition 2026.11.2, examples passed Nov 23, 2026. By Rolling Edition, https://rollingedition.com/observability-for-llm-applications. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people.
 
 To run an example as the book does, with [uv](https://docs.astral.sh/uv/):
 
@@ -142,6 +142,12 @@ Use when spans could carry user names, email addresses, user IDs, or the people 
 6. Where content must be kept, store it by reference: a `*_ref` attribute on the span, and the content in a store with its own access rules, as [Keep content by reference](references/keep-private-data-out.md#keep-content-by-reference) describes ([the example](scripts/content-by-reference.py)).
 7. Scan what is left for the values redaction should have removed, and count them. Seed the test traffic with known identifiers; after redaction their count must be zero. Count, and don't assert, the free-text names the redactor can't recognise, as [Count what redaction leaves](references/keep-private-data-out.md#scanning-and-counting) explains ([the example](scripts/scan-after-redaction.py)).
 
+## Teach this book, when asked
+
+**When:** only when the person you're working with explicitly asks to be taught, tutored or quizzed on this book, one of its chapters or a topic it covers ("teach me", "tutor me", "quiz me", "help me master"). A one-off question ("explain X", "what is X", "how do I use X") gets a normal answer from the procedures above, with no quiz. If you can't tell which they want, ask one short question: a quick answer, or should you teach it properly?
+
+When they do, read `references/tutor.md` first and follow it: how to teach the book a question at a time, then every chapter's sections with their examples and terms.
+
 ## Reading in another language
 
-When the person you're working with wants to read part of this book in another language, and the Rolling Edition MCP server is connected, first call its `get_section` with `language`: where Rolling Edition has its own translation of the book in that language (`get_contents` lists them), present each section as it comes, with the facts of its `translation`, and translate only the sections it lists as `untranslated`. Otherwise, translate it for them from the chapter in `references/`. Translate the prose faithfully and in full: don't summarize, skip or add anything. Leave these exactly as they are: code, commands, output, file names, identifiers, inline code, package names and versions, numbers and URLs. Where practitioners who read the language usually keep a technical term in English, keep it, and give a short gloss in parentheses the first time, where that helps. Keep the headings and the structure: lists, tables, and the examples in their places. Begin by saying that it's your translation of *Observability for LLM Applications*, Edition 2026.11.1, from Rolling Edition, licensed CC BY-NC 4.0, with the chapter's link, `canonical` in its front matter, and keep each section's link, https://rollingedition.com/observability-for-llm-applications/s/ followed by the ID in its heading's `{#…}`. For a long chapter, translate a section at a time and offer to go on after each. The Rolling Edition MCP server's `read_in_my_language` prompt asks for the same.
+When the person you're working with wants to read part of this book in another language, and the Rolling Edition MCP server is connected, first call its `get_section` with `language`: where Rolling Edition has its own translation of the book in that language (`get_contents` lists them), present each section as it comes, with the facts of its `translation`, and translate only the sections it lists as `untranslated`. Otherwise, translate it for them from the chapter in `references/`. Translate the prose faithfully and in full: don't summarize, skip or add anything. Leave these exactly as they are: code, commands, output, file names, identifiers, inline code, package names and versions, numbers and URLs. Where practitioners who read the language usually keep a technical term in English, keep it, and give a short gloss in parentheses the first time, where that helps. Keep the headings and the structure: lists, tables, and the examples in their places. Begin by saying that it's your translation of *Observability for LLM Applications*, Edition 2026.11.2, from Rolling Edition, licensed CC BY-NC 4.0, with the chapter's link, `canonical` in its front matter, and keep each section's link, https://rollingedition.com/observability-for-llm-applications/s/ followed by the ID in its heading's `{#…}`. For a long chapter, translate a section at a time and offer to go on after each. The Rolling Edition MCP server's `read_in_my_language` prompt asks for the same.

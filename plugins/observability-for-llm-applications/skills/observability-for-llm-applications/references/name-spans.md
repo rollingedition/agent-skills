@@ -3,13 +3,13 @@ title: "Observability for LLM Applications"
 chapter: "Name spans the way the standard does"
 chapter_id: name-spans
 book: observability-for-llm-applications
-edition: 2026.11.1
+edition: 2026.11.2
 verified: 2026-11-23
-edition_code: B95K-8RWR
+edition_code: W9DX-M10H
 canonical: https://rollingedition.com/observability-for-llm-applications/name-spans
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“Name spans the way the standard does,” chapter 2 of Observability for LLM Applications, Edition 2026.11.1, examples passed Nov 23, 2026. By Rolling Edition, https://rollingedition.com/observability-for-llm-applications/name-spans. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Name spans the way the standard does,” chapter 2 of Observability for LLM Applications, Edition 2026.11.2, examples passed Nov 23, 2026. By Rolling Edition, https://rollingedition.com/observability-for-llm-applications/name-spans. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Name spans the way the standard does
 
@@ -40,7 +40,7 @@ The registry sorts spans into span types, and each type has a name pattern, a [s
 | Tool execution | `execute_tool {tool}` | INTERNAL | `execute_tool` |
 | Agent invocation | `invoke_agent {agent}` | INTERNAL in process; CLIENT for a remote agent | `invoke_agent` |
 
-Example `inference-span-names` (Python 3.13.16 · bm25s 0.3.16 · mcp 2.3.0 · numpy 2.5.5 · opentelemetry-api 1.45.2 · opentelemetry-exporter-http-transport 0.66b2 · opentelemetry-exporter-otlp-common 0.66b2 · opentelemetry-exporter-otlp-proto-common 1.45.2 · opentelemetry-exporter-otlp-proto-http 1.45.2 · opentelemetry-instrumentation 0.66b2 · opentelemetry-instrumentation-genai-openai 1.3b0 · opentelemetry-proto 1.45.2 · opentelemetry-sdk 1.45.2 · opentelemetry-semantic-conventions 0.66b2 · opentelemetry-util-genai 1.3b0 · pydantic 2.14.4), passing in Edition 2026.11.1:
+Example `inference-span-names` (Python 3.13.16 · bm25s 0.3.16 · mcp 2.3.0 · numpy 2.5.5 · opentelemetry-api 1.45.2 · opentelemetry-exporter-http-transport 0.66b2 · opentelemetry-exporter-otlp-common 0.66b2 · opentelemetry-exporter-otlp-proto-common 1.45.2 · opentelemetry-exporter-otlp-proto-http 1.45.2 · opentelemetry-instrumentation 0.66b2 · opentelemetry-instrumentation-genai-openai 1.3b0 · opentelemetry-proto 1.45.2 · opentelemetry-sdk 1.45.2 · opentelemetry-semantic-conventions 0.66b2 · opentelemetry-util-genai 1.3b0 · pydantic 2.14.4), passing in Edition 2026.11.2:
 
 ```python
 """Print the span name each step gets from the assistant, beside the registry's pattern for that span type. The names are
@@ -130,7 +130,7 @@ Of the spans the assistant makes, the fallback span is the only one the registry
 
 A span's kind says where its work ran: CLIENT for a call out of the process, SERVER for one received, INTERNAL for work inside (two more, PRODUCER and CONSUMER, mark work handed to a queue). The model call is the hard case. The registry says "It's RECOMMENDED to use `CLIENT` kind when the GenAI system being instrumented usually runs in a different process than its client or when the GenAI call happens over instrumented protocol such as HTTP" ([client inference](https://raw.githubusercontent.com/open-telemetry/semantic-conventions-genai/v0.1.0/docs/gen-ai/client-inference.md)). A model behind an endpoint is reached by a call that leaves the assistant's process, so its span is CLIENT. The registry also allows INTERNAL for a model running in the same process, which is why the kind is a judgement at all. The book applies the rule with a test a span can show: whether the call names a server. A call that names a server is CLIENT, and a call that names none can be INTERNAL.
 
-Example `span-kinds-by-process` (Python 3.13.16 · bm25s 0.3.16 · mcp 2.3.0 · numpy 2.5.5 · opentelemetry-api 1.45.2 · opentelemetry-exporter-http-transport 0.66b2 · opentelemetry-exporter-otlp-common 0.66b2 · opentelemetry-exporter-otlp-proto-common 1.45.2 · opentelemetry-exporter-otlp-proto-http 1.45.2 · opentelemetry-instrumentation 0.66b2 · opentelemetry-instrumentation-genai-openai 1.3b0 · opentelemetry-proto 1.45.2 · opentelemetry-sdk 1.45.2 · opentelemetry-semantic-conventions 0.66b2 · opentelemetry-util-genai 1.3b0 · pydantic 2.14.4), passing in Edition 2026.11.1:
+Example `span-kinds-by-process` (Python 3.13.16 · bm25s 0.3.16 · mcp 2.3.0 · numpy 2.5.5 · opentelemetry-api 1.45.2 · opentelemetry-exporter-http-transport 0.66b2 · opentelemetry-exporter-otlp-common 0.66b2 · opentelemetry-exporter-otlp-proto-common 1.45.2 · opentelemetry-exporter-otlp-proto-http 1.45.2 · opentelemetry-instrumentation 0.66b2 · opentelemetry-instrumentation-genai-openai 1.3b0 · opentelemetry-proto 1.45.2 · opentelemetry-sdk 1.45.2 · opentelemetry-semantic-conventions 0.66b2 · opentelemetry-util-genai 1.3b0 · pydantic 2.14.4), passing in Edition 2026.11.2:
 
 ```python
 """Give one model call two kinds: CLIENT when the model sits behind an endpoint, as the trace shows it, and INTERNAL
@@ -218,7 +218,7 @@ A span says what it measured, and two other places say who measured it: the [res
 
 The resource carries three attributes the book sets itself. `service.name` is `ambrewick-assistant`. `service.version` is `1.0.0`, and it marks the release, which chapter 10 reads to split traces by release. `service.instance.id` is `dev-day-replay`. The [replay](#replay-and-the-virtual-clock) sets the instance ID itself, so a rerun names the same instance and its traces can be compared run to run. A process that restarts keeps its instance ID only if one was set, and a query that follows one instance through a restart needs the ID to stay put.
 
-Example `resource-and-schema` (Python 3.13.16 · bm25s 0.3.16 · mcp 2.3.0 · numpy 2.5.5 · opentelemetry-api 1.45.2 · opentelemetry-exporter-http-transport 0.66b2 · opentelemetry-exporter-otlp-common 0.66b2 · opentelemetry-exporter-otlp-proto-common 1.45.2 · opentelemetry-exporter-otlp-proto-http 1.45.2 · opentelemetry-instrumentation 0.66b2 · opentelemetry-instrumentation-genai-openai 1.3b0 · opentelemetry-proto 1.45.2 · opentelemetry-sdk 1.45.2 · opentelemetry-semantic-conventions 0.66b2 · opentelemetry-util-genai 1.3b0 · pydantic 2.14.4), passing in Edition 2026.11.1:
+Example `resource-and-schema` (Python 3.13.16 · bm25s 0.3.16 · mcp 2.3.0 · numpy 2.5.5 · opentelemetry-api 1.45.2 · opentelemetry-exporter-http-transport 0.66b2 · opentelemetry-exporter-otlp-common 0.66b2 · opentelemetry-exporter-otlp-proto-common 1.45.2 · opentelemetry-exporter-otlp-proto-http 1.45.2 · opentelemetry-instrumentation 0.66b2 · opentelemetry-instrumentation-genai-openai 1.3b0 · opentelemetry-proto 1.45.2 · opentelemetry-sdk 1.45.2 · opentelemetry-semantic-conventions 0.66b2 · opentelemetry-util-genai 1.3b0 · pydantic 2.14.4), passing in Edition 2026.11.2:
 
 ```python
 """Print the resource and the instrumentation scope of the renamed spans, with the schema URL each one carries, beside
@@ -289,7 +289,7 @@ A name is a claim about the registry, and the validator makes that claim testabl
 
 The validator cannot name [chapter 1's spans](#one-message-one-trace), because they carry no `gen_ai.operation.name`, the attribute it reads to find a span's type. Message 809's 4 spans are `message`, `route`, `retrieve` and `answer`, and the check prints one finding for each: `no known span type for this row`. The finding gives the reason. Once the root is renamed, `message` becomes `invoke_agent ambrewick-assistant`, and that span is checked against its own type.
 
-Example `validate-the-spans` (Python 3.13.16 · bm25s 0.3.16 · mcp 2.3.0 · numpy 2.5.5 · opentelemetry-api 1.45.2 · opentelemetry-exporter-http-transport 0.66b2 · opentelemetry-exporter-otlp-common 0.66b2 · opentelemetry-exporter-otlp-proto-common 1.45.2 · opentelemetry-exporter-otlp-proto-http 1.45.2 · opentelemetry-instrumentation 0.66b2 · opentelemetry-instrumentation-genai-openai 1.3b0 · opentelemetry-proto 1.45.2 · opentelemetry-sdk 1.45.2 · opentelemetry-semantic-conventions 0.66b2 · opentelemetry-util-genai 1.3b0 · pydantic 2.14.4), passing in Edition 2026.11.1:
+Example `validate-the-spans` (Python 3.13.16 · bm25s 0.3.16 · mcp 2.3.0 · numpy 2.5.5 · opentelemetry-api 1.45.2 · opentelemetry-exporter-http-transport 0.66b2 · opentelemetry-exporter-otlp-common 0.66b2 · opentelemetry-exporter-otlp-proto-common 1.45.2 · opentelemetry-exporter-otlp-proto-http 1.45.2 · opentelemetry-instrumentation 0.66b2 · opentelemetry-instrumentation-genai-openai 1.3b0 · opentelemetry-proto 1.45.2 · opentelemetry-sdk 1.45.2 · opentelemetry-semantic-conventions 0.66b2 · opentelemetry-util-genai 1.3b0 · pydantic 2.14.4), passing in Edition 2026.11.2:
 
 ```python
 """Run the validator over chapter 1's rough spans for message 809: every span fails, because none names a registry span
@@ -350,7 +350,7 @@ findings, all: 4
 
 Renamed, the spans pass. Across all 20 dev-day messages the example checks 74 spans, and it finds 0 problems on any span the registry defines. A single assertion holds that count at zero, so a change that breaks a name fails the run instead of printing a new number.
 
-Example `validate-the-renamed-spans` (Python 3.13.16 · bm25s 0.3.16 · mcp 2.3.0 · numpy 2.5.5 · opentelemetry-api 1.45.2 · opentelemetry-exporter-http-transport 0.66b2 · opentelemetry-exporter-otlp-common 0.66b2 · opentelemetry-exporter-otlp-proto-common 1.45.2 · opentelemetry-exporter-otlp-proto-http 1.45.2 · opentelemetry-instrumentation 0.66b2 · opentelemetry-instrumentation-genai-openai 1.3b0 · opentelemetry-proto 1.45.2 · opentelemetry-sdk 1.45.2 · opentelemetry-semantic-conventions 0.66b2 · opentelemetry-util-genai 1.3b0 · pydantic 2.14.4), passing in Edition 2026.11.1:
+Example `validate-the-renamed-spans` (Python 3.13.16 · bm25s 0.3.16 · mcp 2.3.0 · numpy 2.5.5 · opentelemetry-api 1.45.2 · opentelemetry-exporter-http-transport 0.66b2 · opentelemetry-exporter-otlp-common 0.66b2 · opentelemetry-exporter-otlp-proto-common 1.45.2 · opentelemetry-exporter-otlp-proto-http 1.45.2 · opentelemetry-instrumentation 0.66b2 · opentelemetry-instrumentation-genai-openai 1.3b0 · opentelemetry-proto 1.45.2 · opentelemetry-sdk 1.45.2 · opentelemetry-semantic-conventions 0.66b2 · opentelemetry-util-genai 1.3b0 · pydantic 2.14.4), passing in Edition 2026.11.2:
 
 ```python
 """Run the validator over every span of the dev day's twenty messages: no finding on any span the registry defines, and

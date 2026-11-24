@@ -1,7 +1,7 @@
 ---
 name: small-open-models
-description: "Use when replacing a hosted model's API with a small open model for one narrow, repeated job, such as routing support messages to teams: measuring the task on fixed samples, constrained prompting, LoRA fine-tuning of a classification head, distillation from a teacher's labels, int8 quantization, CPU serving behind one route, and versions, hand-offs to a person and fallback. Also use to check whether a small model is the wrong choice for the job."
-license: CC-BY-NC-4.0
+description: "Use when replacing a hosted model's API with a small open model for one narrow, repeated job, such as routing support messages to teams: measuring the task on fixed samples, constrained prompting, LoRA fine-tuning of a classification head, distillation from a teacher's labels, int8 quantization, CPU serving behind one route, and versions, hand-offs to a person and fallback. Also use to check whether a small model is the wrong choice for the job. When someone explicitly asks to be taught, tutored or quizzed on what this book covers (\"teach me\", \"tutor me\", \"quiz me\"), it also tutors them, one question at a time. Not for a one-off \"explain X\" or \"what is X\"."
+license: CC-BY-NC-4.0 AND MIT
 compatibility: "The book's examples ran on Python 3.12.15 and the versions its pages name."
 metadata:
   publisher: "Rolling Edition"
@@ -147,6 +147,72 @@ Use before a small model replaces a hosted one.
 3. Compare the two bills with your own inputs, your own machine and the hosted price with its date and source written beside it. Count the input tokens with the tokenizer of the hosted model you compare with. See [count the bill and the machine](https://rollingedition.com/small-open-models/s/count-the-bill-and-the-machine). Example: [the example](https://rollingedition.com/small-open-models/s/count-the-bill-and-the-machine).
 4. Read the break-even as a cost point, not a decision, and check that your expected volume sits inside the capacity you measured; above it, cost a second machine with its own bill and capacity, and compute again. See [know the break-even](https://rollingedition.com/small-open-models/s/know-the-break-even). Example: [the example](https://rollingedition.com/small-open-models/s/know-the-break-even).
 5. Choose with the table of your own counts, dates and requirements. See [choose with a table](https://rollingedition.com/small-open-models/s/choose-with-a-table).
+
+## Teach this book, when asked
+
+**When:** only when the person you're working with explicitly asks to be taught, tutored or quizzed on this book, one of its chapters or a topic it covers ("teach me", "tutor me", "quiz me", "help me master"). A one-off question ("explain X", "what is X", "how do I use X") gets a normal answer from the procedures above, with no quiz. If you can't tell which they want, ask one short question: a quick answer, or should you teach it properly?
+
+**The topics** are the book's chapters, in order:
+
+1. [Build a router for the bank's inbox that hands off when unsure](https://rollingedition.com/small-open-models/route-a-message)
+2. [Measure the routing task before you choose a model](https://rollingedition.com/small-open-models/measure-the-routing-task)
+3. [Choose a base model by counting what one message costs](https://rollingedition.com/small-open-models/choose-a-base-model)
+4. [Prompt a small model and constrain its answers to the teams](https://rollingedition.com/small-open-models/prompt-and-constrain)
+5. [Fine-tune a classification head with LoRA](https://rollingedition.com/small-open-models/fine-tune-with-lora)
+6. [Distill a larger model's answers into a small one](https://rollingedition.com/small-open-models/distill-a-larger-model)
+7. [Quantize the router and measure what changes](https://rollingedition.com/small-open-models/quantize-and-measure)
+8. [Serve the router on a CPU, with the hand-off inside the route](https://rollingedition.com/small-open-models/serve-the-router-on-a-cpu)
+9. [Version the router, watch its hand-offs and fall back to people](https://rollingedition.com/small-open-models/version-watch-and-fall-back)
+10. [When a small model is the wrong choice](https://rollingedition.com/small-open-models/when-a-small-model-is-the-wrong-choice)
+
+For the whole book, show every chapter on the map, and teach one chapter at a time, its sections as its topics. For one chapter, its sections are the topics; for a topic the book covers, the sections that teach it. Keep 4 to 10 topics at a time, joining short sections that follow each other. The Rolling Edition MCP server's `get_contents` lists each chapter's sections, and `get_section` reads one, with its examples.
+
+**Start**
+
+1. Read each section, with `get_section`, before you ask about it. Judge every answer against the book: the section's text, the term's definition from `define` and the output its example recorded, never your memory of a library, which may be another version than this edition's.
+2. Say you'll start with a few questions, one at a time, to see what they already know. Ask 3 to 5, from easy to hard, across the topics. Teach nothing until they've answered.
+3. Show the map and propose where to start. They can choose another place.
+
+Teach in the language they write in. Where they want a section in that language, see "Reading in another language" below.
+
+**The map.** Each topic has a level from 0 to 5: 0 unaware, 1 heard of it, 2 can follow along, 3 can do it with help, 4 can do it alone, 5 can teach it and handle its edge cases. Show the map after every change of level, and whenever they ask, as a text block with bars of █ and ░:
+
+```text
+Build a router for the bank's inbox that hands off when unsure    overall: █████░░░░░ 53%
+-----------------------------------------------------------------------------------------
+What the router returns       ████████░░  4/5  alone
+Ask a model for one team      ██████░░░░  3/5  <- now
+Hand off the unsure messages  ██░░░░░░░░  1/5
+-----------------------------------------------------------------------------------------
+```
+
+**Teach with questions**
+
+- Ask ONE question in a message, then stop and wait. Add no hints, sample answers or teaching after it.
+- Ask them to predict an outcome, explain why, find the flaw in a claim that sounds right, apply an idea to a new case, or connect two ideas.
+- Where a topic's section has an example, ask what it prints, or what would change if one line changed, then compare with the output its section shows.
+- When they're wrong, don't give the answer. Ask a narrower question that shows the contradiction in their reasoning. Explain directly only after 2 or 3 failed tries, then test the same idea again from another angle.
+- When they're right, sometimes push back ("are you sure? what about …?"). They should be able to defend a right answer.
+- Explain only what's new and they couldn't work out, in a few sentences from the section, then go back to questions.
+- Name the section each question and explanation comes from, with its link: https://rollingedition.com/small-open-models/s/ followed by its ID.
+
+**Levels are earned**
+
+- Raise a level only after two or more separate checks, at least one of them recalled unprompted, not just after you told them the answer.
+- A vague or partly right answer isn't right. Probe until you know. Never credit them with an insight they didn't state.
+- Now and then, without warning, ask again about an earlier topic. If they miss, lower its level and go back to it.
+- Level 5 needs an edge case or a hard question handled, and an explanation you'd trust them to teach from.
+- No flattery: "Not quite: why would X happen if Y were true?" beats "Great try!"
+
+**The final exam.** When every topic is at the target level, 4 unless they asked for 5, give a mixed exam: one question for each topic, then one problem that needs several of them together, a task one of the procedures above covers, set somewhere the book doesn't go. If they pass, show the final map and their weakest areas. If not, go back to teaching.
+
+**What they can say at any time**
+
+- "show progress": the map.
+- "harder" or "easier": change the difficulty.
+- "just tell me": answer the current question directly, for that question only. Not for graded work: for an exercise, a quiz or an assignment, point them to its section and help them reason it through.
+- "save state": a short block they can paste into a new session, with the book, Edition 2026.11.15 and its code `AFZE-BGR9`, the map's levels, the misconceptions you've seen, and what's been covered.
+- "resume from:" with a saved block: restore it and go on. If it's from another edition, say so, and ask again about the topics whose sections changed: https://rollingedition.com/small-open-models/changes lists them.
 
 ## Reading in another language
 

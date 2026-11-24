@@ -1,7 +1,7 @@
 ---
 name: agent-harnesses
-description: "Use when building, hardening or testing an agent that runs a model with real tools on someone's project. Covers the tool loop and its stop rules, tool schemas and refusals, model adapters and replayed recordings, context budgets and compaction, approval gates bound to the exact diff, sandboxing and secrets, subagents and handoffs, MCP tools, scenario tests and honest scores, traces and token counts, and whether an agent is the right design at all."
-license: CC-BY-NC-4.0
+description: "Use when building, hardening or testing an agent that runs a model with real tools on someone's project. Covers the tool loop and its stop rules, tool schemas and refusals, model adapters and replayed recordings, context budgets and compaction, approval gates bound to the exact diff, sandboxing and secrets, subagents and handoffs, MCP tools, scenario tests and honest scores, traces and token counts, and whether an agent is the right design at all. When someone explicitly asks to be taught, tutored or quizzed on what this book covers (\"teach me\", \"tutor me\", \"quiz me\"), it also tutors them, one question at a time. Not for a one-off \"explain X\" or \"what is X\"."
+license: CC-BY-NC-4.0 AND MIT
 compatibility: "The book's examples ran on Python 3.12.15 and the versions its pages name."
 metadata:
   publisher: "Rolling Edition"
@@ -224,6 +224,76 @@ Other teams write these servers, and the harness runs each as a subprocess with 
 **Pitfalls:**
 - A failure count without kinds does not say which part to fix. One passing run does not predict the next ([Agent failures](https://rollingedition.com/agent-harnesses/s/failures)).
 - A refusal comes before a person's yes, because a yes cannot lift a forbidden change ([Chapter decisions](https://rollingedition.com/agent-harnesses/s/design-decisions)).
+
+## Teach this book, when asked
+
+**When:** only when the person you're working with explicitly asks to be taught, tutored or quizzed on this book, one of its chapters or a topic it covers ("teach me", "tutor me", "quiz me", "help me master"). A one-off question ("explain X", "what is X", "how do I use X") gets a normal answer from the procedures above, with no quiz. If you can't tell which they want, ask one short question: a quick answer, or should you teach it properly?
+
+**The topics** are the book's chapters, in order:
+
+1. [Give a model tools and a loop](https://rollingedition.com/agent-harnesses/tools-and-a-loop)
+2. [Stop the loop when it's done or stuck](https://rollingedition.com/agent-harnesses/stop-rules)
+3. [Give the model tools it can't misuse](https://rollingedition.com/agent-harnesses/tool-schemas)
+4. [One interface for scripted, replayed, local and hosted models](https://rollingedition.com/agent-harnesses/model-adapters)
+5. [Keep the context useful as the task grows](https://rollingedition.com/agent-harnesses/context-budgets)
+6. [Gate the tools that change things](https://rollingedition.com/agent-harnesses/permission-gates)
+7. [Run the agent's code in a sandbox, and keep secrets out of its view](https://rollingedition.com/agent-harnesses/sandbox-and-secrets)
+8. [Hand a subtask to a child, and hand back a stop](https://rollingedition.com/agent-harnesses/subagents-and-handoffs)
+9. [Connect the harness to MCP servers](https://rollingedition.com/agent-harnesses/mcp-tools)
+10. [Test the agent, then measure it on a task set](https://rollingedition.com/agent-harnesses/testing-the-agent)
+11. [Trace each run and count what it cost](https://rollingedition.com/agent-harnesses/traces-and-cost)
+12. [When an agent is the wrong design](https://rollingedition.com/agent-harnesses/when-an-agent-is-the-wrong-design)
+
+For the whole book, show every chapter on the map, and teach one chapter at a time, its sections as its topics. For one chapter, its sections are the topics; for a topic the book covers, the sections that teach it. Keep 4 to 10 topics at a time, joining short sections that follow each other. The Rolling Edition MCP server's `get_contents` lists each chapter's sections, and `get_section` reads one, with its examples.
+
+**Start**
+
+1. Read each section, with `get_section`, before you ask about it. Judge every answer against the book: the section's text, the term's definition from `define` and the output its example recorded, never your memory of a library, which may be another version than this edition's.
+2. Say you'll start with a few questions, one at a time, to see what they already know. Ask 3 to 5, from easy to hard, across the topics. Teach nothing until they've answered.
+3. Show the map and propose where to start. They can choose another place.
+
+Teach in the language they write in. Where they want a section in that language, see "Reading in another language" below.
+
+**The map.** Each topic has a level from 0 to 5: 0 unaware, 1 heard of it, 2 can follow along, 3 can do it with help, 4 can do it alone, 5 can teach it and handle its edge cases. Show the map after every change of level, and whenever they ask, as a text block with bars of █ and ░:
+
+```text
+Give a model tools and a loop    overall: █████░░░░░ 53%
+--------------------------------------------------------
+What the agent does on one task  ████████░░  4/5  alone
+A loop in about seventy lines    ██████░░░░  3/5  <- now
+Two tools and one stop tool      ██░░░░░░░░  1/5
+--------------------------------------------------------
+```
+
+**Teach with questions**
+
+- Ask ONE question in a message, then stop and wait. Add no hints, sample answers or teaching after it.
+- Ask them to predict an outcome, explain why, find the flaw in a claim that sounds right, apply an idea to a new case, or connect two ideas.
+- Where a topic's section has an example, ask what it prints, or what would change if one line changed, then compare with the output its section shows.
+- When they're wrong, don't give the answer. Ask a narrower question that shows the contradiction in their reasoning. Explain directly only after 2 or 3 failed tries, then test the same idea again from another angle.
+- When they're right, sometimes push back ("are you sure? what about …?"). They should be able to defend a right answer.
+- Explain only what's new and they couldn't work out, in a few sentences from the section, then go back to questions.
+- Name the section each question and explanation comes from, with its link: https://rollingedition.com/agent-harnesses/s/ followed by its ID.
+
+**Levels are earned**
+
+- Raise a level only after two or more separate checks, at least one of them recalled unprompted, not just after you told them the answer.
+- A vague or partly right answer isn't right. Probe until you know. Never credit them with an insight they didn't state.
+- Now and then, without warning, ask again about an earlier topic. If they miss, lower its level and go back to it.
+- Level 5 needs an edge case or a hard question handled, and an explanation you'd trust them to teach from.
+- No flattery: "Not quite: why would X happen if Y were true?" beats "Great try!"
+
+**The final exam.** When every topic is at the target level, 4 unless they asked for 5, give a mixed exam: one question for each topic, then one problem that needs several of them together, a task one of the procedures above covers, set somewhere the book doesn't go. If they pass, show the final map and their weakest areas. If not, go back to teaching.
+
+After the exam, tell them once that each chapter's page on rollingedition.com ends with exercises from its examples, and that with Rolling Edition Labs, Submit checks an answer by running it at this edition's pinned versions. Say it plainly, and never make the tutoring wait for it: everything here is free.
+
+**What they can say at any time**
+
+- "show progress": the map.
+- "harder" or "easier": change the difficulty.
+- "just tell me": answer the current question directly, for that question only. Not for graded work: for an exercise, a quiz or an assignment, point them to its section and help them reason it through.
+- "save state": a short block they can paste into a new session, with the book, Edition 2026.11.7 and its code `YNMR-JA84`, the map's levels, the misconceptions you've seen, and what's been covered.
+- "resume from:" with a saved block: restore it and go on. If it's from another edition, say so, and ask again about the topics whose sections changed: https://rollingedition.com/agent-harnesses/changes lists them.
 
 ## Reading in another language
 

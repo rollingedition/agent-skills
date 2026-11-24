@@ -1,13 +1,13 @@
 ---
 title: "Glossary"
 book: "Evaluating LLM Applications"
-edition: "2026.11.6"
+edition: "2026.11.7"
 canonical: "https://rollingedition.com/evaluating-llm-applications/glossary"
 ---
 
 # Glossary of *Evaluating LLM Applications*
 
-The 124 terms this book defines, as Edition 2026.11.6 has them, each in the book's own sentence. When a task this skill covers uses one, it means what it says here: read its section before you rely on it, and cite the section. Where a definition depends on a package, it says the version this edition pins and runs its examples on. On the web: https://rollingedition.com/evaluating-llm-applications/glossary
+The 124 terms this book defines, as Edition 2026.11.7 has them, each in the book's own sentence. When a task this skill covers uses one, it means what it says here: read its section before you rely on it, and cite the section. Where a definition depends on a package, it says the version this edition pins and runs its examples on. On the web: https://rollingedition.com/evaluating-llm-applications/glossary
 
 ## agreement
 

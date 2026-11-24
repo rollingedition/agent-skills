@@ -1,6 +1,6 @@
 ---
 name: time-series-forecasting
-description: "Use when forecasting many related hourly or daily series, such as energy demand a day ahead: baselines to beat, leakage-free backtests, MASE scored on history, statistical and gradient-boosting models, totals that add up, conformal intervals and a buy level from costs, Prophet and recorded foundation-model comparisons, and keeping a daily forecast running."
+description: "Use when forecasting many related hourly or daily series, such as energy demand a day ahead: baselines to beat, leakage-free backtests, MASE scored on history, statistical and gradient-boosting models, totals that add up, conformal intervals and a buy level from costs, Prophet and recorded foundation-model comparisons, and keeping a daily forecast running. When someone explicitly asks to be taught, tutored or quizzed on what this book covers (\"teach me\", \"tutor me\", \"quiz me\"), it also tutors them, one question at a time. Not for a one-off \"explain X\" or \"what is X\"."
 license: CC-BY-NC-4.0 AND MIT
 compatibility: "Python 3.13.16 and the pinned packages in scripts/requirements.txt; the scripts run offline."
 metadata:
@@ -181,6 +181,12 @@ Terms used below. **Held-out week:** the final seven days of the data, which no 
 
 **Pitfalls:**
 - A check that compares `written_at` with a reading's arrival passes for any code, because the replay writes `written_at` as the cutoff. Check the arrival times against the cutoff and refit day, and confirm the check fails on a leaky run ([Log every forecast before its actuals arrive](references/keep-the-forecast-running.md#log-every-forecast-before-actuals)).
+
+## Teach this book, when asked
+
+**When:** only when the person you're working with explicitly asks to be taught, tutored or quizzed on this book, one of its chapters or a topic it covers ("teach me", "tutor me", "quiz me", "help me master"). A one-off question ("explain X", "what is X", "how do I use X") gets a normal answer from the procedures above, with no quiz. If you can't tell which they want, ask one short question: a quick answer, or should you teach it properly?
+
+When they do, read `references/tutor.md` first and follow it: how to teach the book a question at a time, then every chapter's sections with their examples and terms.
 
 ## Reading in another language
 

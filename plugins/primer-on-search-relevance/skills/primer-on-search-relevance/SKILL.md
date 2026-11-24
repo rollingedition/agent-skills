@@ -1,6 +1,6 @@
 ---
 name: primer-on-search-relevance
-description: "Use when evaluating or improving search ranking: grading relevance judgments, scoring rankings with nDCG, precision and MRR, deciding with a permutation test and bootstrap interval whether one ranker beats another, checking LLM relevance judgments against people, tuning BM25, semantic retrieval with embeddings and HNSW, hybrid retrieval with min-max blends or reciprocal rank fusion, query spelling, synonyms, classification and LLM rewrites, learning to rank with LambdaMART, cross-encoder and LLM reranking, evaluating retrieval for RAG answers and agents, and testing a search change before shipping with URisk, A/B tests, power and interleaving. Teaches product search on a public furniture and home-goods product-search dataset, in Python."
+description: "Use when evaluating or improving search ranking: grading relevance judgments, scoring rankings with nDCG, precision and MRR, deciding with a permutation test and bootstrap interval whether one ranker beats another, checking LLM relevance judgments against people, tuning BM25, semantic retrieval with embeddings and HNSW, hybrid retrieval with min-max blends or reciprocal rank fusion, query spelling, synonyms, classification and LLM rewrites, learning to rank with LambdaMART, cross-encoder and LLM reranking, evaluating retrieval for RAG answers and agents, and testing a search change before shipping with URisk, A/B tests, power and interleaving. Teaches product search on a public furniture and home-goods product-search dataset, in Python. When someone explicitly asks to be taught, tutored or quizzed on what this book covers (\"teach me\", \"tutor me\", \"quiz me\"), it also tutors them, one question at a time. Not for a one-off \"explain X\" or \"what is X\"."
 license: CC-BY-NC-4.0 AND MIT
 compatibility: "Python 3.12.15 and the pinned packages in scripts/requirements.txt; the scripts run offline."
 metadata:
@@ -197,6 +197,12 @@ cd scripts && uv run --no-project python load-the-store.py
 **Check:** run [the example](scripts/aa-tests-with-peeking.py) and compare its `significant on some day, checked daily` line, 0.231, with `significant at the planned end`: 0.053.
 
 **Pitfalls:** the dashboard invites peeking; groups don't match the plan; the regression set wears out; ties move results ([What goes wrong in production](references/testing-changes.md#testing-changes-in-production)).
+
+## Teach this book, when asked
+
+**When:** only when the person you're working with explicitly asks to be taught, tutored or quizzed on this book, one of its chapters or a topic it covers ("teach me", "tutor me", "quiz me", "help me master"). A one-off question ("explain X", "what is X", "how do I use X") gets a normal answer from the procedures above, with no quiz. If you can't tell which they want, ask one short question: a quick answer, or should you teach it properly?
+
+When they do, read `references/tutor.md` first and follow it: how to teach the book a question at a time, then every chapter's sections with their examples and terms.
 
 ## Reading in another language
 

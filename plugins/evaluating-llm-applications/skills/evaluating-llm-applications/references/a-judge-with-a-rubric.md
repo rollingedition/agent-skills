@@ -3,13 +3,13 @@ title: "Evaluating LLM Applications"
 chapter: "Write a rubric a judge can apply"
 chapter_id: a-judge-with-a-rubric
 book: evaluating-llm-applications
-edition: 2026.11.6
+edition: 2026.11.7
 verified: 2026-11-22
-edition_code: P6V8-WKJT
+edition_code: WCKB-Y7EK
 canonical: https://rollingedition.com/evaluating-llm-applications/a-judge-with-a-rubric
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“Write a rubric a judge can apply,” chapter 5 of Evaluating LLM Applications, Edition 2026.11.6, examples passed Nov 22, 2026. By Rolling Edition, https://rollingedition.com/evaluating-llm-applications/a-judge-with-a-rubric. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Write a rubric a judge can apply,” chapter 5 of Evaluating LLM Applications, Edition 2026.11.7, examples passed Nov 22, 2026. By Rolling Edition, https://rollingedition.com/evaluating-llm-applications/a-judge-with-a-rubric. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Write a rubric a judge can apply
 
@@ -25,7 +25,7 @@ The judge's reply goes to code, and the code reads the first line of it as the v
 
 The book has five rubrics. The answer judge checks a reply about sablefile against the written reference answer for its question. The calibration rubric checks correctness with no reference, on rows from [HelpSteer2](https://huggingface.co/datasets/nvidia/HelpSteer2), a public dataset of human ratings of other models' replies to general prompts, which [chapter 6](calibrate-the-judge#human-ratings) describes. Its dataset card was read on 20 November 2026. Rubric B is a second wording of the calibration task. The pairwise rubric chooses the better of two replies. The faithfulness rubric checks whether an answer is supported by the sections it was given. Each rubric is written as text and carries a hash, and the first example prints the name and the hash of all five. For an item the docs do not cover, the reference is the word none, and the rubric is what tells the judge that a reply passes only when it is the decline sentence.
 
-Example `rubric-text` (Python 3.12.15 · numpy 2.5.5), passing in Edition 2026.11.6:
+Example `rubric-text` (Python 3.12.15 · numpy 2.5.5), passing in Edition 2026.11.7:
 
 ```python
 """The five rubrics the book's judges use, each with the sha256 its recording's manifest holds, and how many lines its system
@@ -116,7 +116,7 @@ A pairwise judge has no scale points to define, and it only has to say which of 
 
 The pairwise example uses human preference pairs from HelpSteer2. Each pair is judged twice: once with the first response shown as A, and once with the second response shown as A. Each verdict is then mapped back to the response it picked, so the two orders can be compared. A pair is consistent when the same response wins in both orders. It is order-changed when the same letter wins in both orders, which means the position decided the verdict; the example's output calls these flipped. Tie and unreadable are the two other kinds.
 
-Example `pairwise-both-orders` (Python 3.12.15 · numpy 2.5.5), passing in Edition 2026.11.6:
+Example `pairwise-both-orders` (Python 3.12.15 · numpy 2.5.5), passing in Edition 2026.11.7:
 
 ```python
 """How the pairwise judge's verdict on each HelpSteer2 preference pair depends on which response is shown as A. Each pair is
@@ -187,7 +187,7 @@ The rubric asks for the verdict on the first line and one short sentence of reas
 
 Fixed replies go through the parser, one line of output each, which prints the verdict, or the label `refused` for a reply with no readable verdict.
 
-Example `parse-verdicts` (Python 3.12.15 · numpy 2.5.5), passing in Edition 2026.11.6:
+Example `parse-verdicts` (Python 3.12.15 · numpy 2.5.5), passing in Edition 2026.11.7:
 
 ```python
 """What lib.contract.parse_verdict accepts and refuses: the verdict on a reply's first non-empty line, PASS or FAIL in capitals,

@@ -1,6 +1,6 @@
 ---
 name: small-open-models
-description: "Use when replacing a hosted model's API with a small open model for one narrow, repeated job, such as routing support messages to teams: measuring the task on fixed samples, constrained prompting, LoRA fine-tuning of a classification head, distillation from a teacher's labels, int8 quantization, CPU serving behind one route, and versions, hand-offs to a person and fallback. Also use to check whether a small model is the wrong choice for the job."
+description: "Use when replacing a hosted model's API with a small open model for one narrow, repeated job, such as routing support messages to teams: measuring the task on fixed samples, constrained prompting, LoRA fine-tuning of a classification head, distillation from a teacher's labels, int8 quantization, CPU serving behind one route, and versions, hand-offs to a person and fallback. Also use to check whether a small model is the wrong choice for the job. When someone explicitly asks to be taught, tutored or quizzed on what this book covers (\"teach me\", \"tutor me\", \"quiz me\"), it also tutors them, one question at a time. Not for a one-off \"explain X\" or \"what is X\"."
 license: CC-BY-NC-4.0 AND MIT
 compatibility: "Python 3.12.15 and the pinned packages in scripts/requirements.txt; the scripts run offline."
 metadata:
@@ -153,6 +153,12 @@ Use before a small model replaces a hosted one.
 3. Compare the two bills with your own inputs, your own machine and the hosted price with its date and source written beside it. Count the input tokens with the tokenizer of the hosted model you compare with. See [count the bill and the machine](references/when-a-small-model-is-the-wrong-choice.md#count-the-bill-and-the-machine). Example: [the example](scripts/monthly-bill-from-labelled-inputs.py).
 4. Read the break-even as a cost point, not a decision, and check that your expected volume sits inside the capacity you measured; above it, cost a second machine with its own bill and capacity, and compute again. See [know the break-even](references/when-a-small-model-is-the-wrong-choice.md#know-the-break-even). Example: [the example](scripts/break-even-from-recorded-ratio.py).
 5. Choose with the table of your own counts, dates and requirements. See [choose with a table](references/when-a-small-model-is-the-wrong-choice.md#choose-with-a-table).
+
+## Teach this book, when asked
+
+**When:** only when the person you're working with explicitly asks to be taught, tutored or quizzed on this book, one of its chapters or a topic it covers ("teach me", "tutor me", "quiz me", "help me master"). A one-off question ("explain X", "what is X", "how do I use X") gets a normal answer from the procedures above, with no quiz. If you can't tell which they want, ask one short question: a quick answer, or should you teach it properly?
+
+When they do, read `references/tutor.md` first and follow it: how to teach the book a question at a time, then every chapter's sections with their examples and terms.
 
 ## Reading in another language
 

@@ -3,13 +3,13 @@ title: "Observability for LLM Applications"
 chapter: "Attribute tokens and cost to each step"
 chapter_id: tokens-and-cost
 book: observability-for-llm-applications
-edition: 2026.11.1
+edition: 2026.11.2
 verified: 2026-11-23
-edition_code: B95K-8RWR
+edition_code: W9DX-M10H
 canonical: https://rollingedition.com/observability-for-llm-applications/tokens-and-cost
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“Attribute tokens and cost to each step,” chapter 6 of Observability for LLM Applications, Edition 2026.11.1, examples passed Nov 23, 2026. By Rolling Edition, https://rollingedition.com/observability-for-llm-applications/tokens-and-cost. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Attribute tokens and cost to each step,” chapter 6 of Observability for LLM Applications, Edition 2026.11.2, examples passed Nov 23, 2026. By Rolling Edition, https://rollingedition.com/observability-for-llm-applications/tokens-and-cost. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Attribute tokens and cost to each step
 
@@ -27,7 +27,7 @@ The [prompt count and completion count](https://rollingedition.com/agent-harness
 
 Each message makes one route call, and a message on any route but `fallback` makes one or more answer calls. The most calls one message made on this day is 3: a route call and two answer calls, when a tool's request comes before the reply. The script below sorts every call of the day by its three counts and its step.
 
-Example `token-counts-per-step` (Python 3.13.16 · bm25s 0.3.16 · mcp 2.3.0 · numpy 2.5.5 · opentelemetry-api 1.45.2 · opentelemetry-exporter-http-transport 0.66b2 · opentelemetry-exporter-otlp-common 0.66b2 · opentelemetry-exporter-otlp-proto-common 1.45.2 · opentelemetry-exporter-otlp-proto-http 1.45.2 · opentelemetry-instrumentation 0.66b2 · opentelemetry-instrumentation-genai-openai 1.3b0 · opentelemetry-proto 1.45.2 · opentelemetry-sdk 1.45.2 · opentelemetry-semantic-conventions 0.66b2 · opentelemetry-util-genai 1.3b0 · pydantic 2.14.4), passing in Edition 2026.11.1:
+Example `token-counts-per-step` (Python 3.13.16 · bm25s 0.3.16 · mcp 2.3.0 · numpy 2.5.5 · opentelemetry-api 1.45.2 · opentelemetry-exporter-http-transport 0.66b2 · opentelemetry-exporter-otlp-common 0.66b2 · opentelemetry-exporter-otlp-proto-common 1.45.2 · opentelemetry-exporter-otlp-proto-http 1.45.2 · opentelemetry-instrumentation 0.66b2 · opentelemetry-instrumentation-genai-openai 1.3b0 · opentelemetry-proto 1.45.2 · opentelemetry-sdk 1.45.2 · opentelemetry-semantic-conventions 0.66b2 · opentelemetry-util-genai 1.3b0 · pydantic 2.14.4), passing in Edition 2026.11.2:
 
 ```python
 """Tokens per model call (a request), per message, per resolved message and per route, over baseline day 1's 200
@@ -138,7 +138,7 @@ The obvious way to total a day's tokens is to add the usage on every span. That 
 
 Adding the usage up three ways over the same day shows where the extra comes from.
 
-Example `totals-metric-against-spans` (Python 3.13.16 · bm25s 0.3.16 · mcp 2.3.0 · numpy 2.5.5 · opentelemetry-api 1.45.2 · opentelemetry-exporter-http-transport 0.66b2 · opentelemetry-exporter-otlp-common 0.66b2 · opentelemetry-exporter-otlp-proto-common 1.45.2 · opentelemetry-exporter-otlp-proto-http 1.45.2 · opentelemetry-instrumentation 0.66b2 · opentelemetry-instrumentation-genai-openai 1.3b0 · opentelemetry-proto 1.45.2 · opentelemetry-sdk 1.45.2 · opentelemetry-semantic-conventions 0.66b2 · opentelemetry-util-genai 1.3b0 · pydantic 2.14.4), passing in Edition 2026.11.1:
+Example `totals-metric-against-spans` (Python 3.13.16 · bm25s 0.3.16 · mcp 2.3.0 · numpy 2.5.5 · opentelemetry-api 1.45.2 · opentelemetry-exporter-http-transport 0.66b2 · opentelemetry-exporter-otlp-common 0.66b2 · opentelemetry-exporter-otlp-proto-common 1.45.2 · opentelemetry-exporter-otlp-proto-http 1.45.2 · opentelemetry-instrumentation 0.66b2 · opentelemetry-instrumentation-genai-openai 1.3b0 · opentelemetry-proto 1.45.2 · opentelemetry-sdk 1.45.2 · opentelemetry-semantic-conventions 0.66b2 · opentelemetry-util-genai 1.3b0 · pydantic 2.14.4), passing in Edition 2026.11.2:
 
 ```python
 """Summing usage over every span counts each input token twice, because the agent span carries its message's usage as well as
@@ -218,7 +218,7 @@ The pinned llama-cpp-python 0.3.37 has no cached-token field in its Python API o
 
 The same 60 messages run twice here, a seeded sample of baseline day 1: once on the baseline release, `r0`, and once on the cache-off release, `r4`. Release `r4` differs from `r0` in two ways. Its RAM cache is off, and `llm.reset()` clears the runtime's state before each call, which is the way the book's recorder gives each call a fresh state. Setting the cache to none is not enough, because the next call still reuses the prefix of the last one, as the book's probe at the pinned version found.
 
-Example `cached-tokens-from-replay` (Python 3.13.16 · bm25s 0.3.16 · huggingface-hub 2.4.0 · mcp 2.3.0 · numpy 2.5.5 · opentelemetry-api 1.45.2 · opentelemetry-exporter-http-transport 0.66b2 · opentelemetry-exporter-otlp-common 0.66b2 · opentelemetry-exporter-otlp-proto-common 1.45.2 · opentelemetry-exporter-otlp-proto-http 1.45.2 · opentelemetry-instrumentation 0.66b2 · opentelemetry-instrumentation-genai-openai 1.3b0 · opentelemetry-proto 1.45.2 · opentelemetry-sdk 1.45.2 · opentelemetry-semantic-conventions 0.66b2 · opentelemetry-util-genai 1.3b0 · pydantic 2.14.4 · tokenizers 0.23.3), passing in Edition 2026.11.1:
+Example `cached-tokens-from-replay` (Python 3.13.16 · bm25s 0.3.16 · huggingface-hub 2.4.0 · mcp 2.3.0 · numpy 2.5.5 · opentelemetry-api 1.45.2 · opentelemetry-exporter-http-transport 0.66b2 · opentelemetry-exporter-otlp-common 0.66b2 · opentelemetry-exporter-otlp-proto-common 1.45.2 · opentelemetry-exporter-otlp-proto-http 1.45.2 · opentelemetry-instrumentation 0.66b2 · opentelemetry-instrumentation-genai-openai 1.3b0 · opentelemetry-proto 1.45.2 · opentelemetry-sdk 1.45.2 · opentelemetry-semantic-conventions 0.66b2 · opentelemetry-util-genai 1.3b0 · pydantic 2.14.4 · tokenizers 0.23.3), passing in Edition 2026.11.2:
 
 ```python
 """Cached input tokens for each model call, derived as prompt tokens minus the tokens llama.cpp evaluated (PL-21), on baseline
@@ -308,7 +308,7 @@ Only the English messages ran through the assistant. The other five locales are 
 
 Each locale's count is the tokenizer file's count: the utterance's text alone, normalised to NFC and tokenized by `tokenizers` 0.23.3 with the 4B's `tokenizer.json`; no model read it, and it is not a whole prompt.
 
-Example `count-locales-with-the-tokenizer` (Python 3.13.16 · huggingface-hub 2.4.0 · numpy 2.5.5 · tokenizers 0.23.3), passing in Edition 2026.11.1:
+Example `count-locales-with-the-tokenizer` (Python 3.13.16 · huggingface-hub 2.4.0 · numpy 2.5.5 · tokenizers 0.23.3), passing in Edition 2026.11.2:
 
 ```python
 """Count the same 200 baseline utterances in six locales with the 4B's own tokenizer file, and price the counts at the book's
@@ -410,7 +410,7 @@ The nearest real price is the genai-prices listing, and it differs from the book
 
 One answer request from the day, priced three ways, shows how the tables differ.
 
-Example `price-one-request` (Python 3.13.16 · bm25s 0.3.16 · genai-prices 0.2.5 · mcp 2.3.0 · numpy 2.5.5 · opentelemetry-api 1.45.2 · opentelemetry-exporter-http-transport 0.66b2 · opentelemetry-exporter-otlp-common 0.66b2 · opentelemetry-exporter-otlp-proto-common 1.45.2 · opentelemetry-exporter-otlp-proto-http 1.45.2 · opentelemetry-instrumentation 0.66b2 · opentelemetry-instrumentation-genai-openai 1.3b0 · opentelemetry-proto 1.45.2 · opentelemetry-sdk 1.45.2 · opentelemetry-semantic-conventions 0.66b2 · opentelemetry-util-genai 1.3b0 · pydantic 2.14.4), passing in Edition 2026.11.1:
+Example `price-one-request` (Python 3.13.16 · bm25s 0.3.16 · genai-prices 0.2.5 · mcp 2.3.0 · numpy 2.5.5 · opentelemetry-api 1.45.2 · opentelemetry-exporter-http-transport 0.66b2 · opentelemetry-exporter-otlp-common 0.66b2 · opentelemetry-exporter-otlp-proto-common 1.45.2 · opentelemetry-exporter-otlp-proto-http 1.45.2 · opentelemetry-instrumentation 0.66b2 · opentelemetry-instrumentation-genai-openai 1.3b0 · opentelemetry-proto 1.45.2 · opentelemetry-sdk 1.45.2 · opentelemetry-semantic-conventions 0.66b2 · opentelemetry-util-genai 1.3b0 · pydantic 2.14.4), passing in Edition 2026.11.2:
 
 ```python
 """Price one answer call twice: at the book's own rates, and at the genai-prices 0.2.5 listing for the 4B, which needs its
@@ -490,7 +490,7 @@ The table's version and dates matter once a price changes. The release compariso
 
 A call's cost is its tokens priced by a named, dated price table, and cost attribution assigns each call's cost to the step, route and user that caused it. [Agent Harnesses](https://rollingedition.com/agent-harnesses/s/cost-not-money) stops its cost at counts on purpose; this book adds money, tokens first. The book computes cost at query time, from each call's tokens and the table, and does not store cost on the spans. A price change then reprices the query and leaves the stored spans as they were. [Chapter 1](#where-the-time-went-in-twenty-messages) asked which step costs the most money, and this section answers it.
 
-Example `cost-by-route-and-user` (Python 3.13.16 · bm25s 0.3.16 · mcp 2.3.0 · numpy 2.5.5 · opentelemetry-api 1.45.2 · opentelemetry-exporter-http-transport 0.66b2 · opentelemetry-exporter-otlp-common 0.66b2 · opentelemetry-exporter-otlp-proto-common 1.45.2 · opentelemetry-exporter-otlp-proto-http 1.45.2 · opentelemetry-instrumentation 0.66b2 · opentelemetry-instrumentation-genai-openai 1.3b0 · opentelemetry-proto 1.45.2 · opentelemetry-sdk 1.45.2 · opentelemetry-semantic-conventions 0.66b2 · opentelemetry-util-genai 1.3b0 · pydantic 2.14.4), passing in Edition 2026.11.1:
+Example `cost-by-route-and-user` (Python 3.13.16 · bm25s 0.3.16 · mcp 2.3.0 · numpy 2.5.5 · opentelemetry-api 1.45.2 · opentelemetry-exporter-http-transport 0.66b2 · opentelemetry-exporter-otlp-common 0.66b2 · opentelemetry-exporter-otlp-proto-common 1.45.2 · opentelemetry-exporter-otlp-proto-http 1.45.2 · opentelemetry-instrumentation 0.66b2 · opentelemetry-instrumentation-genai-openai 1.3b0 · opentelemetry-proto 1.45.2 · opentelemetry-sdk 1.45.2 · opentelemetry-semantic-conventions 0.66b2 · opentelemetry-util-genai 1.3b0 · pydantic 2.14.4), passing in Edition 2026.11.2:
 
 ```python
 """Cost by step, by route, per resolved message and per user on baseline day 1, at the book's rates. Each call is priced at
@@ -588,7 +588,7 @@ The routes differ in what a message costs. The table gives each route's messages
 
 The `messages` route costs the most per message. It rests on 7 messages, though, so read it as one day's sample and not as a settled rate. The `fallback` route costs the least. Its reply is the fixed one that [chapter 1](#where-the-time-went-in-twenty-messages) describes, and its span records that no model wrote it. The route makes its one route call and no answer call, so its row carries the route call alone.
 
-Example `figure-route-token-mix` (Python 3.13.16 · bm25s 0.3.16 · matplotlib 3.11.2 · mcp 2.3.0 · numpy 2.5.5 · opentelemetry-api 1.45.2 · opentelemetry-exporter-http-transport 0.66b2 · opentelemetry-exporter-otlp-common 0.66b2 · opentelemetry-exporter-otlp-proto-common 1.45.2 · opentelemetry-exporter-otlp-proto-http 1.45.2 · opentelemetry-instrumentation 0.66b2 · opentelemetry-instrumentation-genai-openai 1.3b0 · opentelemetry-proto 1.45.2 · opentelemetry-sdk 1.45.2 · opentelemetry-semantic-conventions 0.66b2 · opentelemetry-util-genai 1.3b0 · pydantic 2.14.4), passing in Edition 2026.11.1:
+Example `figure-route-token-mix` (Python 3.13.16 · bm25s 0.3.16 · matplotlib 3.11.2 · mcp 2.3.0 · numpy 2.5.5 · opentelemetry-api 1.45.2 · opentelemetry-exporter-http-transport 0.66b2 · opentelemetry-exporter-otlp-common 0.66b2 · opentelemetry-exporter-otlp-proto-common 1.45.2 · opentelemetry-exporter-otlp-proto-http 1.45.2 · opentelemetry-instrumentation 0.66b2 · opentelemetry-instrumentation-genai-openai 1.3b0 · opentelemetry-proto 1.45.2 · opentelemetry-sdk 1.45.2 · opentelemetry-semantic-conventions 0.66b2 · opentelemetry-util-genai 1.3b0 · pydantic 2.14.4), passing in Edition 2026.11.2:
 
 ```python
 """Draw the input, cached and output tokens per message on each route, over baseline day 1's 200 messages. The cached part is
@@ -665,7 +665,7 @@ Figure 6.1 shows each route's input tokens per message, with the cached part ins
 
 *Figure 6.1. Input, cached input and output tokens per message, by route. The fallback route's bars are its route call alone.*
 
-![Each route's input tokens per message, with the cached part hatched inside the input bar, and its output tokens beside it. The messages route's input is the tallest bar, and every route's output is short.](https://rollingedition.ai/books/observability-for-llm-applications/2026.11.1/figures/route-token-mix.svg)
+![Each route's input tokens per message, with the cached part hatched inside the input bar, and its output tokens beside it. The messages route's input is the tallest bar, and every route's output is short.](https://rollingedition.ai/books/observability-for-llm-applications/2026.11.2/figures/route-token-mix.svg)
 
 Figure 6.1 shows that the lists route writes the least output of any route but the fallback route, 29.0 tokens per message, and still reads 936.5 input tokens per message. The messages route reads 1415.4 input tokens per message, of which 711.7 are cached. Every route reads far more than it writes.
 
@@ -679,7 +679,7 @@ The costliest of those users sent 3 messages and holds 3.0% of the day's cost.
 
 An average hides the few messages that cost much more than the rest. The check is to rank the messages by cost and ask what share of the day's money the top 1% holds. With 200 messages, the top 1% is two messages.
 
-Example `expensive-tail-share` (Python 3.13.16 · bm25s 0.3.16 · mcp 2.3.0 · numpy 2.5.5 · opentelemetry-api 1.45.2 · opentelemetry-exporter-http-transport 0.66b2 · opentelemetry-exporter-otlp-common 0.66b2 · opentelemetry-exporter-otlp-proto-common 1.45.2 · opentelemetry-exporter-otlp-proto-http 1.45.2 · opentelemetry-instrumentation 0.66b2 · opentelemetry-instrumentation-genai-openai 1.3b0 · opentelemetry-proto 1.45.2 · opentelemetry-sdk 1.45.2 · opentelemetry-semantic-conventions 0.66b2 · opentelemetry-util-genai 1.3b0 · pydantic 2.14.4), passing in Edition 2026.11.1:
+Example `expensive-tail-share` (Python 3.13.16 · bm25s 0.3.16 · mcp 2.3.0 · numpy 2.5.5 · opentelemetry-api 1.45.2 · opentelemetry-exporter-http-transport 0.66b2 · opentelemetry-exporter-otlp-common 0.66b2 · opentelemetry-exporter-otlp-proto-common 1.45.2 · opentelemetry-exporter-otlp-proto-http 1.45.2 · opentelemetry-instrumentation 0.66b2 · opentelemetry-instrumentation-genai-openai 1.3b0 · opentelemetry-proto 1.45.2 · opentelemetry-sdk 1.45.2 · opentelemetry-semantic-conventions 0.66b2 · opentelemetry-util-genai 1.3b0 · pydantic 2.14.4), passing in Edition 2026.11.2:
 
 ```python
 """The most expensive 1% of baseline day 1's messages, and their share of the day's cost at the book's rates. The count is
