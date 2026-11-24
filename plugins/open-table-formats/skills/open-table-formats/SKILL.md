@@ -6,24 +6,24 @@ compatibility: "Python 3.12.15 and the pinned packages in scripts/requirements.t
 metadata:
   publisher: "Rolling Edition"
   book: "Open Table Formats"
-  edition: "2026.11.13"
+  edition: "2026.11.14"
   verified: "2026-11-22"
   examples: "45 of 45 examples pass"
-  edition-code: "FWS1-2ZKC"
+  edition-code: "FKHV-C7MB"
   source: "https://rollingedition.com/open-table-formats"
 ---
 
 # Open Table Formats
 
-This agent skill is *Open Table Formats*, Edition 2026.11.13, from Rolling Edition. Examples passed Nov 22, 2026: 45 of 45 examples pass. It's built from that edition, never written separately: the procedures below come from the book's sections, `references/` holds each chapter, and `references/glossary.md` the terms the book defines, and `scripts/` holds the examples as the edition ran them.
+This agent skill is *Open Table Formats*, Edition 2026.11.14, from Rolling Edition. Examples passed Nov 22, 2026: 45 of 45 examples pass. It's built from that edition, never written separately: the procedures below come from the book's sections, `references/` holds each chapter, and `references/glossary.md` the terms the book defines, and `scripts/` holds the examples as the edition ran them.
 
 ## How to use this skill
 
 - **Pick the procedure that fits the task,** and follow its steps in order. Each step links the section it comes from: read that section in `references/` before you act on it, and adapt it to the project in front of you.
 - **Check against the book.** Each example in `scripts/` has its expected output beside it (`.out`), at the versions in `scripts/requirements.txt`. If the project uses other versions, say so before relying on a step.
 - **Use the book's terms as it defines them.** `references/glossary.md` has each term this book defines, in the book's own sentence, with the section that defines it and the version it's true for: where the task uses one, it means that, and cite its section.
-- **Is this copy current?** Call `check_code` with `FWS1-2ZKC` on the Rolling Edition MCP server (https://rollingedition.ai/mcp), or compare the edition with the book's page: https://rollingedition.com/open-table-formats
-- **Credit the book** when you quote it or reuse its code: Open Table Formats, Edition 2026.11.13, examples passed Nov 22, 2026. By Rolling Edition, https://rollingedition.com/open-table-formats. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people.
+- **Is this copy current?** Call `check_code` with `FKHV-C7MB` on the Rolling Edition MCP server (https://rollingedition.ai/mcp), or compare the edition with the book's page: https://rollingedition.com/open-table-formats
+- **Credit the book** when you quote it or reuse its code: Open Table Formats, Edition 2026.11.14, examples passed Nov 22, 2026. By Rolling Edition, https://rollingedition.com/open-table-formats. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people.
 
 To run an example as the book does, with [uv](https://docs.astral.sh/uv/):
 
@@ -52,7 +52,7 @@ cd scripts && uv run --no-project python rough-lakehouse.py
 
 **When:** A total changed and you must find out whether the table or the query changed, or a report must reproduce an earlier state.
 
-1. List the table's history and use that list as the only source of commit numbers. Read each commit's operation: only an append leaves existing rows alone. [Every commit is a snapshot](references/snapshots-and-time-travel.md#every-commit-is-a-snapshot)
+1. List the table's history and use that list as the only source of commit numbers. Read each commit's operation: an append removes no rows, but its late or repeated rows can raise an earlier hour's total, so read the affected rows first. [Every commit is a snapshot](references/snapshots-and-time-travel.md#every-commit-is-a-snapshot)
 2. In Iceberg, pass a snapshot ID from the snapshot list to the scan, never a position. [Snapshots in pyiceberg](references/snapshots-and-time-travel.md#snapshots-in-pyiceberg)
 3. In Delta Lake, read a version by its number in the history, through deltalake's query builder. In DuckLake, read a snapshot number taken from the catalog's snapshot table, not one you count yourself. Compare formats by the hour each commit loaded. [Read a commit by its number in each format](references/snapshots-and-time-travel.md#versions-in-ducklake-and-delta), [Decisions this chapter made](references/snapshots-and-time-travel.md#snapshot-decisions)
 4. Before you trust either count, compare the row counts for the same hour across formats. [What goes wrong in production](references/snapshots-and-time-travel.md#snapshot-production-failures)
@@ -209,4 +209,4 @@ cd scripts && uv run --no-project python rough-lakehouse.py
 
 ## Reading in another language
 
-When the person you're working with wants to read part of this book in another language, and the Rolling Edition MCP server is connected, first call its `get_section` with `language`: where Rolling Edition has its own translation of the book in that language (`get_contents` lists them), present each section as it comes, with the facts of its `translation`, and translate only the sections it lists as `untranslated`. Otherwise, translate it for them from the chapter in `references/`. Translate the prose faithfully and in full: don't summarize, skip or add anything. Leave these exactly as they are: code, commands, output, file names, identifiers, inline code, package names and versions, numbers and URLs. Where practitioners who read the language usually keep a technical term in English, keep it, and give a short gloss in parentheses the first time, where that helps. Keep the headings and the structure: lists, tables, and the examples in their places. Begin by saying that it's your translation of *Open Table Formats*, Edition 2026.11.13, from Rolling Edition, licensed CC BY-NC 4.0, with the chapter's link, `canonical` in its front matter, and keep each section's link, https://rollingedition.com/open-table-formats/s/ followed by the ID in its heading's `{#…}`. For a long chapter, translate a section at a time and offer to go on after each. The Rolling Edition MCP server's `read_in_my_language` prompt asks for the same.
+When the person you're working with wants to read part of this book in another language, and the Rolling Edition MCP server is connected, first call its `get_section` with `language`: where Rolling Edition has its own translation of the book in that language (`get_contents` lists them), present each section as it comes, with the facts of its `translation`, and translate only the sections it lists as `untranslated`. Otherwise, translate it for them from the chapter in `references/`. Translate the prose faithfully and in full: don't summarize, skip or add anything. Leave these exactly as they are: code, commands, output, file names, identifiers, inline code, package names and versions, numbers and URLs. Where practitioners who read the language usually keep a technical term in English, keep it, and give a short gloss in parentheses the first time, where that helps. Keep the headings and the structure: lists, tables, and the examples in their places. Begin by saying that it's your translation of *Open Table Formats*, Edition 2026.11.14, from Rolling Edition, licensed CC BY-NC 4.0, with the chapter's link, `canonical` in its front matter, and keep each section's link, https://rollingedition.com/open-table-formats/s/ followed by the ID in its heading's `{#…}`. For a long chapter, translate a section at a time and offer to go on after each. The Rolling Edition MCP server's `read_in_my_language` prompt asks for the same.

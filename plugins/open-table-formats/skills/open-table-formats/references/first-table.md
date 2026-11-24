@@ -3,13 +3,13 @@ title: "Open Table Formats"
 chapter: "Build a first table, end to end"
 chapter_id: first-table
 book: open-table-formats
-edition: 2026.11.13
+edition: 2026.11.14
 verified: 2026-11-22
-edition_code: FWS1-2ZKC
+edition_code: FKHV-C7MB
 canonical: https://rollingedition.com/open-table-formats/first-table
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“Build a first table, end to end,” chapter 1 of Open Table Formats, Edition 2026.11.13, examples passed Nov 22, 2026. By Rolling Edition, https://rollingedition.com/open-table-formats/first-table. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Build a first table, end to end,” chapter 1 of Open Table Formats, Edition 2026.11.14, examples passed Nov 22, 2026. By Rolling Edition, https://rollingedition.com/open-table-formats/first-table. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Build a first table, end to end
 
@@ -31,9 +31,9 @@ This chapter builds a rough version of that table. It writes the table in three 
 
 You know SQL, Python and Parquet, and you know what a partition is. This chapter does not explain them.
 
-The pageviews table's rows cover six hours of 3 June 2024, from 00:00 to 05:59 UTC. They come from the [Wikimedia pageviews dumps](https://dumps.wikimedia.org/other/pageviews/2024/2024-06/), which the Wikimedia project releases under CC0. The book keeps the 500 most-viewed titles in each hour, across the English, German, French and Japanese editions, after special pages are removed. The day is fixed and in the past, so the dumps for it will not change, and the data in the repository will not go stale. [The data folder's README](https://github.com/rollingedition/book-open-table-formats/blob/763ac3bc7eb7b59db40f487b38c1ee95058bcd9b/examples/data/README.md) gives the source, the licence and the exact cut.
+The pageviews table's rows cover six hours of 3 June 2024, from 00:00 to 05:59 UTC. They come from the [Wikimedia pageviews dumps](https://dumps.wikimedia.org/other/pageviews/2024/2024-06/), which the Wikimedia project releases under CC0. The book keeps the 500 most-viewed titles in each hour, across the English, German, French and Japanese editions, after special pages are removed. The day is fixed and in the past, so the dumps for it will not change, and the data in the repository will not go stale. [The data folder's README](https://github.com/rollingedition/book-open-table-formats/blob/bb709f813c4f29cd31b23300338ee99c964e1e35/examples/data/README.md) gives the source, the licence and the exact cut.
 
-The data is messy on purpose. Titles carry underscores and non-Latin scripts, and the counts are skewed: the top title in hour 00 has far more views than the title at position 500. Every row in the cut has a `response_bytes` of 0, as the [data folder's README](https://github.com/rollingedition/book-open-table-formats/blob/763ac3bc7eb7b59db40f487b38c1ee95058bcd9b/examples/data/README.md) records. The book keeps the column as the cut gives it, so it is 0 throughout. These values stay in the data, because a table format has to store them as they are.
+The data is messy on purpose. Titles carry underscores and non-Latin scripts, and the counts are skewed: the top title in hour 00 has far more views than the title at position 500. Every row in the cut has a `response_bytes` of 0, as the [data folder's README](https://github.com/rollingedition/book-open-table-formats/blob/bb709f813c4f29cd31b23300338ee99c964e1e35/examples/data/README.md) records. The book keeps the column as the cut gives it, so it is 0 throughout. These values stay in the data, because a table format has to store them as they are.
 
 ## What a table format adds to files {#what-a-table-format-adds}
 
@@ -45,7 +45,7 @@ Where the metadata sits differs too. An Iceberg table keeps a metadata file that
 
 Six hours go in one at a time, into all three formats, and then each table is read back and its totals compared.
 
-Example `rough-lakehouse` (Python 3.12.15 · deltalake 1.6.6 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.13:
+Example `rough-lakehouse` (Python 3.12.15 · deltalake 1.6.6 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.14:
 
 ```python
 """Load six hours into Iceberg, Delta Lake and DuckLake, then read each table back.
@@ -196,7 +196,7 @@ The `hour_utc` column holds a timestamp without a time zone, in UTC, and the two
 
 An append is one commit. Below, pyiceberg creates the table, appends hours 00, 01 and 02 in order, and then lists the snapshots in commit order with their operation and the rows each commit added:
 
-Example `append-hours` (Python 3.12.15 · deltalake 1.6.6 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.13:
+Example `append-hours` (Python 3.12.15 · deltalake 1.6.6 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.14:
 
 ```python
 """Create the Iceberg table, append hours 00 to 02 as three commits, then repeat hour 00.
@@ -281,12 +281,13 @@ With the table in place, you want to ask it questions. DuckDB runs SQL, but an I
 
 The next example appends hours 00 to 02 to a fresh table and asks it two questions: which five titles drew the most views in hour 00, and how many views the three hours hold in all. It checks that total against the sum the scan itself gives.
 
-Example `scan-into-duckdb` (Python 3.12.15 · deltalake 1.6.6 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.13:
+Example `scan-into-duckdb` (Python 3.12.15 · deltalake 1.6.6 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.14:
 
 ```python
 """Read the current Iceberg snapshot into DuckDB and check the totals.
 
-The point that DuckDB received every row rests on the two total views lines, which the assert compares.
+The point that DuckDB's total agrees with the scan's own sum rests on the two total views lines, which the assert
+compares. A matching sum checks one aggregate; it does not show that every row or value arrived.
 """
 
 from lib.lakehouse import (
@@ -355,9 +356,9 @@ total views in the scan: 899451
 
 The list holds the five titles with the most views in hour 00, largest first, with the title as the tie-breaker, and each line shows the views, a tab, then the title. The total in DuckDB is 899451 views, the same as the scan's own sum of 899451, and an assert stops the run if the two ever differ.
 
-A total that matches the scan's sum shows that DuckDB received every row the scan returned. It does not check the rows themselves, and it does not check the top-five query. A check on a total costs one line, so it is worth running after every change to a query. Checking the rows against their source is the job of the later chapters, which compare each change against the data they came from.
+A total that matches the scan's sum is a consistency check on one aggregate. It does not show that DuckDB received every row or every value, because a missing row and an extra one, or two values wrong in opposite directions, can leave the sum unchanged. It does not check the top-five query either. A check on a total costs one line, so it is worth running after every change to a query. Checking the rows against their source is the job of the later chapters, which compare each change against the data they came from.
 
-**Working rule:** Read an Iceberg table into DuckDB as the Arrow table from a scan, and compare a total with the scan's own sum, to confirm that DuckDB received every row. Then check each query's result against a source you can compare it with.
+**Working rule:** Read an Iceberg table into DuckDB as the Arrow table from a scan, and compare a total with the scan's own sum as a quick consistency check. A matching sum does not show that every row arrived, so when the rows themselves matter, compare them, as the [sorted digest](#check-copy-with-digest) in chapter 9 does. Then check each query's result against a source you can compare it with.
 
 ## What goes wrong in production {#first-table-production-failures}
 
@@ -380,6 +381,6 @@ The first chapter's path is short, and it hides four problems that you will meet
 - **Unpartitioned tables.** Chapter 1 creates tables without a partition spec. Chapter 4 changes the partitioning. The pyiceberg-core package is pinned beside pyiceberg, because the day and hour transforms in chapter 4 need it.
 - **Inlining off in the examples.** DuckLake examples set `DATA_INLINING_ROW_LIMIT` to 0, so each insert writes a Parquet file and the file counts mean the same thing wherever the book prints them. Chapter 10's `ducklake-inlined-delete` keeps the default, because its point is that a small delete then writes no delete file.
 - **Delta tables are read through deltalake's `QueryBuilder` only.** The reading helper in `examples/lib/lakehouse.py` takes that path, and each later chapter that reads a Delta table uses the same helper.
-- **Real data, not a stand-in.** Each example in this chapter reads the cut of the six public dumps that [the data README](https://github.com/rollingedition/book-open-table-formats/blob/763ac3bc7eb7b59db40f487b38c1ee95058bcd9b/examples/data/README.md) describes. The book ships no generated data for this chapter.
+- **Real data, not a stand-in.** Each example in this chapter reads the cut of the six public dumps that [the data README](https://github.com/rollingedition/book-open-table-formats/blob/bb709f813c4f29cd31b23300338ee99c964e1e35/examples/data/README.md) describes. The book ships no generated data for this chapter.
 - **SQLite for the Iceberg catalog.** A SQLite file needs no server, so the Iceberg examples run on a laptop with the network off. Those runs also turn off DuckDB's automatic extension download, so a run that needs the network fails instead of fetching.
 - **Labels stand in for IDs.** Printed `snapshot 1`, `snapshot 2` and so on stand in for snapshot IDs, so the output does not change from run to run.

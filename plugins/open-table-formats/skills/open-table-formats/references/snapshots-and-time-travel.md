@@ -3,13 +3,13 @@ title: "Open Table Formats"
 chapter: "Read a table as it was at an earlier snapshot"
 chapter_id: snapshots-and-time-travel
 book: open-table-formats
-edition: 2026.11.13
+edition: 2026.11.14
 verified: 2026-11-22
-edition_code: FWS1-2ZKC
+edition_code: FKHV-C7MB
 canonical: https://rollingedition.com/open-table-formats/snapshots-and-time-travel
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“Read a table as it was at an earlier snapshot,” chapter 2 of Open Table Formats, Edition 2026.11.13, examples passed Nov 22, 2026. By Rolling Edition, https://rollingedition.com/open-table-formats/snapshots-and-time-travel. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Read a table as it was at an earlier snapshot,” chapter 2 of Open Table Formats, Edition 2026.11.14, examples passed Nov 22, 2026. By Rolling Edition, https://rollingedition.com/open-table-formats/snapshots-and-time-travel. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Read a table as it was at an earlier snapshot
 
@@ -17,15 +17,15 @@ This chapter teaches you to read a table as it was after an earlier commit, in e
 
 Suppose a dashboard total for `wiki.pageviews_hourly`, which sums `views` by hour, moves after the third hour lands, and its owner asks two questions. What was the total before that commit? And did the table change, or only the query? Answering them takes the table's history, and a way to read an old state of the table. The table has five columns: `hour_utc`, `domain_code`, `page_title`, `views` and `response_bytes`. Each example in this chapter builds its own copy of the table, as [chapter 1](#land-three-hours) does: it creates the table and appends hours 00, 01 and 02 as three commits. Hour 00 has 499 rows, and each of the other two hours has 500.
 
-## Every commit is a snapshot {#every-commit-is-a-snapshot}
+## Every data commit leaves a snapshot {#every-commit-is-a-snapshot}
 
-[Chapter 1](#append-each-hour) lands the three hours as three commits. Each [commit](#what-a-table-format-adds) leaves a [snapshot](#files-metadata-and-commit) behind, and that is what you read later.
+[Chapter 1](#append-each-hour) lands the three hours as three commits. Each of those [commits](#what-a-table-format-adds) adds data and leaves a [snapshot](#files-metadata-and-commit), which is what you read later.
 
-A commit changes the table's metadata in one atomic step, so a reader sees the table either before the commit or after it, never in between. In Apache Iceberg, each commit creates a snapshot. The [Iceberg spec](https://iceberg.apache.org/spec/) defines a snapshot as "the state of a table at some time", used to access the complete set of data files in the table, and it describes each change as an atomic swap of metadata files. A snapshot has a unique ID, a creation time, and a summary. A snapshot's summary has a required field, `operation`, which is one of [`append`](#files-metadata-and-commit), `replace`, `overwrite` or `delete`. An `append` added data files and removed none. A later commit adds a snapshot and leaves the earlier ones alone, which is what lets the dashboard owner ask about a state that is no longer the newest.
+A commit changes the table's metadata in one atomic step, so a reader sees the table either before the commit or after it, never in between. In Apache Iceberg, each data commit, such as these appends, leaves a snapshot; a schema-only change need not, as [chapter 3](#add-response-bytes) shows. The [Iceberg spec](https://iceberg.apache.org/spec/) defines a snapshot as "the state of a table at some time", used to access the complete set of data files in the table, and it describes each change as an atomic swap of metadata files. A snapshot has a unique ID, a creation time, and a summary. A snapshot's summary has a required field, `operation`, which is one of [`append`](#files-metadata-and-commit), `replace`, `overwrite` or `delete`. An `append` added data files and removed none. A later data commit adds a snapshot and leaves the earlier ones alone, which is what lets the dashboard owner ask about a state that is no longer the newest.
 
 Before any scan, read the history: the example lists the three commits in order, each with its operation and the rows it added, first for Iceberg and then for Delta Lake.
 
-Example `snapshot-history` (Python 3.12.15 · deltalake 1.6.6 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.13:
+Example `snapshot-history` (Python 3.12.15 · deltalake 1.6.6 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.14:
 
 ```python
 """Commit three hours to an Iceberg table and a Delta Lake table, then list each commit with its operation and rows added.
@@ -45,7 +45,7 @@ def main():
             table.append(batch)
             write_deltalake(delta_path, batch, mode="append")
 
-        # sequence_number counts commits, so sorting by it puts the labels in commit order.
+        # sequence_number orders the snapshots, and is not a count of all commits; sorting by it puts the labels in commit order.
         snapshots = sorted(table.snapshots(), key=lambda snapshot: snapshot.sequence_number)
         labels = snapshot_labels([snapshot.snapshot_id for snapshot in snapshots])
         for snapshot in snapshots:
@@ -84,15 +84,15 @@ version 2 operation: WRITE
 version 2 rows added: 500
 ```
 
-All three commits used `append`, so none of them rewrote or removed a file. Hour 00 added 499 rows, one fewer than the others because the data cut dropped one row from it, as the [data README](https://github.com/rollingedition/book-open-table-formats/blob/763ac3bc7eb7b59db40f487b38c1ee95058bcd9b/examples/data/README.md) explains. Hours 01 and 02 each added 500. The owner's question starts here: the table has three states to choose from, and the history names them.
+All three commits used `append`, so none of them rewrote or removed a file. Hour 00 added 499 rows, one fewer than the others because the data cut dropped one row from it, as the [data README](https://github.com/rollingedition/book-open-table-formats/blob/bb709f813c4f29cd31b23300338ee99c964e1e35/examples/data/README.md) explains. Hours 01 and 02 each added 500. The history names the table's three states, and the owner's question starts there.
 
-pyiceberg gives each snapshot a long integer ID. We do not print those IDs. Instead, `snapshot_labels` maps them, in commit order, to the labels "snapshot 1", "snapshot 2" and "snapshot 3", and the output prints only the labels.
+pyiceberg gives each snapshot a long integer ID, which the output never prints: `snapshot_labels` maps the IDs, in commit order, to the labels "snapshot 1", "snapshot 2" and "snapshot 3".
 
-The same three hours went to a Delta Lake table through `write_deltalake`, one write per hour. Delta Lake calls each commit a version, and its history lists the operation and the rows written for each one. Delta numbers its versions from 0, so the first write is version 0. The book prints Delta's own numbers, so the example sorts the history by version and prints "version 0", "version 1" and "version 2". Each Delta write is a `WRITE` operation that adds the same rows as the matching Iceberg snapshot: 499 rows for version 0, then 500 and 500.
+The same three hours went to a Delta Lake table through `write_deltalake`, one write per hour. Delta Lake calls each commit a version, and its history lists the operation and the rows written for each one. Delta numbers its versions from 0, so the first write is version 0. The example sorts the history by version and prints Delta's own numbers. Each Delta write is a `WRITE` operation that adds the same rows as the matching Iceberg snapshot: 499 rows for version 0, then 500 and 500.
 
-The history answers the first half of the owner's question. It says which commit changed the table and how many rows that commit added. An `append` only adds rows, so it cannot change a total for hours that are already in the table. If the total for an hour moved, the history must name an `overwrite`, a `delete` or a `replace` as the cause, and you then read the snapshots on either side of it. The history does not say what a query did, and that part of the question needs the reads in the next section.
+The history answers the first half of the owner's question. It says which commit changed the table and how many rows that commit added. An `append` adds files and removes none, so it cannot have removed rows, but late or repeated rows can raise an hour's total: in [chapter 1](#first-table-production-failures), a second append of hour 00 takes the table from 1499 rows to 1998. Read the affected rows before you blame an operation. The history does not say what a query did; the reads in [the next section](#read-an-earlier-snapshot) answer that.
 
-**Working rule:** Before you read or change a table, list its history in the format you use, and use that list as the only source of commit numbers. Sort the list by commit order, label Iceberg snapshots with `snapshot_labels` before you print them, and print Delta versions as Delta numbers them. Read the operation with each commit. An `append` only adds files, so it cannot have removed rows, while an `overwrite` or `delete` can.
+**Working rule:** Before you read or change a table, list its history in the format you use, and use that list as the only source of commit numbers. Sort the list by commit order, label Iceberg snapshots with `snapshot_labels` before you print them, and print Delta versions as Delta numbers them. Read the operation with each commit. An `append` removes no rows, but it can raise an earlier hour's total. When a total moves, read the affected rows before you blame an operation.
 
 ### What a snapshot points to {#what-a-snapshot-points-to}
 
@@ -116,7 +116,7 @@ The owner's first question is what the total was before the third hour landed. T
 
 In pyiceberg 0.12.0, `scan(snapshot_id=...)` reads the table as of that snapshot, and a scan with no snapshot ID reads the current snapshot. Two scans by ID answer the owner's first question from the table's own history, and the example also reads the current table and compares it with snapshot 3.
 
-Example `read-as-of-snapshot` (Python 3.12.15 · deltalake 1.6.6 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.13:
+Example `read-as-of-snapshot` (Python 3.12.15 · deltalake 1.6.6 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.14:
 
 ```python
 """Read an Iceberg table as of snapshot 2 and snapshot 3, by ID, then compare the current table with snapshot 3.
@@ -191,7 +191,7 @@ DuckLake keeps a snapshot for each change to the catalog, and the change include
 
 The three-version example makes the numbers diverge while the row counts agree: it writes the same three hours to a Delta table and a DuckLake table, one commit per hour in each format. It reads each commit back by its number, prints both row counts, counts the DuckLake snapshots before the first insert, and shows one failure.
 
-Example `three-version-numbers` (Python 3.12.15 · deltalake 1.6.6 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.13:
+Example `three-version-numbers` (Python 3.12.15 · deltalake 1.6.6 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.14:
 
 ```python
 """Commit the same three hours to Delta Lake and DuckLake, then read each commit back by its own number.
@@ -270,7 +270,7 @@ The table below sets the three numbers side by side.
 
 | Format | Number that names a commit | Which changes it counts | How you read it |
 | --- | --- | --- | --- |
-| Iceberg | Snapshot ID, a long integer | Each commit to the table | `scan(snapshot_id=...)` |
+| Iceberg | Snapshot ID, a long integer | Each commit that changes data | `scan(snapshot_id=...)` |
 | Delta Lake | Version, counted from 0 | Each commit to the table | `DeltaTable(path, version=n)` |
 | DuckLake | Snapshot number, counted from 0 (the book's label is one higher) | Every change to the catalog, including schema and table creation | `AT (VERSION => n)` |
 

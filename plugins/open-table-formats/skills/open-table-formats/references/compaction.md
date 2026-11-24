@@ -3,13 +3,13 @@ title: "Open Table Formats"
 chapter: "Compact the small files that hourly appends leave"
 chapter_id: compaction
 book: open-table-formats
-edition: 2026.11.13
+edition: 2026.11.14
 verified: 2026-11-22
-edition_code: FWS1-2ZKC
+edition_code: FKHV-C7MB
 canonical: https://rollingedition.com/open-table-formats/compaction
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“Compact the small files that hourly appends leave,” chapter 6 of Open Table Formats, Edition 2026.11.13, examples passed Nov 22, 2026. By Rolling Edition, https://rollingedition.com/open-table-formats/compaction. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Compact the small files that hourly appends leave,” chapter 6 of Open Table Formats, Edition 2026.11.14, examples passed Nov 22, 2026. By Rolling Edition, https://rollingedition.com/open-table-formats/compaction. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Compact the small files that hourly appends leave
 
@@ -43,7 +43,7 @@ Delta Lake is the first of the three formats in the table above. Its Python libr
 
 You load the six hours into a Delta table, one append each, then count the files the table lists, compact, and count again. Each count comes from the table's own list of files for its current version.
 
-Example `file-counts-before-after` (Python 3.12.15 · deltalake 1.6.6 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.13:
+Example `file-counts-before-after` (Python 3.12.15 · deltalake 1.6.6 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.14:
 
 ```python
 """Load six hourly appends into a Delta Lake table, compact it, and count its files and rows before and after.
@@ -103,9 +103,9 @@ Figure 6.1 follows the same six appends and the compaction version by version. T
 
 *Figure 6.1. The files each table version lists, and the Parquet files on disk after it.*
 
-![A compaction cuts the files the table lists, while the files on disk still grow](https://rollingedition.ai/books/open-table-formats/2026.11.13/figures/files-live-and-on-disk.svg)
+![A compaction cuts the files the table lists, while the files on disk still grow](https://rollingedition.ai/books/open-table-formats/2026.11.14/figures/files-live-and-on-disk.svg)
 
-Example `figure-files-live-and-on-disk` (Python 3.12.15 · deltalake 1.6.6 · duckdb 2.0.0 · matplotlib 3.11.2 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.13:
+Example `figure-files-live-and-on-disk` (Python 3.12.15 · deltalake 1.6.6 · duckdb 2.0.0 · matplotlib 3.11.2 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.14:
 
 ```python
 """Compact six hourly appends into a Delta Lake table, and count the files each version lists and the Parquet files on disk after it.
@@ -189,7 +189,7 @@ DuckLake has compaction as a maintenance function that you call from SQL. The fu
 
 What does the merge leave for a snapshot from before it? The example below reads one. It attaches the catalog with inlining off, inserts the six hours one insert each, and calls the merge once. The table lives in the `wiki` schema, so the call names it. It reads the snapshot number before the merge, so it can read the table as it was at that point.
 
-Example `compact-ducklake` (Python 3.12.15 · deltalake 1.6.6 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.13:
+Example `compact-ducklake` (Python 3.12.15 · deltalake 1.6.6 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.14:
 
 ```python
 """Merge six DuckLake data files, then read a snapshot from before the merge to see what the merge left behind.
@@ -266,7 +266,7 @@ Compaction in Iceberg, at the pinned version of pyiceberg, is a rewrite by overw
 
 A rewrite is judged by what it leaves behind. The check below reads the table's files and rows after six appends and one overwrite, and reads a snapshot from before the rewrite.
 
-Example `iceberg-rewrite-by-overwrite` (Python 3.12.15 · deltalake 1.6.6 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.13:
+Example `iceberg-rewrite-by-overwrite` (Python 3.12.15 · deltalake 1.6.6 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.14:
 
 ```python
 """Rewrite an unpartitioned Iceberg table by overwriting it with its own scan, then check its data files, its snapshot
@@ -322,9 +322,9 @@ snapshot 6 rows: 2999
 parquet files on disk after rewrite: 7
 ```
 
-The data files fall from 6 to 1, and a reader of the table sees the same 2999 rows, read the same way, from fewer files. The rewrite is one commit that adds two snapshots. The operations, in commit order, are six appends and then `delete` and `append`: the `delete` snapshot removes every data file from the table, and the `append` snapshot adds the rewritten files. The current snapshot moves once, so no reader sees the table empty, but the history keeps both snapshots. Deleting whole files in this way is the copy-on-write behaviour that [chapter 5](#corrections-and-merges) describes for Iceberg deletes.
+The data files fall from 6 to 1, and a reader of the table counts 2999 rows, read the same way, from fewer files. The rewrite is one commit that adds two snapshots. The operations, in commit order, are six appends and then `delete` and `append`: the `delete` snapshot removes every data file from the table, and the `append` snapshot adds the rewritten files. The current snapshot moves once, so no reader sees the table empty, but the history keeps both snapshots. Deleting whole files in this way is the copy-on-write behaviour that [chapter 5](#corrections-and-merges) describes for Iceberg deletes.
 
-The snapshot from before the rewrite still reads every row. The labels count snapshots up in commit order, so snapshot 6 is the last append before the rewrite. Read at that snapshot, the table still returns 2999 rows. The Parquet files on disk number 7: the six old files and the one the rewrite wrote. [Chapter 7](#expiry-and-cleanup) covers how to expire the old snapshots and count what they still hold.
+The snapshot from before the rewrite still reads. The labels count snapshots up in commit order, so snapshot 6 is the last append before the rewrite. Read at that snapshot, the table still returns 2999 rows. The Parquet files on disk number 7: the six old files and the one the rewrite wrote. [Chapter 7](#expiry-and-cleanup) covers how to expire the old snapshots and count what they still hold.
 
 **Working rule:** Rewrite an Iceberg table by overwrite only when no other writer commits to the table during the rewrite. On an unpartitioned table, stream the scan as this example does. On a partitioned table, the scan must be read with `to_arrow()`, so the whole scan has to fit in the memory of the job. A streamed reader can be read only once: if the commit fails, build a new reader for the next attempt. Check the file count and the row count after each rewrite, and keep the snapshot from before it until you have checked the result.
 
@@ -342,7 +342,7 @@ The rewrite also reads every file and writes every file, including the ones that
 
 Between them, this chapter's examples print four things, and those four are what to check after any compaction you run. The first is the file count from the table's own listing. The second is the row count of the current version, which must match the count before the compaction. The third is the row count of a version or snapshot from before the compaction, which must still read. The fourth is the number of Parquet files under the table's location, which should exceed the file count by the number of old files that are waiting for cleanup.
 
-The first two checks show that the compaction did what it claims and changed no rows. The third shows that the history still works, which matters for any reader that pins an older version. The fourth shows what the compaction left on disk. The first and the fourth come from different places, and the book's examples print both, so that a mismatch is visible in the output rather than hidden in one number. The fourth count is 7 for the DuckLake table and 7 for the Iceberg table, each one more than the files that remain listed. A compaction that passes the first three checks is not at fault for a count like that. The extra files are the state that chapter 7 cleans up.
+The first two checks show that the compaction cut the file count and kept the row count. A matching count does not show that no row or value changed; for that, compare the rows themselves, as the [sorted digest](#check-copy-with-digest) in chapter 9 does. The third shows that the history still works, which matters for any reader that pins an older version. The fourth shows what the compaction left on disk. The first and the fourth come from different places, and the book's examples print both, so that a mismatch is visible in the output rather than hidden in one number. The fourth count is 7 for the DuckLake table and 7 for the Iceberg table, each one more than the files that remain listed. A compaction that passes the first three checks is not at fault for a count like that. The extra files are the state that chapter 7 cleans up.
 
 Each library has its own file listing. The Delta example counts the URIs of the current version, the DuckLake example asks its catalog for the table's files, and the Iceberg example counts the entries of the table's file inspection. The three numbers are read from metadata, so they do not depend on the directory listing, which is the second source. When the two disagree, stop and find out why before you run the next compaction.
 

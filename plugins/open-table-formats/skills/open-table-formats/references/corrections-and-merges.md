@@ -3,13 +3,13 @@ title: "Open Table Formats"
 chapter: "Correct rows with deletes, updates and merges"
 chapter_id: corrections-and-merges
 book: open-table-formats
-edition: 2026.11.13
+edition: 2026.11.14
 verified: 2026-11-22
-edition_code: FWS1-2ZKC
+edition_code: FKHV-C7MB
 canonical: https://rollingedition.com/open-table-formats/corrections-and-merges
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“Correct rows with deletes, updates and merges,” chapter 5 of Open Table Formats, Edition 2026.11.13, examples passed Nov 22, 2026. By Rolling Edition, https://rollingedition.com/open-table-formats/corrections-and-merges. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Correct rows with deletes, updates and merges,” chapter 5 of Open Table Formats, Edition 2026.11.14, examples passed Nov 22, 2026. By Rolling Edition, https://rollingedition.com/open-table-formats/corrections-and-merges. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Correct rows with deletes, updates and merges
 
@@ -37,7 +37,7 @@ The two libraries take the predicate in different forms. pyiceberg takes an expr
 
 The delete removes the hour 02 rows with fewer than 180 views, a threshold this chapter chose. The cut in [chapter 1](#land-three-hours) keeps only the most-viewed rows in each hour, so a predicate for fewer than two views matches nothing. pyiceberg then warns with `UserWarning: Delete operation did not match any records` and writes no snapshot, as its [source](https://raw.githubusercontent.com/apache/iceberg-python/pyiceberg-0.12.0/pyiceberg/table/__init__.py) shows. A threshold of 180 catches a few of the least-viewed rows in hour 02, which is enough to show what a delete writes.
 
-Example `delete-low-views` (Python 3.12.15 · deltalake 1.6.6 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.13:
+Example `delete-low-views` (Python 3.12.15 · deltalake 1.6.6 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.14:
 
 ```python
 """Runs one delete through Iceberg, Delta Lake and DuckLake and prints what each format removed and rewrote. The data-file lines carry the point; the deleted-row lines beside them are for comparison."""
@@ -130,9 +130,9 @@ Figure 5.1 counts what each format writes to delete 4 rows: copy-on-write pays f
 
 *Figure 5.1. Rows of data, or positions in a delete file, written by the same delete.*
 
-![Copy-on-write rewrites the rest of a file, and merge-on-read writes only the deleted rows' positions](https://rollingedition.ai/books/open-table-formats/2026.11.13/figures/rows-written-to-delete.svg)
+![Copy-on-write rewrites the rest of a file, and merge-on-read writes only the deleted rows' positions](https://rollingedition.ai/books/open-table-formats/2026.11.14/figures/rows-written-to-delete.svg)
 
-Example `figure-rows-written-to-delete` (Python 3.12.15 · deltalake 1.6.6 · duckdb 2.0.0 · matplotlib 3.11.2 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.13:
+Example `figure-rows-written-to-delete` (Python 3.12.15 · deltalake 1.6.6 · duckdb 2.0.0 · matplotlib 3.11.2 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.14:
 
 ```python
 """Runs the delete of delete-low-views through Iceberg, Delta Lake and DuckLake and draws the rows each format wrote to remove the same rows. The point rests on the rows-written lines: copy-on-write rewrites the rest of the hour 02 file, and DuckLake's delete file lists only the positions of the removed rows."""
@@ -240,7 +240,7 @@ pyiceberg's `upsert` takes an Arrow table of rows and the columns that form the 
 
 Send the corrected hour and the late row through one `upsert`, and count what the call leaves in the table's history.
 
-Example `redeliver-hour-upsert` (Python 3.12.15 · deltalake 1.6.6 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.13:
+Example `redeliver-hour-upsert` (Python 3.12.15 · deltalake 1.6.6 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.14:
 
 ```python
 """Upserts the corrected hour 02, with its late row, into the Iceberg table, then upserts the same batch again. The snapshot lines carry the point, in the order the commits were made."""
@@ -339,7 +339,7 @@ The `WHEN NOT MATCHED` branch also inserts `response_bytes`, which is 0 in every
 
 The `AND t.views <> s.views` condition matters. Without it, the `MERGE` would update and count every matched row, so a rerun would count them all again. With it, a matched row whose counts already agree is left alone and not counted. No example runs the statement without the condition, so the claim about a rerun without it is a reading of the statement, not a measured count.
 
-Example `merge-correction-ducklake` (Python 3.12.15 · deltalake 1.6.6 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.13:
+Example `merge-correction-ducklake` (Python 3.12.15 · deltalake 1.6.6 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.14:
 
 ```python
 """Merges the corrected hour 02 and its late row into the DuckLake copy with a SQL MERGE, then runs the same MERGE again. The matched-row line splits the changed count into inserts and updates; the second changed-row line is the rerun."""
@@ -415,7 +415,7 @@ The second table in this book, `wiki.domains`, maps each domain code to a langua
 
 An `UPDATE` would change the label. The `MERGE` shape also has a `WHEN NOT MATCHED` clause, which inserts a domain code the table does not hold yet, so a feed that adds a domain can use the same statement. This table lives only in DuckLake, so the merge runs there. The pageviews table is merged in DuckLake in [MERGE in DuckLake](#merge-in-ducklake). In a pipeline, the label you merge here is the label that [chapter 8's join](#join-tables-from-two-catalogs) returns.
 
-Example `merge-domains-label` (Python 3.12.15 · deltalake 1.6.6 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.13:
+Example `merge-domains-label` (Python 3.12.15 · deltalake 1.6.6 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.14:
 
 ```python
 """Merges one changed language label into the DuckLake copy of the domains table, then runs the same MERGE again. Read the second changed-row line against the sorted table, which shows the label that merged in."""
@@ -478,7 +478,7 @@ Corrections go wrong in practice through a repeated key, a loop of single-row de
 
 **A repeated key in the batch.** A correction sent twice, or two rows with the same key from a bad join, makes the batch invalid. This example sends one corrected row twice, and pyiceberg refuses the upsert before it writes anything.
 
-Example `duplicate-source-keys` (Python 3.12.15 · deltalake 1.6.6 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.13:
+Example `duplicate-source-keys` (Python 3.12.15 · deltalake 1.6.6 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.14:
 
 ```python
 """Sends a batch with one key twice to an Iceberg upsert and to a DuckLake MERGE, and prints each refusal with the row count after it. The two error lines carry the point: each names the cause of its refusal."""
@@ -539,7 +539,7 @@ DuckLake merge: InvalidInputException: Invalid Input Error: MERGE INTO command c
 DuckLake rows after the failed merge: 2999
 ```
 
-Both refusals leave the table with every row it held before the write. The Iceberg upsert raises a `ValueError`, and the table still holds 2999 rows. The DuckLake merge raises an `InvalidInputException` that names the cause, a target row that matched more than one source row, and the table still holds 2999 rows. A pipeline that catches the error and retries the same batch fails again, because the batch is the problem. Deduplicate the source by key before the write. Delta Lake's merge with a repeated key is not tested here ([see the first section](#late-data-as-correction)).
+Both refusals leave the table with as many rows as it held before the write. The Iceberg upsert raises a `ValueError`, and the table still holds 2999 rows. The DuckLake merge raises an `InvalidInputException` that names the cause, a target row that matched more than one source row, and the table still holds 2999 rows. A pipeline that catches the error and retries the same batch fails again, because the batch is the problem. Deduplicate the source by key before the write. Delta Lake's merge with a repeated key is not tested here ([see the first section](#late-data-as-correction)).
 
 **A loop of single-row deletes.** Copy-on-write makes each delete a commit that rewrites the files that hold its matches. Ten deletes in a loop rewrite the file that holds their matches ten times and leave ten snapshots or versions behind. The cost model, not a measurement here, is what suggests it. Collect the rows to delete, then write one delete with a predicate that covers them.
 

@@ -1,13 +1,13 @@
 ---
 title: "Glossary"
 book: "Open Table Formats"
-edition: "2026.11.13"
+edition: "2026.11.14"
 canonical: "https://rollingedition.com/open-table-formats/glossary"
 ---
 
 # Glossary of *Open Table Formats*
 
-The 50 terms this book defines, as Edition 2026.11.13 has them, each in the book's own sentence. When a task this skill covers uses one, it means what it says here: read its section before you rely on it, and cite the section. Where a definition depends on a package, it says the version this edition pins and runs its examples on. On the web: https://rollingedition.com/open-table-formats/glossary
+The 50 terms this book defines, as Edition 2026.11.14 has them, each in the book's own sentence. When a task this skill covers uses one, it means what it says here: read its section before you rely on it, and cite the section. Where a definition depends on a package, it says the version this edition pins and runs its examples on. On the web: https://rollingedition.com/open-table-formats/glossary
 
 ## append
 
@@ -285,7 +285,7 @@ An Iceberg table keeps a metadata file that records its schema, its partition sp
 A snapshot's summary has a required field, operation, which is one of append, replace, overwrite or delete.
 
 - Part of: snapshot summary
-- Defined in: [Every commit is a snapshot](snapshots-and-time-travel.md#every-commit-is-a-snapshot)
+- Defined in: [Every data commit leaves a snapshot](snapshots-and-time-travel.md#every-commit-is-a-snapshot)
 - Address: https://rollingedition.com/concepts/data-engineering/operation
 
 ## orphan
@@ -429,5 +429,5 @@ Delta Lake calls each commit a version
 
 - Also: versions, Delta version
 - Contrasts with: snapshot ID
-- Defined in: [Every commit is a snapshot](snapshots-and-time-travel.md#every-commit-is-a-snapshot)
+- Defined in: [Every data commit leaves a snapshot](snapshots-and-time-travel.md#every-commit-is-a-snapshot)
 - Address: https://rollingedition.com/concepts/table-formats/version
