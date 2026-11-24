@@ -3,13 +3,13 @@ title: "Open Table Formats"
 chapter: "Add and rename columns without rewriting files"
 chapter_id: evolving-schema
 book: open-table-formats
-edition: 2026.11.14
+edition: 2026.11.15
 verified: 2026-11-22
-edition_code: FKHV-C7MB
+edition_code: TJRD-25XE
 canonical: https://rollingedition.com/open-table-formats/evolving-schema
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“Add and rename columns without rewriting files,” chapter 3 of Open Table Formats, Edition 2026.11.14, examples passed Nov 22, 2026. By Rolling Edition, https://rollingedition.com/open-table-formats/evolving-schema. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Add and rename columns without rewriting files,” chapter 3 of Open Table Formats, Edition 2026.11.15, examples passed Nov 22, 2026. By Rolling Edition, https://rollingedition.com/open-table-formats/evolving-schema. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Add and rename columns without rewriting files
 
@@ -46,7 +46,7 @@ with table.update_schema() as update:
 
 To see what the add does to rows already on disk, commit hours 00 to 02, add the column, and append hours 03 to 05, each stamped with its hour number in `load_batch`. Counting rows by hour of the day splits the table at the add: hours 00 to 02 were written before it, and hours 03 to 05 after. Each hour is one write, so the split is also the split by load.
 
-Example `add-column-to-existing-files` (Python 3.12.15 · deltalake 1.6.6 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.14:
+Example `add-column-to-existing-files` (Python 3.12.15 · deltalake 1.6.6 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.15:
 
 ```python
 """Adds load_batch to a table that already holds three hours, in Iceberg and then in Delta Lake, and counts the nulls on each side of the add.
@@ -163,7 +163,7 @@ with table.update_schema() as update:
 
 To check that the ID survives, write three hours, read the field ID of `page_title`, rename the column and read the ID again. The example also counts data files on both sides and queries DuckDB under the new name.
 
-Example `rename-by-id` (Python 3.12.15 · deltalake 1.6.6 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.14:
+Example `rename-by-id` (Python 3.12.15 · deltalake 1.6.6 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.15:
 
 ```python
 """Renames a column in an Iceberg table and reads the old files back under the new name.
@@ -238,7 +238,7 @@ The trap creates a table with column mapping on, which is the protocol's route t
 DeltaTable(path).alter.set_column_metadata("page_title", {"name": "article_title"})
 ```
 
-Example `delta-rename-trap` (Python 3.12.15 · deltalake 1.6.6 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.14:
+Example `delta-rename-trap` (Python 3.12.15 · deltalake 1.6.6 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.15:
 
 ```python
 """Calls set_column_metadata with a name key on a Delta Lake table with column mapping on, then reads the names back and queries
@@ -291,11 +291,11 @@ The trap is that the call looks like a rename and succeeds as one. Nothing in th
 
 Column mapping gives no rename at this pin. The trap's table has `delta.columnMapping.mode` set to `name`, and the call still changes no name. The protocol's column mapping section describes a rename [2], but deltalake 1.6.6 has no call that performs one.
 
-Example `delta-rename-by-rewrite` (Python 3.12.15 · deltalake 1.6.6 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.14:
+Example `delta-rename-by-rewrite` (Python 3.12.15 · deltalake 1.6.6 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.15:
 
 ```python
 """Renames a Delta Lake column by overwriting the table with renamed data and schema, then reads the version before the rewrite back.
-Compare the two columns lines: the version before the rewrite, and the version the rewrite makes.
+Compare the last columns line with the one before it: read back after the rewrite, the version before it still has page_title, while the version the rewrite makes has article_title.
 """
 
 from deltalake import DeltaTable, write_deltalake
@@ -320,6 +320,8 @@ with new_warehouse() as wh:
     print(f"version after the rewrite: {after}")
     print(f"columns after the rewrite: {', '.join(read_delta(path).column_names)}")
     print(f"rows after the rewrite: {read_delta(path).num_rows}")
+    # read by version number, after the overwrite has committed: the old version keeps the schema it was written with
+    print(f"columns at the version before, read after the rewrite: {', '.join(read_delta(path, version=before).column_names)}")
 ```
 
 Output:
@@ -332,11 +334,12 @@ data files after the rewrite: 1
 version after the rewrite: 3
 columns after the rewrite: hour_utc, domain_code, article_title, views, response_bytes
 rows after the rewrite: 1499
+columns at the version before, read after the rewrite: hour_utc, domain_code, page_title, views, response_bytes
 ```
 
 A rewrite is the way to get the name at this pin. The rewrite example reads the whole table through the library, renames the column in memory, and writes the result back with `mode="overwrite"` and `schema_mode="overwrite"`, which replace the data and the schema together. The table had 3 data files before the rewrite and has 1 after it. The rewrite makes version 3, which reads `article_title`, and 1499 rows are in it.
 
-The rewrite costs the size of the table, because every row is read and written again. The table here is small, but a production table that holds millions of rows pays the same per-row cost, so a team should plan the rewrite as a job of its own. The version before the rewrite, 2, still reads `page_title`, which the example also prints. The rewrite therefore changes only the current version, and older versions keep the names they were written with. Before you run one, list the readers that ask for the column by name. The switch happens in one commit, so every reader of the current version moves at the same moment, while a job that pins an older version keeps the old name. Move those jobs with the readers, and record the version number the rewrite replaced until they have moved.
+The rewrite costs the size of the table, because every row is read and written again. The table here is small, but a production table that holds millions of rows pays the same per-row cost, so a team should plan the rewrite as a job of its own. The version before the rewrite, 2, still reads `page_title`: read back once the rewrite has committed, it has the columns hour_utc, domain_code, page_title, views, response_bytes. The rewrite therefore changes only the current version, and older versions keep the names they were written with. Before you run one, list the readers that ask for the column by name. The switch happens in one commit, so every reader of the current version moves at the same moment, while a job that pins an older version keeps the old name. Move those jobs with the readers, and record the version number the rewrite replaced until they have moved.
 
 **Working rule:** Choose Delta Lake column names when the table is created, because at this pin a later rename is a rewrite of the whole table. Do not use `set_column_metadata` to rename a column: it changes the version and the metadata, and the column keeps its name. After any schema change, read the column names back through the library, as the trap example does, and check them before a query depends on them.
 

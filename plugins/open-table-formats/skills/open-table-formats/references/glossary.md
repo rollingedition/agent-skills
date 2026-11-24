@@ -1,13 +1,13 @@
 ---
 title: "Glossary"
 book: "Open Table Formats"
-edition: "2026.11.14"
+edition: "2026.11.15"
 canonical: "https://rollingedition.com/open-table-formats/glossary"
 ---
 
 # Glossary of *Open Table Formats*
 
-The 50 terms this book defines, as Edition 2026.11.14 has them, each in the book's own sentence. When a task this skill covers uses one, it means what it says here: read its section before you rely on it, and cite the section. Where a definition depends on a package, it says the version this edition pins and runs its examples on. On the web: https://rollingedition.com/open-table-formats/glossary
+The 50 terms this book defines, as Edition 2026.11.15 has them, each in the book's own sentence. When a task this skill covers uses one, it means what it says here: read its section before you rely on it, and cite the section. Where a definition depends on a package, it says the version this edition pins and runs its examples on. On the web: https://rollingedition.com/open-table-formats/glossary
 
 ## append
 
