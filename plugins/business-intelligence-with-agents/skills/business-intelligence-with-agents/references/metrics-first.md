@@ -3,13 +3,13 @@ title: "Business Intelligence with Agents"
 chapter: "Route questions to governed metrics first"
 chapter_id: metrics-first
 book: business-intelligence-with-agents
-edition: 2026.11.17
+edition: 2026.11.18
 verified: 2026-11-22
-edition_code: 6VBD-766G
+edition_code: 2DBD-TEG5
 canonical: https://rollingedition.com/business-intelligence-with-agents/metrics-first
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“Route questions to governed metrics first,” chapter 6 of Business Intelligence with Agents, Edition 2026.11.17, examples passed Nov 22, 2026. By Rolling Edition, https://rollingedition.com/business-intelligence-with-agents/metrics-first. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Route questions to governed metrics first,” chapter 6 of Business Intelligence with Agents, Edition 2026.11.18, examples passed Nov 22, 2026. By Rolling Edition, https://rollingedition.com/business-intelligence-with-agents/metrics-first. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Route questions to governed metrics first
 
@@ -27,7 +27,7 @@ The shop's agent gets its metric tools from `lib/metric_tools.py`, a module this
 
 Look first at what the agent sees. The example builds the prompt and prints net revenue's line of the catalog, then calls `describe_metric` for the refund rate, and sizes one golden question, `gq-002`, net revenue in each region in March 2026, under the schema-only prompt from [chapter 1](#ask-for-sql) and under this one. Both sizes are the token counts the model's runtime reported when the calls were recorded.
 
-Example `metric-tools` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.17:
+Example `metric-tools` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.4 · sqlglot 30.31.0), passing in Edition 2026.11.18:
 
 ```python
 """Give the agent the semantic layer's metrics instead of the warehouse's tables, and compare what each prompt holds.
@@ -97,7 +97,7 @@ Qwen's chat template for the model this book records with asks for each tool cal
 
 The shop's case is golden question `gq-003`, net revenue by sales channel in calendar 2025. Schema-only SQL failed it in chapter 1 by filtering `fct_orders` on a `calendar_year` column that exists only in `dim_date`. The recording `metric-agent-runs` holds the same model's replies to the metrics-first prompt for all 48 golden questions. It was made by `recordings/record_metrics_first.py` with the pinned model file, Qwen's recommended sampling and a seed reset before every call, like every recording in this book. `gq-003`'s run, replayed, shows the reply, the request and what the layer did with it.
 
-Example `model-returns-a-request` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.17:
+Example `model-returns-a-request` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.4 · sqlglot 30.31.0), passing in Edition 2026.11.18:
 
 ```python
 """The model returns a metric request, not SQL, and the layer compiles that request. The prose rests on the `matches golden`
@@ -172,7 +172,7 @@ A [parsed request](#request-not-sql) is well-formed, which isn't the same as rig
 
 A person might type three requests the layer refuses: orders by customer email, which no semantic model defines; net revenue by product category, which would fan out; and net revenue for a region called `Europe`. The model's own first request for `gq-002` comes next: the code runs it unvalidated to show what would have happened, then follows its corrected request to its answer.
 
-Example `reject-unknown-dimension` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.17:
+Example `reject-unknown-dimension` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.4 · sqlglot 30.31.0), passing in Edition 2026.11.18:
 
 ```python
 """Validate a metric request against the layer and the warehouse before it runs, and show what would run without it.
@@ -246,7 +246,7 @@ The `ask_back` tool ends the run with a question to the person and the options t
 
 Four dev questions should end in a question back or a reason: two are ambiguous, `gq-019`, about our best customers, and `gq-020`, about which region is doing best, and two can't be answered, a forecast and the cost of shipping. The last tool of each run is printed for all four. Then the code prints the questions the agent asked for `gq-019` and `gq-005`, the answer it gave for `gq-020`, and a check the recorded runs didn't have.
 
-Example `clarify-best-customers` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.17:
+Example `clarify-best-customers` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.4 · sqlglot 30.31.0), passing in Edition 2026.11.18:
 
 ```python
 """Ask back when a question could mean several metrics: the layer supplies each option's definition to the person.
@@ -337,7 +337,7 @@ So far the book has followed [single runs](#validate-the-request). The measureme
 
 Each run gets at most four model calls. A run that uses all four model calls without an answer is a failure, and `grade()` scores it as `step limit`, apart from the declines the model chose. Every run on both splits, for each approach, is replayed and counted by tool: model calls, refused requests, runs that reached a correct answer after a refusal, and clarifications by kind of question.
 
-Example `metrics-first-score` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.17:
+Example `metrics-first-score` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.4 · sqlglot 30.31.0), passing in Edition 2026.11.18:
 
 ```python
 """Score metrics-first against the schema-only baseline on both splits: dev for tuning, test once for the final number.
@@ -437,9 +437,9 @@ Where each approach's misses go is what Figure 6.1 shows. Schema-only SQL's miss
 
 *Figure 6.1. Each approach's outcomes on the dev and test splits, out of 24 questions.*
 
-![On dev, metrics-first's bar is mostly correct answers, and on test a declined segment takes part of it](https://rollingedition.ai/books/business-intelligence-with-agents/2026.11.17/figures/outcomes-by-approach.svg)
+![On dev, metrics-first's bar is mostly correct answers, and on test a declined segment takes part of it](https://rollingedition.ai/books/business-intelligence-with-agents/2026.11.18/figures/outcomes-by-approach.svg)
 
-Example `figure-outcomes-by-approach` (Python 3.12.15 · duckdb 2.0.0 · matplotlib 3.11.2 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.17:
+Example `figure-outcomes-by-approach` (Python 3.12.15 · duckdb 2.0.0 · matplotlib 3.11.2 · pyyaml 6.0.4 · sqlglot 30.31.0), passing in Edition 2026.11.18:
 
 ```python
 """Draw each approach's outcomes on each split as bars of 24 golden questions: correct, wrong, error, declined and step limit.
@@ -532,7 +532,7 @@ This is one model, one sampled reply per call and one synthetic warehouse, so th
 
 [The score](#measure-metrics-first) says how many runs failed, but not why. The why is in the traces, and it decides what to fix: a metric, a description, a check or an access rule. Each run that wasn't correct is laid out call by call: the tool and arguments the model sent, and the first line of what came back. It also prints the request for `gq-008`, a correct run that the dev wrong answers are set beside, and asks the layer for the request `gq-039`'s run was reaching for.
 
-Example `metrics-first-misses` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.3 · sqlglot 30.31.0), passing in Edition 2026.11.17:
+Example `metrics-first-misses` (Python 3.12.15 · duckdb 2.0.0 · pyyaml 6.0.4 · sqlglot 30.31.0), passing in Edition 2026.11.18:
 
 ```python
 """Read every metrics-first run that wasn't correct, call by call, and ask the layer what gq-039's run was reaching for.

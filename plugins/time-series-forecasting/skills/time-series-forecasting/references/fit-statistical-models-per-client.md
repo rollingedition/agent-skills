@@ -3,13 +3,13 @@ title: "Time Series Forecasting"
 chapter: "Fit a statistical model for each client"
 chapter_id: fit-statistical-models-per-client
 book: time-series-forecasting
-edition: 2026.11.18
+edition: 2026.11.19
 verified: 2026-11-22
-edition_code: TJ9A-J786
+edition_code: Y2Y3-GR38
 canonical: https://rollingedition.com/time-series-forecasting/fit-statistical-models-per-client
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“Fit a statistical model for each client,” chapter 4 of Time Series Forecasting, Edition 2026.11.18, examples passed Nov 22, 2026. By Rolling Edition, https://rollingedition.com/time-series-forecasting/fit-statistical-models-per-client. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Fit a statistical model for each client,” chapter 4 of Time Series Forecasting, Edition 2026.11.19, examples passed Nov 22, 2026. By Rolling Edition, https://rollingedition.com/time-series-forecasting/fit-statistical-models-per-client. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Fit a statistical model for each client
 
@@ -27,9 +27,9 @@ Figure 4.1 draws the lead client's last two weeks before the first standard cuto
 
 *Figure 4.1. The lead client's load and its 24-hour mean.*
 
-![The load repeats a daily rise and fall, and its 24-hour mean moves more slowly, lowest after Christmas](https://rollingedition.ai/books/time-series-forecasting/2026.11.18/figures/lead-client-fortnight.svg)
+![The load repeats a daily rise and fall, and its 24-hour mean moves more slowly, lowest after Christmas](https://rollingedition.ai/books/time-series-forecasting/2026.11.19/figures/lead-client-fortnight.svg)
 
-Example `figure-lead-client-fortnight` (Python 3.13.16 · matplotlib 3.11.2 · numpy 2.5.5 · pandas 2.3.3), passing in Edition 2026.11.18:
+Example `figure-lead-client-fortnight` (Python 3.13.16 · matplotlib 3.11.2 · numpy 2.5.5 · pandas 2.3.3), passing in Edition 2026.11.19:
 
 ```python
 """Draw the lead client's last two weeks before the first standard cutoff, with its 24-hour mean.
@@ -102,9 +102,9 @@ Unrolled all the way back, the newest reading has weight alpha and each older on
 
 *Figure 4.2. The weight each of the last 24 readings carries.*
 
-![The newest reading weighs most, and a smaller alpha spreads weight back](https://rollingedition.ai/books/time-series-forecasting/2026.11.18/figures/smoothing-weights.svg)
+![The newest reading weighs most, and a smaller alpha spreads weight back](https://rollingedition.ai/books/time-series-forecasting/2026.11.19/figures/smoothing-weights.svg)
 
-Example `figure-smoothing-weights` (Python 3.13.16 · matplotlib 3.11.2 · numpy 2.5.5 · pandas 2.3.3), passing in Edition 2026.11.18:
+Example `figure-smoothing-weights` (Python 3.13.16 · matplotlib 3.11.2 · numpy 2.5.5 · pandas 2.3.3), passing in Edition 2026.11.19:
 
 ```python
 """Draw the weight exponential smoothing gives each of the last 24 readings, for alpha 0.2 and 0.5.
@@ -152,7 +152,7 @@ ETS, for error, trend and season, extends the simplest form of exponential smoot
 
 Which form does AutoETS pick for each client, and do its forecasts beat seasonal naive? The lines it prints answer both.
 
-Example `autoets-subset-backtest` (Python 3.13.16 · numpy 2.5.5 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.18:
+Example `autoets-subset-backtest` (Python 3.13.16 · numpy 2.5.5 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.19:
 
 ```python
 """Backtest AutoETS and seasonal naive for the eight clients of SUBSET8 over the three standard cutoffs, and score both.
@@ -252,7 +252,7 @@ The chosen form changes from client to client, and for some clients from one cut
 
 A flat form winning looks odd when the seasonal form contains it. ETS(A,N,N) is ETS(A,N,A) with the seasonal part switched off, so the best seasonal fit cannot have a lower likelihood than the flat fit on the same history. Fitting both forms on each of the 24 windows shows whether that happens.
 
-Example `flat-form-check` (Python 3.13.16 · numpy 2.5.5 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.18:
+Example `flat-form-check` (Python 3.13.16 · numpy 2.5.5 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.19:
 
 ```python
 """For each subset window, fit the flat form ETS(A,N,N) and the additive-season form ETS(A,N,A) on the same history, and count where the seasonal fit has the lower likelihood.
@@ -300,7 +300,7 @@ The seasonal fit loses on likelihood, not only on AICc. Its log-likelihood is lo
 
 [Chapter 1](#forecast-with-a-statistical-model) forced an additive season on the lead client, with `model="ZZA"`, and seasonal naive still had the lower error there. Does that hold across all eight? The forced run covers the same eight clients, beside the default.
 
-Example `autoets-forced-season-backtest` (Python 3.13.16 · numpy 2.5.5 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.18:
+Example `autoets-forced-season-backtest` (Python 3.13.16 · numpy 2.5.5 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.19:
 
 ```python
 """Backtest AutoETS with the season forced to additive (model ZZA) and seasonal naive, for the eight clients of SUBSET8 over the three standard cutoffs.
@@ -413,9 +413,9 @@ Figure 4.3 shows the load above its change from the same hour yesterday, over th
 
 *Figure 4.3. The load and its change from the same hour yesterday.*
 
-![The load rises and falls within each day, and its change swings around zero](https://rollingedition.ai/books/time-series-forecasting/2026.11.18/figures/seasonal-difference.svg)
+![The load rises and falls within each day, and its change swings around zero](https://rollingedition.ai/books/time-series-forecasting/2026.11.19/figures/seasonal-difference.svg)
 
-Example `figure-seasonal-difference` (Python 3.13.16 · matplotlib 3.11.2 · numpy 2.5.5 · pandas 2.3.3), passing in Edition 2026.11.18:
+Example `figure-seasonal-difference` (Python 3.13.16 · matplotlib 3.11.2 · numpy 2.5.5 · pandas 2.3.3), passing in Edition 2026.11.19:
 
 ```python
 """Draw the lead client's last two weeks before the first standard cutoff above their change from the same hour
@@ -472,7 +472,7 @@ What remains is what the two autoregressive terms model: over those eight weeks,
 
 We fix the order rather than search for it, and [the section on automatic search](#why-the-book-avoids-autoarima) explains why. Before the order goes into a backtest, fit it once with statsmodels 0.15.0 on the lead client's history before the first standard cutoff, and print the names of the fitted parameters. That shows whether the model has the terms you wrote down.
 
-Example `arima-summary-look` (Python 3.13.16 · numpy 2.5.5 · pandas 2.3.3 · statsmodels 0.15.0 · utilsforecast 0.2.17), passing in Edition 2026.11.18:
+Example `arima-summary-look` (Python 3.13.16 · numpy 2.5.5 · pandas 2.3.3 · statsmodels 0.15.0 · utilsforecast 0.2.17), passing in Edition 2026.11.19:
 
 ```python
 """Fit the fixed seasonal ARIMA with statsmodels on the lead client's history before the first standard cutoff, and print its parameter names. The parameter lines are what the prose reads."""
@@ -512,7 +512,7 @@ Four forecasts now cover the same 24 hours at the same three cutoffs, from the s
 
 One score is still missing: the fixed ARIMA's, on the same windows and measures.
 
-Example `arima-subset-backtest` (Python 3.13.16 · numpy 2.5.5 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.18:
+Example `arima-subset-backtest` (Python 3.13.16 · numpy 2.5.5 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.19:
 
 ```python
 """Backtest the fixed seasonal ARIMA(1,0,0)(1,1,0)[24] and seasonal naive for the eight clients of SUBSET8 over the three standard cutoffs.
@@ -600,7 +600,7 @@ Start with the raw history, the eight weeks before each February cutoff with its
 
 Starting the history at the first reading may fix it. Fitting AutoETS twice at each February cutoff, once on the raw eight weeks and once on the start history, which begins at `MT_115`'s first reading, shows whether it does, scored on the 24 hours from each cutoff.
 
-Example `late-starter-trim` (Python 3.13.16 · numpy 2.5.5 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.18:
+Example `late-starter-trim` (Python 3.13.16 · numpy 2.5.5 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.19:
 
 ```python
 """Backtest AutoETS for MT_115, a late starter, on three February cutoffs: once on its raw eight weeks and once on its history from its first reading.
