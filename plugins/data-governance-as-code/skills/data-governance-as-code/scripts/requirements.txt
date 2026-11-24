@@ -63,7 +63,7 @@ pyparsing==3.3.3
 pyroaring==1.2.0
 python-dateutil==4.0.0
 pytz==2026.6
-pyyaml==6.0.3
+pyyaml==6.0.4
 rdflib==7.6.0
 regex==2026.11.9
 regopy==1.5.2
@@ -74,7 +74,7 @@ scipy==1.18.1
 setuptools==84.2.1
 shellingham==1.5.4
 six==1.17.0
-smart-open==9.0.3
+smart-open==10.0.0
 spacy==3.8.18
 spacy-legacy==3.0.12
 spacy-loggers==1.0.5

@@ -1,13 +1,13 @@
 ---
 title: "Glossary"
 book: "Data Governance as Code"
-edition: "2026.11.35"
+edition: "2026.11.36"
 canonical: "https://rollingedition.com/data-governance-as-code/glossary"
 ---
 
 # Glossary of *Data Governance as Code*
 
-The 151 terms this book defines, as Edition 2026.11.35 has them, each in the book's own sentence. When a task this skill covers uses one, it means what it says here: read its section before you rely on it, and cite the section. Where a definition depends on a package, it says the version this edition pins and runs its examples on. On the web: https://rollingedition.com/data-governance-as-code/glossary
+The 151 terms this book defines, as Edition 2026.11.36 has them, each in the book's own sentence. When a task this skill covers uses one, it means what it says here: read its section before you rely on it, and cite the section. Where a definition depends on a package, it says the version this edition pins and runs its examples on. On the web: https://rollingedition.com/data-governance-as-code/glossary
 
 ## access log
 
