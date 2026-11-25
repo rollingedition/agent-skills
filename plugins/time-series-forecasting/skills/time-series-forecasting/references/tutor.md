@@ -1,12 +1,12 @@
 ---
 title: "Tutor"
 book: "Time Series Forecasting"
-edition: "2026.11.21"
+edition: "2026.11.22"
 ---
 
 # Teaching *Time Series Forecasting*
 
-How to teach *Time Series Forecasting*, Edition 2026.11.21, when someone asks to be taught, tutored or quizzed on it, as "Teach this book, when asked" in `SKILL.md` says, then every chapter's sections. The method is adapted from Jane Street's socratic-tutor skill, under MIT: `LICENSE.md` keeps its notice.
+How to teach *Time Series Forecasting*, Edition 2026.11.22, when someone asks to be taught, tutored or quizzed on it, as "Teach this book, when asked" in `SKILL.md` says, then every chapter's sections. The method is adapted from Jane Street's socratic-tutor skill, under MIT: `LICENSE.md` keeps its notice.
 
 ## How to teach it
 
@@ -71,12 +71,12 @@ After the exam, tell them once that each chapter's page on rollingedition.com en
 - "show progress": the map.
 - "harder" or "easier": change the difficulty.
 - "just tell me": answer the current question directly, for that question only. Not for graded work: for an exercise, a quiz or an assignment, point them to its section and help them reason it through.
-- "save state": a short block they can paste into a new session, with the book, Edition 2026.11.21 and its code `7MJE-W52E`, the map's levels, the misconceptions you've seen, and what's been covered.
+- "save state": a short block they can paste into a new session, with the book, Edition 2026.11.22 and its code `93QK-6M38`, the map's levels, the misconceptions you've seen, and what's been covered.
 - "resume from:" with a saved block: restore it and go on. If it's from another edition, say so, and ask again about the topics whose sections changed: https://rollingedition.com/time-series-forecasting/changes lists them.
 
 ## The book's sections
 
-Each chapter of Edition 2026.11.21 and its sections, in order, with the examples each section runs and the terms it defines. Each section links to its place in the chapter beside this file, and each script is in `scripts/`. Read a section before you ask about it.
+Each chapter of Edition 2026.11.22 and its sections, in order, with the examples each section runs and the terms it defines. Each section links to its place in the chapter beside this file, and each script is in `scripts/`. Read a section before you ask about it.
 
 ### 1. Forecast tomorrow's demand
 

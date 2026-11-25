@@ -3,13 +3,13 @@ title: "Time Series Forecasting"
 chapter: "Forecast tomorrow's demand"
 chapter_id: forecast-tomorrows-demand
 book: time-series-forecasting
-edition: 2026.11.21
+edition: 2026.11.22
 verified: 2026-11-22
-edition_code: 7MJE-W52E
+edition_code: 93QK-6M38
 canonical: https://rollingedition.com/time-series-forecasting/forecast-tomorrows-demand
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“Forecast tomorrow's demand,” chapter 1 of Time Series Forecasting, Edition 2026.11.21, examples passed Nov 22, 2026. By Rolling Edition, https://rollingedition.com/time-series-forecasting/forecast-tomorrows-demand. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Forecast tomorrow's demand,” chapter 1 of Time Series Forecasting, Edition 2026.11.22, examples passed Nov 22, 2026. By Rolling Edition, https://rollingedition.com/time-series-forecasting/forecast-tomorrows-demand. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Forecast tomorrow's demand
 
@@ -27,7 +27,7 @@ Three terms fix what a forecast is. The moment a forecast is made is its cutoff.
 
 The timing matters as much as the method. Every window in this book has its cutoff at 00:00 on the day it predicts, so the last reading it can use is the one for 23:00 on the day before. The case buys before the day starts, so a midnight cutoff is a simplification. The book keeps it so that each window needs only the day before. A supplier that buys earlier would cut earlier and forecast further ahead. A forecast that reads one hour past its cutoff would use information the supplier does not have when it buys, and its score would flatter it.
 
-The data is public. It is the ElectricityLoadDiagrams20112014 dataset from the UCI Machine Learning Repository, by Trindade (2015), with the DOI 10.24432/C58C86. It is licensed under CC BY 4.0. The book ships a cut of it, `electricity_hourly.csv.gz`, with the licence beside it in the same folder. The [data card](https://github.com/rollingedition/book-time-series-forecasting/blob/46ae5d1e5586ff06d788ef8630eef8324763450a/examples/data/README.md) gives the source, the cut and its limits.
+The data is public. It is the ElectricityLoadDiagrams20112014 dataset from the UCI Machine Learning Repository, by Trindade (2015), with the DOI 10.24432/C58C86. It is licensed under CC BY 4.0. The book ships a cut of it, `electricity_hourly.csv.gz`, with the licence beside it in the same folder. The [data card](https://github.com/rollingedition/book-time-series-forecasting/blob/2fb12c1118d02a621e215011d8f4f0f0f4ff68c9/examples/data/README.md) gives the source, the cut and its limits.
 
 The raw file holds 370 clients, with a reading every 15 minutes. The cut averages the four readings of each hour, which gives the energy used in that hour in kWh, and it keeps two whole years, 2013 and 2014. One client, `MT_223`, has no non-zero reading in that window, so the cut drops it. The 369 clients that remain are sorted by id, and 30 are kept at evenly spaced positions. A reader who cuts the raw file must drop `MT_223` and take the same 30 evenly spaced positions, or the counts in this book will not match.
 
@@ -56,7 +56,7 @@ The book keeps every value as the meter recorded it. Nothing is filled, smoothed
 
 The lead client has readings in every hour of the window, so none of its rows are `before_first_reading`. Over the two years it has 17516 ordinary rows. It has 2 gap rows and 2 repeat rows, one of each in each year.
 
-Example `load-lead-client` (Python 3.13.16 · numpy 2.5.5 · pandas 2.3.3 · utilsforecast 0.2.17), passing in Edition 2026.11.21:
+Example `load-lead-client` (Python 3.13.16 · numpy 2.5.5 · pandas 2.3.3 · utilsforecast 0.2.17), passing in Edition 2026.11.22:
 
 ```python
 """Loads the lead client's hourly demand, counts its quirk labels, and checks the eight-week history before each
@@ -137,7 +137,7 @@ Take the window at 00:00 on Dec 25 as a worked case. Its forecast for 00:00 on D
 
 Why a day and not a week? A season of 168 hours would copy the same hour of the same weekday from the week before, which is another valid baseline for a series with a weekly rhythm. This chapter uses the daily season because the question is the next day, and because the day-ahead forecast is the one the case needs.
 
-Example `seasonal-naive-next-day` (Python 3.13.16 · numpy 2.5.5 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.21:
+Example `seasonal-naive-next-day` (Python 3.13.16 · numpy 2.5.5 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.22:
 
 ```python
 """Forecasts the lead client's next day with seasonal naive for each day of the held-out week, then scores it.
@@ -225,7 +225,7 @@ A fit does three things, and each one matters for what the score means. At a cut
 
 The comparison is fair only when nothing else changes. It uses the same 7 cutoffs and the same 1344 hours of history before each one, and it refits the model at every cutoff using only the history before that cutoff. Only the model differs from the baseline.
 
-Example `autoets-next-day` (Python 3.13.16 · numpy 2.5.5 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.21:
+Example `autoets-next-day` (Python 3.13.16 · numpy 2.5.5 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.22:
 
 ```python
 """Forecasts the lead client's next day with AutoETS for each day of the held-out week, then scores it.
@@ -306,9 +306,9 @@ Figure 1.1 draws the lead client's load over the held-out week with both forecas
 
 *Figure 1.1. The held-out week's actual load, with the seasonal naive and AutoETS forecasts for each hour.*
 
-![Seasonal naive copies Christmas Day's lower load into Dec 26, and AutoETS is high on Christmas Day and low the day after](https://rollingedition.ai/books/time-series-forecasting/2026.11.21/figures/held-out-week-forecasts.svg)
+![Seasonal naive copies Christmas Day's lower load into Dec 26, and AutoETS is high on Christmas Day and low the day after](https://rollingedition.ai/books/time-series-forecasting/2026.11.22/figures/held-out-week-forecasts.svg)
 
-Example `figure-held-out-week-forecasts` (Python 3.13.16 · matplotlib 3.11.2 · numpy 2.5.5 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.21:
+Example `figure-held-out-week-forecasts` (Python 3.13.16 · matplotlib 3.11.2 · numpy 2.5.5 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.22:
 
 ```python
 """Draw the lead client's actual load over the held-out week, with the seasonal naive and AutoETS forecasts made at each midnight cutoff.
