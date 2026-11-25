@@ -3,13 +3,13 @@ title: "Securing LLM Applications and Agents"
 chapter: "Measure what prompt-level defences buy"
 chapter_id: prompt-defences
 book: securing-llm-applications-and-agents
-edition: 2026.11.2
+edition: 2026.11.3
 verified: 2026-11-22
-edition_code: Y3X2-HXT9
+edition_code: T64T-4BT9
 canonical: https://rollingedition.com/securing-llm-applications-and-agents/prompt-defences
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“Measure what prompt-level defences buy,” chapter 4 of Securing LLM Applications and Agents, Edition 2026.11.2, examples passed Nov 22, 2026. By Rolling Edition, https://rollingedition.com/securing-llm-applications-and-agents/prompt-defences. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Measure what prompt-level defences buy,” chapter 4 of Securing LLM Applications and Agents, Edition 2026.11.3, examples passed Nov 22, 2026. By Rolling Edition, https://rollingedition.com/securing-llm-applications-and-agents/prompt-defences. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Measure what prompt-level defences buy
 
@@ -23,7 +23,7 @@ The chapter measures five variants: a warning in the system prompt, delimiters, 
 
 The held-out undefended run, which [chapter 3](#undefended-baseline) reports, is lower than dev's. Every held-out comparison in this chapter is against that run, not against the dev numbers, and the paired intervals make that comparison. The held-out example runs each defence once and produces those numbers:
 
-Example `prompt-defences-held-out` (Python 3.13.16 · bm25s 0.3.16 · linkify-it-py 2.2.0 · markdown-it-py 4.3.0 · numpy 2.5.5), passing in Edition 2026.11.2:
+Example `prompt-defences-held-out` (Python 3.13.16 · bm25s 0.3.16 · linkify-it-py 2.2.0 · markdown-it-py 4.3.0 · numpy 2.5.5), passing in Edition 2026.11.3:
 
 ```python
 """Five prompt-level defences, each run once on the held-out split after its wording was frozen on dev, against the
@@ -140,7 +140,7 @@ The simplest defence is a sentence. The warning is appended to the system prompt
 
 Its effect depends on whether the model acts on the note, and the note's wording can't settle that in advance. The first example runs all five variants on the dev split, against the undefended run.
 
-Example `prompt-defences-paired` (Python 3.13.16 · bm25s 0.3.16 · linkify-it-py 2.2.0 · markdown-it-py 4.3.0 · numpy 2.5.5), passing in Edition 2026.11.2:
+Example `prompt-defences-paired` (Python 3.13.16 · bm25s 0.3.16 · linkify-it-py 2.2.0 · markdown-it-py 4.3.0 · numpy 2.5.5), passing in Edition 2026.11.3:
 
 ```python
 """Five prompt-level defences, each replayed on the dev split and paired with the undefended baseline. The line the prose
@@ -297,7 +297,7 @@ On dev, the repeated request has the largest utility cost of the five variants. 
 
 The next example looks for the cause among the dev benign tasks whose check needs an action: a message sent for an outbox check, or a visit booked for a booking check.
 
-Example `prompt-repeat-why` (Python 3.13.16 · bm25s 0.3.16 · linkify-it-py 2.2.0 · markdown-it-py 4.3.0 · numpy 2.5.5), passing in Edition 2026.11.2:
+Example `prompt-repeat-why` (Python 3.13.16 · bm25s 0.3.16 · linkify-it-py 2.2.0 · markdown-it-py 4.3.0 · numpy 2.5.5), passing in Edition 2026.11.3:
 
 ```python
 """On the dev benign tasks, the repeated request makes the model end more tasks in a text reply that lacks the action the
@@ -363,7 +363,7 @@ On held-out, the repeat's utility cost is -33.3 points, with an interval of [-53
 
 Each defence has two costs: the benign tasks it loses, and the tokens it adds to the prompts. The first is in the paired numbers above. The second is counted in the next example, on the dev benign tasks, with the Qwen3 tokeniser from the pinned files. That tokeniser matched the 4B model's own count on the book's probe texts when control tokens are read as control tokens. Each variant's count is summed over that task's model calls in the variant's own run. A run that makes fewer calls has fewer prompts to add to, so a total can fall because the run did less and not because its text is shorter.
 
-Example `prompt-cost-tokens` (Python 3.13.16 · bm25s 0.3.16 · huggingface-hub 2.4.0 · linkify-it-py 2.2.0 · markdown-it-py 4.3.0 · numpy 2.5.5 · tokenizers 0.23.3), passing in Edition 2026.11.2:
+Example `prompt-cost-tokens` (Python 3.13.16 · bm25s 0.3.16 · huggingface-hub 2.4.0 · linkify-it-py 2.2.0 · markdown-it-py 4.3.0 · numpy 2.5.5 · tokenizers 0.23.3), passing in Edition 2026.11.3:
 
 ```python
 """The tokens each variant adds to the prompts it is given, on the 15 dev benign tasks, summed over each task's model
@@ -470,9 +470,9 @@ Figure 4.1 draws each run's attack success along the bottom and its utility up t
 
 *Figure 4.1. Each run's dev attack success against its dev utility, with 95% bootstrap intervals.*
 
-![On the dev split, encoding alone stops every attack, and encoding and repeating the request give up the most benign tasks](https://rollingedition.ai/books/securing-llm-applications-and-agents/2026.11.2/figures/prompt-defence-tradeoff.svg)
+![On the dev split, encoding alone stops every attack, and encoding and repeating the request give up the most benign tasks](https://rollingedition.ai/books/securing-llm-applications-and-agents/2026.11.3/figures/prompt-defence-tradeoff.svg)
 
-Example `figure-prompt-defence-tradeoff` (Python 3.13.16 · bm25s 0.3.16 · linkify-it-py 2.2.0 · markdown-it-py 4.3.0 · matplotlib 3.11.2 · numpy 2.5.5), passing in Edition 2026.11.2:
+Example `figure-prompt-defence-tradeoff` (Python 3.13.16 · bm25s 0.3.16 · linkify-it-py 2.2.0 · markdown-it-py 4.3.0 · matplotlib 3.11.2 · numpy 2.5.5), passing in Edition 2026.11.3:
 
 ```python
 """Draw each prompt defence's dev attack success against its dev utility, with the undefended baseline and 95% bootstrap intervals.
@@ -572,7 +572,7 @@ These counts describe these prompts, this tokeniser and this set of short docume
 
 The undefended 0.6B model looks safer than the 4B model on the dev split, and that is worth a closer look, because it shows how a safety number can come from what a model does rather than from what it resists. The smaller model is Qwen3-0.6B, pinned like the 4B model and run with thinking off. The example sets the two models beside each other on the same dev tasks and cases.
 
-Example `prompt-small-model` (Python 3.13.16 · bm25s 0.3.16 · linkify-it-py 2.2.0 · markdown-it-py 4.3.0 · numpy 2.5.5), passing in Edition 2026.11.2:
+Example `prompt-small-model` (Python 3.13.16 · bm25s 0.3.16 · linkify-it-py 2.2.0 · markdown-it-py 4.3.0 · numpy 2.5.5), passing in Edition 2026.11.3:
 
 ```python
 """The 0.6B model against the 4B baseline on the dev split: utility, attack success, their paired differences, and how

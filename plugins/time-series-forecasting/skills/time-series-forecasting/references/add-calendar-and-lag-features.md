@@ -3,13 +3,13 @@ title: "Time Series Forecasting"
 chapter: "Add calendar and lag features"
 chapter_id: add-calendar-and-lag-features
 book: time-series-forecasting
-edition: 2026.11.19
+edition: 2026.11.20
 verified: 2026-11-22
-edition_code: Y2Y3-GR38
+edition_code: H1KT-SZR3
 canonical: https://rollingedition.com/time-series-forecasting/add-calendar-and-lag-features
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“Add calendar and lag features,” chapter 5 of Time Series Forecasting, Edition 2026.11.19, examples passed Nov 22, 2026. By Rolling Edition, https://rollingedition.com/time-series-forecasting/add-calendar-and-lag-features. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Add calendar and lag features,” chapter 5 of Time Series Forecasting, Edition 2026.11.20, examples passed Nov 22, 2026. By Rolling Edition, https://rollingedition.com/time-series-forecasting/add-calendar-and-lag-features. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Add calendar and lag features
 
@@ -45,9 +45,9 @@ The table below shows the three kinds of target hour in that day-ahead forecast,
 | 01:00 (hour 1) | 00:00 of the forecast day | no | 01:00 the day before | yes |
 | 23:00 (hour 23) | 22:00 of the forecast day | no | 23:00 the day before | yes |
 
-Both of the supplier's lags, 24 and 168, are known at every hour of the day-ahead forecast, so the model never needs a reading that does not yet exist. [lgbm-feature-sets](https://github.com/rollingedition/book-time-series-forecasting/blob/d9d9316c6263503a93d015ceb18a809b4c47a8c1/examples/lgbm-feature-sets.py) passes these two lags to `MLForecast`, and the library does the rest.
+Both of the supplier's lags, 24 and 168, are known at every hour of the day-ahead forecast, so the model never needs a reading that does not yet exist. [lgbm-feature-sets](https://github.com/rollingedition/book-time-series-forecasting/blob/aafa2d10fe7305fb435f19bad56d25c3ecb70634/examples/lgbm-feature-sets.py) passes these two lags to `MLForecast`, and the library does the rest.
 
-The [clock rule from Chapter 3](#mark-clock-change-hours-as-missing) reaches the lags too: the Mar 30, 2014 gap hour is set to missing, so any feature that reads it is missing as well. In the history of an Apr 1, 2014 cutoff, [lgbm-feature-sets](https://github.com/rollingedition/book-time-series-forecasting/blob/d9d9316c6263503a93d015ceb18a809b4c47a8c1/examples/lgbm-feature-sets.py) finds 1 masked hour, and 1 row has a lag that reads it: the row 24 hours after the gap. Before each window's model is fitted, its masked hours are filled [as Chapter 3 fills them](#mark-clock-change-hours-as-missing), from that window's own history, and the fill reads nothing after the cutoff. Once filled, the hour is a reading, so the row that reads it keeps its value, and LightGBM never receives a missing value from a lag. The rule is a stated choice, not a measured optimum. The count printed beside it is what a reader should check.
+The [clock rule from Chapter 3](#mark-clock-change-hours-as-missing) reaches the lags too: the Mar 30, 2014 gap hour is set to missing, so any feature that reads it is missing as well. In the history of an Apr 1, 2014 cutoff, [lgbm-feature-sets](https://github.com/rollingedition/book-time-series-forecasting/blob/aafa2d10fe7305fb435f19bad56d25c3ecb70634/examples/lgbm-feature-sets.py) finds 1 masked hour, and 1 row has a lag that reads it: the row 24 hours after the gap. Before each window's model is fitted, its masked hours are filled [as Chapter 3 fills them](#mark-clock-change-hours-as-missing), from that window's own history, and the fill reads nothing after the cutoff. Once filled, the hour is a reading, so the row that reads it keeps its value, and LightGBM never receives a missing value from a lag. The rule is a stated choice, not a measured optimum. The count printed beside it is what a reader should check.
 
 **Working rule:** Use only lags at least as long as the horizon. With a 24-hour horizon that means 24 hours or more, and this book uses 24 and 168. A shorter lag needs a reason, and a model that uses one must pass the shift test before anyone trusts its score. Keep the clock rule on the lags, and count the rows whose lags read a masked hour, and the hours filled from history.
 
@@ -57,15 +57,15 @@ Lags are built from readings. Calendar features, unlike lags, are facts about th
 
 The supplier's demand follows the day. The hour of day repeats what the lags already carry: the daily rhythm. The weekday adds what they do not. It tells the model that Saturday and Sunday differ from the working days. The month is the third column, and it is a weak one with this history. Eight weeks of history span two or three calendar months, so `month` can only tell a few weeks of the history from the rest, and on the standard cutoffs every forecast hour falls in December. The book uses three mlforecast date features, named by their attribute: `hour`, `dayofweek` and `month`. The weekday column already holds the weekend, so the book adds no separate weekend flag. In pandas, `dayofweek` counts Monday as 0 and Sunday as 6, so Saturday and Sunday are the two values a tree must separate from the rest. A tree can split on that in one step, which is why the weekday is cheap to test.
 
-A public holiday does not follow the weekday. A model with only weekday features reads Dec 25, 2014 as an ordinary Thursday, and it reads a holiday on a Sunday as an ordinary Sunday. The holiday feature answers this. It is a function of the timestamp, `is_holiday` in the shared module `examples/lib/features.py`, which returns 1 on a Portuguese national holiday and 0 otherwise. mlforecast accepts such a function as a date feature and names its column after the function. The holidays come from the `holidays` package 0.110.dev20261120202916, under the MIT licence, through `holidays.country_holidays("PT", years=[2013, 2014])`. For the two years in the data, the package lists 18 dates. The book does not ship that list. Each run builds it from the package's calendar.
+A public holiday does not follow the weekday. A model with only weekday features reads Dec 25, 2014 as an ordinary Thursday, and it reads a holiday on a Sunday as an ordinary Sunday. The holiday feature answers this. It is a function of the timestamp, `is_holiday` in the shared module `examples/lib/features.py`, which returns 1 on a Portuguese national holiday and 0 otherwise. mlforecast accepts such a function as a date feature and names its column after the function. The holidays come from the `holidays` package 0.110.dev20261121183933, under the MIT licence, through `holidays.country_holidays("PT", years=[2013, 2014])`. For the two years in the data, the package lists 18 dates. The book does not ship that list. Each run builds it from the package's calendar.
 
 Figure 5.1 draws the lead client's Dec 25, 2014 hour by hour, beside the average Thursday and the average Sunday of the eight weeks before it, each the mean load at every hour of the day. Dec 25 runs close to the average Sunday, and from 08:00 on it is below the average Thursday in every hour.
 
 *Figure 5.1. The lead client's Dec 25, 2014 beside the average Thursday and the average Sunday.*
 
-![On Dec 25, 2014 the lead client's load runs close to the average Sunday, and from 08:00 on it is below the average Thursday in every hour](https://rollingedition.ai/books/time-series-forecasting/2026.11.19/figures/holiday-like-sunday.svg)
+![On Dec 25, 2014 the lead client's load runs close to the average Sunday, and from 08:00 on it is below the average Thursday in every hour](https://rollingedition.ai/books/time-series-forecasting/2026.11.20/figures/holiday-like-sunday.svg)
 
-Example `figure-holiday-like-sunday` (Python 3.13.16 · holidays 0.110.dev20261120202916 · lightgbm 4.7.0 · matplotlib 3.11.2 · mlforecast 1.1.0 · numpy 2.5.5 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.19:
+Example `figure-holiday-like-sunday` (Python 3.13.16 · holidays 0.110.dev20261121183933 · lightgbm 4.7.0 · matplotlib 3.11.2 · mlforecast 1.1.0 · numpy 2.5.5 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.20:
 
 ```python
 """Draw the lead client's Dec 25, 2014 hour by hour beside the average Thursday and the average Sunday of the eight weeks
@@ -138,7 +138,7 @@ A feature is worth keeping when it lowers the error on windows the model did not
 
 Each set gets two scores. The pooled MAE is the MAE over every client-hour in the windows, the single number for the whole supplier. The mean per-client MASE is MASE for each client, averaged over the clients, here the eight clients. [MASE](#scale-errors-with-mase) divides each client's error by a scale: the mean absolute error that seasonal naive makes in sample on that client's own readings. The book uses one scale function everywhere, `scoring.book_scale`. The scale reads every reading before the first scored window of the set, Apr 18, 2014 at 00:00, with clock-change hours masked, so it does not depend on the windows scored and cannot leak. One client needs care. `MT_115` starts reading on Jan 14, 2014, and the zeros before its first reading are left out of its scale, because it is counted from its first reading. [Chapter 4](#meet-the-late-starters) teaches that rule for late starters.
 
-Example `lgbm-feature-sets` (Python 3.13.16 · holidays 0.110.dev20261120202916 · lightgbm 4.7.0 · mlforecast 1.1.0 · numpy 2.5.5 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.19:
+Example `lgbm-feature-sets` (Python 3.13.16 · holidays 0.110.dev20261121183933 · lightgbm 4.7.0 · mlforecast 1.1.0 · numpy 2.5.5 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.20:
 
 ```python
 """Compare three feature sets for the global LightGBM forecast of SUBSET8 on the decision windows (B-5, B-9, B-10): four
@@ -258,7 +258,7 @@ The [shift test from Chapter 3](#check-a-backtest-for-leakage) carries over with
 
 Which do you expect to have the lower error, the model with a lag of 1 or the one without it? Both are fitted on the same training rows with the same settings, for each of the three standard cutoffs. The honest model uses lags 24 and 168. The leaky model adds a lag of 1, read from the whole series for the target hours, which is what the table built once would do.
 
-Example `lag-leak-check` (Python 3.13.16 · holidays 0.110.dev20261120202916 · lightgbm 4.7.0 · mlforecast 1.1.0 · numpy 2.5.5 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.19:
+Example `lag-leak-check` (Python 3.13.16 · holidays 0.110.dev20261121183933 · lightgbm 4.7.0 · mlforecast 1.1.0 · numpy 2.5.5 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.20:
 
 ```python
 """Shows which lag leaks: a lag of 1 reads the hour before each target hour, which a 24-hour forecast does not have at its
@@ -316,9 +316,9 @@ Figure 5.2 draws the lead client's actual load over the day after each standard 
 
 *Figure 5.2. The actual load and the two forecasts over the day after each standard cutoff.*
 
-![Over the day after each standard cutoff, the forecast with a lag of 1 follows the actual load's rises and falls more closely than the honest forecast does](https://rollingedition.ai/books/time-series-forecasting/2026.11.19/figures/leaky-lag-forecast.svg)
+![Over the day after each standard cutoff, the forecast with a lag of 1 follows the actual load's rises and falls more closely than the honest forecast does](https://rollingedition.ai/books/time-series-forecasting/2026.11.20/figures/leaky-lag-forecast.svg)
 
-Example `figure-leaky-lag-forecast` (Python 3.13.16 · holidays 0.110.dev20261120202916 · lightgbm 4.7.0 · matplotlib 3.11.2 · mlforecast 1.1.0 · numpy 2.5.5 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.19:
+Example `figure-leaky-lag-forecast` (Python 3.13.16 · holidays 0.110.dev20261121183933 · lightgbm 4.7.0 · matplotlib 3.11.2 · mlforecast 1.1.0 · numpy 2.5.5 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.20:
 
 ```python
 """Draw the lead client's actual load over the day after each standard cutoff, with the forecast from honest lags and the
@@ -394,7 +394,7 @@ A lag shorter than the horizon, carried over from an hourly model used for a day
 
 The clock rule can still go wrong in the pipeline. Masked hours make some forecast features missing, and a pipeline can drop those rows, or fill those hours, without saying so. Print the masked hours and the rows they affect every time the history changes.
 
-A pooled score can hide the typical client. In [lgbm-feature-sets](https://github.com/rollingedition/book-time-series-forecasting/blob/d9d9316c6263503a93d015ceb18a809b4c47a8c1/examples/lgbm-feature-sets.py), the unscaled lags-only model's pooled MAE, 304.03 kWh, is below seasonal naive's 305.21 kWh, but its mean per-client MASE is 1.115, against 0.934. The supplier buys power for each client, so the per-client figure is the one that decides a client's forecast. A supplier that reports only the pooled MAE will sell the wrong forecast to the clients the pooled figure hides. Report the per-client MASE next to the pooled figure, and look at the worst client first.
+A pooled score can hide the typical client. In [lgbm-feature-sets](https://github.com/rollingedition/book-time-series-forecasting/blob/aafa2d10fe7305fb435f19bad56d25c3ecb70634/examples/lgbm-feature-sets.py), the unscaled lags-only model's pooled MAE, 304.03 kWh, is below seasonal naive's 305.21 kWh, but its mean per-client MASE is 1.115, against 0.934. The supplier buys power for each client, so the per-client figure is the one that decides a client's forecast. A supplier that reports only the pooled MAE will sell the wrong forecast to the clients the pooled figure hides. Report the per-client MASE next to the pooled figure, and look at the worst client first.
 
 Results can also depend on the machine. LightGBM's [parameter reference](https://lightgbm.readthedocs.io/en/v4.7.0/Parameters.html) says `deterministic` gives stable results for the same data and the same parameters on the CPU device type, and warns that results can differ with other LightGBM versions, with binaries compiled by other compilers, or on other systems. The book sets `deterministic`, row-wise histograms, one thread and a fixed seed, under LightGBM 4.7.0. Those settings make the output repeatable on one machine with one thread count: the output was identical in three runs on the recording machine. They do not promise agreement across machines, and the book has not tested that. The scores are quoted rounded, and rounding does not make two machines agree. If a release machine prints different values, the recorded output needs a fresh recording, and the prose needs the same check.
 

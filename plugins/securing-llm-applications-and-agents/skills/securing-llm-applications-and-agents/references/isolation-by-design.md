@@ -3,13 +3,13 @@ title: "Securing LLM Applications and Agents"
 chapter: "Keep untrusted data out of the plan"
 chapter_id: isolation-by-design
 book: securing-llm-applications-and-agents
-edition: 2026.11.2
+edition: 2026.11.3
 verified: 2026-11-22
-edition_code: Y3X2-HXT9
+edition_code: T64T-4BT9
 canonical: https://rollingedition.com/securing-llm-applications-and-agents/isolation-by-design
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“Keep untrusted data out of the plan,” chapter 8 of Securing LLM Applications and Agents, Edition 2026.11.2, examples passed Nov 22, 2026. By Rolling Edition, https://rollingedition.com/securing-llm-applications-and-agents/isolation-by-design. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Keep untrusted data out of the plan,” chapter 8 of Securing LLM Applications and Agents, Edition 2026.11.3, examples passed Nov 22, 2026. By Rolling Edition, https://rollingedition.com/securing-llm-applications-and-agents/isolation-by-design. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Keep untrusted data out of the plan
 
@@ -25,7 +25,7 @@ The undefended assistant completes 93.3% (14 of 15) of the benign dev tasks, and
 
 Each of the examples below runs in the same harness, against the same case, so their lines can be read side by side. Where a figure is given, the sentence beside it says which split and which design it belongs to, and the table near the end puts the designs in one place.
 
-Example `isolation-paired` (Python 3.13.16 · bm25s 0.3.16 · linkify-it-py 2.2.0 · markdown-it-py 4.3.0 · numpy 2.5.5), passing in Edition 2026.11.2:
+Example `isolation-paired` (Python 3.13.16 · bm25s 0.3.16 · linkify-it-py 2.2.0 · markdown-it-py 4.3.0 · numpy 2.5.5), passing in Edition 2026.11.3:
 
 ```python
 """Each isolation design against the undefended baseline, on the dev set and on the held-out set, with the paired differences between them.
@@ -179,7 +179,7 @@ A check on a call judges the arguments once they arrive. A design decides which 
 
 The first example runs one benign task and one attack case under this design. It prints the calls by tool name and question name only.
 
-Example `dual-llm-references` (Python 3.13.16 · bm25s 0.3.16 · linkify-it-py 2.2.0 · markdown-it-py 4.3.0 · numpy 2.5.5), passing in Edition 2026.11.2:
+Example `dual-llm-references` (Python 3.13.16 · bm25s 0.3.16 · linkify-it-py 2.2.0 · markdown-it-py 4.3.0 · numpy 2.5.5), passing in Edition 2026.11.3:
 
 ```python
 """One benign task and one attack case under the dual LLM, as the calls made, by tool and question name only.
@@ -260,7 +260,7 @@ The dual LLM does not inspect the reply. An attack that works through a link in 
 
 The planner was offered `ask_quarantined`. On the benign dev tasks the quarantined model was asked 0 questions, and on the benign held-out tasks it was asked 0. The attack cases are not counted in those lines, so this run does not say how often the planner asked about attack text. The quarantined model never ran on a benign task, so this chapter makes no claim about the answers it would have given. The design's effect on these attacks is measured, and the example does not say which part of the design produced it.
 
-Example `isolation-cost` (Python 3.13.16 · bm25s 0.3.16 · linkify-it-py 2.2.0 · markdown-it-py 4.3.0 · numpy 2.5.5), passing in Edition 2026.11.2:
+Example `isolation-cost` (Python 3.13.16 · bm25s 0.3.16 · linkify-it-py 2.2.0 · markdown-it-py 4.3.0 · numpy 2.5.5), passing in Edition 2026.11.3:
 
 ```python
 """Where each design's utility cost comes from, counted in the traces of the benign tasks the design lost, on dev and on held-out.
@@ -398,7 +398,7 @@ The check's limits are its width and its coverage. A string argument carries the
 
 The example has no recording. It takes one untrusted message, with fictional fields, and three candidate calls, and it runs the check on each.
 
-Example `taint-label-origins` (Python 3.13.16 · bm25s 0.3.16 · linkify-it-py 2.2.0 · markdown-it-py 4.3.0 · numpy 2.5.5), passing in Edition 2026.11.2:
+Example `taint-label-origins` (Python 3.13.16 · bm25s 0.3.16 · linkify-it-py 2.2.0 · markdown-it-py 4.3.0 · numpy 2.5.5), passing in Edition 2026.11.3:
 
 ```python
 """Which argument values of a crafted episode carry an untrusted label, and the rule that gave the label.
@@ -511,9 +511,9 @@ Figure 8.1 plots dev utility against attack success: undefended 93.3% (14 of 15)
 
 *Figure 8.1. Each run's dev utility against its attack success, with 95% intervals.*
 
-![Only utility splits the designs](https://rollingedition.ai/books/securing-llm-applications-and-agents/2026.11.2/figures/isolation-tradeoff.svg)
+![Only utility splits the designs](https://rollingedition.ai/books/securing-llm-applications-and-agents/2026.11.3/figures/isolation-tradeoff.svg)
 
-Example `figure-isolation-tradeoff` (Python 3.13.16 · bm25s 0.3.16 · linkify-it-py 2.2.0 · markdown-it-py 4.3.0 · matplotlib 3.11.2 · numpy 2.5.5), passing in Edition 2026.11.2:
+Example `figure-isolation-tradeoff` (Python 3.13.16 · bm25s 0.3.16 · linkify-it-py 2.2.0 · markdown-it-py 4.3.0 · matplotlib 3.11.2 · numpy 2.5.5), passing in Edition 2026.11.3:
 
 ```python
 """Each isolation design on the dev split as one point, attack success against utility, with 95% bootstrap intervals in both directions.
@@ -615,7 +615,7 @@ Each cost in this chapter comes from an ordinary request in this office: a reply
 
 The regression example runs the paths this chapter describes, one line per path, so a change to a check shows up as a changed line. Each line gives the case's row and what the check did:
 
-Example `isolation-regressions` (Python 3.13.16 · bm25s 0.3.16 · linkify-it-py 2.2.0 · markdown-it-py 4.3.0 · numpy 2.5.5), passing in Edition 2026.11.2:
+Example `isolation-regressions` (Python 3.13.16 · bm25s 0.3.16 · linkify-it-py 2.2.0 · markdown-it-py 4.3.0 · numpy 2.5.5), passing in Edition 2026.11.3:
 
 ```python
 """The isolation regressions for chapter 8's security review (findings S8-1 to S8-3), with no model and no recording.

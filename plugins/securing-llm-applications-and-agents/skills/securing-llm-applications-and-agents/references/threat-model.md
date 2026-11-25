@@ -3,13 +3,13 @@ title: "Securing LLM Applications and Agents"
 chapter: "Draw the assistant's threat model"
 chapter_id: threat-model
 book: securing-llm-applications-and-agents
-edition: 2026.11.2
+edition: 2026.11.3
 verified: 2026-11-22
-edition_code: Y3X2-HXT9
+edition_code: T64T-4BT9
 canonical: https://rollingedition.com/securing-llm-applications-and-agents/threat-model
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“Draw the assistant's threat model,” chapter 2 of Securing LLM Applications and Agents, Edition 2026.11.2, examples passed Nov 22, 2026. By Rolling Edition, https://rollingedition.com/securing-llm-applications-and-agents/threat-model. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Draw the assistant's threat model,” chapter 2 of Securing LLM Applications and Agents, Edition 2026.11.3, examples passed Nov 22, 2026. By Rolling Edition, https://rollingedition.com/securing-llm-applications-and-agents/threat-model. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Draw the assistant's threat model
 
@@ -27,7 +27,7 @@ A record matters because of who receives it. A tenant may know their own bank re
 
 To find which tools reach these assets, the book reads the tool code instead of the design notes.
 
-Example `threat-tool-table` (Python 3.13.16 · bm25s 0.3.16 · linkify-it-py 2.2.0 · markdown-it-py 4.3.0 · numpy 2.5.5), passing in Edition 2026.11.2:
+Example `threat-tool-table` (Python 3.13.16 · bm25s 0.3.16 · linkify-it-py 2.2.0 · markdown-it-py 4.3.0 · numpy 2.5.5), passing in Edition 2026.11.3:
 
 ```python
 """Prints one block per office tool: what it reads and writes, whether its output carries outside text, whether its
@@ -140,7 +140,7 @@ A data flow follows a piece of text from the place it was written to the point w
 
 The six places where outside text can enter are the locations the attack set uses. [Chapter 3](#goals-locations-styles) defines them and says how the cases were built. The example prints them with a `loc-` prefix, and this book drops the prefix.
 
-Example `threat-flows` (Python 3.13.16 · bm25s 0.3.16 · linkify-it-py 2.2.0 · markdown-it-py 4.3.0 · numpy 2.5.5), passing in Edition 2026.11.2:
+Example `threat-flows` (Python 3.13.16 · bm25s 0.3.16 · linkify-it-py 2.2.0 · markdown-it-py 4.3.0 · numpy 2.5.5), passing in Edition 2026.11.3:
 
 ```python
 """Each attack location, and the one channel that delivers its text to the model: a tool that reads the carrier's field,
@@ -234,7 +234,7 @@ Simon Willison named the lethal trifecta in [a June 2025 post](https://simonwill
 
 Meta turned the same idea into a design rule in [a post of 31 October 2025](https://ai.meta.com/blog/practical-ai-agent-security/), which it calls the Agents Rule of Two. The rule says an agent session should combine no more than two of three properties: processing untrustworthy inputs, reaching sensitive systems or private data, and changing state or communicating externally. The post says the rule should hold until prompt injection can be reliably detected and refused, and it describes prompt injection as an unsolved weakness of LLMs in general. An agent that needs all three should not run on its own; it needs supervision, such as a person approving its actions. [Chapter 6](#least-privilege) builds on that clause. The post also points to Meta's own protection tools. This book treats the rule as a check on a design, not a measured defence, and no result in this chapter shows that it reduces attacks.
 
-Example `threat-trifecta-check` (Python 3.13.16 · bm25s 0.3.16 · linkify-it-py 2.2.0 · markdown-it-py 4.3.0 · numpy 2.5.5), passing in Edition 2026.11.2:
+Example `threat-trifecta-check` (Python 3.13.16 · bm25s 0.3.16 · linkify-it-py 2.2.0 · markdown-it-py 4.3.0 · numpy 2.5.5), passing in Edition 2026.11.3:
 
 ```python
 """Each tool's trifecta legs, and whether removing one leg's tools leaves at most two legs (the Rule of Two), asserted

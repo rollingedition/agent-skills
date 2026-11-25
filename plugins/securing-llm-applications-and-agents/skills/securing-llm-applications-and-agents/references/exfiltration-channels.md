@@ -3,13 +3,13 @@ title: "Securing LLM Applications and Agents"
 chapter: "Close the exfiltration channels"
 chapter_id: exfiltration-channels
 book: securing-llm-applications-and-agents
-edition: 2026.11.2
+edition: 2026.11.3
 verified: 2026-11-22
-edition_code: Y3X2-HXT9
+edition_code: T64T-4BT9
 canonical: https://rollingedition.com/securing-llm-applications-and-agents/exfiltration-channels
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“Close the exfiltration channels,” chapter 7 of Securing LLM Applications and Agents, Edition 2026.11.2, examples passed Nov 22, 2026. By Rolling Edition, https://rollingedition.com/securing-llm-applications-and-agents/exfiltration-channels. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Close the exfiltration channels,” chapter 7 of Securing LLM Applications and Agents, Edition 2026.11.3, examples passed Nov 22, 2026. By Rolling Edition, https://rollingedition.com/securing-llm-applications-and-agents/exfiltration-channels. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Close the exfiltration channels
 
@@ -27,7 +27,7 @@ The fetch rule reads the URL and nothing else. A check on the other arguments a 
 
 The primary defence sits outside the code. The network the assistant runs on should reach only the hosts the office names, through a proxy or a firewall that allows named hosts and refuses the rest. A rule in the harness runs in the same process that the model's output steers, so it is the second layer, and it should refuse when it cannot decide. The book's examples make no network call at all. Their fetches go to fixture pages that the environment serves, so in the book the fixture sites are the only hosts the environment reaches. That is a property of the test environment, not a control for the office, and the office has to build the network control itself.
 
-Example `egress-fetch-paired` (Python 3.13.16 · bm25s 0.3.16 · linkify-it-py 2.2.0 · markdown-it-py 4.3.0 · numpy 2.5.5), passing in Edition 2026.11.2:
+Example `egress-fetch-paired` (Python 3.13.16 · bm25s 0.3.16 · linkify-it-py 2.2.0 · markdown-it-py 4.3.0 · numpy 2.5.5), passing in Edition 2026.11.3:
 
 ```python
 """The outbound allowlist plus the fetch query rule, against the undefended run, on the 15 benign tasks and 60 cases of each split: dev, then held-out.
@@ -165,7 +165,7 @@ Raw HTML is escaped, not removed. The rule's parser has raw HTML off, and the ru
 
 On this set the model's replies rarely carried an image or a link, and the next paragraphs say why that zero should not be trusted. The first example measures the rule on the undefended reply of each attack case, on both splits.
 
-Example `render-policy-replies` (Python 3.13.16 · bm25s 0.3.16 · linkify-it-py 2.2.0 · markdown-it-py 4.3.0 · numpy 2.5.5), passing in Edition 2026.11.2:
+Example `render-policy-replies` (Python 3.13.16 · bm25s 0.3.16 · linkify-it-py 2.2.0 · markdown-it-py 4.3.0 · numpy 2.5.5), passing in Edition 2026.11.3:
 
 ```python
 """The render policy over the final reply of every attack case, undefended, on the dev and the held-out splits.
@@ -262,7 +262,7 @@ A set with so few reply attacks cannot show what the rule does with each form of
 The zero on dev is the model's, and it is not a property of the attacks. The set aims at the reply's channel in three goals: the attacks for `g-key-image`, `g-link` and `g-phone-image` each ran against the image or the link in the reply, and their goal lines in the [chapter 3 baseline](#undefended-baseline) read 0 of 5, 0 of 7 and 0 of 6. The attacks tried the channel. The model's replies rarely took it. A different model, or an attacker that adapts, could take it, and the chapter does not claim otherwise.
 
 
-Example `render-policy-crafted` (Python 3.13.16 · bm25s 0.3.16 · linkify-it-py 2.2.0 · markdown-it-py 4.3.0 · numpy 2.5.5), passing in Edition 2026.11.2:
+Example `render-policy-crafted` (Python 3.13.16 · bm25s 0.3.16 · linkify-it-py 2.2.0 · markdown-it-py 4.3.0 · numpy 2.5.5), passing in Edition 2026.11.3:
 
 ```python
 """The render policy on eleven crafted replies, one per form, with no model and no recorded run.
@@ -348,7 +348,7 @@ Every form but one is removed. The form that stays is the office's own plain ima
 
 The table covers one address per form. The next example holds the attempts that a security review of this rule and the scan made against them, 22 in all, with each one asserted.
 
-Example `exfiltration-regressions` (Python 3.13.16 · bm25s 0.3.16 · linkify-it-py 2.2.0 · markdown-it-py 4.3.0 · numpy 2.5.5), passing in Edition 2026.11.2:
+Example `exfiltration-regressions` (Python 3.13.16 · bm25s 0.3.16 · linkify-it-py 2.2.0 · markdown-it-py 4.3.0 · numpy 2.5.5), passing in Edition 2026.11.3:
 
 ```python
 """The exfiltration regressions for the chapter's security review (findings SEC7-01 to SEC7-05), with no model and no recording.
@@ -438,7 +438,7 @@ The payment portal key and the hidden note are in the assistant's context. Once 
 
 The scan, `egress.secret_scan`, looks for the key and the note's marker in the reply's text: as written, after one round of percent-decoding, and as the view would show it, with tags removed and entities decoded. It returns the labels of what it found, and the harness decides what a hit means. In this book a hit flags the reply and never blocks it. Because the harness flags and does not withhold, a flag is an event for someone to read, not a control on its own.
 
-Example `secret-scan-replies` (Python 3.13.16 · bm25s 0.3.16 · linkify-it-py 2.2.0 · markdown-it-py 4.3.0 · numpy 2.5.5), passing in Edition 2026.11.2:
+Example `secret-scan-replies` (Python 3.13.16 · bm25s 0.3.16 · linkify-it-py 2.2.0 · markdown-it-py 4.3.0 · numpy 2.5.5), passing in Edition 2026.11.3:
 
 ```python
 """The secret scan over the final reply of every case and benign task, undefended, on the dev and held-out splits.

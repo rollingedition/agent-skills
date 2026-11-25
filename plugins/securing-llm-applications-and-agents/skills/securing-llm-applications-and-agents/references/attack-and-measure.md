@@ -3,13 +3,13 @@ title: "Securing LLM Applications and Agents"
 chapter: "Attack an assistant, then measure a fix"
 chapter_id: attack-and-measure
 book: securing-llm-applications-and-agents
-edition: 2026.11.2
+edition: 2026.11.3
 verified: 2026-11-22
-edition_code: Y3X2-HXT9
+edition_code: T64T-4BT9
 canonical: https://rollingedition.com/securing-llm-applications-and-agents/attack-and-measure
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“Attack an assistant, then measure a fix,” chapter 1 of Securing LLM Applications and Agents, Edition 2026.11.2, examples passed Nov 22, 2026. By Rolling Edition, https://rollingedition.com/securing-llm-applications-and-agents/attack-and-measure. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Attack an assistant, then measure a fix,” chapter 1 of Securing LLM Applications and Agents, Edition 2026.11.3, examples passed Nov 22, 2026. By Rolling Edition, https://rollingedition.com/securing-llm-applications-and-agents/attack-and-measure. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Attack an assistant, then measure a fix
 
@@ -51,7 +51,7 @@ The rough set is deliberately strong. It holds the combination the undefended ru
 
 Run the baseline. Its first lines are the undefended run's three measures, and the rest are the breakdowns the chapter uses later.
 
-Example `attack-rough-baseline` (Python 3.13.16 · bm25s 0.3.16 · linkify-it-py 2.2.0 · markdown-it-py 4.3.0 · numpy 2.5.5), passing in Edition 2026.11.2:
+Example `attack-rough-baseline` (Python 3.13.16 · bm25s 0.3.16 · linkify-it-py 2.2.0 · markdown-it-py 4.3.0 · numpy 2.5.5), passing in Edition 2026.11.3:
 
 ```python
 """The undefended assistant on the rough set, replayed from the rough-baseline recording.
@@ -124,7 +124,7 @@ A count alone doesn't say how far a rate could move. For that the book uses a pe
 
 The interval covers one thing: the spread that comes from which cases happened to be drawn. It doesn't cover cases the set never contained, and it doesn't cover a scorer that is wrong. Its width depends on the number of cases, and on the rate too. It is widest near half, and it shrinks to nothing at 0% and at 100%, where a zero width is not precision. The next example shows the width of the same kind of rate at three sizes.
 
-Example `attack-interval-width` (Python 3.13.16 · numpy 2.5.5), passing in Edition 2026.11.2:
+Example `attack-interval-width` (Python 3.13.16 · numpy 2.5.5), passing in Edition 2026.11.3:
 
 ```python
 """How wide a bootstrap interval is on 20 cases, and on 100 and 200, for the same observed rate.
@@ -163,9 +163,9 @@ Ten successes in twenty cases gives an interval 40.1 points wide. The same rate 
 
 *Figure 1.1. How wide the 95% interval is for a rate of one half, from 10 to 200 cases.*
 
-![The interval is widest on few cases, and it narrows fast at first and then slowly](https://rollingedition.ai/books/securing-llm-applications-and-agents/2026.11.2/figures/interval-width.svg)
+![The interval is widest on few cases, and it narrows fast at first and then slowly](https://rollingedition.ai/books/securing-llm-applications-and-agents/2026.11.3/figures/interval-width.svg)
 
-Example `figure-interval-width` (Python 3.13.16 · matplotlib 3.11.2 · numpy 2.5.5), passing in Edition 2026.11.2:
+Example `figure-interval-width` (Python 3.13.16 · matplotlib 3.11.2 · numpy 2.5.5), passing in Edition 2026.11.3:
 
 ```python
 """Draw how wide the bootstrap interval is for an observed rate of one half, as the number of cases grows from 10 to 200.
@@ -232,7 +232,7 @@ To measure the rule, you run the same 20 attack cases and 10 benign tasks again,
 
 The rough set comes from the development split. The allowlist has no threshold to tune, so the rule itself is not fitted to these cases. The set was chosen for the attack, as the previous section says. Chapter 3 sets the held-out split aside, and each defence from chapter 4 on reports its numbers on it once, on cases the defence was never tuned on.
 
-Example `attack-allowlist-paired` (Python 3.13.16 · bm25s 0.3.16 · linkify-it-py 2.2.0 · markdown-it-py 4.3.0 · numpy 2.5.5), passing in Edition 2026.11.2:
+Example `attack-allowlist-paired` (Python 3.13.16 · bm25s 0.3.16 · linkify-it-py 2.2.0 · markdown-it-py 4.3.0 · numpy 2.5.5), passing in Edition 2026.11.3:
 
 ```python
 """The same 20 cases and 10 benign tasks with the outbound allowlist enforced, from the rough-allowlist recording.
@@ -320,7 +320,7 @@ The paired difference in attack success is -100.0 points. Its interval, [-100.0,
 
 A rule in the harness is only as strict as the harness that runs it, so the harness fails closed when the rule is not followed. A check that returns no decision lets 0 pages be fetched. A tool the rule has never heard of is refused and logged as a defence event, and the model's malformed arguments end in an error result, not a crashed run:
 
-Example `attack-allowlist-probes` (Python 3.13.16 · bm25s 0.3.16 · linkify-it-py 2.2.0 · markdown-it-py 4.3.0 · numpy 2.5.5), passing in Edition 2026.11.2:
+Example `attack-allowlist-probes` (Python 3.13.16 · bm25s 0.3.16 · linkify-it-py 2.2.0 · markdown-it-py 4.3.0 · numpy 2.5.5), passing in Edition 2026.11.3:
 
 ```python
 """The harness's own fail-closed and error paths, probed with a scripted model and no recording, for chapter 1's review (F-1 to F-3).

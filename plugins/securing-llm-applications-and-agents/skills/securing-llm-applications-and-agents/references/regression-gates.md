@@ -3,13 +3,13 @@ title: "Securing LLM Applications and Agents"
 chapter: "Keep the defences from regressing"
 chapter_id: regression-gates
 book: securing-llm-applications-and-agents
-edition: 2026.11.2
+edition: 2026.11.3
 verified: 2026-11-22
-edition_code: Y3X2-HXT9
+edition_code: T64T-4BT9
 canonical: https://rollingedition.com/securing-llm-applications-and-agents/regression-gates
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“Keep the defences from regressing,” chapter 12 of Securing LLM Applications and Agents, Edition 2026.11.2, examples passed Nov 22, 2026. By Rolling Edition, https://rollingedition.com/securing-llm-applications-and-agents/regression-gates. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Keep the defences from regressing,” chapter 12 of Securing LLM Applications and Agents, Edition 2026.11.3, examples passed Nov 22, 2026. By Rolling Edition, https://rollingedition.com/securing-llm-applications-and-agents/regression-gates. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Keep the defences from regressing
 
@@ -29,7 +29,7 @@ The utility floor is measured against the undefended run, so the baseline's reco
 
 The next example runs the gate on two runs: one with the defence switched off, and one with a single case changed. It prints both checks for each run, and then a sweep that shows how many successes the attack check tolerates.
 
-Example `gate-catches-a-regression` (Python 3.13.16 · bm25s 0.3.16 · linkify-it-py 2.2.0 · markdown-it-py 4.3.0 · numpy 2.5.5), passing in Edition 2026.11.2:
+Example `gate-catches-a-regression` (Python 3.13.16 · bm25s 0.3.16 · linkify-it-py 2.2.0 · markdown-it-py 4.3.0 · numpy 2.5.5), passing in Edition 2026.11.3:
 
 ```python
 """The gate fails a run with the defence off, on its attack check, and passes a one-case change that is within noise.
@@ -130,7 +130,7 @@ The thresholds come from one place. The recording script `recordings/gate_thresh
 
 The next example prints the dev numbers the rule reads, and the two checks it gives the defended run.
 
-Example `gate-thresholds` (Python 3.13.16 · bm25s 0.3.16 · linkify-it-py 2.2.0 · markdown-it-py 4.3.0 · numpy 2.5.5), passing in Edition 2026.11.2:
+Example `gate-thresholds` (Python 3.13.16 · bm25s 0.3.16 · linkify-it-py 2.2.0 · markdown-it-py 4.3.0 · numpy 2.5.5), passing in Edition 2026.11.3:
 
 ```python
 """The gate's thresholds come from dev, once, and the defended run passes both checks on its interval bounds.
@@ -191,9 +191,9 @@ Reading the bound instead of the rate puts the pass line at a smaller count of s
 
 *Figure 12.1. The observed rate and its interval's upper bound as the first dev cases in ID order succeed, with the stored ceiling and the pass line.*
 
-![In the sweep, the upper bound of attack success crosses the stored ceiling at a smaller count of successes than the observed rate does](https://rollingedition.ai/books/securing-llm-applications-and-agents/2026.11.2/figures/gate-boundary.svg)
+![In the sweep, the upper bound of attack success crosses the stored ceiling at a smaller count of successes than the observed rate does](https://rollingedition.ai/books/securing-llm-applications-and-agents/2026.11.3/figures/gate-boundary.svg)
 
-Example `figure-gate-boundary` (Python 3.13.16 · bm25s 0.3.16 · linkify-it-py 2.2.0 · markdown-it-py 4.3.0 · matplotlib 3.11.2 · numpy 2.5.5), passing in Edition 2026.11.2:
+Example `figure-gate-boundary` (Python 3.13.16 · bm25s 0.3.16 · linkify-it-py 2.2.0 · markdown-it-py 4.3.0 · matplotlib 3.11.2 · numpy 2.5.5), passing in Edition 2026.11.3:
 
 ```python
 """The gate reads the upper bound of attack success, so its pass line falls well below the count where the rate reaches the ceiling.
@@ -281,7 +281,7 @@ The security log holds only what detecting and answering an incident needs. It i
 
 The next example builds the log from the replayed dev runs of the undefended run and of each defence the log covers. It prints the first lines and the counts, then runs two queries on the log alone.
 
-Example `security-events-log` (Python 3.13.16 · bm25s 0.3.16 · huggingface-hub 2.4.0 · linkify-it-py 2.2.0 · markdown-it-py 4.3.0 · numpy 2.5.5 · tokenizers 0.23.3 · torch 2.15.0+cpu · transformers 5.23.0), passing in Edition 2026.11.2:
+Example `security-events-log` (Python 3.13.16 · bm25s 0.3.16 · huggingface-hub 2.4.0 · linkify-it-py 2.2.0 · markdown-it-py 4.3.0 · numpy 2.5.5 · tokenizers 0.23.3 · torch 2.15.0+cpu · transformers 5.24.0), passing in Edition 2026.11.3:
 
 ```python
 """The security log as sorted JSON lines, and the two queries an incident responder runs on the log alone.
@@ -403,7 +403,7 @@ A team that reports to an auditor or a security lead needs the defences in the t
 
 The next example prints that table, and it asserts that the table covers exactly the defences that have a recording the example can replay.
 
-Example `standards-report` (Python 3.13.16 · bm25s 0.3.16 · linkify-it-py 2.2.0 · markdown-it-py 4.3.0 · numpy 2.5.5), passing in Edition 2026.11.2:
+Example `standards-report` (Python 3.13.16 · bm25s 0.3.16 · linkify-it-py 2.2.0 · markdown-it-py 4.3.0 · numpy 2.5.5), passing in Edition 2026.11.3:
 
 ```python
 """Each defence the book measures, with its label and the confirmed risk IDs it addresses.

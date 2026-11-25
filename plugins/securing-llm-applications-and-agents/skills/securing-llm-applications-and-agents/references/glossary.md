@@ -1,13 +1,13 @@
 ---
 title: "Glossary"
 book: "Securing LLM Applications and Agents"
-edition: "2026.11.2"
+edition: "2026.11.3"
 canonical: "https://rollingedition.com/securing-llm-applications-and-agents/glossary"
 ---
 
 # Glossary of *Securing LLM Applications and Agents*
 
-The 23 terms this book defines, as Edition 2026.11.2 has them, each in the book's own sentence. When a task this skill covers uses one, it means what it says here: read its section before you rely on it, and cite the section. Where a definition depends on a package, it says the version this edition pins and runs its examples on. On the web: https://rollingedition.com/securing-llm-applications-and-agents/glossary
+The 23 terms this book defines, as Edition 2026.11.3 has them, each in the book's own sentence. When a task this skill covers uses one, it means what it says here: read its section before you rely on it, and cite the section. Where a definition depends on a package, it says the version this edition pins and runs its examples on. On the web: https://rollingedition.com/securing-llm-applications-and-agents/glossary
 
 ## adaptive attacker
 

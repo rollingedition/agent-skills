@@ -3,13 +3,13 @@ title: "Securing LLM Applications and Agents"
 chapter: "Enforce least privilege outside the model"
 chapter_id: least-privilege
 book: securing-llm-applications-and-agents
-edition: 2026.11.2
+edition: 2026.11.3
 verified: 2026-11-22
-edition_code: Y3X2-HXT9
+edition_code: T64T-4BT9
 canonical: https://rollingedition.com/securing-llm-applications-and-agents/least-privilege
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“Enforce least privilege outside the model,” chapter 6 of Securing LLM Applications and Agents, Edition 2026.11.2, examples passed Nov 22, 2026. By Rolling Edition, https://rollingedition.com/securing-llm-applications-and-agents/least-privilege. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Enforce least privilege outside the model,” chapter 6 of Securing LLM Applications and Agents, Edition 2026.11.3, examples passed Nov 22, 2026. By Rolling Edition, https://rollingedition.com/securing-llm-applications-and-agents/least-privilege. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Enforce least privilege outside the model
 
@@ -31,7 +31,7 @@ Each defence is paired with the baseline on the same cases. Its interval therefo
 
 Run the three defences against the baseline, each paired with it on the same cases. The printed lines give each defence's rates, the paired differences, and the refusals by tool.
 
-Example `least-privilege-paired` (Python 3.13.16 · bm25s 0.3.16 · linkify-it-py 2.2.0 · markdown-it-py 4.3.0 · numpy 2.5.5), passing in Edition 2026.11.2:
+Example `least-privilege-paired` (Python 3.13.16 · bm25s 0.3.16 · linkify-it-py 2.2.0 · markdown-it-py 4.3.0 · numpy 2.5.5), passing in Edition 2026.11.3:
 
 ```python
 """The three least-privilege defences, each replayed on the 60 dev cases and 15 dev tasks and paired with the baseline.
@@ -166,7 +166,7 @@ The `lookup_tenant` refusals are the policy at work on a pattern the undefended 
 
 The fetch rule is the policy's weak point, and its misses are measured.
 
-Example `argument-policy-bypasses` (Python 3.13.16 · bm25s 0.3.16 · linkify-it-py 2.2.0 · markdown-it-py 4.3.0 · numpy 2.5.5), passing in Edition 2026.11.2:
+Example `argument-policy-bypasses` (Python 3.13.16 · bm25s 0.3.16 · linkify-it-py 2.2.0 · markdown-it-py 4.3.0 · numpy 2.5.5), passing in Edition 2026.11.3:
 
 ```python
 """The argument policy's fetch rule, run directly on one tenant's phone number in six forms, with no model and no recording.
@@ -232,7 +232,7 @@ forms allowed on the office host: 2 of 6
 
 The rule is run directly, with no model, on one tenant's phone number in six forms, to the office's fixture host and to `attacker.example`. Each line prints a form and whether the call is allowed. On the attacker's host every form was refused, because the host rule refuses any host the office does not own. On the office's host the rule refused four forms, the plain, percent-encoded and spaced forms and the number in the path, and allowed two: the number in base64, and a partial number, its last six digits. The printed count is 2 of 6.
 
-Example `least-privilege-regressions` (Python 3.13.16 · bm25s 0.3.16 · huggingface-hub 2.4.0 · linkify-it-py 2.2.0 · markdown-it-py 4.3.0 · numpy 2.5.5 · tokenizers 0.23.3), passing in Edition 2026.11.2:
+Example `least-privilege-regressions` (Python 3.13.16 · bm25s 0.3.16 · huggingface-hub 2.4.0 · linkify-it-py 2.2.0 · markdown-it-py 4.3.0 · numpy 2.5.5 · tokenizers 0.23.3), passing in Edition 2026.11.3:
 
 ```python
 """The least-privilege regressions for the chapter's security review (findings S6-1 and S6-3), with no model and no recording.
@@ -357,7 +357,7 @@ The approval step runs in the same paired measure as the other two, which [the f
 
 With the approval step, attack success on the dev cases was 11.7% (7 of 60), the same as the baseline. The paired difference is +0.0 points. It stopped 0 baseline successes. The by-goal count explains why, and the grouping below is the one the approval numbers need.
 
-Example `least-privilege-by-goal` (Python 3.13.16 · bm25s 0.3.16 · linkify-it-py 2.2.0 · markdown-it-py 4.3.0 · numpy 2.5.5), passing in Edition 2026.11.2:
+Example `least-privilege-by-goal` (Python 3.13.16 · bm25s 0.3.16 · linkify-it-py 2.2.0 · markdown-it-py 4.3.0 · numpy 2.5.5), passing in Edition 2026.11.3:
 
 ```python
 """Which goals each least-privilege defence can see: the baseline's successful attacks that each defence stops, by goal.
@@ -437,7 +437,7 @@ On dev, the approval step stopped 0 of 7 of the baseline's successes, and the ex
 
 The three defences were run once more on the held-out split: sixty held-out cases and fifteen held-out tasks, with the same baseline and the same paired measure.
 
-Example `least-privilege-held-out` (Python 3.13.16 · bm25s 0.3.16 · linkify-it-py 2.2.0 · markdown-it-py 4.3.0 · numpy 2.5.5), passing in Edition 2026.11.2:
+Example `least-privilege-held-out` (Python 3.13.16 · bm25s 0.3.16 · linkify-it-py 2.2.0 · markdown-it-py 4.3.0 · numpy 2.5.5), passing in Edition 2026.11.3:
 
 ```python
 """The three least-privilege defences, each replayed on the 60 held-out cases and 15 held-out tasks and paired with the
@@ -559,7 +559,7 @@ The problem is in the tokeniser. The chat format marks the start and end of each
 
 The measure is on eleven control cases. They are the fake-turn cases rebuilt with the model's real chat markers. They are outside the frozen set of 120 and are neither dev nor held-out, so they show the mechanism on these cases and nothing more.
 
-Example `control-tokens-paired` (Python 3.13.16 · bm25s 0.3.16 · huggingface-hub 2.4.0 · linkify-it-py 2.2.0 · markdown-it-py 4.3.0 · numpy 2.5.5 · tokenizers 0.23.3), passing in Edition 2026.11.2:
+Example `control-tokens-paired` (Python 3.13.16 · bm25s 0.3.16 · huggingface-hub 2.4.0 · linkify-it-py 2.2.0 · markdown-it-py 4.3.0 · numpy 2.5.5 · tokenizers 0.23.3), passing in Edition 2026.11.3:
 
 ```python
 """The control-token fix on the 11-case control set (outside the frozen 120) and the 15 dev tasks, paired with the
