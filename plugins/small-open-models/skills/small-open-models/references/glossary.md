@@ -1,13 +1,13 @@
 ---
 title: "Glossary"
 book: "Small Open Models"
-edition: "2026.11.15"
+edition: "2026.11.16"
 canonical: "https://rollingedition.com/small-open-models/glossary"
 ---
 
 # Glossary of *Small Open Models*
 
-The 100 terms this book defines, as Edition 2026.11.15 has them, each in the book's own sentence. When a task this skill covers uses one, it means what it says here: read its section before you rely on it, and cite the section. Where a definition depends on a package, it says the version this edition pins and runs its examples on. On the web: https://rollingedition.com/small-open-models/glossary
+The 100 terms this book defines, as Edition 2026.11.16 has them, each in the book's own sentence. When a task this skill covers uses one, it means what it says here: read its section before you rely on it, and cite the section. Where a definition depends on a package, it says the version this edition pins and runs its examples on. On the web: https://rollingedition.com/small-open-models/glossary
 
 ## accuracy
 
@@ -132,7 +132,7 @@ The changed-prediction count uses the same 200 messages and asks a question the 
 
 The chat form wraps the router prompt's text in the model's chat template, which adds a default system prompt.
 
-- True for: transformers 5.23.0
+- True for: transformers 5.24.0
 - Contrasts with: raw form
 - Defined in: [The prompt, settled before any recording](prompt-and-constrain.md#the-prompt-settled-before-any-recording)
 - Address: https://rollingedition.com/concepts/large-language-models/chat-form
@@ -548,8 +548,8 @@ Guo et al. (2017) report that their networks are "poorly calibrated", meaning th
 
 Transformers applies the rule through a callback, prefix_allowed_tokens_fn, which returns the allowed tokens for each position.
 
-- True for: transformers 5.23.0
-- Implemented by: transformers 5.23.0
+- True for: transformers 5.24.0
+- Implemented by: transformers 5.24.0
 - Defined in: [A token trie allows only team names](prompt-and-constrain.md#a-token-trie-allows-only-team-names)
 - Address: https://rollingedition.com/concepts/large-language-models/prefix-allowed-tokens-fn
 
