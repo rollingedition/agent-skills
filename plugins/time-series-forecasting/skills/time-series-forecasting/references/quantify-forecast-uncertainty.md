@@ -3,13 +3,13 @@ title: "Time Series Forecasting"
 chapter: "Quantify forecast uncertainty"
 chapter_id: quantify-forecast-uncertainty
 book: time-series-forecasting
-edition: 2026.11.20
+edition: 2026.11.21
 verified: 2026-11-22
-edition_code: H1KT-SZR3
+edition_code: 7MJE-W52E
 canonical: https://rollingedition.com/time-series-forecasting/quantify-forecast-uncertainty
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“Quantify forecast uncertainty,” chapter 8 of Time Series Forecasting, Edition 2026.11.20, examples passed Nov 22, 2026. By Rolling Edition, https://rollingedition.com/time-series-forecasting/quantify-forecast-uncertainty. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Quantify forecast uncertainty,” chapter 8 of Time Series Forecasting, Edition 2026.11.21, examples passed Nov 22, 2026. By Rolling Edition, https://rollingedition.com/time-series-forecasting/quantify-forecast-uncertainty. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Quantify forecast uncertainty
 
@@ -44,7 +44,7 @@ The library that does this for the book's model is mlforecast, at version 1.1.0.
 
 To see what the library does with a short calibration history, run its class with three calibration windows. It scores the three standard cutoffs, Dec 29 to Dec 31, 2014, each at 00:00. Those are the held-out week's last three days, and the days this chapter scores. mlforecast refits the global model at each cutoff and calibrates each one on the three before it.
 
-Example `conformal-three-windows` (Python 3.13.16 · holidays 0.110.dev20261121183933 · lightgbm 4.7.0 · mlforecast 1.1.0 · numpy 2.5.5 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.20:
+Example `conformal-three-windows` (Python 3.13.16 · holidays 0.110.dev20261122052220 · lightgbm 4.7.0 · mlforecast 1.1.0 · numpy 2.5.5 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.21:
 
 ```python
 """mlforecast's own conformal intervals, with three calibration windows, refitted at each of the three standard cutoffs.
@@ -124,7 +124,7 @@ Twelve windows with thirty clients give 360 residuals for each hour of the day. 
 
 Two choices in this design were made on the decision windows, not on the held-out evaluation. The [decision windows](#choose-on-decision-windows) are the four cutoffs from Nov 25 to Dec 3, 2014. Their calibration is Nov 9 to 20, 2014, twelve holiday-free days that end four days before the first decision cutoff, the same shape as the held-out design. The windows are scored on their own, and the held-out evaluation is not read. The choices are judged by the interval score and the lowest client's coverage. The interval score adds a band's width to a penalty for each reading that misses the band, the penalty growing with the distance of the miss and scaled by 2 over the miss rate the level allows ([Gneiting and Raftery (2007)](https://sites.stat.washington.edu/raftery/Research/PDF/Gneiting2007jasa.pdf), eq. 43). Those windows settle both choices, as the measurements below show.
 
-Example `conformal-decision-windows` (Python 3.13.16 · holidays 0.110.dev20261121183933 · lightgbm 4.7.0 · mlforecast 1.1.0 · numpy 2.5.5 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.20:
+Example `conformal-decision-windows` (Python 3.13.16 · holidays 0.110.dev20261122052220 · lightgbm 4.7.0 · mlforecast 1.1.0 · numpy 2.5.5 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.21:
 
 ```python
 """The two calibration choices, scaling each client's residuals and the finite-sample levels, decided on the four decision
@@ -205,9 +205,9 @@ Figure 8.1 sorts each client's coverage at 80, circles unscaled and squares scal
 
 *Figure 8.1. Each client's coverage at 80 on the decision windows, sorted.*
 
-![With the scale, more clients' coverage at 80 sits near the dashed target line](https://rollingedition.ai/books/time-series-forecasting/2026.11.20/figures/client-coverage-scaled.svg)
+![With the scale, more clients' coverage at 80 sits near the dashed target line](https://rollingedition.ai/books/time-series-forecasting/2026.11.21/figures/client-coverage-scaled.svg)
 
-Example `figure-client-coverage-scaled` (Python 3.13.16 · holidays 0.110.dev20261121183933 · lightgbm 4.7.0 · matplotlib 3.11.2 · mlforecast 1.1.0 · numpy 2.5.5 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.20:
+Example `figure-client-coverage-scaled` (Python 3.13.16 · holidays 0.110.dev20261122052220 · lightgbm 4.7.0 · matplotlib 3.11.2 · mlforecast 1.1.0 · numpy 2.5.5 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.21:
 
 ```python
 """Each client's share of hours inside the 80% band on the decision windows, sorted, with residuals unscaled and scaled.
@@ -269,7 +269,7 @@ The finite-sample levels stay out of the bands. Each new residual is one more am
 
 The held-out evaluation applies the same design to the standard cutoffs, which are the days the rest of the chapter scores.
 
-Example `conformal-earlier-windows` (Python 3.13.16 · holidays 0.110.dev20261121183933 · lightgbm 4.7.0 · mlforecast 1.1.0 · numpy 2.5.5 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.20:
+Example `conformal-earlier-windows` (Python 3.13.16 · holidays 0.110.dev20261122052220 · lightgbm 4.7.0 · mlforecast 1.1.0 · numpy 2.5.5 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.21:
 
 ```python
 """Conformal bands for every client, calibrated on twelve holiday-free days before the scored week, with each client's
@@ -374,7 +374,7 @@ The finite-sample levels would change the total's figure. On the scored days the
 
 Dependence also decides when the misses fall, which a coverage figure cannot show. A band can cover close to its label on average and still miss in long stretches. A 2026 preprint on gridded temperature forecasts, [Distribution-Free Uncertainty Quantification for Weather Forecasting](https://arxiv.org/abs/2611.24329) (arXiv:2611.24329v1, read Nov 21, 2026), measures this. Its author reports that conformal bands fitted cell by cell reach near their nominal coverage of 2 m temperature from the ERA5 reanalysis. Yet the share of cells covered varies from day to day about 3 to 10 times as much as independent cells would give, and the misses cluster in time, both for a small CNN and for the ECMWF HRES forecast. It is one preprint, on one variable and one coarse grid, so we take only the caution from it and test it on the total's bands at 80.
 
-Example `total-band-miss-runs` (Python 3.13.16 · holidays 0.110.dev20261121183933 · lightgbm 4.7.0 · mlforecast 1.1.0 · numpy 2.5.5 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.20:
+Example `total-band-miss-runs` (Python 3.13.16 · holidays 0.110.dev20261122052220 · lightgbm 4.7.0 · mlforecast 1.1.0 · numpy 2.5.5 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.21:
 
 ```python
 """Whether the total's misses at 80 come in runs: the longest run of missed hours and the share of misses whose next
@@ -442,9 +442,9 @@ Figure 8.2 marks each missed hour; the longest run starts Dec 31, 16:00.
 
 *Figure 8.2. The total's band at 80, its actual hours, and the hours outside the band.*
 
-![The total's misses cluster in runs, the longest late on the last scored day](https://rollingedition.ai/books/time-series-forecasting/2026.11.20/figures/total-band-misses.svg)
+![The total's misses cluster in runs, the longest late on the last scored day](https://rollingedition.ai/books/time-series-forecasting/2026.11.21/figures/total-band-misses.svg)
 
-Example `figure-total-band-misses` (Python 3.13.16 · holidays 0.110.dev20261121183933 · lightgbm 4.7.0 · matplotlib 3.11.2 · mlforecast 1.1.0 · numpy 2.5.5 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.20:
+Example `figure-total-band-misses` (Python 3.13.16 · holidays 0.110.dev20261122052220 · lightgbm 4.7.0 · matplotlib 3.11.2 · mlforecast 1.1.0 · numpy 2.5.5 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.21:
 
 ```python
 """The total's 72 scored hours with its 80% band, the actual total, and each hour outside the band marked.
@@ -511,7 +511,7 @@ With the illustrative costs from [Why one number is not enough](#why-one-number-
 
 Does buying at the critical fractile cost less than buying at the median or higher, on days the bands never saw? Below, the purchase is set for each hour from these costs, and the scored days answer the question. The level 0.95 is not offered, as [Measure coverage on held-out days](#measure-coverage-on-held-out-days) explains.
 
-Example `buy-ahead-level-by-cost` (Python 3.13.16 · holidays 0.110.dev20261121183933 · lightgbm 4.7.0 · mlforecast 1.1.0 · numpy 2.5.5 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.20:
+Example `buy-ahead-level-by-cost` (Python 3.13.16 · holidays 0.110.dev20261122052220 · lightgbm 4.7.0 · mlforecast 1.1.0 · numpy 2.5.5 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.21:
 
 ```python
 """The buy level for the total, set from the two costs: the critical fractile, cu / (cu + co), is the quantile that minimises
