@@ -3,13 +3,13 @@ title: "Open Table Formats"
 chapter: "Change partitioning without rewriting old files"
 chapter_id: partition-evolution
 book: open-table-formats
-edition: 2026.11.16
-verified: 2026-11-24
-edition_code: XR7P-ZXAG
+edition: 2026.11.17
+verified: 2026-11-26
+edition_code: HZSF-JRTK
 canonical: https://rollingedition.com/open-table-formats/partition-evolution
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“Change partitioning without rewriting old files,” chapter 4 of Open Table Formats, Edition 2026.11.16, examples passed Nov 24, 2026. By Rolling Edition, https://rollingedition.com/open-table-formats/partition-evolution. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Change partitioning without rewriting old files,” chapter 4 of Open Table Formats, Edition 2026.11.17, examples passed Nov 26, 2026. By Rolling Edition, https://rollingedition.com/open-table-formats/partition-evolution. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Change partitioning without rewriting old files
 
@@ -35,7 +35,7 @@ The other two formats handle partitioning differently, and the differences decid
 
 ## Move from daily to hourly partitions {#daily-to-hourly-partitions}
 
-Each example builds its table from [the cut](https://github.com/rollingedition/book-open-table-formats/blob/72ea8e730acf6ce6c2c2fabd0a388682cbad4d5a/examples/data/README.md) again, with the original columns and not the ones [chapter 3](#columns-tracked-by-id) added. To move the table to hours, you swap one transform of `hour_utc` for another. Iceberg partitions by a transform of a column: the day transform puts each row under its calendar day, and the hour transform puts each row under its hour. The pyiceberg library computes these transforms with the `pyiceberg-core` package, and the day transform imports that package when it writes. An install with only `pyiceberg` therefore fails at the first append under a day or hour partition (pyiceberg 0.12.0 source, [`pyiceberg/transforms.py`](https://raw.githubusercontent.com/apache/iceberg-python/pyiceberg-0.12.0/pyiceberg/transforms.py), `DayTransform.pyarrow_transform`). The pins in this book include `pyiceberg-core` at 0.11.0, next to `pyiceberg` at 0.12.0.
+Each example builds its table from [the cut](https://github.com/rollingedition/book-open-table-formats/blob/6fd32f22604d8c734a149713ab6b2242b1fd9a82/examples/data/README.md) again, with the original columns and not the ones [chapter 3](#columns-tracked-by-id) added. To move the table to hours, you swap one transform of `hour_utc` for another. Iceberg partitions by a transform of a column: the day transform puts each row under its calendar day, and the hour transform puts each row under its hour. The pyiceberg library computes these transforms with the `pyiceberg-core` package, and the day transform imports that package when it writes. An install with only `pyiceberg` therefore fails at the first append under a day or hour partition (pyiceberg 0.12.0 source, [`pyiceberg/transforms.py`](https://raw.githubusercontent.com/apache/iceberg-python/pyiceberg-0.12.0/pyiceberg/transforms.py), `DayTransform.pyarrow_transform`). The pins in this book include `pyiceberg-core` at 0.11.0, next to `pyiceberg` at 0.12.0.
 
 The table starts with a day spec. Hours 00 to 02 load under it. Then the spec changes, and hours 03 to 05 load under the hour spec. The change is one `update_spec()` block that removes the day field and adds the hour field:
 
@@ -47,7 +47,7 @@ with table.update_spec() as update:
 
 Both calls go in one block, so the table gets one spec change with the day field gone. The spec list, printed in order with the transform of each field, shows what the change did. The field names are the ones this book uses, `ts_day` and `ts_hour`, so a spec label says which transform each field applies. The source column stays `hour_utc`. The day field and the hour field are two transforms of that column, so a reader's filter on the column keeps working across both eras.
 
-Example `day-then-hour-spec` (Python 3.12.15 · deltalake 1.6.6 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.16:
+Example `day-then-hour-spec` (Python 3.12.15 · deltalake 1.6.6 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.17:
 
 ```python
 """Partition an Iceberg table by day, change its spec to hour, and load more hours under the new spec.
@@ -132,7 +132,7 @@ A [partition spec](#partition-specs-are-versioned) is a way to skip files. Befor
 
 Pruning is where the change pays off, so plan three scans twice: once under the day spec (see [moving to hourly partitions](#daily-to-hourly-partitions)), and again after the three hour-partitioned loads. Two filters each ask for one hour: hour 01, which was loaded before the change, and hour 04, which was loaded after it. The third has no filter and is a full scan.
 
-Example `plan-files-by-partition` (Python 3.12.15 · deltalake 1.6.6 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.16:
+Example `plan-files-by-partition` (Python 3.12.15 · deltalake 1.6.6 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.17:
 
 ```python
 """Count the files an Iceberg scan plans for one hour, for another hour and for the whole table, before and after a spec change.
@@ -208,9 +208,9 @@ For every one-hour filter after the change, not only the two in the table, Figur
 
 *Figure 4.1. The one file each one-hour filter plans after the spec change, by the spec it was written under.*
 
-![Every one-hour filter plans a single file: a day-spec file for the hours loaded before the change, an hour-spec file for those after](https://rollingedition.ai/books/open-table-formats/2026.11.16/figures/files-by-spec.svg)
+![Every one-hour filter plans a single file: a day-spec file for the hours loaded before the change, an hour-spec file for those after](https://rollingedition.ai/books/open-table-formats/2026.11.17/figures/files-by-spec.svg)
 
-Example `figure-files-by-spec` (Python 3.12.15 · deltalake 1.6.6 · duckdb 2.0.0 · matplotlib 3.11.2 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.16:
+Example `figure-files-by-spec` (Python 3.12.15 · deltalake 1.6.6 · duckdb 2.0.0 · matplotlib 3.11.2 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.17:
 
 ```python
 """Draw, for each one-hour filter after the change from a day spec to an hour spec, the one file it plans and that file's spec.
@@ -297,7 +297,7 @@ DeltaError: Generic error: Specified table partitioning does not match table par
 
 Try the change with a plain `mode="overwrite"` first, and the library refuses it with that error. The same write with `schema_mode="overwrite"` then goes through. That is the setting the library's API at the pins uses in place of the older `overwrite_schema` flag. The rows are read into memory before the overwrite starts, because an overwrite replaces every row the table holds. Writing the rows back is the only way to keep them.
 
-Example `delta-partition-overwrite` (Python 3.12.15 · deltalake 1.6.6 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.16:
+Example `delta-partition-overwrite` (Python 3.12.15 · deltalake 1.6.6 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.17:
 
 ```python
 """Change a Delta Lake table's partition columns from day to hour, which rewrites the table.
@@ -381,7 +381,7 @@ The Delta change is a rewrite of the table's current files, not a metadata edit.
 
 **DuckLake** stores partitioning as a table setting in its catalog, and a change applies to later loads only. The [DuckLake documentation](https://ducklake.select/docs/stable/duckdb/advanced_features/partitioning) says the partitioning keys of a table affect only the data written after the change. Set the table to partition by `hour(hour_utc)`, load one more hour, and the file counts before and after that load show the rule at work. The helper attaches the catalog with inlining off, so each load writes a data file, and the count shows what each load did.
 
-Example `ducklake-partition-alter` (Python 3.12.15 · deltalake 1.6.6 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.16:
+Example `ducklake-partition-alter` (Python 3.12.15 · deltalake 1.6.6 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.17:
 
 ```python
 """Set a DuckLake table's partitioning to hour, then load one more hour and count the files before and after it.

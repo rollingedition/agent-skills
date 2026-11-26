@@ -3,13 +3,13 @@ title: "Open Table Formats"
 chapter: "Compact the small files that hourly appends leave"
 chapter_id: compaction
 book: open-table-formats
-edition: 2026.11.16
-verified: 2026-11-24
-edition_code: XR7P-ZXAG
+edition: 2026.11.17
+verified: 2026-11-26
+edition_code: HZSF-JRTK
 canonical: https://rollingedition.com/open-table-formats/compaction
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“Compact the small files that hourly appends leave,” chapter 6 of Open Table Formats, Edition 2026.11.16, examples passed Nov 24, 2026. By Rolling Edition, https://rollingedition.com/open-table-formats/compaction. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Compact the small files that hourly appends leave,” chapter 6 of Open Table Formats, Edition 2026.11.17, examples passed Nov 26, 2026. By Rolling Edition, https://rollingedition.com/open-table-formats/compaction. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Compact the small files that hourly appends leave
 
@@ -43,7 +43,7 @@ Delta Lake is the first of the three formats in the table above. Its Python libr
 
 You load the six hours into a Delta table, one append each, then count the files the table lists, compact, and count again. Each count comes from the table's own list of files for its current version.
 
-Example `file-counts-before-after` (Python 3.12.15 · deltalake 1.6.6 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.16:
+Example `file-counts-before-after` (Python 3.12.15 · deltalake 1.6.6 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.17:
 
 ```python
 """Load six hourly appends into a Delta Lake table, compact it, and count its files and rows before and after.
@@ -103,9 +103,9 @@ Figure 6.1 follows the same six appends and the compaction version by version. T
 
 *Figure 6.1. The files each table version lists, and the Parquet files on disk after it.*
 
-![A compaction cuts the files the table lists, while the files on disk still grow](https://rollingedition.ai/books/open-table-formats/2026.11.16/figures/files-live-and-on-disk.svg)
+![A compaction cuts the files the table lists, while the files on disk still grow](https://rollingedition.ai/books/open-table-formats/2026.11.17/figures/files-live-and-on-disk.svg)
 
-Example `figure-files-live-and-on-disk` (Python 3.12.15 · deltalake 1.6.6 · duckdb 2.0.0 · matplotlib 3.11.2 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.16:
+Example `figure-files-live-and-on-disk` (Python 3.12.15 · deltalake 1.6.6 · duckdb 2.0.0 · matplotlib 3.11.2 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.17:
 
 ```python
 """Compact six hourly appends into a Delta Lake table, and count the files each version lists and the Parquet files on disk after it.
@@ -189,7 +189,7 @@ DuckLake has compaction as a maintenance function that you call from SQL. The fu
 
 What does the merge leave for a snapshot from before it? The example below reads one. It attaches the catalog with inlining off, inserts the six hours one insert each, and calls the merge once. The table lives in the `wiki` schema, so the call names it. It reads the snapshot number before the merge, so it can read the table as it was at that point.
 
-Example `compact-ducklake` (Python 3.12.15 · deltalake 1.6.6 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.16:
+Example `compact-ducklake` (Python 3.12.15 · deltalake 1.6.6 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.17:
 
 ```python
 """Merge six DuckLake data files, then read a snapshot from before the merge to see what the merge left behind.
@@ -266,7 +266,7 @@ Compaction in Iceberg, at the pinned version of pyiceberg, is a rewrite by overw
 
 A rewrite is judged by what it leaves behind. The check below reads the table's files and rows after six appends and one overwrite, and reads a snapshot from before the rewrite.
 
-Example `iceberg-rewrite-by-overwrite` (Python 3.12.15 · deltalake 1.6.6 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.16:
+Example `iceberg-rewrite-by-overwrite` (Python 3.12.15 · deltalake 1.6.6 · duckdb 2.0.0 · pyarrow 26.0.1 · pyiceberg 0.12.0), passing in Edition 2026.11.17:
 
 ```python
 """Rewrite an unpartitioned Iceberg table by overwriting it with its own scan, then check its data files, its snapshot
