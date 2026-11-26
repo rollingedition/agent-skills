@@ -3,13 +3,13 @@ title: "Time Series Forecasting"
 chapter: "Forecast many clients with one model"
 chapter_id: forecast-many-clients-at-once
 book: time-series-forecasting
-edition: 2026.11.23
+edition: 2026.11.24
 verified: 2026-11-22
-edition_code: 78X6-HCHX
+edition_code: M4MV-3D3W
 canonical: https://rollingedition.com/time-series-forecasting/forecast-many-clients-at-once
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“Forecast many clients with one model,” chapter 6 of Time Series Forecasting, Edition 2026.11.23, examples passed Nov 22, 2026. By Rolling Edition, https://rollingedition.com/time-series-forecasting/forecast-many-clients-at-once. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Forecast many clients with one model,” chapter 6 of Time Series Forecasting, Edition 2026.11.24, examples passed Nov 22, 2026. By Rolling Edition, https://rollingedition.com/time-series-forecasting/forecast-many-clients-at-once. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Forecast many clients with one model
 
@@ -43,7 +43,7 @@ The rule for keeping an identifier is the one [Chapter 5](#measure-what-each-fea
 
 Before the identifier goes into the model, test it on windows the reported scores never touch. The check fits the model twice on each decision cutoff, with and without the identifier, and refuses to start if a scored hour is a holiday or in the held-out week.
 
-Example `client-identifier-check` (Python 3.13.16 · holidays 0.110.dev20261123021027 · lightgbm 4.7.0 · mlforecast 1.1.0 · numpy 2.5.5 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.23:
+Example `client-identifier-check` (Python 3.13.16 · holidays 0.110.dev20261123201640 · lightgbm 4.7.0 · mlforecast 1.1.0 · numpy 2.5.5 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.24:
 
 ```python
 """Tests whether a client identifier lowers the global model's error on four ordinary decision windows, before the
@@ -133,7 +133,7 @@ The rule refuses a cutoff in two cases only: a client has no non-zero reading be
 
 The leak check asks whether the rule reads only the past and refuses the right cutoffs. It runs nine cutoffs, refused or not, and poisons each from the cutoff on, once with zeros and once with a value no meter could record. The history must not change, and every accepted cutoff must hold all thirty clients.
 
-Example `start-rule-leak-check` (Python 3.13.16 · holidays 0.110.dev20261123021027 · lightgbm 4.7.0 · mlforecast 1.1.0 · numpy 2.5.5 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.23:
+Example `start-rule-leak-check` (Python 3.13.16 · holidays 0.110.dev20261123201640 · lightgbm 4.7.0 · mlforecast 1.1.0 · numpy 2.5.5 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.24:
 
 ```python
 """Checks that the start rule reads only rows before each cutoff, refuses the cutoffs the data's flag predicts, and
@@ -200,7 +200,7 @@ The same checks run on a deliberately broken version, which reads each first rea
 
 The model runs with the start rule and without it, on the standard cutoffs and then the February cutoffs. The counts that differ, and each run's error, show what the rule does.
 
-Example `global-model-raw-starts` (Python 3.13.16 · holidays 0.110.dev20261123021027 · lightgbm 4.7.0 · mlforecast 1.1.0 · numpy 2.5.5 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.23:
+Example `global-model-raw-starts` (Python 3.13.16 · holidays 0.110.dev20261123201640 · lightgbm 4.7.0 · mlforecast 1.1.0 · numpy 2.5.5 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.24:
 
 ```python
 """Runs the global model with the start rule and without it, on the February cutoffs, where a late starter's zeros enter
@@ -321,7 +321,7 @@ On the standard cutoffs the same forecasts score a mean MASE of 1.01 with the sc
 
 The score below sets the global model beside seasonal naive on the three standard cutoffs.
 
-Example `global-model-thirty-clients` (Python 3.13.16 · holidays 0.110.dev20261123021027 · lightgbm 4.7.0 · mlforecast 1.1.0 · numpy 2.5.5 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.23:
+Example `global-model-thirty-clients` (Python 3.13.16 · holidays 0.110.dev20261123201640 · lightgbm 4.7.0 · mlforecast 1.1.0 · numpy 2.5.5 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.24:
 
 ```python
 """Scores one global LightGBM model, with the identifier that client-identifier-check kept, against seasonal naive on the
@@ -400,9 +400,9 @@ Figure 6.1 plots each client's MASE under seasonal naive across the bottom and u
 
 *Figure 6.1. Each client's MASE under seasonal naive and under the global model.*
 
-![Most clients sit below the equal line, where the global model has the lower MASE, and the labelled clients sit above it, where seasonal naive wins](https://rollingedition.ai/books/time-series-forecasting/2026.11.23/figures/client-mase-global-vs-naive.svg)
+![Most clients sit below the equal line, where the global model has the lower MASE, and the labelled clients sit above it, where seasonal naive wins](https://rollingedition.ai/books/time-series-forecasting/2026.11.24/figures/client-mase-global-vs-naive.svg)
 
-Example `figure-client-mase-global-vs-naive` (Python 3.13.16 · holidays 0.110.dev20261123021027 · lightgbm 4.7.0 · matplotlib 3.11.2 · mlforecast 1.1.0 · numpy 2.5.5 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.23:
+Example `figure-client-mase-global-vs-naive` (Python 3.13.16 · holidays 0.110.dev20261123201640 · lightgbm 4.7.0 · matplotlib 3.11.2 · mlforecast 1.1.0 · numpy 2.5.5 · pandas 2.3.3 · statsforecast 2.1.1 · utilsforecast 0.2.17), passing in Edition 2026.11.24:
 
 ```python
 """Draw each client's MASE under seasonal naive against the global model's, on the three standard cutoffs, with the equal line.
