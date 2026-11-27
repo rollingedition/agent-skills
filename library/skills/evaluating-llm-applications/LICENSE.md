@@ -1,12 +1,12 @@
 # Licence
 
-This agent skill is *Evaluating LLM Applications*, Edition 2026.11.7, from Rolling Edition, under the Creative Commons Attribution-NonCommercial 4.0 International licence (CC BY-NC 4.0): https://creativecommons.org/licenses/by-nc/4.0/
+This agent skill is *Evaluating LLM Applications*, Edition 2026.11.8, from Rolling Edition, under the Creative Commons Attribution-NonCommercial 4.0 International licence (CC BY-NC 4.0): https://creativecommons.org/licenses/by-nc/4.0/
 
 Rolling Edition and the book's authors also give you permissions beyond that licence, such as using it at work and in teaching: Reuse our books, https://rollingedition.com/policies/reuse
 
 Give this credit when you share or adapt it, and say what you changed:
 
-> Evaluating LLM Applications, Edition 2026.11.7, examples passed Nov 22, 2026. By Rolling Edition, https://rollingedition.com/evaluating-llm-applications. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people.
+> Evaluating LLM Applications, Edition 2026.11.8, examples passed Nov 22, 2026. By Rolling Edition, https://rollingedition.com/evaluating-llm-applications. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people.
 
 The tutoring procedure, "Teach this book, when asked" in `SKILL.md`, is adapted from Jane Street's socratic-tutor skill, https://github.com/janestreet/agent_skills, and is under the MIT License, with Jane Street's notice:
 

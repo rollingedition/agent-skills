@@ -3,13 +3,13 @@ title: "Evaluating LLM Applications"
 chapter: "Measure a judge's errors against human ratings, then correct a pass rate"
 chapter_id: calibrate-the-judge
 book: evaluating-llm-applications
-edition: 2026.11.7
+edition: 2026.11.8
 verified: 2026-11-22
-edition_code: WCKB-Y7EK
+edition_code: G7XC-GVKT
 canonical: https://rollingedition.com/evaluating-llm-applications/calibrate-the-judge
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“Measure a judge's errors against human ratings, then correct a pass rate,” chapter 6 of Evaluating LLM Applications, Edition 2026.11.7, examples passed Nov 22, 2026. By Rolling Edition, https://rollingedition.com/evaluating-llm-applications/calibrate-the-judge. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Measure a judge's errors against human ratings, then correct a pass rate,” chapter 6 of Evaluating LLM Applications, Edition 2026.11.8, examples passed Nov 22, 2026. By Rolling Edition, https://rollingedition.com/evaluating-llm-applications/calibrate-the-judge. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Measure a judge's errors against human ratings, then correct a pass rate
 
@@ -35,7 +35,7 @@ The split decides how the numbers may be used. Dev is where the book sets anythi
 
 Agreement is the share of rows on which the judge and the human give the same verdict. It can mislead when one verdict dominates. A judge that passes everything agrees well with a sample that is mostly PASS, and agreement alone cannot tell that judge from a careful one. The fix is to ask what agreement the two verdicts would reach by chance, from their two PASS rates alone, and then take the chance out. Kappa does that. For two raters on pass or fail, kappa is the observed agreement minus the chance agreement, divided by one minus the chance agreement. [The kappa statistic, a review by McHugh](https://hrcak.srce.hr/file/132393), gives that formula. Kappa is one when the two raters agree on every row.
 
-Example `calibration-agreement` (Python 3.12.15 · numpy 2.5.5), passing in Edition 2026.11.7:
+Example `calibration-agreement` (Python 3.12.15 · numpy 2.5.5), passing in Edition 2026.11.8:
 
 ```python
 """How often the reference-free correctness judge agrees with the human ratings on the HelpSteer2 sample, and Cohen's kappa
@@ -85,7 +85,7 @@ Agreement measures closeness to the human labels, not whether the replies are ri
 
 Chapter 5 described a second calibration wording, rubric B. The calibration rubric, rubric A from here on, says that a reply which makes no false claim is "not incorrect". Rubric B rewords it: it says "right" where A says "not incorrect", and it drops the points about misleading and confidence. Rubric B was recorded on dev only. The next example sets the two wordings side by side on the same dev rows.
 
-Example `rubric-b-agreement` (Python 3.12.15 · numpy 2.5.5), passing in Edition 2026.11.7:
+Example `rubric-b-agreement` (Python 3.12.15 · numpy 2.5.5), passing in Edition 2026.11.8:
 
 ```python
 """How often the second rubric's verdicts agree with the human ratings on the HelpSteer2 sample, beside the first rubric's,
@@ -183,7 +183,7 @@ The interval includes zero, so the dev estimate does not show that rubric B is b
 
 Agreement and kappa say how often the judge agrees with the humans. They do not say which way it errs. The two rates that do are the true positive rate and the true negative rate. The true positive rate, TPR, is the share of human PASS rows that the judge passes. The true negative rate, TNR, is the share of human FAIL rows that the judge fails. A judge that passes too much has a high TPR and a low TNR, because its errors are false passes. A judge that fails too much is the reverse. The correction in the next section needs both rates, since each one fixes a different error.
 
-Example `tpr-tnr` (Python 3.12.15 · numpy 2.5.5), passing in Edition 2026.11.7:
+Example `tpr-tnr` (Python 3.12.15 · numpy 2.5.5), passing in Edition 2026.11.8:
 
 ```python
 """The judge's true positive rate and true negative rate on the HelpSteer2 sample, with the counts beside each, on dev, on
@@ -234,7 +234,7 @@ The observed pass rate counts two kinds of verdict: true passes the judge caught
 
 The correction has a limit. It divides by TPR + TNR - 1. A judge whose two rates sit near what chance would give has a denominator near zero, and then small errors in either rate become large swings in the corrected rate. The book's code refuses to correct when that denominator is below 0.1, and it raises an error instead of printing a rate. The run below stays well clear of that floor. In practice a team does four things in order: measure TPR and TNR on a calibration set kept apart from the set it will correct, check that the denominator clears the floor, apply the correction to the observed rate over the readable replies, and write the transfer assumption beside the result.
 
-Example `corrected-pass-rate` (Python 3.12.15 · numpy 2.5.5 · pydantic 2.14.3 · typing-extensions 4.16.0), passing in Edition 2026.11.7:
+Example `corrected-pass-rate` (Python 3.12.15 · numpy 2.5.5 · pydantic 2.14.3 · typing-extensions 4.16.0), passing in Edition 2026.11.8:
 
 ```python
 """The baseline's answer-judge pass rate over the test items the judge gave a readable verdict, corrected for the judge's errors
@@ -320,7 +320,7 @@ The result is also close to the code's ceiling. The code clips the corrected rat
 
 ## How much one row moves the corrected rate {#how-much-one-row-moves-it}
 
-Example `correction-sensitivity` (Python 3.12.15 · numpy 2.5.5 · pydantic 2.14.3 · typing-extensions 4.16.0), passing in Edition 2026.11.7:
+Example `correction-sensitivity` (Python 3.12.15 · numpy 2.5.5 · pydantic 2.14.3 · typing-extensions 4.16.0), passing in Edition 2026.11.8:
 
 ```python
 """How much the corrected pass rate of corrected-pass-rate depends on its inputs. A 95% bootstrap interval resamples both the
@@ -374,9 +374,9 @@ The example resamples both the dev rows and the readable items, 2,000 times, wit
 
 *Figure 6.1. The corrected pass rate over the bootstrap resamples, with the cap and the interval's ends.*
 
-![The resamples pile up at the 100% cap, a bar taller than any bin below it, so the interval's top end is the cap](https://rollingedition.ai/books/evaluating-llm-applications/2026.11.7/figures/corrected-resamples.svg)
+![The resamples pile up at the 100% cap, a bar taller than any bin below it, so the interval's top end is the cap](https://rollingedition.ai/books/evaluating-llm-applications/2026.11.8/figures/corrected-resamples.svg)
 
-Example `figure-corrected-resamples` (Python 3.12.15 · matplotlib 3.11.2 · numpy 2.5.5 · pydantic 2.14.3 · typing-extensions 4.16.0), passing in Edition 2026.11.7:
+Example `figure-corrected-resamples` (Python 3.12.15 · matplotlib 3.11.2 · numpy 2.5.5 · pydantic 2.14.3 · typing-extensions 4.16.0), passing in Edition 2026.11.8:
 
 ```python
 """Draws the bootstrap distribution of the corrected pass rate over the 2,000 resamples of correction-sensitivity: the bars
@@ -470,7 +470,7 @@ Each pair is a HelpSteer2 prompt with two responses and a human preference betwe
 
 Before you run the example, predict whether a pair that counts only when both orders pick the human's response will score above or below either order taken alone. Then check the guess against the output.
 
-Example `pairwise-agreement` (Python 3.12.15 · numpy 2.5.5), passing in Edition 2026.11.7:
+Example `pairwise-agreement` (Python 3.12.15 · numpy 2.5.5), passing in Edition 2026.11.8:
 
 ```python
 """How often the pairwise judge's verdict agrees with the human preference on each HelpSteer2 pair, dev and held-out apart.
