@@ -54,7 +54,7 @@ numpy==2.5.5
     #   matplotlib
 opentelemetry-api==1.45.2
     # via mcp
-packaging==26.3
+packaging==26.4
     # via pytest
 pillow==13.0.0
     # via matplotlib

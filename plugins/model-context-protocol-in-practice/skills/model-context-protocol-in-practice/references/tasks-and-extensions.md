@@ -3,13 +3,13 @@ title: "Model Context Protocol in Practice"
 chapter: "Run long work as tasks"
 chapter_id: tasks-and-extensions
 book: model-context-protocol-in-practice
-edition: 2026.11.19
+edition: 2026.11.20
 verified: 2026-11-22
-edition_code: WBWS-5CPZ
+edition_code: BRG6-NM88
 canonical: https://rollingedition.com/model-context-protocol-in-practice/tasks-and-extensions
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“Run long work as tasks,” chapter 7 of Model Context Protocol in Practice, Edition 2026.11.19, examples passed Nov 22, 2026. By Rolling Edition, https://rollingedition.com/model-context-protocol-in-practice/tasks-and-extensions. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Run long work as tasks,” chapter 7 of Model Context Protocol in Practice, Edition 2026.11.20, examples passed Nov 22, 2026. By Rolling Edition, https://rollingedition.com/model-context-protocol-in-practice/tasks-and-extensions. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Run long work as tasks
 
@@ -39,7 +39,7 @@ So this book builds a small one. `lib.tasks` implements, on the SDK's framework,
 
 The shop's server passes `tasks.Tasks({"restock_report"})` to `MCPServer(extensions=[...])`, which tells it to answer every call to `restock_report` with a task. The tool itself calls `lib.restock`. Serving the shop's server to one client with `TasksClient` and one without shows both halves of the negotiation; the example reads the first client's declaration off the wire, and the second client also sends one `tasks/get`.
 
-Example `declare-the-tasks-extension` (Python 3.12.15 · cryptography 50.0.2 · httpx2 2.16.2 · mcp 2.3.0 · mcp-types 2.3.0 · pydantic 2.14.4 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.19:
+Example `declare-the-tasks-extension` (Python 3.12.15 · cryptography 50.0.2 · httpx2 2.16.2 · mcp 2.3.0 · mcp-types 2.3.0 · pydantic 2.14.4 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.20:
 
 ```python
 """Declare the Tasks extension on the shop's server, then show what a client gets with it and without it: both declarations, and the
@@ -123,7 +123,7 @@ A task's handle is a `CreateTaskResult`: a result whose `resultType` is `"task"`
 
 This run reuses the server from [the previous example](#negotiate-an-extension) and calls `restock_report` with `allow_claimed=True`, which returns the handle, not the finished report. It then sends one `tasks/get` straight after, to check that the server already holds the task.
 
-Example `start-a-restock-report` (Python 3.12.15 · cryptography 50.0.2 · httpx2 2.16.2 · mcp 2.3.0 · mcp-types 2.3.0 · pydantic 2.14.4 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.19:
+Example `start-a-restock-report` (Python 3.12.15 · cryptography 50.0.2 · httpx2 2.16.2 · mcp 2.3.0 · mcp-types 2.3.0 · pydantic 2.14.4 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.20:
 
 ```python
 """Call restock_report and keep the handle the server answers with at once, instead of waiting for the report. The tasks/get sent straight after is the line the prose rests on: it finds the task, so the server stored it before the handle left."""
@@ -195,7 +195,7 @@ In the SDK, polling belongs in a client extension. `TasksClient` claims the resu
 
 A host makes this call when a lead asks for the restock report. Through `TasksClient`, with `on_poll=` set to keep every `tasks/get` reply, a client calls `restock_report` with a threshold of 30 units.
 
-Example `poll-the-restock-report` (Python 3.12.15 · cryptography 50.0.2 · httpx2 2.16.2 · jsonschema 4.26.0 · mcp 2.3.0 · mcp-types 2.3.0 · pydantic 2.14.4 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.19:
+Example `poll-the-restock-report` (Python 3.12.15 · cryptography 50.0.2 · httpx2 2.16.2 · jsonschema 4.26.0 · mcp 2.3.0 · mcp-types 2.3.0 · pydantic 2.14.4 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.20:
 
 ```python
 """Call restock_report through a client whose extension polls the task until it ends, and get the report back as an ordinary tool result. The asserts check that the report was still working on more than one poll and that its messages only counted up, which the prose relies on."""
@@ -264,7 +264,7 @@ Cancelling uses `tasks/cancel` with the `taskId`, and the specification says `no
 
 The expiry example sets a one-minute `ttlMs`, which shows expiry without a long wait. So that its output never depends on the machine's speed, it holds each report before every product, with `restock.Steps`, a gate in `lib.restock` that lets one more product start each time `allow()` is called. It starts one report that is never allowed a product, polls it, moves the fake clock 61 seconds on, and polls again. Then it starts a second report, lets it recount one product, waits for its first status message, and cancels it. It polls at once, lets the report start its next product, and polls until the task is terminal.
 
-Example `expire-a-task` (Python 3.12.15 · cryptography 50.0.2 · httpx2 2.16.2 · mcp 2.3.0 · mcp-types 2.3.0 · pydantic 2.14.4 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.19:
+Example `expire-a-task` (Python 3.12.15 · cryptography 50.0.2 · httpx2 2.16.2 · mcp 2.3.0 · mcp-types 2.3.0 · pydantic 2.14.4 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.20:
 
 ```python
 """Show the two ways a task ends early: its time to live runs out and the server purges it, or the client cancels it and the report stops at its next check. The -32602 from the purged task and the final status of the cancelled report are the lines the prose rests on."""

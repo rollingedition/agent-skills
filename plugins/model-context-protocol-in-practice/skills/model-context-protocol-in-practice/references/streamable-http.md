@@ -3,13 +3,13 @@ title: "Model Context Protocol in Practice"
 chapter: "Serve over Streamable HTTP"
 chapter_id: streamable-http
 book: model-context-protocol-in-practice
-edition: 2026.11.19
+edition: 2026.11.20
 verified: 2026-11-22
-edition_code: WBWS-5CPZ
+edition_code: BRG6-NM88
 canonical: https://rollingedition.com/model-context-protocol-in-practice/streamable-http
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“Serve over Streamable HTTP,” chapter 6 of Model Context Protocol in Practice, Edition 2026.11.19, examples passed Nov 22, 2026. By Rolling Edition, https://rollingedition.com/model-context-protocol-in-practice/streamable-http. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Serve over Streamable HTTP,” chapter 6 of Model Context Protocol in Practice, Edition 2026.11.20, examples passed Nov 22, 2026. By Rolling Edition, https://rollingedition.com/model-context-protocol-in-practice/streamable-http. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Serve over Streamable HTTP
 
@@ -36,7 +36,7 @@ A server answers each request in one of two forms: a single JSON object (`Conten
 
 In the Python SDK the change is one argument. `MCPServer.run(transport="streamable-http")` serves the server under uvicorn, by default on 127.0.0.1, port 8000, at the path `/mcp` (`mcp/server/mcpserver/server.py`). On the client side, `Client` takes a URL where it took `StdioServerParameters`, and connects with the SDK's Streamable HTTP client (`mcp/client/client.py`). The shop's server keeps chapter 3's five tools unchanged, and only the last lines of its file change. The port comes from `http_mcp.port()`, not 8000, so it never collides with anything else.
 
-Example `serve-on-loopback` (Python 3.12.15 · cryptography 50.0.2 · httpx2 2.16.2 · jsonschema 4.26.0 · mcp 2.3.0 · mcp-types 2.3.0 · pydantic 2.14.4 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.19:
+Example `serve-on-loopback` (Python 3.12.15 · cryptography 50.0.2 · httpx2 2.16.2 · jsonschema 4.26.0 · mcp 2.3.0 · mcp-types 2.3.0 · pydantic 2.14.4 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.20:
 
 ```python
 """Serves chapter 3's five tools over Streamable HTTP in a process of its own, then calls one from a client that has only
@@ -99,7 +99,7 @@ The body stays the source of truth. A server MUST reject a request whose headers
 
 Recording one `get_order_status` call with the SDK's client shows a correct exchange. Two requests the SDK's client never sends, through `lib.http_mcp.post`, show what the server refuses: a `tools/call` whose `Mcp-Name` says `check_stock` while its body names `get_order_status`, and a GET.
 
-Example `trace-an-http-exchange` (Python 3.12.15 · cryptography 50.0.2 · httpx2 2.16.2 · jsonschema 4.26.0 · mcp 2.3.0 · mcp-types 2.3.0 · pydantic 2.14.4 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.19:
+Example `trace-an-http-exchange` (Python 3.12.15 · cryptography 50.0.2 · httpx2 2.16.2 · jsonschema 4.26.0 · mcp 2.3.0 · mcp-types 2.3.0 · pydantic 2.14.4 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.20:
 
 ```python
 """Records the HTTP exchanges behind one tool call, then sends two requests the SDK's client never would. The point rests
@@ -192,7 +192,7 @@ In the SDK, a tool reports with `await ctx.report_progress(progress, total=..., 
 
 The shop's API has an endpoint, `POST /stock/{sku}/recount`, which recounts one product in both warehouses and takes a few seconds per product in the real shop. `recount_stock` calls it for each of the shop's 64 SKUs and reports after each one. In the examples, `lib.recount` asks the API to take 0.02 seconds per product, so a full recount takes a few seconds. The same server runs twice: once with the SDK's default, which can stream, and once with `json_response=True`, which makes every response a single JSON object.
 
-Example `progress-on-stock-recount` (Python 3.12.15 · cryptography 50.0.2 · httpx2 2.16.2 · jsonschema 4.26.0 · mcp 2.3.0 · mcp-types 2.3.0 · pydantic 2.14.4 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.19:
+Example `progress-on-stock-recount` (Python 3.12.15 · cryptography 50.0.2 · httpx2 2.16.2 · jsonschema 4.26.0 · mcp 2.3.0 · mcp-types 2.3.0 · pydantic 2.14.4 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.20:
 
 ```python
 """Runs recount_stock with progress reports, once with the SDK's streaming responses and once with JSON-only responses. The
@@ -280,7 +280,7 @@ Inside an `async def` tool, cancellation arrives as anyio's cancellation excepti
 
 To watch that path end to end, the host cancels the call at the fifth progress report, the way a host would when its person closes the ticket. Each product takes 0.1 seconds here, so the server is still inside the sixth product's recount when the stream closes. `recount_stock` records how each run ended, and the recorder logs what crossed the wire.
 
-Example `cancel-the-stock-recount` (Python 3.12.15 · anyio 4.16.0 · cryptography 50.0.2 · httpx2 2.16.2 · mcp 2.3.0 · mcp-types 2.3.0 · pydantic 2.14.4 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.19:
+Example `cancel-the-stock-recount` (Python 3.12.15 · anyio 4.16.0 · cryptography 50.0.2 · httpx2 2.16.2 · mcp 2.3.0 · mcp-types 2.3.0 · pydantic 2.14.4 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.20:
 
 ```python
 """Cancels recount_stock after five progress reports by closing its response stream, and records where the server stopped.
@@ -374,7 +374,7 @@ One refund, asked for on replica a and confirmed on replica b, touches all three
 
 The shared store is `lib.shared_state`. Its `SharedMap` and `SharedSet` keep entries in a SQLite file that every process on the machine opens, and each carries a lock on a file beside it, so that one replica's check-then-write can't interleave with another's. `shop_tools.create_server(quotes=...)` and `confirmations.OnceOnly(seen=...)` take any such container, and fall back to process memory without one, so chapters 3 and 5 run as before. Rows hold JSON, not pickles, and a quote's expiry is stored as a wall-clock time, because a monotonic deadline means nothing on another host. A SQLite file reaches only processes on one machine. A deployment puts the same two tables in a database its replicas share.
 
-Example `two-replicas-one-client` (Python 3.12.15 · cryptography 50.0.2 · httpx2 2.16.2 · jsonschema 4.26.0 · mcp 2.3.0 · mcp-types 2.3.0 · pydantic 2.14.4 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.19:
+Example `two-replicas-one-client` (Python 3.12.15 · cryptography 50.0.2 · httpx2 2.16.2 · jsonschema 4.26.0 · mcp 2.3.0 · mcp-types 2.3.0 · pydantic 2.14.4 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.20:
 
 ```python
 """Runs two replicas of chapter 5's refund server through three kinds of shared state, and replays one confirmation across them.
@@ -464,7 +464,7 @@ The browser hands the server its defence. It sends the page's `Origin` with each
 
 The SDK arms both checks by default. When the app's `host` is a loopback name and you pass no `transport_security`, it allows only `Host` values `127.0.0.1:*`, `localhost:*` and `[::1]:*`, and only `Origin` values with the same names under `http://` (`mcp/server/mcpserver/server.py`). Four requests probe that default: `tools/list` with no `Origin`, with the server's own origin, with `http://attacker.example`, and with a `Host` of `fernhill.example`. It then builds the same app with `host="0.0.0.0"`, the usual container setting, and sends the two foreign requests again. That app binds to 127.0.0.1, since only the setting is under test.
 
-Example `reject-a-foreign-origin` (Python 3.12.15 · cryptography 50.0.2 · httpx2 2.16.2 · mcp 2.3.0 · mcp-types 2.3.0 · pydantic 2.14.4 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.19:
+Example `reject-a-foreign-origin` (Python 3.12.15 · cryptography 50.0.2 · httpx2 2.16.2 · mcp 2.3.0 · mcp-types 2.3.0 · pydantic 2.14.4 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.20:
 
 ```python
 """Sends tools/list to the shop's server with foreign Origin and Host headers, first with the SDK's loopback default and then

@@ -1,12 +1,12 @@
 ---
 title: "Tutor"
 book: "Agent Harnesses"
-edition: "2026.11.8"
+edition: "2026.11.9"
 ---
 
 # Teaching *Agent Harnesses*
 
-How to teach *Agent Harnesses*, Edition 2026.11.8, when someone asks to be taught, tutored or quizzed on it, as "Teach this book, when asked" in `SKILL.md` says, then every chapter's sections. The method is adapted from Jane Street's socratic-tutor skill, under MIT: `LICENSE.md` keeps its notice.
+How to teach *Agent Harnesses*, Edition 2026.11.9, when someone asks to be taught, tutored or quizzed on it, as "Teach this book, when asked" in `SKILL.md` says, then every chapter's sections. The method is adapted from Jane Street's socratic-tutor skill, under MIT: `LICENSE.md` keeps its notice.
 
 ## How to teach it
 
@@ -73,12 +73,12 @@ After the exam, tell them once that each chapter's page on rollingedition.com en
 - "show progress": the map.
 - "harder" or "easier": change the difficulty.
 - "just tell me": answer the current question directly, for that question only. Not for graded work: for an exercise, a quiz or an assignment, point them to its section and help them reason it through.
-- "save state": a short block they can paste into a new session, with the book, Edition 2026.11.8 and its code `7VH3-TBZX`, the map's levels, the misconceptions you've seen, and what's been covered.
+- "save state": a short block they can paste into a new session, with the book, Edition 2026.11.9 and its code `VY69-4031`, the map's levels, the misconceptions you've seen, and what's been covered.
 - "resume from:" with a saved block: restore it and go on. If it's from another edition, say so, and ask again about the topics whose sections changed: https://rollingedition.com/agent-harnesses/changes lists them.
 
 ## The book's sections
 
-Each chapter of Edition 2026.11.8 and its sections, in order, with the examples each section runs and the terms it defines. Each section links to its place in the chapter beside this file, and each script is in `scripts/`. Read a section before you ask about it.
+Each chapter of Edition 2026.11.9 and its sections, in order, with the examples each section runs and the terms it defines. Each section links to its place in the chapter beside this file, and each script is in `scripts/`. Read a section before you ask about it.
 
 ### 1. Give a model tools and a loop
 

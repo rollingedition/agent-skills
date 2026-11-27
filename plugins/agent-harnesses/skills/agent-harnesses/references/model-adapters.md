@@ -3,13 +3,13 @@ title: "Agent Harnesses"
 chapter: "One interface for scripted, replayed, local and hosted models"
 chapter_id: model-adapters
 book: agent-harnesses
-edition: 2026.11.8
+edition: 2026.11.9
 verified: 2026-11-22
-edition_code: 7VH3-TBZX
+edition_code: VY69-4031
 canonical: https://rollingedition.com/agent-harnesses/model-adapters
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“One interface for scripted, replayed, local and hosted models,” chapter 4 of Agent Harnesses, Edition 2026.11.8, examples passed Nov 22, 2026. By Rolling Edition, https://rollingedition.com/agent-harnesses/model-adapters. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“One interface for scripted, replayed, local and hosted models,” chapter 4 of Agent Harnesses, Edition 2026.11.9, examples passed Nov 22, 2026. By Rolling Edition, https://rollingedition.com/agent-harnesses/model-adapters. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # One interface for scripted, replayed, local and hosted models
 
@@ -46,7 +46,7 @@ The rows come from a logger, not from a script. `LoggedModel` wraps a live model
 
 Chapter 1's T-01 run goes through the loop twice in the first example: once on a `ScriptedModel` that holds the stored reply texts, and once on the `ReplayModel` for the same run. The scripted replies are read from the stored file, so both runs start from the same source.
 
-Example `same-loop-two-models` (Python 3.12.15 · numpy 2.5.5 · pydantic 2.14.4), passing in Edition 2026.11.8:
+Example `same-loop-two-models` (Python 3.12.15 · numpy 2.5.5 · pydantic 2.14.4), passing in Edition 2026.11.9:
 
 ```python
 """Chapter-1-t01 runs through the loop twice: once with a ScriptedModel holding the stored reply texts, once with a
@@ -100,7 +100,7 @@ The loop made the same calls both times, and the example stops if the two runs d
 
 The second example checks the recording itself, against its manifest, and then replays it.
 
-Example `replay-byte-for-byte` (Python 3.12.15 · numpy 2.5.5 · pydantic 2.14.4), passing in Edition 2026.11.8:
+Example `replay-byte-for-byte` (Python 3.12.15 · numpy 2.5.5 · pydantic 2.14.4), passing in Edition 2026.11.9:
 
 ```python
 """The stored chapter-1 run is the recording its manifest describes, and replaying it hands the loop each stored reply text
@@ -198,7 +198,7 @@ No example in this book sends a request that returns a structured `tool_calls` f
 
 The recording used the same file and the same sampling as the local model. It ran the pinned llama-cpp-python's own server on loopback, and sent T-01's first step through the adapter twice. The stored file holds each request as sent and each raw response body. A loopback `http.server` serves those bodies in order, and it answers `409` to any request whose body differs from the recorded one. The stub compares the request body, every message and every setting. It does not compare the path, the method or the headers, so a change to the endpoint's path or to the `Authorization` header would pass. If a change to the adapter alters the body it sends, the request fails before any reply is read. The stored bodies keep the server's own `id` and `created` fields. Nothing compares or prints them. Because no model is loaded, the adapter's HTTP and parsing code runs every time the book's examples are checked.
 
-Example `openai-compatible-loopback` (Python 3.12.15 · numpy 2.5.5 · pydantic 2.14.4), passing in Edition 2026.11.8:
+Example `openai-compatible-loopback` (Python 3.12.15 · numpy 2.5.5 · pydantic 2.14.4), passing in Edition 2026.11.9:
 
 ```python
 """The OpenAI-compatible adapter, run live against a loopback stub that serves the bodies recorded from llama.cpp's own
@@ -255,7 +255,7 @@ The helper that builds the adapter for the recordings and the example, `loopback
 
 The proxy works as it does for any `urllib` request, except for loopback hosts, `127.0.0.1`, `::1` and `localhost`, which are reached directly. A remote `http` URL goes through the proxy the environment names. A stub stands in for the proxy in the refusal example, and it shows both halves: the loopback requests never reach it, and the remote request arrives with its full URL.
 
-Example `adapter-refuses-unsafe-endpoints` (Python 3.12.15 · numpy 2.5.5), passing in Edition 2026.11.8:
+Example `adapter-refuses-unsafe-endpoints` (Python 3.12.15 · numpy 2.5.5), passing in Edition 2026.11.9:
 
 ```python
 """The OpenAI-compatible adapter refuses a redirect, a key over plain http to a remote host, and a non-http scheme. It sends

@@ -3,13 +3,13 @@ title: "Model Context Protocol in Practice"
 chapter: "Build a host that works through tickets"
 chapter_id: build-a-host
 book: model-context-protocol-in-practice
-edition: 2026.11.19
+edition: 2026.11.20
 verified: 2026-11-22
-edition_code: WBWS-5CPZ
+edition_code: BRG6-NM88
 canonical: https://rollingedition.com/model-context-protocol-in-practice/build-a-host
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“Build a host that works through tickets,” chapter 10 of Model Context Protocol in Practice, Edition 2026.11.19, examples passed Nov 22, 2026. By Rolling Edition, https://rollingedition.com/model-context-protocol-in-practice/build-a-host. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Build a host that works through tickets,” chapter 10 of Model Context Protocol in Practice, Edition 2026.11.20, examples passed Nov 22, 2026. By Rolling Edition, https://rollingedition.com/model-context-protocol-in-practice/build-a-host. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Build a host that works through tickets
 
@@ -31,7 +31,7 @@ A group can also take a session you already hold, through `connect_with_session`
 
 The support host uses one `mcp.Client` per server instead. Each runs in its default auto mode, which probes `server/discover` and falls back to the handshake only for a server that doesn't answer it (`mcp/client/client.py`). The host keeps the clients in a map keyed by a prefix its own configuration assigns: `shop` for the shop's server, launched over stdio from `lib.support_shop`, and `partner` for the partner's server, `lib.partner`, connected in-process. The code connects both, gives the shop's server to a `ClientSessionGroup`, and reconnects to the shop's server with the era the first connection learned.
 
-Example `connect-two-servers` (Python 3.12.15 · cryptography 50.0.2 · httpx2 2.16.2 · mcp 2.3.0 · mcp-types 2.3.0 · pydantic 2.14.4 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.19:
+Example `connect-two-servers` (Python 3.12.15 · cryptography 50.0.2 · httpx2 2.16.2 · mcp 2.3.0 · mcp-types 2.3.0 · pydantic 2.14.4 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.20:
 
 ```python
 """Two clients under their own prefixes each settle their own revision, and the SDK's ClientSessionGroup settles the
@@ -104,7 +104,7 @@ The shop's case makes the collision concrete. Suppose the partner's next release
 
 The support host names every tool `{prefix}.{tool}`. It uses `.` as the separator because `.` is in the allowed set and reads like a path. `TicketHost.route` turns a name the model used back into the server's prefix and the tool's name on the wire, and returns nothing for an unknown name.
 
-Example `tool-name-collision` (Python 3.12.15 · cryptography 50.0.2 · httpx2 2.16.2 · mcp 2.3.0 · mcp-types 2.3.0 · pydantic 2.14.4 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.19:
+Example `tool-name-collision` (Python 3.12.15 · cryptography 50.0.2 · httpx2 2.16.2 · mcp 2.3.0 · mcp-types 2.3.0 · pydantic 2.14.4 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.20:
 
 ```python
 """The partner's next release adds its own get_order_status, and ClientSessionGroup refuses it beside the shop's. The
@@ -188,7 +188,7 @@ That is why `lib.support_shop` derives each `quote_id` from a counter, hashed wi
 
 Ticket T-0009 shows the loop when the first guess is wrong. The customer asks what a refund would be on order "o7144". The order they mean is O-1744, and O-7144 doesn't exist.
 
-Example `work-one-ticket` (Python 3.12.15 · cryptography 50.0.2 · httpx2 2.16.2 · jsonschema 4.26.0 · mcp 2.3.0 · mcp-types 2.3.0 · pydantic 2.14.4 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.19:
+Example `work-one-ticket` (Python 3.12.15 · cryptography 50.0.2 · httpx2 2.16.2 · jsonschema 4.26.0 · mcp 2.3.0 · mcp-types 2.3.0 · pydantic 2.14.4 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.20:
 
 ```python
 """The support host works one ticket and prints each model turn: the tool call, its outcome, and what went back to the
@@ -278,7 +278,7 @@ The Python SDK splits the work. `Client.call_tool` runs the retry loop itself, u
 
 The shop's API holds a refund above the refund policy's limit of €150.00 until a support lead releases it, and `issue_refund` asks for that release with a one-field form. Two such refunds run through the support host's own `call` method, the path a model's tool call takes, and a scripted lead accepts the first and declines the second.
 
-Example `host-answers-elicitation` (Python 3.12.15 · cryptography 50.0.2 · httpx2 2.16.2 · jsonschema 4.26.0 · mcp 2.3.0 · mcp-types 2.3.0 · pydantic 2.14.4 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.19:
+Example `host-answers-elicitation` (Python 3.12.15 · cryptography 50.0.2 · httpx2 2.16.2 · jsonschema 4.26.0 · mcp 2.3.0 · mcp-types 2.3.0 · pydantic 2.14.4 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.20:
 
 ```python
 """Two refunds above the policy limit, each held by an input request from the shop's server. The host shows the lead
@@ -367,7 +367,7 @@ Input requests bring the user into a call; resources bring documents into the mo
 
 The shop's server lists its 6 policies as resources, with the annotations that [Expose the policies as resources](#policies-as-resources) gave them. All are for the assistant. The refund policy has priority 1.0, and the others have 0.5. The refund policy matters most to the model, because it says what may be refunded and that a refund above the limit waits for a lead. The support host's rule is its own: attach every resource the server marks for the assistant with a priority of at least 0.8, once, after the tools in the system prompt. The model never chooses, so a ticket's text can't pull a document into the context.
 
-Example `attach-a-policy-resource` (Python 3.12.15 · cryptography 50.0.2 · httpx2 2.16.2 · mcp 2.3.0 · mcp-types 2.3.0 · pydantic 2.14.4 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.19:
+Example `attach-a-policy-resource` (Python 3.12.15 · cryptography 50.0.2 · httpx2 2.16.2 · mcp 2.3.0 · mcp-types 2.3.0 · pydantic 2.14.4 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.20:
 
 ```python
 """The host attaches the shop's policies that the server marks for the assistant at a high priority, and the model never
@@ -449,7 +449,7 @@ The recording `ticket-runs` holds the model's replies for this run's 102 model c
 
 Of those batches, 1 worked a single ticket, T-0007, and the rest worked the queue. The queue's replay uses the single-ticket batch's replies for T-0007, because its messages match. By the manifest's timings, a call took 16.5 seconds on average on the CPU, and the longest batch took 8.0 minutes. The manifest, in `examples/data/recorded/ticket-runs/`, lists the batches, the model file by revision and hash, the sampling, the prompt's hash and the host's settings.
 
-Example `work-the-ticket-queue` (Python 3.12.15 · cryptography 50.0.2 · httpx2 2.16.2 · jsonschema 4.26.0 · mcp 2.3.0 · mcp-types 2.3.0 · pydantic 2.14.4 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.19:
+Example `work-the-ticket-queue` (Python 3.12.15 · cryptography 50.0.2 · httpx2 2.16.2 · jsonschema 4.26.0 · mcp 2.3.0 · mcp-types 2.3.0 · pydantic 2.14.4 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.20:
 
 ```python
 """The host works every one of the shop's tickets against both servers and counts the outcomes, the first tools and the

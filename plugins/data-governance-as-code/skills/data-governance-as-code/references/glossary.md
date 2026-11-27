@@ -1,13 +1,13 @@
 ---
 title: "Glossary"
 book: "Data Governance as Code"
-edition: "2026.11.36"
+edition: "2026.11.37"
 canonical: "https://rollingedition.com/data-governance-as-code/glossary"
 ---
 
 # Glossary of *Data Governance as Code*
 
-The 151 terms this book defines, as Edition 2026.11.36 has them, each in the book's own sentence. When a task this skill covers uses one, it means what it says here: read its section before you rely on it, and cite the section. Where a definition depends on a package, it says the version this edition pins and runs its examples on. On the web: https://rollingedition.com/data-governance-as-code/glossary
+The 151 terms this book defines, as Edition 2026.11.37 has them, each in the book's own sentence. When a task this skill covers uses one, it means what it says here: read its section before you rely on it, and cite the section. Where a definition depends on a package, it says the version this edition pins and runs its examples on. On the web: https://rollingedition.com/data-governance-as-code/glossary
 
 ## access log
 
@@ -748,7 +748,7 @@ measure each check's noise by the findings nobody acts on
 lib.audit.normalized keeps the query's shape and drops its values: sqlglot parses the query, and every literal, in any of DuckDB's syntaxes, becomes ?.
 
 - Also: normalized text
-- True for: sqlglot 30.33.0
+- True for: sqlglot 30.34.0
 - Defined in: [Keep values out of the record](audit-and-evidence.md#keep-values-out-of-the-record)
 - Address: https://rollingedition.com/concepts/data-governance/normalized-query
 
@@ -965,8 +965,8 @@ The purpose is an attribute of the request.
 
 sqlglot parses a query into a tree, and its qualify step resolves every column against a schema, qualifies it with its table, and expands * into the columns it stands for when it has a schema to expand against
 
-- True for: sqlglot 30.33.0
-- Implemented by: sqlglot 30.33.0
+- True for: sqlglot 30.34.0
+- Implemented by: sqlglot 30.34.0
 - The same as: https://rollingedition.com/concepts/artificial-intelligence/column-qualification
 - Defined in: [Find every table and column a query reads](enforcing-policies-on-queries.md#find-what-a-query-reads)
 - Address: https://rollingedition.com/concepts/data-engineering/qualify

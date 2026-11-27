@@ -3,13 +3,13 @@ title: "Model Context Protocol in Practice"
 chapter: "Serve data as resources and prompts"
 chapter_id: resources-and-prompts
 book: model-context-protocol-in-practice
-edition: 2026.11.19
+edition: 2026.11.20
 verified: 2026-11-22
-edition_code: WBWS-5CPZ
+edition_code: BRG6-NM88
 canonical: https://rollingedition.com/model-context-protocol-in-practice/resources-and-prompts
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“Serve data as resources and prompts,” chapter 4 of Model Context Protocol in Practice, Edition 2026.11.19, examples passed Nov 22, 2026. By Rolling Edition, https://rollingedition.com/model-context-protocol-in-practice/resources-and-prompts. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Serve data as resources and prompts,” chapter 4 of Model Context Protocol in Practice, Edition 2026.11.20, examples passed Nov 22, 2026. By Rolling Edition, https://rollingedition.com/model-context-protocol-in-practice/resources-and-prompts. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Serve data as resources and prompts
 
@@ -37,7 +37,7 @@ The server publishes each policy as a static resource at `shop://policies/{slug}
 
 At the pinned revision, `resources/list` and `resources/read` results carry two cache hints. `ttlMs` says how long a result stays fresh, and `cacheScope` says whether a cache may share it across callers ([caching](https://modelcontextprotocol.io/specification/2026-07-28/server/utilities/caching)). The SDK's default is a `ttlMs` of 0 with the `private` scope (`mcp/server/caching.py`). The policies are the same for every caller and change rarely, so this server marks both methods `public` for an hour. Listing and reading the policies shows both hints.
 
-Example `list-policy-resources` (Python 3.12.15 · cryptography 50.0.2 · httpx2 2.16.2 · mcp 2.3.0 · mcp-types 2.3.0 · pydantic 2.14.4 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.19:
+Example `list-policy-resources` (Python 3.12.15 · cryptography 50.0.2 · httpx2 2.16.2 · mcp 2.3.0 · mcp-types 2.3.0 · pydantic 2.14.4 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.20:
 
 ```python
 """Serves the shop's six policies as static resources, then lists them and reads the refund policy from a client.
@@ -129,7 +129,7 @@ The shop's order template is `shop://orders/{order_id}`, and its function wraps 
 
 Four reads, one success and three kinds of miss: a real order, one that doesn't exist, one ID in the wrong format, and one URI whose variable tries to climb out of the order's path.
 
-Example `order-resource-template` (Python 3.12.15 · cryptography 50.0.2 · httpx2 2.16.2 · mcp 2.3.0 · mcp-types 2.3.0 · pydantic 2.14.4 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.19:
+Example `order-resource-template` (Python 3.12.15 · cryptography 50.0.2 · httpx2 2.16.2 · mcp 2.3.0 · mcp-types 2.3.0 · pydantic 2.14.4 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.20:
 
 ```python
 """Reads orders through the template shop://orders/{order_id} and prints what each kind of miss returns.
@@ -228,7 +228,7 @@ The handler asks the shop's API for that customer's orders and keeps those that 
 
 The API's response also carries the customer's total order count. When that total is more than the API returned, older orders might match too, so the handler leaves `total` out and sets `has_more`. Otherwise it reports the number of matches as `total`. The order template applies the same scope to reads: another customer's order gets the same not-found answer as an order that doesn't exist. A shared module, `lib.shop_reads`, holds the async helper both handlers use to call the shop's API. The run types two prefixes and reads two orders the caller can't see.
 
-Example `complete-order-ids` (Python 3.12.15 · cryptography 50.0.2 · httpx2 2.16.2 · mcp 2.3.0 · mcp-types 2.3.0 · pydantic 2.14.4 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.19:
+Example `complete-order-ids` (Python 3.12.15 · cryptography 50.0.2 · httpx2 2.16.2 · mcp 2.3.0 · mcp-types 2.3.0 · pydantic 2.14.4 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.20:
 
 ```python
 """Completes order IDs for shop://orders/{order_id} from the orders of the one customer the server acts for, and answers another customer's order as if it didn't exist.
@@ -328,7 +328,7 @@ In the Python SDK, server code publishes a change with `await ctx.notify_resourc
 
 The shop's stock policy says a negative count means a recount is due, and KG-1018 has a negative count in the `south` warehouse. To show a change within one process, the example keeps the counts in the server's memory, standing in for the shop's stock system. It publishes each product's counts as `shop://stock/{sku}`, and it adds a tool, `set_on_hand`, that a warehouse's host would call after a recount. The tool replaces one count and publishes an update for that product's URI. The client watches KG-1018 and KG-9999, which doesn't exist. It records a recount of another product, then one of KG-1018, and later closes the stream and opens it again.
 
-Example `stock-resource-changes` (Python 3.12.15 · anyio 4.16.0 · cryptography 50.0.2 · httpx2 2.16.2 · jsonschema 4.26.0 · mcp 2.3.0 · mcp-types 2.3.0 · pydantic 2.14.4 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.19:
+Example `stock-resource-changes` (Python 3.12.15 · anyio 4.16.0 · cryptography 50.0.2 · httpx2 2.16.2 · jsonschema 4.26.0 · mcp 2.3.0 · mcp-types 2.3.0 · pydantic 2.14.4 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.20:
 
 ```python
 """Watches two products with subscriptions/listen, records recounts while a stream is open and while it is closed, and re-reads after each.
@@ -421,7 +421,7 @@ The support team reviews each refund request against the refund policy, which sa
 
 Filling the prompt in for order O-1145, whose customer asks for €343.49, shows the messages a model would receive. Three bad calls follow: a path where an order ID belongs, a missing argument and a misspelled prompt name.
 
-Example `refund-review-prompt` (Python 3.12.15 · cryptography 50.0.2 · httpx2 2.16.2 · mcp 2.3.0 · mcp-types 2.3.0 · pydantic 2.14.4 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.19:
+Example `refund-review-prompt` (Python 3.12.15 · cryptography 50.0.2 · httpx2 2.16.2 · mcp 2.3.0 · mcp-types 2.3.0 · pydantic 2.14.4 · starlette 1.10.0 · uvicorn 0.54.0), passing in Edition 2026.11.20:
 
 ```python
 """Packages a refund review as a prompt, with the refund policy embedded, the order quoted and the arguments checked first.
