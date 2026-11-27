@@ -3,13 +3,13 @@ title: "Language Models from the Ground Up"
 chapter: "Inside an open model"
 chapter_id: inside-an-open-model
 book: language-models-from-the-ground-up
-edition: 2026.11.20
+edition: 2026.11.21
 verified: 2026-11-22
-edition_code: WEC8-JP3F
+edition_code: QCZ3-6KZE
 canonical: https://rollingedition.com/language-models-from-the-ground-up/inside-an-open-model
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“Inside an open model,” chapter 10 of Language Models from the Ground Up, Edition 2026.11.20, examples passed Nov 22, 2026. By Rolling Edition, https://rollingedition.com/language-models-from-the-ground-up/inside-an-open-model. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Inside an open model,” chapter 10 of Language Models from the Ground Up, Edition 2026.11.21, examples passed Nov 22, 2026. By Rolling Edition, https://rollingedition.com/language-models-from-the-ground-up/inside-an-open-model. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Inside an open model
 
@@ -25,7 +25,7 @@ The parts are familiar, so the first question is where the parameters sit. [Chap
 
 Run the same count on SmolLM2's recorded weights, and watch which part now holds the most:
 
-Example `open-model-parameters` (Python 3.12.15), passing in Edition 2026.11.20:
+Example `open-model-parameters` (Python 3.12.15), passing in Edition 2026.11.21:
 
 ```python
 """Counts SmolLM2-360M's recorded weights by part, with the embedding table shared with the output counted once.
@@ -90,7 +90,7 @@ SmolLM2 comes in three sizes, each built from the same parts, and their configur
 
 Count all three sizes from their recorded configurations, and check the 360M count against the weights the first recording saved:
 
-Example `open-model-family` (Python 3.12.15), passing in Edition 2026.11.20:
+Example `open-model-family` (Python 3.12.15), passing in Edition 2026.11.21:
 
 ```python
 """Counts all three SmolLM2 sizes from their recorded configurations, part by part, and checks the 360M model's count
@@ -161,7 +161,7 @@ counting a key and a value per layer, and two bytes per number.
 
 Budgeting needs, for each size, the weights, the cache per token and the cache for the longest text the models are set up for, 8,192 tokens, with and without grouped keys and values:
 
-Example `open-model-memory` (Python 3.12.15), passing in Edition 2026.11.20:
+Example `open-model-memory` (Python 3.12.15), passing in Edition 2026.11.21:
 
 ```python
 """Works out each size's weights and key and value cache, with and without grouped keys and values, in decimal gigabytes
@@ -210,9 +210,9 @@ For the smallest size, grouping decides whether one long text's cache outgrows t
 
 *Figure 10.1. SmolLM2-135M's key and value cache against text length, with and without grouping, beside its weights' memory.*
 
-![Without grouping, the smallest model's cache passes its weights part way through the longest text; grouped, it stays under them](https://rollingedition.ai/books/language-models-from-the-ground-up/2026.11.20/figures/kv-cache-grows.svg)
+![Without grouping, the smallest model's cache passes its weights part way through the longest text; grouped, it stays under them](https://rollingedition.ai/books/language-models-from-the-ground-up/2026.11.21/figures/kv-cache-grows.svg)
 
-Example `figure-kv-cache-grows` (Python 3.12.15 · matplotlib 3.11.2 · numpy 2.5.5), passing in Edition 2026.11.20:
+Example `figure-kv-cache-grows` (Python 3.12.15 · matplotlib 3.11.2 · numpy 2.5.5), passing in Edition 2026.11.21:
 
 ```python
 """Draws SmolLM2-135M's key and value cache against text length, with and without grouped keys and values, beside its
@@ -274,7 +274,7 @@ Each model scores the same events. For a name, the store's model starts from `<s
 
 Which model scores the store's names better per word, and by how much? Decide before reading on. Then compute the store's model's scores in NumPy, read SmolLM2's from the recording, and compare them per token and per word:
 
-Example `open-model-on-the-store` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1), passing in Edition 2026.11.20:
+Example `open-model-on-the-store` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1), passing in Edition 2026.11.21:
 
 ```python
 """Scores the store's model and SmolLM2-360M on the same names and the same descriptions, per word, the unit the two share.
@@ -346,7 +346,7 @@ The lesson isn't that small models are better. A model predicts best the kind of
 
 Look at each head's recorded average weight on the previous token and on the first token, over the first 50 of the 446 products scored above, each text a name, a newline and its description. The even spread is averaged the same way, so the two can be set side by side:
 
-Example `open-model-heads` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1 · tokenizers 0.23.3), passing in Edition 2026.11.20:
+Example `open-model-heads` (Python 3.12.15 · numpy 2.5.5 · pandas 3.1.1 · tokenizers 0.23.3), passing in Edition 2026.11.21:
 
 ```python
 """Reads SmolLM2's recorded head averages over the recorded texts, and compares them with an even spread averaged the same way.
@@ -404,9 +404,9 @@ In 21 of 28 layers past the fourth, most heads put more than half their weight o
 
 *Figure 10.2. Each head's average weight on the first token, by layer, against the even spread.*
 
-![Heads in the first four layers put little weight on the first token; from layer 5 on, most heads in most layers put more than half there](https://rollingedition.ai/books/language-models-from-the-ground-up/2026.11.20/figures/first-token-sinks.svg)
+![Heads in the first four layers put little weight on the first token; from layer 5 on, most heads in most layers put more than half there](https://rollingedition.ai/books/language-models-from-the-ground-up/2026.11.21/figures/first-token-sinks.svg)
 
-Example `figure-first-token-sinks` (Python 3.12.15 · matplotlib 3.11.2 · numpy 2.5.5 · pandas 3.1.1 · tokenizers 0.23.3), passing in Edition 2026.11.20:
+Example `figure-first-token-sinks` (Python 3.12.15 · matplotlib 3.11.2 · numpy 2.5.5 · pandas 3.1.1 · tokenizers 0.23.3), passing in Edition 2026.11.21:
 
 ```python
 """Draws each of SmolLM2's 480 recorded heads by its layer: its average weight on the first token, with the even spread as
@@ -467,7 +467,7 @@ figure: figures/first-token-sinks.svg
 
 Check SmolLM2's recorded probabilities of `cover` and `set` at one point in the description of `double chaise patio furniture cover`, after `this outdoor patio furniture`, with the name as sold, without `cover`, and ending in `set`:
 
-Example `open-model-copying` (Python 3.12.15), passing in Edition 2026.11.20:
+Example `open-model-copying` (Python 3.12.15), passing in Edition 2026.11.21:
 
 ```python
 """Prints SmolLM2's recorded probabilities of cover and set after the same words of a description, under three versions of the name.
@@ -505,7 +505,7 @@ The search box is where the store's text matters most. [Chapter 8](#autocomplete
 
 Here are SmolLM2's three likeliest next tokens after the same five prefixes, each given with nothing before it, the way the store's model got them:
 
-Example `open-model-autocomplete` (Python 3.12.15), passing in Edition 2026.11.20:
+Example `open-model-autocomplete` (Python 3.12.15), passing in Edition 2026.11.21:
 
 ```python
 """Prints SmolLM2's three likeliest next tokens after five search-box prefixes, and its probability of stool after outdoor bar.
