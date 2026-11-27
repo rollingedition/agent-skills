@@ -1,7 +1,7 @@
 {
   "name": "observability-for-llm-applications",
   "displayName": "Observability for LLM Applications",
-  "version": "2026.11.2",
+  "version": "2026.11.3",
   "description": "How to find where an LLM application's time, tokens and money went, and which step failed: GenAI conventions, traces across processes, a backend, cost, latency, failures, alerts, regressions, sampling and privacy, worked on a personal assistant's back end over MASSIVE's English utterances, with its own tools, retrieval and an MCP server.",
   "author": {
     "name": "Rolling Edition",

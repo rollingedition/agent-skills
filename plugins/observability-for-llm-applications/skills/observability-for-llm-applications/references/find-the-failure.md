@@ -3,13 +3,13 @@ title: "Observability for LLM Applications"
 chapter: "Find the step that failed"
 chapter_id: find-the-failure
 book: observability-for-llm-applications
-edition: 2026.11.2
+edition: 2026.11.3
 verified: 2026-11-23
-edition_code: W9DX-M10H
+edition_code: 9P10-Q8SD
 canonical: https://rollingedition.com/observability-for-llm-applications/find-the-failure
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“Find the step that failed,” chapter 8 of Observability for LLM Applications, Edition 2026.11.2, examples passed Nov 23, 2026. By Rolling Edition, https://rollingedition.com/observability-for-llm-applications/find-the-failure. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Find the step that failed,” chapter 8 of Observability for LLM Applications, Edition 2026.11.3, examples passed Nov 23, 2026. By Rolling Edition, https://rollingedition.com/observability-for-llm-applications/find-the-failure. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Find the step that failed
 
@@ -33,7 +33,7 @@ The registry offers few values to choose from. Its fallback is `_OTHER`, and it 
 
 An exception is recorded apart from the status. When the OpenTelemetry Python SDK, 1.45.2 in this book, records an exception, it adds an `exception` event to the span and leaves the status unset. The two helpers that wrap a span, `start_as_current_span` and `use_span`, are the exception to that: when an exception escapes them, they also set the status to ERROR by default. The recording-errors page asks for a different place: it says an exception that fails an operation should be recorded as a log record. We recommend keeping the SDK's event while the receiver holds spans. Every query in this chapter reads spans, and the counts depend on the status. A deployment with a log pipeline can take the other route, as long as the status and `error.type` still reach the spans.
 
-Example `error-status-by-step` (Python 3.13.16 · bm25s 0.3.16 · mcp 2.3.0 · numpy 2.5.5 · opentelemetry-api 1.45.2 · opentelemetry-exporter-http-transport 0.66b2 · opentelemetry-exporter-otlp-common 0.66b2 · opentelemetry-exporter-otlp-proto-common 1.45.2 · opentelemetry-exporter-otlp-proto-http 1.45.2 · opentelemetry-instrumentation 0.66b2 · opentelemetry-instrumentation-genai-openai 1.3b0 · opentelemetry-proto 1.45.2 · opentelemetry-sdk 1.45.2 · opentelemetry-semantic-conventions 0.66b2 · opentelemetry-util-genai 1.3b0 · pydantic 2.14.4), passing in Edition 2026.11.2:
+Example `error-status-by-step` (Python 3.13.16 · bm25s 0.3.16 · mcp 2.3.0 · numpy 2.5.5 · opentelemetry-api 1.45.2 · opentelemetry-exporter-http-transport 0.66b2 · opentelemetry-exporter-otlp-common 0.66b2 · opentelemetry-exporter-otlp-proto-common 1.45.2 · opentelemetry-exporter-otlp-proto-http 1.45.2 · opentelemetry-instrumentation 0.66b2 · opentelemetry-instrumentation-genai-openai 1.3b0 · opentelemetry-proto 1.45.2 · opentelemetry-sdk 1.45.2 · opentelemetry-semantic-conventions 0.66b2 · opentelemetry-util-genai 1.3b0 · pydantic 2.14.4), passing in Edition 2026.11.3:
 
 ```python
 """Which spans end with ERROR, and what error.type each carries, on the incident day (injected, labelled) and on baseline
@@ -86,7 +86,7 @@ The status rule in [the first section](#how-a-span-records-failure) catches a fa
 
 Two facts about this runtime shape the check. First, it never reports `tool_calls`. A model's tool call comes back as text inside the reply, and the finish reason stays `stop`, so the finish reason cannot show a tool call. The next section deals with that case. Second, the answer step has a cap of 160 tokens. The cap is the same in every release and recording. It was set once, before any recording this book reads, and no recording was edited to produce a cut.
 
-Example `truncated-replies` (Python 3.13.16 · bm25s 0.3.16 · mcp 2.3.0 · numpy 2.5.5 · opentelemetry-api 1.45.2 · opentelemetry-exporter-http-transport 0.66b2 · opentelemetry-exporter-otlp-common 0.66b2 · opentelemetry-exporter-otlp-proto-common 1.45.2 · opentelemetry-exporter-otlp-proto-http 1.45.2 · opentelemetry-instrumentation 0.66b2 · opentelemetry-instrumentation-genai-openai 1.3b0 · opentelemetry-proto 1.45.2 · opentelemetry-sdk 1.45.2 · opentelemetry-semantic-conventions 0.66b2 · opentelemetry-util-genai 1.3b0 · pydantic 2.14.4), passing in Edition 2026.11.2:
+Example `truncated-replies` (Python 3.13.16 · bm25s 0.3.16 · mcp 2.3.0 · numpy 2.5.5 · opentelemetry-api 1.45.2 · opentelemetry-exporter-http-transport 0.66b2 · opentelemetry-exporter-otlp-common 0.66b2 · opentelemetry-exporter-otlp-proto-common 1.45.2 · opentelemetry-exporter-otlp-proto-http 1.45.2 · opentelemetry-instrumentation 0.66b2 · opentelemetry-instrumentation-genai-openai 1.3b0 · opentelemetry-proto 1.45.2 · opentelemetry-sdk 1.45.2 · opentelemetry-semantic-conventions 0.66b2 · opentelemetry-util-genai 1.3b0 · pydantic 2.14.4), passing in Edition 2026.11.3:
 
 ```python
 """Which model replies the runtime cut at its token cap, read from the finish reason the runtime recorded for each
@@ -155,7 +155,7 @@ When the model wants a tool, it writes a `<tool_call>` block into its reply, and
 
 A different failure reaches the tool itself. A call can parse and still fail the argument model of its tool. That is not a malformed reply. The tool attempt ends ERROR, with `error.type` set to the class `ValidationError`, and [the query section](#querying-each-failure-mode) counts those among the tool attempts.
 
-Example `malformed-tool-calls` (Python 3.13.16 · bm25s 0.3.16 · mcp 2.3.0 · numpy 2.5.5 · opentelemetry-api 1.45.2 · opentelemetry-exporter-http-transport 0.66b2 · opentelemetry-exporter-otlp-common 0.66b2 · opentelemetry-exporter-otlp-proto-common 1.45.2 · opentelemetry-exporter-otlp-proto-http 1.45.2 · opentelemetry-instrumentation 0.66b2 · opentelemetry-instrumentation-genai-openai 1.3b0 · opentelemetry-proto 1.45.2 · opentelemetry-sdk 1.45.2 · opentelemetry-semantic-conventions 0.66b2 · opentelemetry-util-genai 1.3b0 · pydantic 2.14.4), passing in Edition 2026.11.2:
+Example `malformed-tool-calls` (Python 3.13.16 · bm25s 0.3.16 · mcp 2.3.0 · numpy 2.5.5 · opentelemetry-api 1.45.2 · opentelemetry-exporter-http-transport 0.66b2 · opentelemetry-exporter-otlp-common 0.66b2 · opentelemetry-exporter-otlp-proto-common 1.45.2 · opentelemetry-exporter-otlp-proto-http 1.45.2 · opentelemetry-instrumentation 0.66b2 · opentelemetry-instrumentation-genai-openai 1.3b0 · opentelemetry-proto 1.45.2 · opentelemetry-sdk 1.45.2 · opentelemetry-semantic-conventions 0.66b2 · opentelemetry-util-genai 1.3b0 · pydantic 2.14.4), passing in Edition 2026.11.3:
 
 ```python
 """Which answer replies carry a tool call the parser cannot read, on baseline day 1 (the 4B) and the model swap (the 0.6B).
@@ -241,7 +241,7 @@ The status rule in [the first section](#how-a-span-records-failure) catches a fa
 
 A retry is another attempt at a failed call, recorded as its own span. We recommend one span per attempt, and we record each attempt of a tool call as its own `execute_tool` span, with an `ambrewick.attempt` number. A failed attempt is therefore an ERROR span, and the call's success appears on the attempt that succeeded. No span describes the whole call. [Chapter 4's choice](#errors-across-the-boundary) gives the reason, and the first attempt's timeout is one of the failures the user's message met, so it counts.
 
-Example `retries-under-incident` (Python 3.13.16 · bm25s 0.3.16 · mcp 2.3.0 · numpy 2.5.5 · opentelemetry-api 1.45.2 · opentelemetry-exporter-http-transport 0.66b2 · opentelemetry-exporter-otlp-common 0.66b2 · opentelemetry-exporter-otlp-proto-common 1.45.2 · opentelemetry-exporter-otlp-proto-http 1.45.2 · opentelemetry-instrumentation 0.66b2 · opentelemetry-instrumentation-genai-openai 1.3b0 · opentelemetry-proto 1.45.2 · opentelemetry-sdk 1.45.2 · opentelemetry-semantic-conventions 0.66b2 · opentelemetry-util-genai 1.3b0 · pydantic 2.14.4), passing in Edition 2026.11.2:
+Example `retries-under-incident` (Python 3.13.16 · bm25s 0.3.16 · mcp 2.3.0 · numpy 2.5.5 · opentelemetry-api 1.45.2 · opentelemetry-exporter-http-transport 0.66b2 · opentelemetry-exporter-otlp-common 0.66b2 · opentelemetry-exporter-otlp-proto-common 1.45.2 · opentelemetry-exporter-otlp-proto-http 1.45.2 · opentelemetry-instrumentation 0.66b2 · opentelemetry-instrumentation-genai-openai 1.3b0 · opentelemetry-proto 1.45.2 · opentelemetry-sdk 1.45.2 · opentelemetry-semantic-conventions 0.66b2 · opentelemetry-util-genai 1.3b0 · pydantic 2.14.4), passing in Edition 2026.11.3:
 
 ```python
 """What each injected window does to the calls it covers, on the incident day, run live so the contacts server applies its
@@ -343,7 +343,7 @@ The fallback reply is defined in [chapter 1](#where-the-time-went-in-twenty-mess
 
 The dev day shows the case in small. Of its 20 messages, 5 were routed wrong, and 3 of those got the fallback reply for a scenario that needed a tool or an article.
 
-Example `wrong-routes-by-label` (Python 3.13.16 · bm25s 0.3.16 · mcp 2.3.0 · numpy 2.5.5 · opentelemetry-api 1.45.2 · opentelemetry-exporter-http-transport 0.66b2 · opentelemetry-exporter-otlp-common 0.66b2 · opentelemetry-exporter-otlp-proto-common 1.45.2 · opentelemetry-exporter-otlp-proto-http 1.45.2 · opentelemetry-instrumentation 0.66b2 · opentelemetry-instrumentation-genai-openai 1.3b0 · opentelemetry-proto 1.45.2 · opentelemetry-sdk 1.45.2 · opentelemetry-semantic-conventions 0.66b2 · opentelemetry-util-genai 1.3b0 · pydantic 2.14.4), passing in Edition 2026.11.2:
+Example `wrong-routes-by-label` (Python 3.13.16 · bm25s 0.3.16 · mcp 2.3.0 · numpy 2.5.5 · opentelemetry-api 1.45.2 · opentelemetry-exporter-http-transport 0.66b2 · opentelemetry-exporter-otlp-common 0.66b2 · opentelemetry-exporter-otlp-proto-common 1.45.2 · opentelemetry-exporter-otlp-proto-http 1.45.2 · opentelemetry-instrumentation 0.66b2 · opentelemetry-instrumentation-genai-openai 1.3b0 · opentelemetry-proto 1.45.2 · opentelemetry-sdk 1.45.2 · opentelemetry-semantic-conventions 0.66b2 · opentelemetry-util-genai 1.3b0 · pydantic 2.14.4), passing in Edition 2026.11.3:
 
 ```python
 """How often the router chose a route other than the scenario table's, on baseline day 1 (the 4B), the same messages under
@@ -431,7 +431,7 @@ The fallback scenarios show the opposite error. They went to a tool route 11 tim
 
 The model-swap release routed 83 of 200 messages wrong, and 68 of those were fallback replies to scenarios that needed a tool or an article. The two releases answer the same 200 messages. Its prompt also carries `/no_think`, so the difference from the 4B is the smaller model and the suffix together.
 
-Example `figure-failure-modes-by-route` (Python 3.13.16 · bm25s 0.3.16 · matplotlib 3.11.2 · mcp 2.3.0 · numpy 2.5.5 · opentelemetry-api 1.45.2 · opentelemetry-exporter-http-transport 0.66b2 · opentelemetry-exporter-otlp-common 0.66b2 · opentelemetry-exporter-otlp-proto-common 1.45.2 · opentelemetry-exporter-otlp-proto-http 1.45.2 · opentelemetry-instrumentation 0.66b2 · opentelemetry-instrumentation-genai-openai 1.3b0 · opentelemetry-proto 1.45.2 · opentelemetry-sdk 1.45.2 · opentelemetry-semantic-conventions 0.66b2 · opentelemetry-util-genai 1.3b0 · pydantic 2.14.4), passing in Edition 2026.11.2:
+Example `figure-failure-modes-by-route` (Python 3.13.16 · bm25s 0.3.16 · matplotlib 3.11.2 · mcp 2.3.0 · numpy 2.5.5 · opentelemetry-api 1.45.2 · opentelemetry-exporter-http-transport 0.66b2 · opentelemetry-exporter-otlp-common 0.66b2 · opentelemetry-exporter-otlp-proto-common 1.45.2 · opentelemetry-exporter-otlp-proto-http 1.45.2 · opentelemetry-instrumentation 0.66b2 · opentelemetry-instrumentation-genai-openai 1.3b0 · opentelemetry-proto 1.45.2 · opentelemetry-sdk 1.45.2 · opentelemetry-semantic-conventions 0.66b2 · opentelemetry-util-genai 1.3b0 · pydantic 2.14.4), passing in Edition 2026.11.3:
 
 ```python
 """Draw, for each scenario route on baseline day 1, how many of its messages the router sent right, to another tool route,
@@ -515,7 +515,7 @@ Figure 8.1 draws the same messages by route. Each bar is an expected route from 
 
 *Figure 8.1. Each route's messages on baseline day 1: routed right, wrong to a tool route, or wrong to the fallback reply.*
 
-![Horizontal bars for the seven routes on baseline day 1: most messages are routed right, and most wrong routes sit in the calendar, fallback and messages bars, with the fallback scenarios' misroutes going to tool routes](https://rollingedition.ai/books/observability-for-llm-applications/2026.11.2/figures/failure-modes-by-route.svg)
+![Horizontal bars for the seven routes on baseline day 1: most messages are routed right, and most wrong routes sit in the calendar, fallback and messages bars, with the fallback scenarios' misroutes going to tool routes](https://rollingedition.ai/books/observability-for-llm-applications/2026.11.3/figures/failure-modes-by-route.svg)
 
 **Working rule:** Check each route against the scenario table on the trace, count fallback replies to other scenarios apart from the other wrong routes, and print every rate with its interval. Compare two releases only on the same messages, and name any suffix or prompt change beside the comparison.
 
@@ -523,7 +523,7 @@ Figure 8.1 draws the same messages by route. Each bar is an expected route from 
 
 Each failure mode gets one query over the receiver's rows, and the receiver keeps each day in its own file. The baseline and the incident day are kept apart, so an injected row never sits in a real count. [The receiver](#the-book-receiver) holds the same rows the assistant's export writes, as chapter 5 shows.
 
-Example `failure-modes-query` (Python 3.13.16 · bm25s 0.3.16 · duckdb 2.0.1 · mcp 2.3.0 · numpy 2.5.5 · opentelemetry-api 1.45.2 · opentelemetry-exporter-http-transport 0.66b2 · opentelemetry-exporter-otlp-common 0.66b2 · opentelemetry-exporter-otlp-proto-common 1.45.2 · opentelemetry-exporter-otlp-proto-http 1.45.2 · opentelemetry-instrumentation 0.66b2 · opentelemetry-instrumentation-genai-openai 1.3b0 · opentelemetry-proto 1.45.2 · opentelemetry-sdk 1.45.2 · opentelemetry-semantic-conventions 0.66b2 · opentelemetry-util-genai 1.3b0 · pydantic 2.14.4), passing in Edition 2026.11.2:
+Example `failure-modes-query` (Python 3.13.16 · bm25s 0.3.16 · duckdb 2.0.1 · mcp 2.3.0 · numpy 2.5.5 · opentelemetry-api 1.45.2 · opentelemetry-exporter-http-transport 0.66b2 · opentelemetry-exporter-otlp-common 0.66b2 · opentelemetry-exporter-otlp-proto-common 1.45.2 · opentelemetry-exporter-otlp-proto-http 1.45.2 · opentelemetry-instrumentation 0.66b2 · opentelemetry-instrumentation-genai-openai 1.3b0 · opentelemetry-proto 1.45.2 · opentelemetry-sdk 1.45.2 · opentelemetry-semantic-conventions 0.66b2 · opentelemetry-util-genai 1.3b0 · pydantic 2.14.4), passing in Edition 2026.11.3:
 
 ```python
 """One query per failure mode over the stored rows: baseline day 1 (real) and the incident day (injected, labelled), each
@@ -607,7 +607,7 @@ On the incident day, the same tool query finds the injected attempts: 4 timeouts
 
 Production will not look like the incident day. The faults here are placed by the case, so each one can be matched to a window afterwards. A real fault has no label. A count by window is then a count of times that someone chose after the fact, and it is only as good as the record of the incident's start and end. Keep that record next to the counts, as the case's incidents file does, and say which counts came from it.
 
-Other libraries will set status their own way. A client span can read ERROR with no `error.type`, as the MCP SDK's span does for a timeout in [the first table](#how-a-span-records-failure). Count failures by status first, and treat `error.type` as a label added to each count, not as a condition for being one. Retries inside a client library need care too. The openai client at 3.57.0 retries inside one call by default (`max_retries`), so instrumentation around that call writes one span, and the refusals it retried never become spans, so the span rule cannot count them. To see them, set `max_retries=0` and retry in your own code, as this book does.
+Other libraries will set status their own way. A client span can read ERROR with no `error.type`, as the MCP SDK's span does for a timeout in [the first table](#how-a-span-records-failure). Count failures by status first, and treat `error.type` as a label added to each count, not as a condition for being one. Retries inside a client library need care too. The openai client at 3.58.0 retries inside one call by default (`max_retries`), so instrumentation around that call writes one span, and the refusals it retried never become spans, so the span rule cannot count them. To see them, set `max_retries=0` and retry in your own code, as this book does.
 
 Retries in your own code need attributes of their own. The HTTP conventions define `http.request.resend_count` for resent HTTP requests ([HTTP spans](https://raw.githubusercontent.com/open-telemetry/semantic-conventions/v1.45.0/docs/http/http-spans.md), v1.45.0). That attribute does not describe an MCP call, so this book's retry carries `ambrewick.attempt`. Choose an attribute that names the attempt in whatever protocol your call uses.
 

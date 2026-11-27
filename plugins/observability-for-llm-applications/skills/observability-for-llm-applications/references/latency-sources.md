@@ -3,13 +3,13 @@ title: "Observability for LLM Applications"
 chapter: "Find where the latency comes from"
 chapter_id: latency-sources
 book: observability-for-llm-applications
-edition: 2026.11.2
+edition: 2026.11.3
 verified: 2026-11-23
-edition_code: W9DX-M10H
+edition_code: 9P10-Q8SD
 canonical: https://rollingedition.com/observability-for-llm-applications/latency-sources
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“Find where the latency comes from,” chapter 7 of Observability for LLM Applications, Edition 2026.11.2, examples passed Nov 23, 2026. By Rolling Edition, https://rollingedition.com/observability-for-llm-applications/latency-sources. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Find where the latency comes from,” chapter 7 of Observability for LLM Applications, Edition 2026.11.3, examples passed Nov 23, 2026. By Rolling Edition, https://rollingedition.com/observability-for-llm-applications/latency-sources. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Find where the latency comes from
 
@@ -23,7 +23,7 @@ The chapter builds the chain of calls that sets a message's end, the split of ea
 
 A message's trace is a tree of timed spans, and the root span ends when the reply goes out. Most spans sit inside the root, and most of them do not set that end. To find the ones that do, walk back from the root's end: take the child that ends last, then the child that ends last before that child starts, and keep going until the walk reaches the root's start. The critical path is the chain of spans that sets a message's end time; shortening any other span doesn't end the message sooner. Shorten a span on the chain and the message gets shorter, until another chain becomes the longer one.
 
-Example `critical-path-one-message` (Python 3.13.16 · bm25s 0.3.16 · mcp 2.3.0 · numpy 2.5.5 · opentelemetry-api 1.45.2 · opentelemetry-exporter-http-transport 0.66b2 · opentelemetry-exporter-otlp-common 0.66b2 · opentelemetry-exporter-otlp-proto-common 1.45.2 · opentelemetry-exporter-otlp-proto-http 1.45.2 · opentelemetry-instrumentation 0.66b2 · opentelemetry-instrumentation-genai-openai 1.3b0 · opentelemetry-proto 1.45.2 · opentelemetry-sdk 1.45.2 · opentelemetry-semantic-conventions 0.66b2 · opentelemetry-util-genai 1.3b0 · pydantic 2.14.4), passing in Edition 2026.11.2:
+Example `critical-path-one-message` (Python 3.13.16 · bm25s 0.3.16 · mcp 2.3.0 · numpy 2.5.5 · opentelemetry-api 1.45.2 · opentelemetry-exporter-http-transport 0.66b2 · opentelemetry-exporter-otlp-common 0.66b2 · opentelemetry-exporter-otlp-proto-common 1.45.2 · opentelemetry-exporter-otlp-proto-http 1.45.2 · opentelemetry-instrumentation 0.66b2 · opentelemetry-instrumentation-genai-openai 1.3b0 · opentelemetry-proto 1.45.2 · opentelemetry-sdk 1.45.2 · opentelemetry-semantic-conventions 0.66b2 · opentelemetry-util-genai 1.3b0 · pydantic 2.14.4), passing in Edition 2026.11.3:
 
 ```python
 """Replay the slowest message of baseline day 1 and list the chain of spans that sets its end time. The replay runs the
@@ -113,7 +113,7 @@ The numbers in this section come from the recorder, not from the metric, which t
 
 Each median in this section comes with a 95% interval, which [tail percentiles with intervals](#tail-percentiles-with-intervals) defines.
 
-Example `time-to-first-chunk-by-route` (Python 3.13.16 · bm25s 0.3.16 · mcp 2.3.0 · numpy 2.5.5 · opentelemetry-api 1.45.2 · opentelemetry-exporter-http-transport 0.66b2 · opentelemetry-exporter-otlp-common 0.66b2 · opentelemetry-exporter-otlp-proto-common 1.45.2 · opentelemetry-exporter-otlp-proto-http 1.45.2 · opentelemetry-instrumentation 0.66b2 · opentelemetry-instrumentation-genai-openai 1.3b0 · opentelemetry-proto 1.45.2 · opentelemetry-sdk 1.45.2 · opentelemetry-semantic-conventions 0.66b2 · opentelemetry-util-genai 1.3b0 · pydantic 2.14.4), passing in Edition 2026.11.2:
+Example `time-to-first-chunk-by-route` (Python 3.13.16 · bm25s 0.3.16 · mcp 2.3.0 · numpy 2.5.5 · opentelemetry-api 1.45.2 · opentelemetry-exporter-http-transport 0.66b2 · opentelemetry-exporter-otlp-common 0.66b2 · opentelemetry-exporter-otlp-proto-common 1.45.2 · opentelemetry-exporter-otlp-proto-http 1.45.2 · opentelemetry-instrumentation 0.66b2 · opentelemetry-instrumentation-genai-openai 1.3b0 · opentelemetry-proto 1.45.2 · opentelemetry-sdk 1.45.2 · opentelemetry-semantic-conventions 0.66b2 · opentelemetry-util-genai 1.3b0 · pydantic 2.14.4), passing in Edition 2026.11.3:
 
 ```python
 """Take each message's last answer call on baseline day 1, the one that writes the reply the user reads, and compare its time
@@ -216,7 +216,7 @@ The counts in this section need no new definition. [Chapter 6](#three-token-coun
 
 The counters come from llama-cpp-python, which exposes llama.cpp's counters for each context: the prompt tokens evaluated and the time they took, and the tokens generated and the time they took. The counters only add up, so the recorder takes the difference before and after each call. Its four warm-up calls, made before each process's first recorded message, are outside the split.
 
-Example `prefill-generation-split` (Python 3.13.16 · bm25s 0.3.16 · mcp 2.3.0 · numpy 2.5.5 · opentelemetry-api 1.45.2 · opentelemetry-exporter-http-transport 0.66b2 · opentelemetry-exporter-otlp-common 0.66b2 · opentelemetry-exporter-otlp-proto-common 1.45.2 · opentelemetry-exporter-otlp-proto-http 1.45.2 · opentelemetry-instrumentation 0.66b2 · opentelemetry-instrumentation-genai-openai 1.3b0 · opentelemetry-proto 1.45.2 · opentelemetry-sdk 1.45.2 · opentelemetry-semantic-conventions 0.66b2 · opentelemetry-util-genai 1.3b0 · pydantic 2.14.4), passing in Edition 2026.11.2:
+Example `prefill-generation-split` (Python 3.13.16 · bm25s 0.3.16 · mcp 2.3.0 · numpy 2.5.5 · opentelemetry-api 1.45.2 · opentelemetry-exporter-http-transport 0.66b2 · opentelemetry-exporter-otlp-common 0.66b2 · opentelemetry-exporter-otlp-proto-common 1.45.2 · opentelemetry-exporter-otlp-proto-http 1.45.2 · opentelemetry-instrumentation 0.66b2 · opentelemetry-instrumentation-genai-openai 1.3b0 · opentelemetry-proto 1.45.2 · opentelemetry-sdk 1.45.2 · opentelemetry-semantic-conventions 0.66b2 · opentelemetry-util-genai 1.3b0 · pydantic 2.14.4), passing in Edition 2026.11.3:
 
 ```python
 """Split the recorded compute of each model call on baseline day 1 into prefill (the prompt the model read) and generation
@@ -272,7 +272,7 @@ Retrieval puts articles into the answer call's prompt, so a release that retriev
 
 The comparison uses the same messages under both releases, the paired 60: the messages of baseline day 1 that the top-8 release was also recorded on. The output's r0 is the baseline and r3 is the top-8 release. It sums each release's answer calls over those messages, and that is a sum, not a comparison with an interval. Chapter 10 pairs the same messages and gives the interval on the difference.
 
-Example `context-against-prefill` (Python 3.13.16 · bm25s 0.3.16 · mcp 2.3.0 · numpy 2.5.5 · opentelemetry-api 1.45.2 · opentelemetry-exporter-http-transport 0.66b2 · opentelemetry-exporter-otlp-common 0.66b2 · opentelemetry-exporter-otlp-proto-common 1.45.2 · opentelemetry-exporter-otlp-proto-http 1.45.2 · opentelemetry-instrumentation 0.66b2 · opentelemetry-instrumentation-genai-openai 1.3b0 · opentelemetry-proto 1.45.2 · opentelemetry-sdk 1.45.2 · opentelemetry-semantic-conventions 0.66b2 · opentelemetry-util-genai 1.3b0 · pydantic 2.14.4), passing in Edition 2026.11.2:
+Example `context-against-prefill` (Python 3.13.16 · bm25s 0.3.16 · mcp 2.3.0 · numpy 2.5.5 · opentelemetry-api 1.45.2 · opentelemetry-exporter-http-transport 0.66b2 · opentelemetry-exporter-otlp-common 0.66b2 · opentelemetry-exporter-otlp-proto-common 1.45.2 · opentelemetry-exporter-otlp-proto-http 1.45.2 · opentelemetry-instrumentation 0.66b2 · opentelemetry-instrumentation-genai-openai 1.3b0 · opentelemetry-proto 1.45.2 · opentelemetry-sdk 1.45.2 · opentelemetry-semantic-conventions 0.66b2 · opentelemetry-util-genai 1.3b0 · pydantic 2.14.4), passing in Edition 2026.11.3:
 
 ```python
 """Compare the same 60 messages under r0 (the baseline, on baseline day 1) and r3 (the top-8 release): the answer calls'
@@ -379,7 +379,7 @@ The rule has a consequence at the top of the list. On 200 values the 99th percen
 
 Predict before you run it. How many messages does a route need before its 95th percentile is anything but its slowest message? Work it from ceil(0.95 × n), then check the output.
 
-Example `percentiles-by-route` (Python 3.13.16 · bm25s 0.3.16 · mcp 2.3.0 · numpy 2.5.5 · opentelemetry-api 1.45.2 · opentelemetry-exporter-http-transport 0.66b2 · opentelemetry-exporter-otlp-common 0.66b2 · opentelemetry-exporter-otlp-proto-common 1.45.2 · opentelemetry-exporter-otlp-proto-http 1.45.2 · opentelemetry-instrumentation 0.66b2 · opentelemetry-instrumentation-genai-openai 1.3b0 · opentelemetry-proto 1.45.2 · opentelemetry-sdk 1.45.2 · opentelemetry-semantic-conventions 0.66b2 · opentelemetry-util-genai 1.3b0 · pydantic 2.14.4), passing in Edition 2026.11.2:
+Example `percentiles-by-route` (Python 3.13.16 · bm25s 0.3.16 · mcp 2.3.0 · numpy 2.5.5 · opentelemetry-api 1.45.2 · opentelemetry-exporter-http-transport 0.66b2 · opentelemetry-exporter-otlp-common 0.66b2 · opentelemetry-exporter-otlp-proto-common 1.45.2 · opentelemetry-exporter-otlp-proto-http 1.45.2 · opentelemetry-instrumentation 0.66b2 · opentelemetry-instrumentation-genai-openai 1.3b0 · opentelemetry-proto 1.45.2 · opentelemetry-sdk 1.45.2 · opentelemetry-semantic-conventions 0.66b2 · opentelemetry-util-genai 1.3b0 · pydantic 2.14.4), passing in Edition 2026.11.3:
 
 ```python
 """Print each route's median, p95 and p99 of message time on baseline day 1, every one with its message count n, and a 95%
@@ -482,7 +482,7 @@ The messages route's 95th percentile is 24,253.7 ms from 7 messages, with a 95% 
 
 The all-routes median, 8,099.3 ms, is lower than the median of every route that answered. The reason is the fallback route. 89 of the 200 messages took the fallback reply, which makes one route call and no answer call, and their median is 1,392.0 ms. The all-routes median is the middle value of all the messages, so those messages pull it down.
 
-Example `figure-latency-tail-by-route` (Python 3.13.16 · bm25s 0.3.16 · matplotlib 3.11.2 · mcp 2.3.0 · numpy 2.5.5 · opentelemetry-api 1.45.2 · opentelemetry-exporter-http-transport 0.66b2 · opentelemetry-exporter-otlp-common 0.66b2 · opentelemetry-exporter-otlp-proto-common 1.45.2 · opentelemetry-exporter-otlp-proto-http 1.45.2 · opentelemetry-instrumentation 0.66b2 · opentelemetry-instrumentation-genai-openai 1.3b0 · opentelemetry-proto 1.45.2 · opentelemetry-sdk 1.45.2 · opentelemetry-semantic-conventions 0.66b2 · opentelemetry-util-genai 1.3b0 · pydantic 2.14.4), passing in Edition 2026.11.2:
+Example `figure-latency-tail-by-route` (Python 3.13.16 · bm25s 0.3.16 · matplotlib 3.11.2 · mcp 2.3.0 · numpy 2.5.5 · opentelemetry-api 1.45.2 · opentelemetry-exporter-http-transport 0.66b2 · opentelemetry-exporter-otlp-common 0.66b2 · opentelemetry-exporter-otlp-proto-common 1.45.2 · opentelemetry-exporter-otlp-proto-http 1.45.2 · opentelemetry-instrumentation 0.66b2 · opentelemetry-instrumentation-genai-openai 1.3b0 · opentelemetry-proto 1.45.2 · opentelemetry-sdk 1.45.2 · opentelemetry-semantic-conventions 0.66b2 · opentelemetry-util-genai 1.3b0 · pydantic 2.14.4), passing in Edition 2026.11.3:
 
 ```python
 """Draw each route's median and p95 of message time on baseline day 1, with a 95% interval on the p95, so the tail's place
@@ -556,7 +556,7 @@ figure: figures/latency-tail-by-route.svg
 
 *Figure 7.1. Each route's median and 95th percentile of message time on baseline day 1, with a 95% interval on the 95th percentile.*
 
-![The answering routes' 95th percentiles have mostly overlapping intervals, and the fallback route's is far shorter](https://rollingedition.ai/books/observability-for-llm-applications/2026.11.2/figures/latency-tail-by-route.svg)
+![The answering routes' 95th percentiles have mostly overlapping intervals, and the fallback route's is far shorter](https://rollingedition.ai/books/observability-for-llm-applications/2026.11.3/figures/latency-tail-by-route.svg)
 
 Figure 7.1 draws each route's median and 95th percentile, with the interval on the 95th percentile as a bar. The top row is all routes together. Read the answering routes' bars against one another. Most of their intervals overlap, and the messages interval overlaps calendar's, as the example asserts. The 4 routes under 20 messages have bars that end at their own largest message. The fallback bar is far shorter than the rest. So the tail depends on whether the route answers, and the count decides how sure the reader can be of where a route's tail sits.
 
@@ -572,7 +572,7 @@ The same bootstrap applies to any statistic taken per message, such as the share
 
 A histogram keeps no messages, only counts. A bucket counts the values between two edges, so a percentile read from buckets is known only to within its bucket. The GenAI conventions at tag 0.1.0 say the boundaries SHOULD be these, in seconds, for their duration histograms, the agent's `gen_ai.client.invoke_agent.duration` included. The book uses them for message time, the duration this chapter measures: 0.01, 0.02, 0.04, 0.08, 0.16, 0.32, 0.64, 1.28, 2.56, 5.12, 10.24, 20.48, 40.96, 81.92. A service exports the edges its configuration sets, which may not be these.
 
-Example `bucket-edges-hide-tail` (Python 3.13.16 · bm25s 0.3.16 · mcp 2.3.0 · numpy 2.5.5 · opentelemetry-api 1.45.2 · opentelemetry-exporter-http-transport 0.66b2 · opentelemetry-exporter-otlp-common 0.66b2 · opentelemetry-exporter-otlp-proto-common 1.45.2 · opentelemetry-exporter-otlp-proto-http 1.45.2 · opentelemetry-instrumentation 0.66b2 · opentelemetry-instrumentation-genai-openai 1.3b0 · opentelemetry-proto 1.45.2 · opentelemetry-sdk 1.45.2 · opentelemetry-semantic-conventions 0.66b2 · opentelemetry-util-genai 1.3b0 · pydantic 2.14.4), passing in Edition 2026.11.2:
+Example `bucket-edges-hide-tail` (Python 3.13.16 · bm25s 0.3.16 · mcp 2.3.0 · numpy 2.5.5 · opentelemetry-api 1.45.2 · opentelemetry-exporter-http-transport 0.66b2 · opentelemetry-exporter-otlp-common 0.66b2 · opentelemetry-exporter-otlp-proto-common 1.45.2 · opentelemetry-exporter-otlp-proto-http 1.45.2 · opentelemetry-instrumentation 0.66b2 · opentelemetry-instrumentation-genai-openai 1.3b0 · opentelemetry-proto 1.45.2 · opentelemetry-sdk 1.45.2 · opentelemetry-semantic-conventions 0.66b2 · opentelemetry-util-genai 1.3b0 · pydantic 2.14.4), passing in Edition 2026.11.3:
 
 ```python
 """Count baseline day 1's message times into the buckets the GenAI conventions advise for the agent's duration histogram, then
@@ -653,7 +653,7 @@ The output counts the same messages of baseline day 1 into those buckets, estima
 
 The buckets place the 95th percentile between those edges, and no closer. The estimate spreads the messages in the bucket evenly across it. That is the rule of [Prometheus's percentile estimate from buckets](https://raw.githubusercontent.com/prometheus/prometheus/v2.53.0/promql/quantile.go), which assumes a linear distribution within a bucket. Other backends may interpolate differently, so the estimate moves when the edges move. Here the estimate is 20,019.8 ms and the nearest-rank value of the raw messages is 18,351.2 ms, so the estimate is 1,668.6 ms too high on this day.
 
-Example `figure-bucket-hides-tail` (Python 3.13.16 · bm25s 0.3.16 · matplotlib 3.11.2 · mcp 2.3.0 · numpy 2.5.5 · opentelemetry-api 1.45.2 · opentelemetry-exporter-http-transport 0.66b2 · opentelemetry-exporter-otlp-common 0.66b2 · opentelemetry-exporter-otlp-proto-common 1.45.2 · opentelemetry-exporter-otlp-proto-http 1.45.2 · opentelemetry-instrumentation 0.66b2 · opentelemetry-instrumentation-genai-openai 1.3b0 · opentelemetry-proto 1.45.2 · opentelemetry-sdk 1.45.2 · opentelemetry-semantic-conventions 0.66b2 · opentelemetry-util-genai 1.3b0 · pydantic 2.14.4), passing in Edition 2026.11.2:
+Example `figure-bucket-hides-tail` (Python 3.13.16 · bm25s 0.3.16 · matplotlib 3.11.2 · mcp 2.3.0 · numpy 2.5.5 · opentelemetry-api 1.45.2 · opentelemetry-exporter-http-transport 0.66b2 · opentelemetry-exporter-otlp-common 0.66b2 · opentelemetry-exporter-otlp-proto-common 1.45.2 · opentelemetry-exporter-otlp-proto-http 1.45.2 · opentelemetry-instrumentation 0.66b2 · opentelemetry-instrumentation-genai-openai 1.3b0 · opentelemetry-proto 1.45.2 · opentelemetry-sdk 1.45.2 · opentelemetry-semantic-conventions 0.66b2 · opentelemetry-util-genai 1.3b0 · pydantic 2.14.4), passing in Edition 2026.11.3:
 
 ```python
 """Draw baseline day 1's message times twice, on one millisecond scale: each message as a point in the upper panel, and the
@@ -726,7 +726,7 @@ figure: figures/bucket-hides-tail.svg
 
 *Figure 7.2. Baseline day 1's messages as points, and as bucket counts, with the 95th percentile as a dashed line.*
 
-![The 95th percentile falls in a bucket, and the bucket counts alone cannot say where in it the messages lie](https://rollingedition.ai/books/observability-for-llm-applications/2026.11.2/figures/bucket-hides-tail.svg)
+![The 95th percentile falls in a bucket, and the bucket counts alone cannot say where in it the messages lie](https://rollingedition.ai/books/observability-for-llm-applications/2026.11.3/figures/bucket-hides-tail.svg)
 
 Figure 7.2 draws the same messages twice on one millisecond scale. The upper panel plots each message at the share of messages at or below it, so the points climb. The dotted lines are the bucket edges, and the dashed line is the nearest-rank 95th percentile. The lower panel shows each bucket's count, drawn across the range the bucket covers. The 95th-percentile line falls inside a wide bucket, and nothing in the lower panel says where in that bucket the messages sit. That is what a bucket loses, and it is why the estimate is off.
 
@@ -738,7 +738,7 @@ A message's time is not only its own work. When a message arrives while the mode
 
 The numbers in this section are computed, not recorded. The code models one server. Its arrivals come at random, at a fixed average rate set by the load, which is a Poisson process: the gaps between arrivals are independent, with an exponential spread. Each message's service time is one of the day's recorded message times, drawn with replacement. Little's law says that the average number in a system equals its arrival rate times the average time each item spends in it, L = λW. [Little's 1961 proof](https://doi.org/10.1287/opre.9.3.383) establishes it, and [MIT's course notes on the M/M/1 queue](https://ocw.mit.edu/courses/2-854-introduction-to-manufacturing-systems-fall-2016/927056a1af54772a587fd84ad4951e71_MIT2_854F16_Mm1Queue.pdf) state it in the form used here.
 
-Example `queue-on-service-times` (Python 3.13.16 · bm25s 0.3.16 · mcp 2.3.0 · numpy 2.5.5 · opentelemetry-api 1.45.2 · opentelemetry-exporter-http-transport 0.66b2 · opentelemetry-exporter-otlp-common 0.66b2 · opentelemetry-exporter-otlp-proto-common 1.45.2 · opentelemetry-exporter-otlp-proto-http 1.45.2 · opentelemetry-instrumentation 0.66b2 · opentelemetry-instrumentation-genai-openai 1.3b0 · opentelemetry-proto 1.45.2 · opentelemetry-sdk 1.45.2 · opentelemetry-semantic-conventions 0.66b2 · opentelemetry-util-genai 1.3b0 · pydantic 2.14.4), passing in Edition 2026.11.2:
+Example `queue-on-service-times` (Python 3.13.16 · bm25s 0.3.16 · mcp 2.3.0 · numpy 2.5.5 · opentelemetry-api 1.45.2 · opentelemetry-exporter-http-transport 0.66b2 · opentelemetry-exporter-otlp-common 0.66b2 · opentelemetry-exporter-otlp-proto-common 1.45.2 · opentelemetry-exporter-otlp-proto-http 1.45.2 · opentelemetry-instrumentation 0.66b2 · opentelemetry-instrumentation-genai-openai 1.3b0 · opentelemetry-proto 1.45.2 · opentelemetry-sdk 1.45.2 · opentelemetry-semantic-conventions 0.66b2 · opentelemetry-util-genai 1.3b0 · pydantic 2.14.4), passing in Edition 2026.11.3:
 
 ```python
 """Queue baseline day 1's recorded message times behind one first-come, first-served server at three loads, with seeded Poisson
