@@ -3,13 +3,13 @@ title: "A Primer on Search Relevance"
 chapter: "Hybrid retrieval"
 chapter_id: hybrid-retrieval
 book: primer-on-search-relevance
-edition: 2026.11.13
-verified: 2026-11-22
-edition_code: AP0H-0B16
+edition: 2026.11.14
+verified: 2026-11-27
+edition_code: 46AD-BKMM
 canonical: https://rollingedition.com/primer-on-search-relevance/hybrid-retrieval
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“Hybrid retrieval,” chapter 7 of A Primer on Search Relevance, Edition 2026.11.13, examples passed Nov 22, 2026. By Rolling Edition, https://rollingedition.com/primer-on-search-relevance/hybrid-retrieval. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Hybrid retrieval,” chapter 7 of A Primer on Search Relevance, Edition 2026.11.14, examples passed Nov 27, 2026. By Rolling Edition, https://rollingedition.com/primer-on-search-relevance/hybrid-retrieval. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Hybrid retrieval
 
@@ -29,7 +29,7 @@ The store has 50 train queries for tuning and 30 test queries for reporting. Thi
 
 Score both of the store's retrievers by [nDCG@10](#score-one-ranking) on every [train query](#store-data), keeping each one's top 100.
 
-Example `bm25-semantic-wins-by-query` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.13:
+Example `bm25-semantic-wins-by-query` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.14:
 
 ```python
 """Scores BM25 and semantic retrieval on each train query and counts the queries each one wins, ties included.
@@ -92,7 +92,7 @@ If you could choose the better of the two for each query, the mean would be 0.80
 
 Next, see whether the two lists hold different products, and what share of each query's **exact** products (those the judges graded as fully matching) each list finds:
 
-Example `overlap-and-union-recall` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.13:
+Example `overlap-and-union-recall` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.14:
 
 ```python
 """Measures how much BM25's and semantic retrieval's top 10s overlap, and the share of each query's exact products
@@ -151,7 +151,7 @@ The two top 10s share 3.7 products on average, so most of each is missing from t
 
 Two train queries show the kinds of failure:
 
-Example `two-queries-two-winners` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.13:
+Example `two-queries-two-winners` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.14:
 
 ```python
 """Prints the top 5 products of BM25 and semantic retrieval for two train queries, with their judgments, and counts
@@ -232,7 +232,7 @@ Knowing [where each retriever wins](#queries-each-retriever-wins) isn't enough: 
 
 Fuse BM25 and semantic retrieval as [chapter 1](#fuse-with-rrf) did, with reciprocal rank fusion (RRF): each product scores 1 / (60 + its rank) in each ranking, summed over the two, so each ranking gets an equal vote. Then split the train queries by winner and compare fusion with semantic retrieval alone:
 
-Example `fusion-gain-by-winning-retriever` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.13:
+Example `fusion-gain-by-winning-retriever` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.14:
 
 ```python
 """Compares BM25, semantic retrieval and their RRF fusion on the train queries, then splits the queries by which
@@ -321,7 +321,7 @@ A sum needs both scores for every product it ranks. The **candidate set** for a 
 
 Start with the store's raw scores, added with α = 0.5 on the train queries, then do the same after min-max scaling, written out in the example and checked against `lib.blend.weighted_sum`:
 
-Example `raw-scores-versus-min-max` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.13:
+Example `raw-scores-versus-min-max` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.14:
 
 ```python
 """Adds BM25 and cosine scores with equal weights, raw and after min-max scaling, and checks the scaled sum against
@@ -397,9 +397,9 @@ The weight says "half each", but the ranking is mostly BM25's: the raw sum's nDC
 
 *Figure 7.1. Each retriever's scores for the candidates of laundry basket with wheels, raw and after min-max scaling.*
 
-![Raw, BM25's scores are all larger than the similarities and spread far wider; after min-max scaling, both run from 0 to 1.](https://rollingedition.ai/books/primer-on-search-relevance/2026.11.13/figures/score-scales.svg)
+![Raw, BM25's scores are all larger than the similarities and spread far wider; after min-max scaling, both run from 0 to 1.](https://rollingedition.ai/books/primer-on-search-relevance/2026.11.14/figures/score-scales.svg)
 
-Example `figure-score-scales` (Python 3.12.15 · bm25s 0.3.16 · matplotlib 3.11.2 · numpy 2.5.5 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.13:
+Example `figure-score-scales` (Python 3.12.15 · bm25s 0.3.16 · matplotlib 3.11.2 · numpy 2.5.5 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.14:
 
 ```python
 """Draws the candidates for laundry basket with wheels twice, each retriever's scores on one axis: raw, then after min-max scaling. The prose rests on the two raw ranges and the two scaled ranges printed below the chart."""
@@ -465,7 +465,7 @@ The depth of each list matters too. A product in one retriever's top 20 but not 
 
 Try six values of k on the train queries, fusing lists 100 deep. One check is planned before running: does the best k beat the default, k = 60?
 
-Example `rrf-k-on-train` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.13:
+Example `rrf-k-on-train` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.14:
 
 ```python
 """Fuses BM25 and semantic retrieval with six values of k on the train queries, and tests the best k against the
@@ -531,7 +531,7 @@ The two settings' rankings differ on only a handful of queries (wins, losses and
 
 The chapter's two [blends](#hybrid-retrieval) each take one weight, α, the share given to semantic retrieval. In the [weighted sum](#normalize-scores-before-adding), α multiplies the normalized similarity and 1 − α the normalized BM25 score. In **weighted RRF**, a product scores (1 − α) / (k + its BM25 rank) plus α / (k + its semantic rank). For both, α = 0 is BM25 alone and α = 1 is semantic retrieval alone. For RRF, α = 0.5 is [chapter 1's unweighted fusion](#fuse-with-rrf) with every score halved. Here is the arithmetic for one train query's top product, with an illustrative α = 0.75:
 
-Example `weighted-rrf-one-product` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.13:
+Example `weighted-rrf-one-product` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.14:
 
 ```python
 """Scores every candidate for one train query by weighted RRF, by hand, and checks the ranking against
@@ -587,7 +587,7 @@ Tuning tries a grid of α values on train queries and keeps the one with the bes
 
 Tune α over 0, 0.1, … 1 for the weighted sum under each of [the three normalizations](#normalize-scores-before-adding), and for weighted RRF with k = 60. Then, as tuning checks, test each normalization against min-max, and test the two blends bound for the test queries against semantic retrieval:
 
-Example `tune-blend-weights-on-train` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.13:
+Example `tune-blend-weights-on-train` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.14:
 
 ```python
 """Tunes α on the train queries for the weighted sum under three normalizations and for weighted RRF, then compares
@@ -656,9 +656,9 @@ weighted rrf gain over semantic, t-test p: 0.205
 
 *Figure 7.2. Mean nDCG@10 on the train queries for each weight alpha, with semantic retrieval alone.*
 
-![The min-max blend rises from BM25 alone to a peak above semantic retrieval alone, the dashed line, then stays a little above that line until α = 1, where they meet.](https://rollingedition.ai/books/primer-on-search-relevance/2026.11.13/figures/blend-weight-curve.svg)
+![The min-max blend rises from BM25 alone to a peak above semantic retrieval alone, the dashed line, then stays a little above that line until α = 1, where they meet.](https://rollingedition.ai/books/primer-on-search-relevance/2026.11.14/figures/blend-weight-curve.svg)
 
-Example `figure-blend-weight-curve` (Python 3.12.15 · bm25s 0.3.16 · matplotlib 3.11.2 · numpy 2.5.5 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.13:
+Example `figure-blend-weight-curve` (Python 3.12.15 · bm25s 0.3.16 · matplotlib 3.11.2 · numpy 2.5.5 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.14:
 
 ```python
 """Draws the min-max weighted sum's mean nDCG@10 on the train queries for each alpha from 0 to 1, with semantic retrieval alone as a dashed line. The prose rests on the best alpha and its nDCG@10, the nDCG@10 at each alpha, the first and last alphas above semantic retrieval alone, and the BM25-alone and semantic-alone values printed below the chart."""
@@ -740,7 +740,7 @@ The [tuned weights](#tune-blend-on-train) come from a few dozen queries, so they
 
 Resample the train queries 1000 times with a fixed seed, and count how often each α wins for both tuned blends, the weighted sum of min-max scores and weighted RRF, on the same resamples:
 
-Example `blend-weight-bootstrap` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.13:
+Example `blend-weight-bootstrap` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.14:
 
 ```python
 """Resamples the train queries with a fixed seed and counts which α wins each resample, for the weighted sum and for
@@ -802,7 +802,7 @@ Both weights stay on the side of the grid that favours semantic retrieval, apart
 
 Resampling isn't the only check. Products with equal BM25 scores need some order, and `lib.lexical` lists them by `product_id`, an order that carries no information. Descending `product_id` carries none either. The weighted sum gives tied products the same BM25 term, so their order hardly matters to it, but RRF gives them consecutive ranks, and so different scores. List BM25's ties by descending `product_id`, and tune the [best RRF k](#rrf-settings-on-train) and both weights again on the train queries:
 
-Example `tuning-with-ties-reversed` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.13:
+Example `tuning-with-ties-reversed` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.14:
 
 ```python
 """Tunes RRF's k and both blends' α again with BM25's equal scores listed in descending product_id order, to test
@@ -875,7 +875,7 @@ Only held-out queries show whether a tuned setting helps beyond the queries that
 
 On the store's train queries, the [tuned blends](#tune-blend-on-train) gained 0.013 and 0.015 over semantic retrieval, neither of them a gain the permutation test could tell from chance. Predict first: on the test queries, will the weighted sum at α = 0.7 and weighted RRF at α = 0.6 score above semantic retrieval, level with it, or below it?
 
-Example `tuned-blends-on-test` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.13:
+Example `tuned-blends-on-test` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.14:
 
 ```python
 """Chooses each blend's α on the train queries, runs both once on the test queries, and compares each with semantic
@@ -971,7 +971,7 @@ The logarithm is a saturation, like BM25's: in the authors' words, it "prevents 
 
 Expansion terms target one of BM25's failures in the store. Count, on the train queries, how many [exact](#queries-each-retriever-wins) products lack at least one of the query's words, as BM25's tokenizer sees them:
 
-Example `exact-products-missing-query-words` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.13:
+Example `exact-products-missing-query-words` (Python 3.12.15 · bm25s 0.3.16 · numpy 2.5.5 · pandas 3.1.1 · scipy 1.18.1), passing in Edition 2026.11.14:
 
 ```python
 """Counts the exact train pairs whose product lacks a word of its query, as BM25's tokenizer sees them, and counts the

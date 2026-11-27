@@ -18,10 +18,10 @@ This repository is generated from the books, so changes made here are overwritte
 | [Model Context Protocol in Practice](https://rollingedition.com/model-context-protocol-in-practice) | `model-context-protocol-in-practice` | 2026.11.20 | 71 of 71 examples pass |
 | [Observability for LLM Applications](https://rollingedition.com/observability-for-llm-applications) | `observability-for-llm-applications` | 2026.11.3 | 80 of 80 examples pass |
 | [Open Table Formats](https://rollingedition.com/open-table-formats) | `open-table-formats` | 2026.11.17 | 45 of 45 examples pass |
-| [A Primer on Search Relevance](https://rollingedition.com/primer-on-search-relevance) | `primer-on-search-relevance` | 2026.11.13 | 141 of 141 examples pass |
+| [A Primer on Search Relevance](https://rollingedition.com/primer-on-search-relevance) | `primer-on-search-relevance` | 2026.11.14 | 141 of 141 examples pass |
 | [Securing LLM Applications and Agents](https://rollingedition.com/securing-llm-applications-and-agents) | `securing-llm-applications-and-agents` | 2026.11.3 | 60 of 60 examples pass |
 | [Small Open Models](https://rollingedition.com/small-open-models) | `small-open-models` | 2026.11.16 | 42 of 42 examples pass |
-| [Time Series Forecasting](https://rollingedition.com/time-series-forecasting) | `time-series-forecasting` | 2026.11.24 | 56 of 56 examples pass |
+| [Time Series Forecasting](https://rollingedition.com/time-series-forecasting) | `time-series-forecasting` | 2026.11.25 | 56 of 56 examples pass |
 
 ## Install
 

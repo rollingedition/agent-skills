@@ -6,24 +6,24 @@ compatibility: "The book's examples ran on Python 3.12.15 and the versions its p
 metadata:
   publisher: "Rolling Edition"
   book: "A Primer on Search Relevance"
-  edition: "2026.11.13"
-  verified: "2026-11-22"
+  edition: "2026.11.14"
+  verified: "2026-11-27"
   examples: "141 of 141 examples pass"
-  edition-code: "AP0H-0B16"
+  edition-code: "46AD-BKMM"
   source: "https://rollingedition.com/primer-on-search-relevance"
 ---
 
 # A Primer on Search Relevance
 
-This agent skill is *A Primer on Search Relevance*, Edition 2026.11.13, from Rolling Edition. Examples passed Nov 22, 2026: 141 of 141 examples pass. It's built from that edition, never written separately: the procedures below come from the book's sections, and each step links to its section on rollingedition.com, whose page has the section's text and its examples, with their code and output.
+This agent skill is *A Primer on Search Relevance*, Edition 2026.11.14, from Rolling Edition. Examples passed Nov 27, 2026: 141 of 141 examples pass. It's built from that edition, never written separately: the procedures below come from the book's sections, and each step links to its section on rollingedition.com, whose page has the section's text and its examples, with their code and output.
 
 ## How to use this skill
 
 - **Pick the procedure that fits the task,** and follow its steps in order. Each step links the section it comes from: read that section before you act on it, with the Rolling Edition MCP server's `get_section` (book `primer-on-search-relevance` and the section's ID, the link's last part) or on its page, and adapt it to the project in front of you.
 - **Check against the book.** An example's section shows its code, the versions it ran on and its output. If the project uses other versions, say so before relying on a step.
 - **Use the book's terms as it defines them.** The book's Glossary has each term it defines, in the book's own sentence, with its section: https://rollingedition.com/primer-on-search-relevance/glossary. The Rolling Edition MCP server's `define` gives one with its section, its edition and the version it's true for: where the task uses one, it means that.
-- **Is this copy current?** Call `check_code` with `AP0H-0B16` on the Rolling Edition MCP server (https://rollingedition.ai/mcp), or compare the edition with the book's page: https://rollingedition.com/primer-on-search-relevance
-- **Credit the book** when you quote it or reuse its code: A Primer on Search Relevance, Edition 2026.11.13, examples passed Nov 22, 2026. By Rolling Edition, https://rollingedition.com/primer-on-search-relevance. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people.
+- **Is this copy current?** Call `check_code` with `46AD-BKMM` on the Rolling Edition MCP server (https://rollingedition.ai/mcp), or compare the edition with the book's page: https://rollingedition.com/primer-on-search-relevance
+- **Credit the book** when you quote it or reuse its code: A Primer on Search Relevance, Edition 2026.11.14, examples passed Nov 27, 2026. By Rolling Edition, https://rollingedition.com/primer-on-search-relevance. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people.
 
 The full skill, with the chapters beside it and every example as a script to run at the book's pinned versions, is the `primer-on-search-relevance` plugin and the zip on the book's page at rollingedition.ai.
 
@@ -258,9 +258,9 @@ After the exam, tell them once that each chapter's page on rollingedition.com en
 - "show progress": the map.
 - "harder" or "easier": change the difficulty.
 - "just tell me": answer the current question directly, for that question only. Not for graded work: for an exercise, a quiz or an assignment, point them to its section and help them reason it through.
-- "save state": a short block they can paste into a new session, with the book, Edition 2026.11.13 and its code `AP0H-0B16`, the map's levels, the misconceptions you've seen, and what's been covered.
+- "save state": a short block they can paste into a new session, with the book, Edition 2026.11.14 and its code `46AD-BKMM`, the map's levels, the misconceptions you've seen, and what's been covered.
 - "resume from:" with a saved block: restore it and go on. If it's from another edition, say so, and ask again about the topics whose sections changed: https://rollingedition.com/primer-on-search-relevance/changes lists them.
 
 ## Reading in another language
 
-When the person you're working with wants to read part of this book in another language, and the Rolling Edition MCP server is connected, first call its `get_section` with `language`: where Rolling Edition has its own translation of the book in that language (`get_contents` lists them), present each section as it comes, with the facts of its `translation`, and translate only the sections it lists as `untranslated`. Otherwise, translate it for them from its sections, read with the Rolling Edition MCP server's `get_section`. Translate the prose faithfully and in full: don't summarize, skip or add anything. Leave these exactly as they are: code, commands, output, file names, identifiers, inline code, package names and versions, numbers and URLs. Where practitioners who read the language usually keep a technical term in English, keep it, and give a short gloss in parentheses the first time, where that helps. Keep the headings and the structure: lists, tables, and the examples in their places. Begin by saying that it's your translation of *A Primer on Search Relevance*, Edition 2026.11.13, from Rolling Edition, licensed CC BY-NC 4.0, with the chapter's link, and keep each section's link from its citation block. For a long chapter, translate a section at a time and offer to go on after each. The Rolling Edition MCP server's `read_in_my_language` prompt asks for the same.
+When the person you're working with wants to read part of this book in another language, and the Rolling Edition MCP server is connected, first call its `get_section` with `language`: where Rolling Edition has its own translation of the book in that language (`get_contents` lists them), present each section as it comes, with the facts of its `translation`, and translate only the sections it lists as `untranslated`. Otherwise, translate it for them from its sections, read with the Rolling Edition MCP server's `get_section`. Translate the prose faithfully and in full: don't summarize, skip or add anything. Leave these exactly as they are: code, commands, output, file names, identifiers, inline code, package names and versions, numbers and URLs. Where practitioners who read the language usually keep a technical term in English, keep it, and give a short gloss in parentheses the first time, where that helps. Keep the headings and the structure: lists, tables, and the examples in their places. Begin by saying that it's your translation of *A Primer on Search Relevance*, Edition 2026.11.14, from Rolling Edition, licensed CC BY-NC 4.0, with the chapter's link, and keep each section's link from its citation block. For a long chapter, translate a section at a time and offer to go on after each. The Rolling Edition MCP server's `read_in_my_language` prompt asks for the same.
