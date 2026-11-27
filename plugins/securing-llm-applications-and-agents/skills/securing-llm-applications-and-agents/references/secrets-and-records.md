@@ -3,13 +3,13 @@ title: "Securing LLM Applications and Agents"
 chapter: "Keep secrets and other people's records out of the context"
 chapter_id: secrets-and-records
 book: securing-llm-applications-and-agents
-edition: 2026.11.3
+edition: 2026.11.4
 verified: 2026-11-22
-edition_code: T64T-4BT9
+edition_code: DZ78-8TMV
 canonical: https://rollingedition.com/securing-llm-applications-and-agents/secrets-and-records
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“Keep secrets and other people's records out of the context,” chapter 9 of Securing LLM Applications and Agents, Edition 2026.11.3, examples passed Nov 22, 2026. By Rolling Edition, https://rollingedition.com/securing-llm-applications-and-agents/secrets-and-records. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Keep secrets and other people's records out of the context,” chapter 9 of Securing LLM Applications and Agents, Edition 2026.11.4, examples passed Nov 22, 2026. By Rolling Edition, https://rollingedition.com/securing-llm-applications-and-agents/secrets-and-records. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Keep secrets and other people's records out of the context
 
@@ -29,7 +29,7 @@ The office's prompt holds two values of this kind. One is the portal key. The ot
 
 The primary defence is design: a key belongs with the tool that uses it, so the model never holds the value. The book does not build such a tool. What it measures is the removal of the values from the prompt, which is the step the design would otherwise take.
 
-Example `secrets-out-paired` (Python 3.13.16 · bm25s 0.3.16 · linkify-it-py 2.2.0 · markdown-it-py 4.3.0 · numpy 2.5.5), passing in Edition 2026.11.3:
+Example `secrets-out-paired` (Python 3.13.16 · bm25s 0.3.16 · linkify-it-py 2.2.0 · markdown-it-py 4.3.0 · numpy 2.5.5), passing in Edition 2026.11.4:
 
 ```python
 """Keeping the hidden note and the portal key out of the prompt leaves no secret-goal attack succeeding in this set, on either split.
@@ -158,7 +158,7 @@ The acting user in the example is a staff member, u-02, who can read 24 of 40 do
 
 There are two places to apply that filter. The first is after ranking: search all the documents, keep the top k, and then drop the ones the user cannot read. The second is before ranking: drop the documents the user cannot read, build the ranking from what is left, and keep the top k. The primary defence is the index itself: it holds only the documents the acting role may read, built for each role. The control this chapter builds is the query-time filter. It is teaching code and defence in depth, a second layer over the index. Its label is harness (enforcement), because it refuses to rank a document the user cannot read.
 
-Example `filter-before-ranking` (Python 3.13.16 · bm25s 0.3.16 · numpy 2.5.5), passing in Edition 2026.11.3:
+Example `filter-before-ranking` (Python 3.13.16 · bm25s 0.3.16 · numpy 2.5.5), passing in Edition 2026.11.4:
 
 ```python
 """Filtering by access before ranking gives a staff user the same results as an index of only the documents they may read.
@@ -255,7 +255,7 @@ A count of results falls only for a query where a hidden document ranks inside t
 
 One limit sits outside the search. The search tool's description, in every prompt, gives an owner-only quote as an example query, so every acting user learns that the quote exists. Every recording used that description, so it stays.
 
-Example `retrieval-by-role-paired` (Python 3.13.16 · bm25s 0.3.16 · linkify-it-py 2.2.0 · markdown-it-py 4.3.0 · numpy 2.5.5), passing in Edition 2026.11.3:
+Example `retrieval-by-role-paired` (Python 3.13.16 · bm25s 0.3.16 · linkify-it-py 2.2.0 · markdown-it-py 4.3.0 · numpy 2.5.5), passing in Edition 2026.11.4:
 
 ```python
 """Filtering search by the acting user's role before ranking: what it costs in benign tasks, and that on this set it removes no index attack, because none succeeded undefended.
@@ -392,7 +392,7 @@ A filter decides who may read a document. It says nothing about whether the docu
 
 PoisonedRAG (Zou and colleagues, USENIX Security 2025; [arXiv:2402.07867](https://arxiv.org/abs/2402.07867)) reports that five malicious texts, injected for each target question into a knowledge database of millions of texts, reached a 90% attack success rate. That is the attack's authors' own setup, and this chapter has not checked whether others reproduced it. The book's own measure is different: one wrong deposit figure in one document, against one assistant, on this set.
 
-Example `poisoned-deposit` (Python 3.13.16 · bm25s 0.3.16 · linkify-it-py 2.2.0 · markdown-it-py 4.3.0 · numpy 2.5.5), passing in Edition 2026.11.3:
+Example `poisoned-deposit` (Python 3.13.16 · bm25s 0.3.16 · linkify-it-py 2.2.0 · markdown-it-py 4.3.0 · numpy 2.5.5), passing in Edition 2026.11.4:
 
 ```python
 """The poisoned deposit figure gets past the three runs, and a citation check on the reply catches the poisoned ones.
@@ -480,7 +480,7 @@ The check is `cite_provenance`, a function in the book's defence code. Its label
 
 The example applies that rule to the replies each run recorded, after the fact. So "flagged" below means "would have been refused", not that the episode refused the reply.
 
-Example `secrets-regressions` (Python 3.13.16 · bm25s 0.3.16 · linkify-it-py 2.2.0 · markdown-it-py 4.3.0 · numpy 2.5.5), passing in Edition 2026.11.3:
+Example `secrets-regressions` (Python 3.13.16 · bm25s 0.3.16 · linkify-it-py 2.2.0 · markdown-it-py 4.3.0 · numpy 2.5.5), passing in Edition 2026.11.4:
 
 ```python
 """The secrets and records regressions for chapter 9's security review (findings SEC9-01 to SEC9-05, and SEC9-08), with no

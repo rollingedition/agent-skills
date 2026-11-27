@@ -3,13 +3,13 @@ title: "Securing LLM Applications and Agents"
 chapter: "Detect injected text, and count the false alarms"
 chapter_id: injection-detectors
 book: securing-llm-applications-and-agents
-edition: 2026.11.3
+edition: 2026.11.4
 verified: 2026-11-22
-edition_code: T64T-4BT9
+edition_code: DZ78-8TMV
 canonical: https://rollingedition.com/securing-llm-applications-and-agents/injection-detectors
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“Detect injected text, and count the false alarms,” chapter 5 of Securing LLM Applications and Agents, Edition 2026.11.3, examples passed Nov 22, 2026. By Rolling Edition, https://rollingedition.com/securing-llm-applications-and-agents/injection-detectors. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Detect injected text, and count the false alarms,” chapter 5 of Securing LLM Applications and Agents, Edition 2026.11.4, examples passed Nov 22, 2026. By Rolling Edition, https://rollingedition.com/securing-llm-applications-and-agents/injection-detectors. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Detect injected text, and count the false alarms
 
@@ -42,7 +42,7 @@ Published adaptive attacks have evaded prompt-injection classifiers as a class. 
 
 The classifier gives a score, and a threshold turns the score into a flag. The threshold is a choice, so it has to be made on data that the later numbers do not reuse. This book picks it on the dev split and nowhere else. Held-out and the public corpora are scored once, at the value dev picked.
 
-Example `detector-threshold-dev` (Python 3.13.16 · bm25s 0.3.16 · huggingface-hub 2.4.0 · numpy 2.5.5 · tokenizers 0.23.3 · torch 2.15.0+cpu · transformers 5.24.0), passing in Edition 2026.11.3:
+Example `detector-threshold-dev` (Python 3.13.16 · bm25s 0.3.16 · huggingface-hub 2.4.0 · numpy 2.5.5 · tokenizers 0.23.3 · torch 2.15.0+cpu · transformers 5.24.1), passing in Edition 2026.11.4:
 
 ```python
 """The detector's threshold, picked on dev alone: the lowest grid value at which at most 1 dev benign record is
@@ -136,7 +136,7 @@ There is a second check on the pick, which is how many scores sit near it. A pic
 
 ## False alarms on real text {#false-alarms-on-real-text}
 
-Example `detector-held-out` (Python 3.13.16 · bm25s 0.3.16 · huggingface-hub 2.4.0 · numpy 2.5.5 · tokenizers 0.23.3 · torch 2.15.0+cpu · transformers 5.24.0), passing in Edition 2026.11.3:
+Example `detector-held-out` (Python 3.13.16 · bm25s 0.3.16 · huggingface-hub 2.4.0 · numpy 2.5.5 · tokenizers 0.23.3 · torch 2.15.0+cpu · transformers 5.24.1), passing in Edition 2026.11.4:
 
 ```python
 """The detector at the threshold dev picked, scored once on the held-out half: how many injected texts it flags
@@ -233,7 +233,7 @@ The one flagged record is a document, and by the book's construction it is benig
 
 The detector misses by style: none of the invisible texts, part of the plain ones, and every encoded, fake-turn and important-marked one. The invisible count is 0 of 9, and the plain count is 6 of 12. The output has the counts for the other styles, and the injected texts are counted by style because those counts show where the detector fails on this set. The invisible result is the tag-character limit from the classifier section, now in the counts. The encoded flags are counts, not evidence that the detector decodes anything, and the chapter does not claim it does.
 
-Example `detector-public-corpora` (Python 3.13.16 · bm25s 0.3.16 · huggingface-hub 2.4.0 · numpy 2.5.5 · tokenizers 0.23.3 · torch 2.15.0+cpu · transformers 5.24.0), passing in Edition 2026.11.3:
+Example `detector-public-corpora` (Python 3.13.16 · bm25s 0.3.16 · huggingface-hub 2.4.0 · numpy 2.5.5 · tokenizers 0.23.3 · torch 2.15.0+cpu · transformers 5.24.1), passing in Edition 2026.11.4:
 
 ```python
 """The detector at the threshold dev picked, run once over two public prompt-injection corpora: the share of
@@ -312,7 +312,7 @@ The public corpora carry one caveat, stated once for the chapter. The model card
 
 A threshold is a rule about one text. In the loop, the detector becomes a filter on each tool call. The filter scores every decoded string in every field of an untrusted tool's result, at any depth, so a text nested in an object or moved to a field the office does not normally fill is still scored. A text longer than the model's 512-token window is scored in overlapping windows of 512 tokens, with a stride of 256, and the filter keeps the highest score. A result is withheld when any of its pieces scores at or above the dev threshold, and the withheld result is replaced by a fixed notice. The filter is teaching code, one layer of defence in depth. The filter is labelled input (detector). The primary defences for the tool path are the deployment's registered tools and scoped permissions, and the isolation design of [chapter 8](#dual-llm). [Chapter 6](#a-tool-filter-per-task)'s per-task filter and policies are further layers, and this filter does not replace them.
 
-Example `detector-filter-paired` (Python 3.13.16 · bm25s 0.3.16 · huggingface-hub 2.4.0 · linkify-it-py 2.2.0 · markdown-it-py 4.3.0 · numpy 2.5.5 · tokenizers 0.23.3 · torch 2.15.0+cpu · transformers 5.24.0), passing in Edition 2026.11.3:
+Example `detector-filter-paired` (Python 3.13.16 · bm25s 0.3.16 · huggingface-hub 2.4.0 · linkify-it-py 2.2.0 · markdown-it-py 4.3.0 · numpy 2.5.5 · tokenizers 0.23.3 · torch 2.15.0+cpu · transformers 5.24.1), passing in Edition 2026.11.4:
 
 ```python
 """The detector filter at the threshold picked on dev, against the undefended baseline, on dev and on held-out. The lines
@@ -409,7 +409,7 @@ The benign side is counted the same way. 3 of the 15 dev benign tasks had a resu
 
 The filter also has regression checks, which run it on structural attempts.
 
-Example `detector-regressions` (Python 3.13.16 · bm25s 0.3.16 · huggingface-hub 2.4.0 · linkify-it-py 2.2.0 · markdown-it-py 4.3.0 · numpy 2.5.5 · tokenizers 0.23.3 · torch 2.15.0+cpu · transformers 5.24.0), passing in Edition 2026.11.3:
+Example `detector-regressions` (Python 3.13.16 · bm25s 0.3.16 · huggingface-hub 2.4.0 · linkify-it-py 2.2.0 · markdown-it-py 4.3.0 · numpy 2.5.5 · tokenizers 0.23.3 · torch 2.15.0+cpu · transformers 5.24.1), passing in Edition 2026.11.4:
 
 ```python
 """The detector filter's regressions for chapter 5's security review (findings S5-1 to S5-4 and S5-6), with no generative
@@ -485,7 +485,7 @@ These checks claim no more than they assert. They do not test a text split acros
 
 ## The open model as a detector {#the-open-model-as-a-detector}
 
-Example `open-model-detector` (Python 3.13.16 · bm25s 0.3.16 · huggingface-hub 2.4.0 · numpy 2.5.5 · tokenizers 0.23.3 · torch 2.15.0+cpu · transformers 5.24.0), passing in Edition 2026.11.3:
+Example `open-model-detector` (Python 3.13.16 · bm25s 0.3.16 · huggingface-hub 2.4.0 · numpy 2.5.5 · tokenizers 0.23.3 · torch 2.15.0+cpu · transformers 5.24.1), passing in Edition 2026.11.4:
 
 ```python
 """The open model's yes-or-no verdicts as a detector, replayed from its recording: how many injected texts it flags and
@@ -598,7 +598,7 @@ The example also applies the correction that chapter 6 gives for a rate a judge 
 
 Readers meet several guard models, and they are often mixed up. A content-safety guard judges whether a text is harmful, and an injection detector judges whether it carries instructions the reader did not intend. The book runs one content-safety guard for contrast: Qwen3Guard-Gen-0.6B, under Apache-2.0. Its categories, as its card lists them, include violent, non-violent illegal acts, sexual content, personal information, self-harm, unethical acts, politically sensitive topics, copyright and jailbreak. The card defines Jailbreak for input only, as content that explicitly attempts to override the model's system prompt or model conditioning. That is close to direct injection, so the card's lack of an injection category does not mean the guard ignores injection. The guard's reply is two lines, a safety label and a category line. The run has 0 of 400 unparsed replies.
 
-Example `content-guard-contrast` (Python 3.13.16 · bm25s 0.3.16 · huggingface-hub 2.4.0 · numpy 2.5.5 · tokenizers 0.23.3 · torch 2.15.0+cpu · transformers 5.24.0), passing in Edition 2026.11.3:
+Example `content-guard-contrast` (Python 3.13.16 · bm25s 0.3.16 · huggingface-hub 2.4.0 · numpy 2.5.5 · tokenizers 0.23.3 · torch 2.15.0+cpu · transformers 5.24.1), passing in Edition 2026.11.4:
 
 ```python
 """Qwen3Guard's verdicts on the same texts, replayed from its recording and parsed as its chat template defines them:

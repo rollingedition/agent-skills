@@ -3,13 +3,13 @@ title: "Securing LLM Applications and Agents"
 chapter: "Check what third parties hand the assistant"
 chapter_id: third-party-parts
 book: securing-llm-applications-and-agents
-edition: 2026.11.3
+edition: 2026.11.4
 verified: 2026-11-22
-edition_code: T64T-4BT9
+edition_code: DZ78-8TMV
 canonical: https://rollingedition.com/securing-llm-applications-and-agents/third-party-parts
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“Check what third parties hand the assistant,” chapter 10 of Securing LLM Applications and Agents, Edition 2026.11.3, examples passed Nov 22, 2026. By Rolling Edition, https://rollingedition.com/securing-llm-applications-and-agents/third-party-parts. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Check what third parties hand the assistant,” chapter 10 of Securing LLM Applications and Agents, Edition 2026.11.4, examples passed Nov 22, 2026. By Rolling Edition, https://rollingedition.com/securing-llm-applications-and-agents/third-party-parts. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Check what third parties hand the assistant
 
@@ -33,7 +33,7 @@ In production the drift is rarely deliberate. A vendor adds a tool that writes a
 
 The check tests the claims in three steps. It compares each tool's declared arguments with the arguments its code reads, which it collects from subscripts, `get` calls and `in` tests in the code's syntax tree. It takes the declared effect from the annotations. Then it makes one fresh call on a copy of the office's state and records which state fields changed. A read claim must come with no write, and a write claim must come with a write to exactly the tables approved when the tool was reviewed. A tool that declares no effect is not taken as a read: it disagrees if it writes, and it is `undeclared` if it does not.
 
-Example `description-behaviour-check` (Python 3.13.16 · bm25s 0.3.16 · linkify-it-py 2.2.0 · markdown-it-py 4.3.0 · numpy 2.5.5), passing in Edition 2026.11.3:
+Example `description-behaviour-check` (Python 3.13.16 · bm25s 0.3.16 · linkify-it-py 2.2.0 · markdown-it-py 4.3.0 · numpy 2.5.5), passing in Edition 2026.11.4:
 
 ```python
 """Each contractor tool's declared arguments and effect are checked against what its tool does on a fresh call: the tables it writes, and the arguments its code reads, recorded by a proxy.
@@ -147,7 +147,7 @@ The pin here is a SHA-256 hash over every key of a tool's definition: its name, 
 
 Next comes the rug pull, built in code. The script makes a copy of the contractor's server in which the carrier tool's description gains the sentence of one dev attack. The output prints the case ID and never the sentence. The carrier is `a-049`, the changed tool is `book_visit`, and its verdict is `changed`.
 
-Example `pin-tool-definitions` (Python 3.13.16 · numpy 2.5.5), passing in Edition 2026.11.3:
+Example `pin-tool-definitions` (Python 3.13.16 · numpy 2.5.5), passing in Edition 2026.11.4:
 
 ```python
 """The contractor's two tools verify against their pins; a changed copy, a duplicate listing and an added key do not, and the listing gate offers only verified tools, frozen.
@@ -223,7 +223,7 @@ The listing step is the host's gate on which tools reach the prompt. In the exam
 
 A server with no pins gives the gate nothing to compare. A tool with no pin is `unpinned`, and it is not listed. The risk is a host that writes pins automatically on the first load, so the first load's definitions pass without a reading by anyone. The host should refuse to start a server whose pins are missing, and a person should take the pins.
 
-Example `third-party-bypasses` (Python 3.13.16 · bm25s 0.3.16 · linkify-it-py 2.2.0 · markdown-it-py 4.3.0 · numpy 2.5.5), passing in Edition 2026.11.3:
+Example `third-party-bypasses` (Python 3.13.16 · bm25s 0.3.16 · linkify-it-py 2.2.0 · markdown-it-py 4.3.0 · numpy 2.5.5), passing in Edition 2026.11.4:
 
 ```python
 """The chapter 10 review's regression rows for the third-party parts, as data: pins, requirement lines, claims, stand-in argument reads and model folders.
@@ -350,7 +350,7 @@ The primary control is the format rule: the loader reads only safetensors weight
 
 Some files in the detector repository are pickles and are not pinned. `training_args.bin` is one. A probe at the pinned commit listed its entries without loading it: it is a `torch.save` archive whose object is stored as `data.pkl`, so loading it with `torch.load(..., weights_only=False)`, or with `pickle`, would run whatever that object names. The loader never opens it.
 
-Example `model-file-checks` (Python 3.13.16 · bm25s 0.3.16 · huggingface-hub 2.4.0 · numpy 2.5.5 · picklescan 1.0.5), passing in Edition 2026.11.3:
+Example `model-file-checks` (Python 3.13.16 · bm25s 0.3.16 · huggingface-hub 2.4.0 · numpy 2.5.5 · picklescan 1.0.5), passing in Edition 2026.11.4:
 
 ```python
 """The detector's files match their pins, the snapshot folder holds no unpinned file, the loader refuses training_args.bin, and picklescan flags a harmless print pickle without loading it.
@@ -451,7 +451,7 @@ Production builds go wrong in a familiar way. A rebuild a month later installs a
 
 The check reads a JSON copy of the requirements file, `data/third-party/requirements.json`, not the file itself. The book's runner copies data files and not the example's own folder. The copy records the file it came from, and the two must stay equal.
 
-Example `dependency-pin-check` (Python 3.13.16 · numpy 2.5.5), passing in Edition 2026.11.3:
+Example `dependency-pin-check` (Python 3.13.16 · numpy 2.5.5), passing in Edition 2026.11.4:
 
 ```python
 """Every line of the examples' requirements file is a comment, a blank line, the one reviewed option, or an exact name==version pin, so a version cannot move under the book.
