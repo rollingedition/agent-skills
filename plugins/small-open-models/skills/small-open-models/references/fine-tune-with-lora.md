@@ -3,13 +3,13 @@ title: "Small Open Models"
 chapter: "Fine-tune a classification head with LoRA"
 chapter_id: fine-tune-with-lora
 book: small-open-models
-edition: 2026.11.16
+edition: 2026.11.17
 verified: 2026-11-23
-edition_code: ND69-JQ1D
+edition_code: 9CXG-7DRH
 canonical: https://rollingedition.com/small-open-models/fine-tune-with-lora
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“Fine-tune a classification head with LoRA,” chapter 5 of Small Open Models, Edition 2026.11.16, examples passed Nov 23, 2026. By Rolling Edition, https://rollingedition.com/small-open-models/fine-tune-with-lora. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Fine-tune a classification head with LoRA,” chapter 5 of Small Open Models, Edition 2026.11.17, examples passed Nov 23, 2026. By Rolling Edition, https://rollingedition.com/small-open-models/fine-tune-with-lora. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Fine-tune a classification head with LoRA
 
@@ -49,7 +49,7 @@ The adapter's manifest records the base model's revision, so a reader can check 
 
 Before the book uses a recording, it shows what a short run does with the same recipe. The run below takes 30 steps, at batch size 8 and seed 0, on the training rows outside dev, and then scores `test_200`, the first 200 entries of the [fixed sample](measure-the-routing-task#dev-test-and-fixed-samples) that chapter 2 drew. It is a failure, and the book shows it as one. The short run checks that the pipeline works from start to finish, and that is its only job here.
 
-Example `lora-thirty-steps` (Python 3.12.15 · peft 0.22.0 · torch 2.15.0+cpu · torchao 0.18.0+cpu · transformers 5.24.0), passing in Edition 2026.11.16:
+Example `lora-thirty-steps` (Python 3.12.15 · peft 0.22.0 · torch 2.15.0+cpu · torchao 0.18.0+cpu · transformers 5.24.1), passing in Edition 2026.11.17:
 
 ```python
 """Train for 30 steps on the recorded recipe, then score test_200 at the placeholder threshold of 0.5.
@@ -143,9 +143,9 @@ The shaded span on the left covers the short run's steps, and their mean loss is
 
 *Figure 5.1. The loss at each step of the recorded run, its moving mean, and the uniform guess.*
 
-![The recording's loss falls from above the uniform guess to well below it, and the short run covers only its first steps.](https://rollingedition.ai/books/small-open-models/2026.11.16/figures/lora-loss-curve.svg)
+![The recording's loss falls from above the uniform guess to well below it, and the short run covers only its first steps.](https://rollingedition.ai/books/small-open-models/2026.11.17/figures/lora-loss-curve.svg)
 
-Example `figure-lora-loss-curve` (Python 3.12.15 · matplotlib 3.11.2 · numpy 2.5.5), passing in Edition 2026.11.16:
+Example `figure-lora-loss-curve` (Python 3.12.15 · matplotlib 3.11.2 · numpy 2.5.5), passing in Edition 2026.11.17:
 
 ```python
 """Draw the loss at each of the recording's steps, with its moving mean, against the uniform guess over 77 teams.
@@ -218,7 +218,7 @@ The recording used seed 0 and batch size 8, the same as the short run's 0 and 8.
 
 Take the adapter as it was recorded. A different recipe becomes a new run, named `v2`; the book does not edit the adapter by hand. Keeping the recording fixed is what lets a reader check the numbers in this chapter against the files they downloaded.
 
-Example `lora-recorded-adapter` (Python 3.12.15 · peft 0.22.0 · torch 2.15.0+cpu · torchao 0.18.0+cpu · transformers 5.24.0), passing in Edition 2026.11.16:
+Example `lora-recorded-adapter` (Python 3.12.15 · peft 0.22.0 · torch 2.15.0+cpu · torchao 0.18.0+cpu · transformers 5.24.1), passing in Edition 2026.11.17:
 
 ```python
 """Load the recorded adapter banking77-lora-v1 and score test_200 at the threshold in its manifest; no training runs here.
@@ -282,7 +282,7 @@ The threshold is not chosen on this sample. It came from the manifest, which [th
 
 The recorded adapter is the router's model, and the stand-in is the baseline. The two were measured with different thresholds, so their hand-off counts are not the same kind of result. Compare them on the same messages, with each threshold named beside its count. The comparison below does that for `test_200`, reading the stand-in's recorded answers for the same messages.
 
-Example `compare-with-standin` (Python 3.12.15 · peft 0.22.0 · torch 2.15.0+cpu · torchao 0.18.0+cpu · transformers 5.24.0), passing in Edition 2026.11.16:
+Example `compare-with-standin` (Python 3.12.15 · peft 0.22.0 · torch 2.15.0+cpu · torchao 0.18.0+cpu · transformers 5.24.1), passing in Edition 2026.11.17:
 
 ```python
 """Set the stand-in's recorded answers beside the recorded adapter's live predictions on the same 200 test messages.
@@ -362,7 +362,7 @@ The comparison is one sample of 200 messages. [Chapter 1](route-a-message#score-
 
 The threshold is the cut that sends a message to a person. Chapter 2 set its measures, and chapter 1 left it as a placeholder. The book's rule chooses it on the dev split only: the lowest confidence threshold, on a grid of 0.01, at which accuracy on messages not handed off is at least the target of 0.90. The rule is written in the manifest with its value, so a reader can see the rule as well as the number it produced. The test sample plays no part, [as chapter 2 requires](measure-the-routing-task#dev-test-and-fixed-samples).
 
-Example `choose-threshold-on-dev` (Python 3.12.15 · peft 0.22.0 · torch 2.15.0+cpu · torchao 0.18.0+cpu · transformers 5.24.0), passing in Edition 2026.11.16:
+Example `choose-threshold-on-dev` (Python 3.12.15 · peft 0.22.0 · torch 2.15.0+cpu · torchao 0.18.0+cpu · transformers 5.24.1), passing in Edition 2026.11.17:
 
 ```python
 """Find the hand-off threshold on dev by the manifest's rule, then check it against the manifest's value.
@@ -432,7 +432,7 @@ The adapter stays the same in production, but the messages it sees do not. Suppo
 
 The confidence is not a probability that the team is right. [Guo et al. (2017)](https://arxiv.org/abs/1706.04599) report that their networks are "poorly calibrated", meaning their confidence does not match how often they are right. This book checks its own adapter on dev. The dev messages fall into five confidence bands, and each band gets a count, an accuracy and a mean confidence, the two quantities Guo et al. compare when they measure calibration. Grouping dev by confidence shows whether a 0.9 means nine in ten.
 
-Example `calibration-bands-on-dev` (Python 3.12.15 · peft 0.22.0 · torch 2.15.0+cpu · torchao 0.18.0+cpu · transformers 5.24.0), passing in Edition 2026.11.16:
+Example `calibration-bands-on-dev` (Python 3.12.15 · peft 0.22.0 · torch 2.15.0+cpu · torchao 0.18.0+cpu · transformers 5.24.1), passing in Edition 2026.11.17:
 
 ```python
 """Group the dev messages into five bands by the adapter's confidence, and print each band's count, accuracy and mean confidence.

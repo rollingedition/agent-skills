@@ -3,13 +3,13 @@ title: "Small Open Models"
 chapter: "Version the router, watch its hand-offs and fall back to people"
 chapter_id: version-watch-and-fall-back
 book: small-open-models
-edition: 2026.11.16
+edition: 2026.11.17
 verified: 2026-11-23
-edition_code: ND69-JQ1D
+edition_code: 9CXG-7DRH
 canonical: https://rollingedition.com/small-open-models/version-watch-and-fall-back
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“Version the router, watch its hand-offs and fall back to people,” chapter 9 of Small Open Models, Edition 2026.11.16, examples passed Nov 23, 2026. By Rolling Edition, https://rollingedition.com/small-open-models/version-watch-and-fall-back. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Version the router, watch its hand-offs and fall back to people,” chapter 9 of Small Open Models, Edition 2026.11.17, examples passed Nov 23, 2026. By Rolling Edition, https://rollingedition.com/small-open-models/version-watch-and-fall-back. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Version the router, watch its hand-offs and fall back to people
 
@@ -29,7 +29,7 @@ A version is written into the name. `banking77-lora-v1` is the recorded LoRA ada
 
 The first check reads the manifest and compares its base revision with the pin. It prints the adapter's name first, followed by the comparison:
 
-Example `adapter-manifest-check` (Python 3.12.15 · fastapi 0.165.0 · peft 0.22.0 · pydantic 2.14.4 · torch 2.15.0+cpu · torchao 0.18.0+cpu · transformers 5.24.0), passing in Edition 2026.11.16:
+Example `adapter-manifest-check` (Python 3.12.15 · fastapi 0.165.0 · peft 0.22.0 · pydantic 2.14.4 · torch 2.15.0+cpu · torchao 0.18.0+cpu · transformers 5.24.1), passing in Edition 2026.11.17:
 
 ```python
 """Show what the adapter check does before a route loads an adapter, and what it does to two edited copies.
@@ -125,7 +125,7 @@ The drift rule is this book's choice, not a figure from a source. A window's han
 
 The committed test sample, `test_1001`, has no dates, so the windows are cut from its first 100 messages. The first two windows, of 25 messages each, are the first messages of the sample, in sample order. Weeks 3 and 4 are a replay, not new traffic. For those two weeks, the example takes the sample's next messages, sorts them by the router's confidence from lowest to highest, and splits the sorted list in two. The example marks the replay as simulated in its printed line, simulated replay of sample messages 51 to 100. The replay is built to produce a spread of confidences, so it shows what the rule does with a skewed window, and like the baseline it says nothing about the inbox.
 
-Example `handoff-windows` (Python 3.12.15 · peft 0.22.0 · torch 2.15.0+cpu · torchao 0.18.0+cpu · transformers 5.24.0), passing in Edition 2026.11.16:
+Example `handoff-windows` (Python 3.12.15 · peft 0.22.0 · torch 2.15.0+cpu · torchao 0.18.0+cpu · transformers 5.24.1), passing in Edition 2026.11.17:
 
 ```python
 """Watch the router's hand-off rate week by week on a fixed, ordered sample of test_1001, against the dev baseline.
@@ -234,7 +234,7 @@ The route's JSON has `team`, `confidence`, `handed_off`, `adapter` and `version`
 
 The book does not teach a call to a hosted model as the fallback, and it sets no threshold for the stand-in. Its answers come from a recording, which the fallback script reads. That script measures how often the suggestion is right, and it does not decide anything from that measure.
 
-Example `fallback-to-larger-model` (Python 3.12.15 · peft 0.22.0 · torch 2.15.0+cpu · torchao 0.18.0+cpu · transformers 5.24.0), passing in Edition 2026.11.16:
+Example `fallback-to-larger-model` (Python 3.12.15 · peft 0.22.0 · torch 2.15.0+cpu · torchao 0.18.0+cpu · transformers 5.24.1), passing in Edition 2026.11.17:
 
 ```python
 """Hand each handed-off message to a person, with the stand-in's recorded answer as a labelled suggestion.
@@ -301,7 +301,7 @@ The suggestions are right on 4/10 of the handed-off messages that carry one. Tha
 
 A drifting window is a signal to look, and it does not on its own start a retraining. The book sets three triggers, and this section states each one. The first is drift, the rule in this chapter's watch applied to consecutive windows. The book retrains when two consecutive windows drift, a number no source gives, and you may choose another, provided you state it in advance. The second trigger is a team added to the 77 the router returns. The router has no training rows for it, and people's labels would show it as a team outside the 77. The third is a rise in wrong teams on messages the router keeps, confirmed in the kept-message sample from the previous section. It is not the sample of handed-off messages, whose teams are never returned, so wrong teams there are expected and do no harm. The retrain script below exercises only the first. The recorded data holds no added team and no person's labels, so the second and third are rules without a test here.
 
-Example `retrain-trigger` (Python 3.12.15 · peft 0.22.0 · torch 2.15.0+cpu · torchao 0.18.0+cpu · transformers 5.24.0), passing in Edition 2026.11.16:
+Example `retrain-trigger` (Python 3.12.15 · peft 0.22.0 · torch 2.15.0+cpu · torchao 0.18.0+cpu · transformers 5.24.1), passing in Edition 2026.11.17:
 
 ```python
 """Decide whether to retrain, as a rule over the weekly drift flags from handoff-windows. The rule is the book's choice,

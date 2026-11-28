@@ -20,7 +20,7 @@ This repository is generated from the books, so changes made here are overwritte
 | [Open Table Formats](https://rollingedition.com/open-table-formats) | `open-table-formats` | 2026.11.17 | 45 of 45 examples pass |
 | [A Primer on Search Relevance](https://rollingedition.com/primer-on-search-relevance) | `primer-on-search-relevance` | 2026.11.14 | 141 of 141 examples pass |
 | [Securing LLM Applications and Agents](https://rollingedition.com/securing-llm-applications-and-agents) | `securing-llm-applications-and-agents` | 2026.11.4 | 60 of 60 examples pass |
-| [Small Open Models](https://rollingedition.com/small-open-models) | `small-open-models` | 2026.11.16 | 42 of 42 examples pass |
+| [Small Open Models](https://rollingedition.com/small-open-models) | `small-open-models` | 2026.11.17 | 42 of 42 examples pass |
 | [Time Series Forecasting](https://rollingedition.com/time-series-forecasting) | `time-series-forecasting` | 2026.11.26 | 56 of 56 examples pass |
 
 ## Install
