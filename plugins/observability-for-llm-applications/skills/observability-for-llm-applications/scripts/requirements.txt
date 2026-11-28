@@ -297,7 +297,7 @@ numpy==2.5.5
     #   scikit-learn
     #   scipy
     #   skops
-openai==3.58.0
+openai==3.59.0
     # via -r requirements.in
 openinference-semantic-conventions==0.1.46
     # via -r requirements.in

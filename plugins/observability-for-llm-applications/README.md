@@ -2,7 +2,7 @@
 
 This plugin is *Observability for LLM Applications*, a Rolling Edition book, as an agent skill: the methods the book teaches, as procedures your coding agent follows step by step, each step linked to the section it comes from, with the book's chapters as references and its examples as scripts.
 
-It's built from Edition 2026.11.3, whose examples last passed on 2026-11-23 (80 of 80 examples pass), and rebuilt with every new edition. The book: https://rollingedition.com/observability-for-llm-applications
+It's built from Edition 2026.11.4, whose examples last passed on 2026-11-23 (80 of 80 examples pass), and rebuilt with every new edition. The book: https://rollingedition.com/observability-for-llm-applications
 
 Install it with `/plugin install observability-for-llm-applications@rolling-edition`. It needs nothing else: to run an example as the book does, the skill says how, with uv and the book's pinned versions.
 

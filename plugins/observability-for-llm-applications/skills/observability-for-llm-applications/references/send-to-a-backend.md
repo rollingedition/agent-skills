@@ -3,13 +3,13 @@ title: "Observability for LLM Applications"
 chapter: "Send traces to a backend you can run"
 chapter_id: send-to-a-backend
 book: observability-for-llm-applications
-edition: 2026.11.3
+edition: 2026.11.4
 verified: 2026-11-23
-edition_code: 9P10-Q8SD
+edition_code: XFJ3-KNEQ
 canonical: https://rollingedition.com/observability-for-llm-applications/send-to-a-backend
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“Send traces to a backend you can run,” chapter 5 of Observability for LLM Applications, Edition 2026.11.3, examples passed Nov 23, 2026. By Rolling Edition, https://rollingedition.com/observability-for-llm-applications/send-to-a-backend. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Send traces to a backend you can run,” chapter 5 of Observability for LLM Applications, Edition 2026.11.4, examples passed Nov 23, 2026. By Rolling Edition, https://rollingedition.com/observability-for-llm-applications/send-to-a-backend. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Send traces to a backend you can run
 
@@ -25,7 +25,7 @@ For traces, the request goes to the path `/v1/traces`, and its body is either Pr
 
 Here a dev-day message's three spans go through that exporter to a receiver on loopback, which the next section describes: its agent span, its chat span and its `execute_tool find_contact` span, whose counts come from the recording. Two things about a synchronous processor, the kind the examples use, are checked along the way.
 
-Example `otlp-export-loopback` (Python 3.13.16 · mcp 2.3.0 · numpy 2.5.5 · opentelemetry-api 1.45.2 · opentelemetry-exporter-http-transport 0.66b2 · opentelemetry-exporter-otlp-common 0.66b2 · opentelemetry-exporter-otlp-proto-common 1.45.2 · opentelemetry-exporter-otlp-proto-http 1.45.2 · opentelemetry-instrumentation 0.66b2 · opentelemetry-instrumentation-genai-openai 1.3b0 · opentelemetry-proto 1.45.2 · opentelemetry-sdk 1.45.2 · opentelemetry-semantic-conventions 0.66b2 · opentelemetry-util-genai 1.3b0 · pydantic 2.14.4), passing in Edition 2026.11.3:
+Example `otlp-export-loopback` (Python 3.13.16 · mcp 2.3.0 · numpy 2.5.5 · opentelemetry-api 1.45.2 · opentelemetry-exporter-http-transport 0.66b2 · opentelemetry-exporter-otlp-common 0.66b2 · opentelemetry-exporter-otlp-proto-common 1.45.2 · opentelemetry-exporter-otlp-proto-http 1.45.2 · opentelemetry-instrumentation 0.66b2 · opentelemetry-instrumentation-genai-openai 1.3b0 · opentelemetry-proto 1.45.2 · opentelemetry-sdk 1.45.2 · opentelemetry-semantic-conventions 0.66b2 · opentelemetry-util-genai 1.3b0 · pydantic 2.14.4), passing in Edition 2026.11.4:
 
 ```python
 """Export one dev-day message's three spans over OTLP/HTTP to the book's receiver on loopback, and check that a span's
@@ -98,7 +98,7 @@ The receiver is the book's own: an HTTP server from the standard library that de
 
 Both processes export to it. The assistant's exporter runs in the assistant's own process. The contacts server gets the endpoint from its environment: when `OTEL_EXPORTER_OTLP_TRACES_ENDPOINT` or `OTEL_EXPORTER_OTLP_ENDPOINT` names one, the server exports its spans over OTLP itself. When neither is set, it writes the JSON-lines file that [The contacts server is another process](#the-contacts-server) describes. The receiver takes a port that the system chooses, and the examples never print it; the contacts server is still a stdio subprocess and only sends to that port.
 
-Example `two-processes-one-receiver` (Python 3.13.16 · bm25s 0.3.16 · mcp 2.3.0 · numpy 2.5.5 · opentelemetry-api 1.45.2 · opentelemetry-exporter-http-transport 0.66b2 · opentelemetry-exporter-otlp-common 0.66b2 · opentelemetry-exporter-otlp-proto-common 1.45.2 · opentelemetry-exporter-otlp-proto-http 1.45.2 · opentelemetry-instrumentation 0.66b2 · opentelemetry-instrumentation-genai-openai 1.3b0 · opentelemetry-proto 1.45.2 · opentelemetry-sdk 1.45.2 · opentelemetry-semantic-conventions 0.66b2 · opentelemetry-util-genai 1.3b0 · pydantic 2.14.4), passing in Edition 2026.11.3:
+Example `two-processes-one-receiver` (Python 3.13.16 · bm25s 0.3.16 · mcp 2.3.0 · numpy 2.5.5 · opentelemetry-api 1.45.2 · opentelemetry-exporter-http-transport 0.66b2 · opentelemetry-exporter-otlp-common 0.66b2 · opentelemetry-exporter-otlp-proto-common 1.45.2 · opentelemetry-exporter-otlp-proto-http 1.45.2 · opentelemetry-instrumentation 0.66b2 · opentelemetry-instrumentation-genai-openai 1.3b0 · opentelemetry-proto 1.45.2 · opentelemetry-sdk 1.45.2 · opentelemetry-semantic-conventions 0.66b2 · opentelemetry-util-genai 1.3b0 · pydantic 2.14.4), passing in Edition 2026.11.4:
 
 ```python
 """Replay baseline day 1's messages that route to the messages tools, with the contacts server live, and send both
@@ -166,7 +166,7 @@ The rows the receiver stored equal the rows that `lib/export.py` writes for the 
 
 The rows checked above are what the queries read, and the example writes them to a JSON Lines file first. `connect()` in `lib/query.py` opens an in-memory DuckDB connection, at 2.0.1, with one view named `spans` over that file.
 
-Example `query-stored-spans` (Python 3.13.16 · bm25s 0.3.16 · duckdb 2.0.1 · mcp 2.3.0 · numpy 2.5.5 · opentelemetry-api 1.45.2 · opentelemetry-exporter-http-transport 0.66b2 · opentelemetry-exporter-otlp-common 0.66b2 · opentelemetry-exporter-otlp-proto-common 1.45.2 · opentelemetry-exporter-otlp-proto-http 1.45.2 · opentelemetry-instrumentation 0.66b2 · opentelemetry-instrumentation-genai-openai 1.3b0 · opentelemetry-proto 1.45.2 · opentelemetry-sdk 1.45.2 · opentelemetry-semantic-conventions 0.66b2 · opentelemetry-util-genai 1.3b0 · pydantic 2.14.4), passing in Edition 2026.11.3:
+Example `query-stored-spans` (Python 3.13.16 · bm25s 0.3.16 · duckdb 2.0.1 · mcp 2.3.0 · numpy 2.5.5 · opentelemetry-api 1.45.2 · opentelemetry-exporter-http-transport 0.66b2 · opentelemetry-exporter-otlp-common 0.66b2 · opentelemetry-exporter-otlp-proto-common 1.45.2 · opentelemetry-exporter-otlp-proto-http 1.45.2 · opentelemetry-instrumentation 0.66b2 · opentelemetry-instrumentation-genai-openai 1.3b0 · opentelemetry-proto 1.45.2 · opentelemetry-sdk 1.45.2 · opentelemetry-semantic-conventions 0.66b2 · opentelemetry-util-genai 1.3b0 · pydantic 2.14.4), passing in Edition 2026.11.4:
 
 ```python
 """Query the receiver's stored rows with DuckDB: the spans each process stored, the join across the process boundary,
@@ -241,7 +241,7 @@ The receiver keeps rows in memory. A team needs a backend that stores them on di
 
 The book starts the server on loopback with a SQLite file in a temporary folder. It turns telemetry off through environment variables. It stops the server by its process group, since the server starts worker processes of its own and signalling the parent alone leaves them running.
 
-Example `mlflow-search-traces` (Python 3.13.16 · mcp 2.3.0 · mlflow 3.18.0 · mlflow-skinny 3.18.0 · mlflow-tracing 3.18.0 · numpy 2.5.5 · opentelemetry-api 1.45.2 · opentelemetry-exporter-http-transport 0.66b2 · opentelemetry-exporter-otlp-common 0.66b2 · opentelemetry-exporter-otlp-proto-common 1.45.2 · opentelemetry-exporter-otlp-proto-http 1.45.2 · opentelemetry-instrumentation 0.66b2 · opentelemetry-instrumentation-genai-openai 1.3b0 · opentelemetry-proto 1.45.2 · opentelemetry-sdk 1.45.2 · opentelemetry-semantic-conventions 0.66b2 · opentelemetry-util-genai 1.3b0 · pydantic 2.14.4), passing in Edition 2026.11.3:
+Example `mlflow-search-traces` (Python 3.13.16 · mcp 2.3.0 · mlflow 3.18.0 · mlflow-skinny 3.18.0 · mlflow-tracing 3.18.0 · numpy 2.5.5 · opentelemetry-api 1.45.2 · opentelemetry-exporter-http-transport 0.66b2 · opentelemetry-exporter-otlp-common 0.66b2 · opentelemetry-exporter-otlp-proto-common 1.45.2 · opentelemetry-exporter-otlp-proto-http 1.45.2 · opentelemetry-instrumentation 0.66b2 · opentelemetry-instrumentation-genai-openai 1.3b0 · opentelemetry-proto 1.45.2 · opentelemetry-sdk 1.45.2 · opentelemetry-semantic-conventions 0.66b2 · opentelemetry-util-genai 1.3b0 · pydantic 2.14.4), passing in Edition 2026.11.4:
 
 ```python
 """Send one message's three spans to MLflow 3.18.0 on SQLite over OTLP/HTTP, and read them back with search_traces. MLflow
@@ -317,7 +317,7 @@ MLflow marks the chat span with its own attribute, `mlflow.spanType`, and the ma
 
 MLflow priced nothing. At 3.18.0 it prices a span into `mlflow.llm.cost` and the trace into `mlflow.trace.cost` when its price lookup knows the model. It has no price for qwen3-4b-instruct-2507, the model the chat span names, so it stored no cost on either. Chapter 6 prices tokens with the book's own table, because the model is self-hosted and a price has a date.
 
-Example `same-spans-two-receivers` (Python 3.13.16 · mcp 2.3.0 · mlflow 3.18.0 · mlflow-skinny 3.18.0 · mlflow-tracing 3.18.0 · numpy 2.5.5 · opentelemetry-api 1.45.2 · opentelemetry-exporter-http-transport 0.66b2 · opentelemetry-exporter-otlp-common 0.66b2 · opentelemetry-exporter-otlp-proto-common 1.45.2 · opentelemetry-exporter-otlp-proto-http 1.45.2 · opentelemetry-instrumentation 0.66b2 · opentelemetry-instrumentation-genai-openai 1.3b0 · opentelemetry-proto 1.45.2 · opentelemetry-sdk 1.45.2 · opentelemetry-semantic-conventions 0.66b2 · opentelemetry-util-genai 1.3b0 · pydantic 2.14.4), passing in Edition 2026.11.3:
+Example `same-spans-two-receivers` (Python 3.13.16 · mcp 2.3.0 · mlflow 3.18.0 · mlflow-skinny 3.18.0 · mlflow-tracing 3.18.0 · numpy 2.5.5 · opentelemetry-api 1.45.2 · opentelemetry-exporter-http-transport 0.66b2 · opentelemetry-exporter-otlp-common 0.66b2 · opentelemetry-exporter-otlp-proto-common 1.45.2 · opentelemetry-exporter-otlp-proto-http 1.45.2 · opentelemetry-instrumentation 0.66b2 · opentelemetry-instrumentation-genai-openai 1.3b0 · opentelemetry-proto 1.45.2 · opentelemetry-sdk 1.45.2 · opentelemetry-semantic-conventions 0.66b2 · opentelemetry-util-genai 1.3b0 · pydantic 2.14.4), passing in Edition 2026.11.4:
 
 ```python
 """Send one message's spans, from one provider, to two receivers: the book's receiver and MLflow. Both hold the same span

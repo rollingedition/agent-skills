@@ -3,13 +3,13 @@ title: "Observability for LLM Applications"
 chapter: "Catch a regression in the traces"
 chapter_id: catch-a-regression
 book: observability-for-llm-applications
-edition: 2026.11.3
+edition: 2026.11.4
 verified: 2026-11-23
-edition_code: 9P10-Q8SD
+edition_code: XFJ3-KNEQ
 canonical: https://rollingedition.com/observability-for-llm-applications/catch-a-regression
 license: CC BY-NC 4.0
 more_permissions: https://rollingedition.com/policies/reuse
-attribution: "“Catch a regression in the traces,” chapter 10 of Observability for LLM Applications, Edition 2026.11.3, examples passed Nov 23, 2026. By Rolling Edition, https://rollingedition.com/observability-for-llm-applications/catch-a-regression. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
+attribution: "“Catch a regression in the traces,” chapter 10 of Observability for LLM Applications, Edition 2026.11.4, examples passed Nov 23, 2026. By Rolling Edition, https://rollingedition.com/observability-for-llm-applications/catch-a-regression. Text CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/), with added permissions (https://rollingedition.com/policies/reuse). Code MIT, copyright Rolling Edition and contributors. Written with AI. Verified by people."
 ---
 # Catch a regression in the traces
 
@@ -23,7 +23,7 @@ A comparison can only split traces by release if each trace says which release m
 
 The marker does more than label. Without it, a query over a week of traces would mix the releases into one average, and no release would show its own movement. With it, the same query returns one row per release. Below, the same 60 messages are replayed under the baseline and under each of the four changes, and every span of the five replays goes into one file. Each replay keeps its own markers, and the span IDs come from one sequence, so no two replays share an ID.
 
-Example `release-markers-query` (Python 3.13.16 · bm25s 0.3.16 · duckdb 2.0.1 · mcp 2.3.0 · numpy 2.5.5 · opentelemetry-api 1.45.2 · opentelemetry-exporter-http-transport 0.66b2 · opentelemetry-exporter-otlp-common 0.66b2 · opentelemetry-exporter-otlp-proto-common 1.45.2 · opentelemetry-exporter-otlp-proto-http 1.45.2 · opentelemetry-instrumentation 0.66b2 · opentelemetry-instrumentation-genai-openai 1.3b0 · opentelemetry-proto 1.45.2 · opentelemetry-sdk 1.45.2 · opentelemetry-semantic-conventions 0.66b2 · opentelemetry-util-genai 1.3b0 · pydantic 2.14.4), passing in Edition 2026.11.3:
+Example `release-markers-query` (Python 3.13.16 · bm25s 0.3.16 · duckdb 2.0.1 · mcp 2.3.0 · numpy 2.5.5 · opentelemetry-api 1.45.2 · opentelemetry-exporter-http-transport 0.66b2 · opentelemetry-exporter-otlp-common 0.66b2 · opentelemetry-exporter-otlp-proto-common 1.45.2 · opentelemetry-exporter-otlp-proto-http 1.45.2 · opentelemetry-instrumentation 0.66b2 · opentelemetry-instrumentation-genai-openai 1.3b0 · opentelemetry-proto 1.45.2 · opentelemetry-sdk 1.45.2 · opentelemetry-semantic-conventions 0.66b2 · opentelemetry-util-genai 1.3b0 · pydantic 2.14.4), passing in Edition 2026.11.4:
 
 ```python
 """Replay the same 60 messages under each of the five releases, export every span to one store, and query the release
@@ -117,7 +117,7 @@ Input tokens here are the recorded counts, and [chapter 6](#three-token-counts) 
 
 Next, the example sets each change beside the baseline on the messages that change recorded.
 
-Example `paired-latency-and-tokens` (Python 3.13.16 · bm25s 0.3.16 · mcp 2.3.0 · numpy 2.5.5 · opentelemetry-api 1.45.2 · opentelemetry-exporter-http-transport 0.66b2 · opentelemetry-exporter-otlp-common 0.66b2 · opentelemetry-exporter-otlp-proto-common 1.45.2 · opentelemetry-exporter-otlp-proto-http 1.45.2 · opentelemetry-instrumentation 0.66b2 · opentelemetry-instrumentation-genai-openai 1.3b0 · opentelemetry-proto 1.45.2 · opentelemetry-sdk 1.45.2 · opentelemetry-semantic-conventions 0.66b2 · opentelemetry-util-genai 1.3b0 · pydantic 2.14.4), passing in Edition 2026.11.3:
+Example `paired-latency-and-tokens` (Python 3.13.16 · bm25s 0.3.16 · mcp 2.3.0 · numpy 2.5.5 · opentelemetry-api 1.45.2 · opentelemetry-exporter-http-transport 0.66b2 · opentelemetry-exporter-otlp-common 0.66b2 · opentelemetry-exporter-otlp-proto-common 1.45.2 · opentelemetry-exporter-otlp-proto-http 1.45.2 · opentelemetry-instrumentation 0.66b2 · opentelemetry-instrumentation-genai-openai 1.3b0 · opentelemetry-proto 1.45.2 · opentelemetry-sdk 1.45.2 · opentelemetry-semantic-conventions 0.66b2 · opentelemetry-util-genai 1.3b0 · pydantic 2.14.4), passing in Edition 2026.11.4:
 
 ```python
 """Compare each release with baseline r0 on the same messages, in message time and input tokens: the mean of the per-message differences, and the p95 difference with the two p95s resampled jointly (PL-6). Each interval is a bootstrap of 2,000 resamples at 95 %, seed 20261207. The unpaired width for the input tokens is printed beside the paired one: the messages' own lengths cancel out of the paired difference."""
@@ -195,7 +195,7 @@ The cache-off release is the one that should not move input tokens, and it does 
 
 Figure 10.1 draws the two differences for each release, the p95 message time on the left and input tokens per message on the right, each with its interval. The zero line is the reference. The prompt change's p95 interval crosses it, which is the tail's uncertainty in one picture. The token intervals for the prompt change, the model swap and the top-8 release lie clear of zero, and the cache-off release's token interval sits on it, as its input total says.
 
-Example `figure-paired-differences` (Python 3.13.16 · bm25s 0.3.16 · matplotlib 3.11.2 · mcp 2.3.0 · numpy 2.5.5 · opentelemetry-api 1.45.2 · opentelemetry-exporter-http-transport 0.66b2 · opentelemetry-exporter-otlp-common 0.66b2 · opentelemetry-exporter-otlp-proto-common 1.45.2 · opentelemetry-exporter-otlp-proto-http 1.45.2 · opentelemetry-instrumentation 0.66b2 · opentelemetry-instrumentation-genai-openai 1.3b0 · opentelemetry-proto 1.45.2 · opentelemetry-sdk 1.45.2 · opentelemetry-semantic-conventions 0.66b2 · opentelemetry-util-genai 1.3b0 · pydantic 2.14.4), passing in Edition 2026.11.3:
+Example `figure-paired-differences` (Python 3.13.16 · bm25s 0.3.16 · matplotlib 3.11.2 · mcp 2.3.0 · numpy 2.5.5 · opentelemetry-api 1.45.2 · opentelemetry-exporter-http-transport 0.66b2 · opentelemetry-exporter-otlp-common 0.66b2 · opentelemetry-exporter-otlp-proto-common 1.45.2 · opentelemetry-exporter-otlp-proto-http 1.45.2 · opentelemetry-instrumentation 0.66b2 · opentelemetry-instrumentation-genai-openai 1.3b0 · opentelemetry-proto 1.45.2 · opentelemetry-sdk 1.45.2 · opentelemetry-semantic-conventions 0.66b2 · opentelemetry-util-genai 1.3b0 · pydantic 2.14.4), passing in Edition 2026.11.4:
 
 ```python
 """Draw each release's paired difference from baseline r0 on the same messages, in p95 message time and in input tokens per message, each with its interval. A line that crosses the zero line is a difference the interval cannot rule out; the p95 uses messages resampled jointly, and the token mean uses per-message differences."""
@@ -259,7 +259,7 @@ figure: figures/paired-differences.svg
 
 *Figure 10.1. Each release's paired difference from the baseline with its 95% interval: p95 message time on the left, input tokens per message on the right.*
 
-![Two panels, one row per release: the prompt change's p95 interval crosses the zero line, the cache-off release's token interval sits on it, and the other intervals lie clear of zero](https://rollingedition.ai/books/observability-for-llm-applications/2026.11.3/figures/paired-differences.svg)
+![Two panels, one row per release: the prompt change's p95 interval crosses the zero line, the cache-off release's token interval sits on it, and the other intervals lie clear of zero](https://rollingedition.ai/books/observability-for-llm-applications/2026.11.4/figures/paired-differences.svg)
 
 **Working rule:** Subtract the baseline's value for each message before you summarise. Resample the messages jointly for a percentile, and print each difference with its count and its interval.
 
@@ -285,7 +285,7 @@ The error rule uses the definition [chapter 8](#how-a-span-records-failure) give
 
 The gate has to pass a normal day, or a team would stop reading it. Gating baseline day 2 against day 1 shows whether it does, with the same rules and limits.
 
-Example `gate-on-baseline-day-two` (Python 3.13.16 · bm25s 0.3.16 · mcp 2.3.0 · numpy 2.5.5 · opentelemetry-api 1.45.2 · opentelemetry-exporter-http-transport 0.66b2 · opentelemetry-exporter-otlp-common 0.66b2 · opentelemetry-exporter-otlp-proto-common 1.45.2 · opentelemetry-exporter-otlp-proto-http 1.45.2 · opentelemetry-instrumentation 0.66b2 · opentelemetry-instrumentation-genai-openai 1.3b0 · opentelemetry-proto 1.45.2 · opentelemetry-sdk 1.45.2 · opentelemetry-semantic-conventions 0.66b2 · opentelemetry-util-genai 1.3b0 · pydantic 2.14.4), passing in Edition 2026.11.3:
+Example `gate-on-baseline-day-two` (Python 3.13.16 · bm25s 0.3.16 · mcp 2.3.0 · numpy 2.5.5 · opentelemetry-api 1.45.2 · opentelemetry-exporter-http-transport 0.66b2 · opentelemetry-exporter-otlp-common 0.66b2 · opentelemetry-exporter-otlp-proto-common 1.45.2 · opentelemetry-exporter-otlp-proto-http 1.45.2 · opentelemetry-instrumentation 0.66b2 · opentelemetry-instrumentation-genai-openai 1.3b0 · opentelemetry-proto 1.45.2 · opentelemetry-sdk 1.45.2 · opentelemetry-semantic-conventions 0.66b2 · opentelemetry-util-genai 1.3b0 · pydantic 2.14.4), passing in Edition 2026.11.4:
 
 ```python
 """Gate baseline day 2 against baseline day 1, both on release r0, with the same rules and limits as the prompt release's gate. The two days share no message, so each interval resamples each day on its own. The day is a normal day with no incident, and the gate must pass it, or a gate that flags every normal day would never reach CI."""
@@ -325,7 +325,7 @@ The two days share 0 messages, so the intervals are unpaired. Message time rises
 
 Paired, the prompt change should fail on tokens; unpaired, the same 60 messages should pass. Both judgements run on the same messages, and the run asserts both results.
 
-Example `gate-on-prompt-release` (Python 3.13.16 · bm25s 0.3.16 · mcp 2.3.0 · numpy 2.5.5 · opentelemetry-api 1.45.2 · opentelemetry-exporter-http-transport 0.66b2 · opentelemetry-exporter-otlp-common 0.66b2 · opentelemetry-exporter-otlp-proto-common 1.45.2 · opentelemetry-exporter-otlp-proto-http 1.45.2 · opentelemetry-instrumentation 0.66b2 · opentelemetry-instrumentation-genai-openai 1.3b0 · opentelemetry-proto 1.45.2 · opentelemetry-sdk 1.45.2 · opentelemetry-semantic-conventions 0.66b2 · opentelemetry-util-genai 1.3b0 · pydantic 2.14.4), passing in Edition 2026.11.3:
+Example `gate-on-prompt-release` (Python 3.13.16 · bm25s 0.3.16 · mcp 2.3.0 · numpy 2.5.5 · opentelemetry-api 1.45.2 · opentelemetry-exporter-http-transport 0.66b2 · opentelemetry-exporter-otlp-common 0.66b2 · opentelemetry-exporter-otlp-proto-common 1.45.2 · opentelemetry-exporter-otlp-proto-http 1.45.2 · opentelemetry-instrumentation 0.66b2 · opentelemetry-instrumentation-genai-openai 1.3b0 · opentelemetry-proto 1.45.2 · opentelemetry-sdk 1.45.2 · opentelemetry-semantic-conventions 0.66b2 · opentelemetry-util-genai 1.3b0 · pydantic 2.14.4), passing in Edition 2026.11.4:
 
 ```python
 """Gate the prompt-change release r1 against r0 on the same 60 messages, with the gate's own rules. The gate reads the traces only: message time, input tokens, cost, errors and route accuracy. A rule flags a release when the end of its interval nearest the limit lies past the limit. The prompt change adds tokens to every route call, and the gate catches it only because the messages are paired: the same 60 messages judged as unrelated samples pass."""
@@ -408,7 +408,7 @@ Judged as unrelated samples, the same 60 messages pass. The token rise is still 
 
 Gating the model swap on all 200 messages shows a different failure. Its amounts fall, which the rules pass, and its routes fall, which one rule catches.
 
-Example `gate-on-model-swap` (Python 3.13.16 · bm25s 0.3.16 · mcp 2.3.0 · numpy 2.5.5 · opentelemetry-api 1.45.2 · opentelemetry-exporter-http-transport 0.66b2 · opentelemetry-exporter-otlp-common 0.66b2 · opentelemetry-exporter-otlp-proto-common 1.45.2 · opentelemetry-exporter-otlp-proto-http 1.45.2 · opentelemetry-instrumentation 0.66b2 · opentelemetry-instrumentation-genai-openai 1.3b0 · opentelemetry-proto 1.45.2 · opentelemetry-sdk 1.45.2 · opentelemetry-semantic-conventions 0.66b2 · opentelemetry-util-genai 1.3b0 · pydantic 2.14.4), passing in Edition 2026.11.3:
+Example `gate-on-model-swap` (Python 3.13.16 · bm25s 0.3.16 · mcp 2.3.0 · numpy 2.5.5 · opentelemetry-api 1.45.2 · opentelemetry-exporter-http-transport 0.66b2 · opentelemetry-exporter-otlp-common 0.66b2 · opentelemetry-exporter-otlp-proto-common 1.45.2 · opentelemetry-exporter-otlp-proto-http 1.45.2 · opentelemetry-instrumentation 0.66b2 · opentelemetry-instrumentation-genai-openai 1.3b0 · opentelemetry-proto 1.45.2 · opentelemetry-sdk 1.45.2 · opentelemetry-semantic-conventions 0.66b2 · opentelemetry-util-genai 1.3b0 · pydantic 2.14.4), passing in Edition 2026.11.4:
 
 ```python
 """Gate release r2, the 0.6B model swap, against r0 on the same 200 messages, with the same rules and limits. Its route accuracy falls, and the gate flags it. Its message time, input tokens and cost fall too, and the rules for those amounts pass a fall. The fall comes from the answer calls: r2 routes more messages to the fallback reply, which makes no answer call. The suffix adds a few tokens to every route call. The gate reads each message's route reply against the route its scenario gives, never an answer."""
@@ -488,7 +488,7 @@ The route check counts a route as wrong when it differs from the scenario table,
 
 The top-8 release and the cache-off release get the same gate on the same 60 paired messages, and the example runs both.
 
-Example `gate-on-retrieval-and-cache` (Python 3.13.16 · bm25s 0.3.16 · mcp 2.3.0 · numpy 2.5.5 · opentelemetry-api 1.45.2 · opentelemetry-exporter-http-transport 0.66b2 · opentelemetry-exporter-otlp-common 0.66b2 · opentelemetry-exporter-otlp-proto-common 1.45.2 · opentelemetry-exporter-otlp-proto-http 1.45.2 · opentelemetry-instrumentation 0.66b2 · opentelemetry-instrumentation-genai-openai 1.3b0 · opentelemetry-proto 1.45.2 · opentelemetry-sdk 1.45.2 · opentelemetry-semantic-conventions 0.66b2 · opentelemetry-util-genai 1.3b0 · pydantic 2.14.4), passing in Edition 2026.11.3:
+Example `gate-on-retrieval-and-cache` (Python 3.13.16 · bm25s 0.3.16 · mcp 2.3.0 · numpy 2.5.5 · opentelemetry-api 1.45.2 · opentelemetry-exporter-http-transport 0.66b2 · opentelemetry-exporter-otlp-common 0.66b2 · opentelemetry-exporter-otlp-proto-common 1.45.2 · opentelemetry-exporter-otlp-proto-http 1.45.2 · opentelemetry-instrumentation 0.66b2 · opentelemetry-instrumentation-genai-openai 1.3b0 · opentelemetry-proto 1.45.2 · opentelemetry-sdk 1.45.2 · opentelemetry-semantic-conventions 0.66b2 · opentelemetry-util-genai 1.3b0 · pydantic 2.14.4), passing in Edition 2026.11.4:
 
 ```python
 """Gate the top-8 release r3 and the cache-off release r4 against r0, each on the same 60 paired messages, with the same rules and limits as the other gates. The top-8 release retrieves more articles, so its input tokens rise, and its time and cost rise with them. The cache-off release sends the same prompts, so its input total does not move, but its cost and time rise. The gate flags r3 on all three amounts and r4 on time and cost alone."""
